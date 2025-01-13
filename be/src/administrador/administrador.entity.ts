@@ -13,7 +13,7 @@ export class Administrador extends BaseEntity {
   apellido!: string;
 
   @Property({ type: 'string', nullable: false }) // Capaz si permite nulos
-  telefono?: string;
+  telefono!: string;
 
   // @Property({ type: 'string', nullable: true })
   // direccion?: string;
@@ -28,5 +28,5 @@ export class Administrador extends BaseEntity {
   password!: string;
 
   @Property({ type: 'string', nullable: false, unique: true }) // Capaz si permite nulos
-  email?: string;
+  email!: string;
 }
