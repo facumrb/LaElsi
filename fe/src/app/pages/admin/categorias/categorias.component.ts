@@ -2,7 +2,6 @@ import { Component, inject, OnInit } from '@angular/core';
 import { ApiCategoriaService } from '../../../services/api-categoria.service';
 import { IApiCategoria } from '../../../models/categoria.model';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
 import {
   FormBuilder,
   FormGroup,

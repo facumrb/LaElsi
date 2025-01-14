@@ -15,6 +15,10 @@ export class SideBarComponent {
     this.onMenuSelect.emit(menu);
   }
 
+  Usuarios(): void {
+    this._router.navigate(['/admin/usuarios']);
+  }
+
   Productos(): void {
     this._router.navigate(['/admin/items']);
   }
@@ -22,6 +26,4 @@ export class SideBarComponent {
   Categorias(): void {
     this._router.navigate(['/admin/categorias']);
   }
-
-  Usuarios() {}
 }
