@@ -7,7 +7,7 @@ export const orm = await MikroORM.init({
   entities: ['dist/**/*.entity.js'],
   entitiesTs: ['src/**/*.entity.ts'],
   dbName: 'laelsi',
-  clientUrl: 'mysql://root:admin@localhost:3306/laelsi',
+  clientUrl: 'mysql://root:Tanque54@localhost:3306/laelsi',
   highlighter: new SqlHighlighter(),
   debug: true,
   driver: MySqlDriver,
@@ -15,8 +15,8 @@ export const orm = await MikroORM.init({
     //never in production
     disableForeignKeys: true,
     createForeignKeyConstraints: true,
-    ignoreSchema: [],
-  },
+    ignoreSchema: []
+  }
 });
 
 export const syncSchema = async () => {
