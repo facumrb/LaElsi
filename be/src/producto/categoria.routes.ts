@@ -3,6 +3,7 @@ import { findAll, findOne, add, update, remove, searchCategorias, sanitizeCatego
 
 export const categoriaRouter = Router();
 
+categoriaRouter.get('/search', searchCategorias);
 categoriaRouter.get('/', findAll);
 categoriaRouter.get('/:id', findOne);
 categoriaRouter.post('/', sanitizeCategoriaInput, add);
@@ -10,4 +11,3 @@ categoriaRouter.patch('/:id', sanitizeCategoriaInput, update);
 categoriaRouter.delete('/:id', remove);
 
 // Ruta para buscar categorías por nombre o descripción
-categoriaRouter.get('/search', searchCategorias);

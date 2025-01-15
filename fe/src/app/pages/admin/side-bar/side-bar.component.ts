@@ -11,11 +11,11 @@ export class SideBarComponent {
   private _router = inject(Router);
   @Output() onMenuSelect = new EventEmitter<string>();
 
-  selectMenu(menu: string): void {
+  selectMenu(menu: string, event?: Event): void {
     this.onMenuSelect.emit(menu);
   }
 
-  Usuarios(): void {
+  /* Usuarios(): void {
     this._router.navigate(['/admin/usuarios']);
   }
 
@@ -25,5 +25,5 @@ export class SideBarComponent {
 
   Categorias(): void {
     this._router.navigate(['/admin/categorias']);
-  }
+  } */
 }

@@ -1,38 +1,20 @@
-<div class="usuarios-container">
+<div class="container">
   <h1>Gestión de usuarios</h1>
-  <div class="filter-container">
-    <label for="usuarioFiltro" class="filter-label"
-      >Filtrar por Tipo de usuario:</label
-    >
-    <select
-      id="usuarioFiltro"
-      class="filter-select form-control"
-      (change)="filterByUsuario($event)"
-    >
-      <option value="">Todas los Usuarios</option>
-      @for (usuario of usuarios; track $index) {
-      <option [value]="usuario.id">
-        {{ usuario.nombre }}
-      </option>
-      }
-    </select>
-  </div>
   <table class="table table-striped">
     <thead>
       <tr>
-        <th>Rol</th>
         <th>Nombre</th>
         <th>Apellido</th>
         <th>Telefono</th>
         <th>Usuario</th>
         <th>Contraseña</th>
         <th>Email</th>
+        <th>Acciones</th>
       </tr>
     </thead>
     <tbody>
       @for (usuario of usuarios; track $index) {
       <tr>
-        <td>{{ usuario.rol }}</td>
         <td>{{ usuario.nombre }}</td>
         <td>{{ usuario.apellido }}</td>
         <td>{{ usuario.telefono }}</td>
@@ -97,157 +79,125 @@
           </div>
         </div>
         <div class="form-group">
-          <label for="marca">Marca</label>
+          <label for="apellido">Apellido</label>
           <input
             type="text"
             class="form-control"
-            id="marca"
-            formControlName="marca"
-            name="marca"
+            id="apellido"
+            formControlName="apellido"
+            name="apellido"
             [ngClass]="{
-              'is-invalid': hasErrors('marca', 'required')
+              'is-invalid':
+                hasErrors('apellido', 'required') ||
+                hasErrors('apellido', 'pattern')
             }"
           />
           <!-- Contenedor de mensajes de error -->
           <div class="error-container">
-            @if (hasErrors('marca', 'required')) {
-            <div class="text-danger">La marca es obligatoria.</div>
+            @if (hasErrors('apellido', 'required')) {
+            <div class="text-danger">El apellido es obligatorio.</div>
+            } @if (hasErrors('apellido', 'pattern')) {
+            <div class="text-danger">El formato del apellido es inválido.</div>
             }
           </div>
         </div>
-        <div class="form-group full-width">
-          <label for="descripcion">Descripción</label>
-          <textarea
+        <div class="form-group">
+          <label for="telefono">Telefono</label>
+          <input
+            type="text"
             class="form-control"
-            id="descripcion"
-            formControlName="descripcion"
-            name="descripcion"
+            id="telefono"
+            formControlName="telefono"
+            name="telefono"
             [ngClass]="{
               'is-invalid':
-                hasErrors('descripcion', 'required') ||
-                hasErrors('descripcion', 'pattern')
+                hasErrors('telefono', 'required') ||
+                hasErrors('telefono', 'pattern')
             }"
-          ></textarea>
+          />
           <!-- Contenedor de mensajes de error -->
           <div class="error-container">
-            @if (hasErrors('descripcion', 'required')) {
-            <div class="text-danger">La descripción es obligatoria.</div>
-            } @if (hasErrors('descripcion', 'pattern')) {
+            @if (hasErrors('telefono', 'required')) {
+            <div class="text-danger">El telefono es obligatorio.</div>
+            } @if (hasErrors('telefono', 'pattern')) {
+            <div class="text-danger">El formato del telefono es inválido.</div>
+            }
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="usuario">Usuario</label>
+          <input
+            type="text"
+            class="form-control"
+            id="usuario"
+            formControlName="usuario"
+            name="usuario"
+            [ngClass]="{
+              'is-invalid':
+                hasErrors('usuario', 'required') ||
+                hasErrors('usuario', 'pattern')
+            }"
+          />
+          <!-- Contenedor de mensajes de error -->
+          <div class="error-container">
+            @if (hasErrors('usuario', 'required')) {
+            <div class="text-danger">El usuario es obligatorio.</div>
+            } @if (hasErrors('usuario', 'pattern')) {
+            <div class="text-danger">El formato del usuario es inválido.</div>
+            }
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Contraseña</label>
+          <input
+            type="password"
+            class="form-control"
+            id="password"
+            formControlName="password"
+            name="password"
+            [ngClass]="{
+              'is-invalid':
+                hasErrors('password', 'required') ||
+                hasErrors('password', 'pattern')
+            }"
+          />
+          <!-- Contenedor de mensajes de error -->
+          <div class="error-container">
+            @if (hasErrors('password', 'required')) {
+            <div class="text-danger">La contraseña es obligatoria.</div>
+            } @if (hasErrors('password', 'pattern')) {
             <div class="text-danger">
-              El formato de la descripción es inválido.
+              El formato de la contraseña es inválido.
             </div>
             }
           </div>
         </div>
+
         <div class="form-group">
-          <label for="precio">Precio</label>
+          <label for="email">Email</label>
           <input
-            type="text"
+            type="email"
             class="form-control"
-            id="precio"
-            formControlName="precio"
-            name="precio"
+            id="email"
+            formControlName="email"
+            name="email"
             [ngClass]="{
               'is-invalid':
-                hasErrors('precio', 'required') ||
-                hasErrors('precio', 'pattern')
+                hasErrors('email', 'required') || hasErrors('email', 'email')
             }"
           />
           <!-- Contenedor de mensajes de error -->
           <div class="error-container">
-            @if (hasErrors('precio', 'required')) {
-            <div class="text-danger">El precio es obligatorio.</div>
-            } @if (hasErrors('precio', 'pattern')) {
-            <div class="text-danger">El formato del precio es inválido.</div>
+            @if (hasErrors('email', 'required')) {
+            <div class="text-danger">El email es obligatorio.</div>
+            } @if (hasErrors('email', 'email')) {
+            <div class="text-danger">El formato del email es inválido.</div>
             }
           </div>
         </div>
-        <div class="form-group">
-          <label for="stock">Stock</label>
-          <input
-            type="text"
-            class="form-control"
-            id="stock"
-            formControlName="stock"
-            name="stock"
-            [ngClass]="{
-              'is-invalid':
-                hasErrors('stock', 'required') || hasErrors('stock', 'pattern')
-            }"
-          />
-          <!-- Contenedor de mensajes de error -->
-          <div class="error-container">
-            @if (hasErrors('stock', 'required')) {
-            <div class="text-danger">El stock es obligatorio.</div>
-            } @if (hasErrors('stock', 'pattern')) {
-            <div class="text-danger">El formato del stock es inválido.</div>
-            }
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="estado">Estado</label>
-          <select
-            id="estado"
-            class="form-control"
-            formControlName="estado"
-            name="estado"
-            [ngClass]="{ 'is-invalid': hasErrors('estado', 'required') }"
-          >
-            <option value="" disabled selected>Seleccione un estado</option>
-            <option value="Activo">Activo</option>
-            <option value="Inactivo">Inactivo</option>
-          </select>
-          <div class="error-container">
-            @if (hasErrors('estado', 'required')){
-            <div class="text-danger">Seleccionar un estado es obligatorio.</div>
-            }
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="cant_vendidos">Cantidad Vendida</label>
-          <input
-            type="text"
-            class="form-control"
-            id="cant_vendidos"
-            formControlName="cant_vendidos"
-            name="cant_vendidos"
-            [ngClass]="{
-              'is-invalid':
-                hasErrors('cant_vendidos', 'required') ||
-                hasErrors('cant_vendidos', 'pattern')
-            }"
-          />
-          <!-- Contenedor de mensajes de error -->
-          <div class="error-container">
-            @if (hasErrors('cant_vendidos', 'required')) {
-            <div class="text-danger">La cantidad vendida es obligatoria.</div>
-            } @if (hasErrors('cant_vendidos', 'pattern')) {
-            <div class="text-danger">El formato es inválido.</div>
-            }
-          </div>
-        </div>
-        <div class="form-group full-width">
-          <label for="categoria">Categoria</label>
-          <select
-            id="categoria"
-            class="form-control"
-            formControlName="categoria"
-            name="categoria"
-            [ngClass]="{ 'is-invalid': hasErrors('categoria', 'required') }"
-          >
-            <option value="" disabled selected>Seleccione una categoria</option>
-            @for(categoria of categorias; track $index){
-            <option [value]="categoria.id">{{ categoria.nombre }}</option>
-            }
-          </select>
-          <div class="error-container">
-            @if (hasErrors('categoria', 'required')){
-            <div class="text-danger">
-              Seleccionar una categoria es obligatorio.
-            </div>
-            }
-          </div>
-        </div>
+
         <div class="modal-actions">
           <button
             type="submit"

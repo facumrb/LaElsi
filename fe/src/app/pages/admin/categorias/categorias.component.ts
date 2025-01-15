@@ -14,7 +14,7 @@ import {
   selector: 'app-categorias',
   imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './categorias.component.html',
-  styleUrl: './categorias.component.css',
+  styleUrl: '../home/home.component.css',
 })
 export class CategoriasComponent implements OnInit {
   formCategory!: FormGroup;

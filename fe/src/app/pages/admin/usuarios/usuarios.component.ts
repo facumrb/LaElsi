@@ -14,7 +14,7 @@ import {
   selector: 'app-usuarios',
   imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './usuarios.component.html',
-  styleUrl: './usuarios.component.css',
+  styleUrl: '../home/home.component.css',
 })
 export class UsuariosComponent implements OnInit {
   formUsuario!: FormGroup;
@@ -52,6 +52,7 @@ export class UsuariosComponent implements OnInit {
           Validators.pattern('^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9.,;:?!()_\'"-\\s]*$'),
         ],
       ],
+      password: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
     });
   }
@@ -63,16 +64,8 @@ export class UsuariosComponent implements OnInit {
   loadUsuarios(): void {
     this._apiService.getAllAdmins().subscribe((data) => {
       this.usuarios = data;
-      /*       this.applyFilters();
-       */
     });
   }
-
-  /* applyFilters(): void {
-    this.usuarios = this.usuarios.filter((usuario) =>
-      this.filterState ? usuario.rol === this.filterState : true
-    );
-  } */
 
   openModal(mode: 'add' | 'edit', administrador?: IApiAdmin): void {
     this.modalMode = mode;
@@ -82,7 +75,6 @@ export class UsuariosComponent implements OnInit {
       this.formUsuario.patchValue(administrador);
     } else {
       this.formUsuario.reset();
-      this.formUsuario.patchValue({ rol: '' });
     }
   }
 

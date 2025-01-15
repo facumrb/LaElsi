@@ -84,3 +84,6 @@ Content-Type: application/json
 
 ### DELETE a item
 DELETE http://localhost:3000/api/items/{{idToDelete}}
+
+### SEARCH
+GET http://localhost:3000/api/items/search?query=Bloques

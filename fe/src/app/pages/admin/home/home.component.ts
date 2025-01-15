@@ -4,6 +4,7 @@ import { SideBarComponent } from '../side-bar/side-bar.component';
 import { CommonModule } from '@angular/common';
 import { CategoriasComponent } from '../categorias/categorias.component';
 import { ItemsComponent } from '../items/items.component';
+import { UsuariosComponent } from '../usuarios/usuarios.component';
 
 @Component({
   selector: 'app-home',
@@ -16,11 +17,18 @@ export class HomeComponent {
 
   // Método para cargar el componente seleccionado
   loadComponent(componentName: string): void {
-    if (componentName === 'productos') {
-      this.currentComponent = ItemsComponent;
-    }
-    if (componentName === 'categorias') {
-      this.currentComponent = CategoriasComponent;
+    // Mapear nombres de componentes a clases
+    const componentMap: { [key: string]: any } = {
+      productos: ItemsComponent,
+      categorias: CategoriasComponent,
+      usuarios: UsuariosComponent,
+    };
+
+    // Si el componente actual es el mismo que el seleccionado, deselecciona
+    if (this.currentComponent === componentMap[componentName]) {
+      this.currentComponent = null; // Cierra la vista
+    } else {
+      this.currentComponent = componentMap[componentName]; // Cambia al nuevo componente
     }
   }
 }

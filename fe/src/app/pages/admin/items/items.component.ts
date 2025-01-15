@@ -16,7 +16,7 @@ import { ApiCategoriaService } from '../../../services/api-categoria.service';
   selector: 'app-items',
   imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './items.component.html',
-  styleUrl: './items.component.css',
+  styleUrl: '../home/home.component.css',
 })
 export class ItemsComponent implements OnInit {
   formItem!: FormGroup;
@@ -156,20 +156,17 @@ export class ItemsComponent implements OnInit {
     );
   }
 
-  /* onSearch(): void {
-    const trimmedQuery = this.searchQuery.trim();
+  onSearch(): void {
+    const trimmedQuery = this.searchQuery.trim().toLowerCase();
     if (trimmedQuery) {
-      this._apiService.searchItems(trimmedQuery).subscribe({
-        next: (data) => {
-          this.items = data;
-        },
-        error: (error) => {
-          console.error('Error en la búsqueda:', error);
-          this.items = [];
-        },
-      });
+      this.items = this.allItems.filter(
+        (item) =>
+          item.nombre.toLowerCase().includes(trimmedQuery) ||
+          item.descripcion.toLowerCase().includes(trimmedQuery) ||
+          item.marca.toLowerCase().includes(trimmedQuery)
+      );
     } else {
-      this.loadItems(); // Cargar todas las categorías si no hay búsqueda
+      this.items = [...this.allItems]; // Restablecer la lista completa si la consulta está vacía
     }
-  } */
+  }
 }

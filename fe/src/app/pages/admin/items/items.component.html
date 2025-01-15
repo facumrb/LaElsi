@@ -1,5 +1,18 @@
-<div class="items-container">
+<div class="container">
   <h1>Gestión de Productos</h1>
+  <!-- Barra de búsqueda -->
+  <div class="search-container">
+    <label for="searchInput" class="search-label">Buscar:</label>
+    <input
+      id="searchInput"
+      type="text"
+      class="search-input form-control"
+      [(ngModel)]="searchQuery"
+      (input)="onSearch()"
+      placeholder="Buscar por nombre, descripción o marca..."
+    />
+  </div>
+  <!-- Filtrado por categoria -->
   <div class="filter-container">
     <label for="categoriaFiltro" class="filter-label"
       >Filtrar por Categoría:</label

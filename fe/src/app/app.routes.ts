@@ -6,6 +6,7 @@ import { EditProfileComponent } from './pages/admin/edit-profile/edit-profile.co
 import { ViewProfileComponent } from './pages/admin/view-profile/view-profile.component';
 import { CategoriasComponent } from './pages/admin/categorias/categorias.component';
 import { ItemsComponent } from './pages/admin/items/items.component';
+import { UsuariosComponent } from './pages/admin/usuarios/usuarios.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginHomeComponent },
@@ -16,6 +17,7 @@ export const routes: Routes = [
       { path: 'home', component: HomeComponent },
       { path: 'view-profile/:id', component: ViewProfileComponent },
       { path: 'edit-profile/:id', component: EditProfileComponent },
+      { path: 'usuarios', component: UsuariosComponent },
       { path: 'categorias', component: CategoriasComponent },
       { path: 'items', component: ItemsComponent },
     ],
