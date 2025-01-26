@@ -25,7 +25,12 @@ Para abrir el proyecto, sigue estos pasos:
 
 - Navega al directorio clonado y abre la carpeta en VS Code.
 
-**3. Formas de compilar el proyecto:**
+**3. Agrega las dependencias del proyecto:
+```bash
+  npm install
+  ```
+
+**4. Formas de compilar el proyecto:**
 
 - Para ejecutar el **Frontend y Backend** simultáneamente:
   ```bash
