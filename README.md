@@ -25,7 +25,8 @@ Para abrir el proyecto, sigue estos pasos:
 
 - Navega al directorio clonado y abre la carpeta en VS Code.
 
-**3. Agrega las dependencias del proyecto:
+**3. Agrega las dependencias del proyecto:**
+
 ```bash
   npm install
   ```
