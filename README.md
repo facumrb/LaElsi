@@ -9,7 +9,7 @@ Antes de abrir el proyecto, asegúrate de tener instalados:
 - Node.js (versión 22 o superior)
 - npm (versión 10 o superior)
 - Angular cli (version 19) (npm install -g @angular/cli)
-- Visual Studio Code
+- Visual Studio Code.
 
 ## Cómo abrir el proyecto
 
