@@ -6,9 +6,6 @@ yarn-error.log*
 
 # --- Variables de Entorno ---
 .env
-.env.local
-.env.*
-*.env
 
 # --- Builds y Salidas de Compilación (Aplica a BE y FE) ---
 dist/
