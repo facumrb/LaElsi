@@ -18,14 +18,23 @@ Si no tienes Node.js instalado, recomendamos usar **fnm** (Fast Node Manager) pa
     ```powershell
     winget install Schniz.fnm
     ```
-2.  **Instalar Node.js v22:**
+2.  **Instalar Node.js v22 y configurar PowerShell:**
+
     ```bash
     fnm install 22
     fnm use 22
+
+    # Configurar el perfil para que fnm cargue siempre:
     notepad $profile
-    Agregar esta linea al doc: fnm env --use-on-cd --shell powershell | Out-String | Invoke-Expression
     ```
-3.  **Instalar Angular CLI**
+
+    _Agrega la siguiente línea al final del archivo que se abrió y guarda:_
+
+    ```powershell
+    fnm env --use-on-cd --shell powershell | Out-String | Invoke-Expression
+    ```
+
+3.  **Instalar Angular CLI:**
     ```bash
     npm install -g @angular/cli@19.0.2
     ```
@@ -37,28 +46,35 @@ Para abrir el proyecto, sigue estos pasos:
 **1. Clona este repositorio:**
 
 ```bash
-   git clone https://github.com/facumrb/LaElsi.git
+git clone [https://github.com/facumrb/LaElsi.git](https://github.com/facumrb/LaElsi.git)
 ```
 
-**2. Abre el proyecto en Visual Studio Code:**
+**2. Instala las dependencias:**
 
-- Navega al directorio clonado y abre la carpeta en VS Code.
-
-**3. Agrega las dependencias del proyecto:**
+Ejecuta este comando en la carpeta raíz (instalará las librerías del backend, frontend y herramientas generales):
 
 ```bash
-  npm install
+npm install
 ```
 
-**4. Formas de compilar el proyecto:**
+**3. Configuración de Variables de Entorno:**
 
-- Para ejecutar el **Frontend y Backend** simultáneamente:
+El backend requiere credenciales de base de datos para funcionar.
+
+1.  Ve a la carpeta `be`.
+2.  Crea un archivo llamado `.env` (puedes copiar el archivo `.env.example` como base).
+3.  Define las variables `DB_USER`, `DB_PASSWORD` y `DB_NAME` con tu configuración local de MySQL.
+
+**4. Ejecución del proyecto:**
+
+Gracias a la arquitectura de Monorepo, puedes ejecutar todo desde la carpeta raíz:
+
+- **Opción A: Todo junto (Recomendado)** Levanta Frontend y Backend simultáneamente:
+
   ```bash
   npm run start:dev
   ```
-  - Para compilar solo una parte:
-    - Navega al directorio correspondiente (`cd fe` o `cd be`).
-    - Ejecuta:
-      ```bash
-      npm run start:dev
-      ```
+
+- **Opción B: Ejecutar por partes**
+  - Solo Backend: `npm run start:dev:be`
+  - Solo Frontend: `npm run start:dev:fe`
