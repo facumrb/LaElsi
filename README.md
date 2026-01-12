@@ -8,8 +8,13 @@ Antes de abrir el proyecto, asegúrate de tener instalados:
 
 - Node.js (versión 22 o superior)
 - npm (versión 10 o superior)
-- Angular cli (version 19) (npm install -g @angular/cli)
-- Visual Studio Code.
+- Angular cli (version 19.0.2) (npm install -g @angular/cli@19.0.2)
+
+## Pasos de instalación en Windows
+
+- Instalar fnm --> winget install Schniz.fnm
+- Instalar node.js junto a npm --> fnm install 22
+- Instalar angular cli v19.0.2 --> npm install -g @angular/cli@19.0.2
 
 ## Cómo abrir el proyecto
 
@@ -29,7 +34,7 @@ Para abrir el proyecto, sigue estos pasos:
 
 ```bash
   npm install
-  ```
+```
 
 **4. Formas de compilar el proyecto:**
 
