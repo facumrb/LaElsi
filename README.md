@@ -46,7 +46,7 @@ Para abrir el proyecto, sigue estos pasos:
 **1. Clona este repositorio:**
 
 ```bash
-git clone [https://github.com/facumrb/LaElsi.git](https://github.com/facumrb/LaElsi.git)
+git clone https://github.com/facumrb/LaElsi.git
 ```
 
 **2. Instala las dependencias:**

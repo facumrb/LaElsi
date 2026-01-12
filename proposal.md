@@ -14,8 +14,8 @@
 
 ### Repositorios
 
-- [frontend app](https://github.com/facumrb/LaElsi/tree/main/fe)
-- [backend app](https://github.com/facumrb/LaElsi/tree/main/be)
+- [FrontEnd](https://github.com/facumrb/LaElsi/tree/main/fe)
+- [BackEnd](https://github.com/facumrb/LaElsi/tree/main/be)
 
 ## Tema
 
