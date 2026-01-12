@@ -6,9 +6,9 @@ La librería “LaElsi” es un negocio dedicado a la venta de productos de libr
 
 Antes de abrir el proyecto, asegúrate de tener instalados:
 
-- Node.js (versión 22 LTS o superior)
-- npm (versión 10 o superior)
-- Angular cli (version 19.0.2) (npm install -g @angular/cli@19.0.2)
+- **Node.js**: Versión 22 (LTS) o superior.
+- **NPM**: Versión 10 o superior.
+- **Angular CLI**: Versión 19.0.2
 
 ## Pasos de instalación en Windows
 
