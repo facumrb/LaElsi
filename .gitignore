@@ -19,7 +19,7 @@ coverage/
 tsconfig.build.tsbuildinfo
 
 # --- Frameworks Específicos (Angular, Sass, etc.) ---
-.angular/cache
+.angular
 .sass-cache/
 connect.lock
 typings/
