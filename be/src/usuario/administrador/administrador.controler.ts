@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { Administrador } from './administrador.entity.js';
-import { orm } from '../shared/db/orm.js';
+import { orm } from '../../shared/db/orm.js';
 // import bcrypt from 'bcryptjs';
 // Crear endpoint, verificar credencial y manejar respuesta.
 

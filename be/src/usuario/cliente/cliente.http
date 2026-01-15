@@ -1,0 +1,20 @@
+### GET ALL Clientes
+GET http://localhost:3000/api/clientes
+
+### POST Crear un Cliente
+# @name createCliente
+POST http://localhost:3000/api/clientes
+Content-Type: application/json
+
+### ID del Cliente creado
+@id = {{createCliente.response.body.data.id}}
+
+### GET Un Cliente por ID
+GET http://localhost:3000/api/clientes/{{id}}
+
+### PATCH Actualizar un Cliente
+PATCH http://localhost:3000/api/clientes/{{id}}
+Content-Type: application/json
+
+### DELETE Eliminar un Cliente
+DELETE http://localhost:3000/api/clientes/{{id}}

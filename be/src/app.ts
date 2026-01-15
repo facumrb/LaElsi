@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import express from 'express';
-import { administradorRouter } from './administrador/administrador.routes.js';
+import { administradorRouter } from './usuario/administrador/administrador.routes.js';
+import { clienteRouter } from './usuario/cliente/cliente.routes.js';
 import { categoriaRouter } from './producto/categoria.routes.js';
 import { itemRouter } from './producto/item.routes.js';
 // import { uploadDir } from './producto/item.controler.js';
@@ -21,6 +22,7 @@ app.use((req, res, next) => {
 app.use('/api/categorias', categoriaRouter);
 app.use('/api/items', itemRouter);
 app.use('/api/administradores', administradorRouter);
+app.use('/api/clientes', clienteRouter);
 // Ruta para ver imágenes
 /* app.use('/api/items/imagenesProductos', express.static(uploadDir));
  */
