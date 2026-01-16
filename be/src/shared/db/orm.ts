@@ -3,6 +3,11 @@ import { MikroORM } from '@mikro-orm/core';
 import { MySqlDriver } from '@mikro-orm/mysql';
 import { SqlHighlighter } from '@mikro-orm/sql-highlighter';
 import 'dotenv/config';
+import { Administrador } from '../../usuario/administrador/administrador.entity.js';
+import { Cliente } from '../../usuario/cliente/cliente.entity.js';
+import { Categoria } from '../../producto/categoria.entity.js';
+import { Item } from '../../producto/item.entity.js';
+import { BaseEntity } from './baseEntity.entity.js';
 
 // Validación básica para no intentar conectar si faltan datos
 if (!process.env.DB_USER || !process.env.DB_NAME) {
@@ -10,8 +15,8 @@ if (!process.env.DB_USER || !process.env.DB_NAME) {
 }
 
 export const orm = await MikroORM.init({
-  entities: ['dist/**/*.entity.js'],
-  entitiesTs: ['src/**/*.entity.ts'],
+  entities: [Administrador, Cliente, Categoria, Item, BaseEntity],
+  entitiesTs: [Administrador, Cliente, Categoria, Item, BaseEntity],
   dbName: process.env.DB_NAME,
   clientUrl: `mysql://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`,
   highlighter: new SqlHighlighter(),

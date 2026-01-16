@@ -6,6 +6,15 @@ GET http://localhost:3000/api/clientes
 POST http://localhost:3000/api/clientes
 Content-Type: application/json
 
+{
+  "nombre": "Jorge",
+  "apellido": "Quinoa",
+  "telefono": "3415044454",
+  "usuario": "jorge_quinoa",
+  "password": "papasfritas",
+  "email": "jorgequinoa@gmail.com"
+}
+
 ### ID del Cliente creado
 @id = {{createCliente.response.body.data.id}}
 
@@ -15,6 +24,11 @@ GET http://localhost:3000/api/clientes/{{id}}
 ### PATCH Actualizar un Cliente
 PATCH http://localhost:3000/api/clientes/{{id}}
 Content-Type: application/json
+
+{
+  "nombre": "Jorge Actualizado",
+  "apellido": "Quinoa Actualizado",
+}
 
 ### DELETE Eliminar un Cliente
 DELETE http://localhost:3000/api/clientes/{{id}}
