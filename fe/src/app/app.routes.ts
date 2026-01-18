@@ -7,6 +7,15 @@ import { ViewProfileComponent } from './pages/admin/view-profile/view-profile.co
 import { CategoriasComponent } from './pages/admin/categorias/categorias.component';
 import { ItemsComponent } from './pages/admin/items/items.component';
 import { UsuariosComponent } from './pages/admin/usuarios/usuarios.component';
+import { MainPageComponent } from './pages/cliente/main-page/main-page.component';
+import { PerfilPageComponent } from './pages/cliente/perfil-page/perfil-page.component';
+import { CarritoPageComponent } from './pages/cliente/carrito-page/carrito-page.component';
+import { ComputacionPageComponent } from './pages/cliente/computacion-page/computacion-page.component';
+import { JugueteriaPageComponent } from './pages/cliente/jugueteria-page/jugueteria-page.component';
+import { LibreriaPageComponent } from './pages/cliente/libreria-page/libreria-page.component';
+import { ImpresionesPageComponent } from './pages/cliente/impresiones-page/impresiones-page.component';
+import { SellosPageComponent } from './pages/cliente/sellos-page/sellos-page.component';
+import { DisenoGraficoPageComponent } from './pages/cliente/diseno-grafico-page/diseno-grafico-page.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginHomeComponent },
@@ -22,5 +31,19 @@ export const routes: Routes = [
       { path: 'items', component: ItemsComponent },
     ],
   },
-  { path: '**', redirectTo: 'login', pathMatch: 'full' },
+  // { path: '**', redirectTo: 'login', pathMatch: 'full' },
+  {
+    path: 'cliente',
+    children: [
+      { path: 'main', component: MainPageComponent },
+      { path: 'perfil', component: PerfilPageComponent },
+      { path: 'carrito', component: CarritoPageComponent },
+      { path: 'computacion', component: ComputacionPageComponent },
+      { path: 'jugueteria', component: JugueteriaPageComponent },
+      { path: 'libreria', component: LibreriaPageComponent },
+      { path: 'impresiones', component: ImpresionesPageComponent },
+      { path: 'sellos', component: SellosPageComponent },
+      { path: 'disenio', component: DisenoGraficoPageComponent },
+    ],
+  },
 ];
