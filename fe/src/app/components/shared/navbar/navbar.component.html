@@ -1,47 +1,67 @@
 <header>
- <nav class="sup">
-    <a routerLink="/cliente/main">
-        <img src="assets/Logo.png" alt="La Elsi logo" width="120">
+  <nav class="sup">
+    <a routerLink="/">
+      <img src="assets/Logo.png" alt="La Elsi logo" width="120" />
     </a>
     <div class="buscar">
-        <input type="text" class="form-control" placeholder="Buscar articulo...">
-        <button class="btn btn-primary" type="submit">
-            <i class="bi bi-search"></i>
-        </button>
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Buscar articulo..."
+      />
+      <button class="btn btn-primary" type="submit">
+        <i class="bi bi-search"></i>
+      </button>
     </div>
     <div class="login-carrito">
-        <a routerLink="../../login">
-            <button class="btn btn-primary">
-                <i class="bi bi-person-circle"></i> {{ userSignal() }}
-            </button>
-        </a>
-        <a routerLink="/cliente/carrito/">
-            <button class="btn btn-primary"> 
-                <i class="bi bi-cart4"></i> {{ carritoSignal() }}
-            </button>
-        </a>
+      <a routerLink="/login">
+        <button class="btn btn-primary">
+          <i class="bi bi-person-circle"></i> {{ userSignal() }}
+        </button>
+      </a>
+      <a routerLink="/carrito">
+        <button class="btn btn-primary">
+          <i class="bi bi-cart4"></i> {{ carritoSignal() }}
+        </button>
+      </a>
     </div>
-    
- </nav>
- <nav class="inf">
-    <a routerLink="/cliente/jugueteria/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
-        >Juguetería
+  </nav>
+  <nav class="inf">
+    <a
+      routerLink="/jugueteria"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+      >Juguetería
     </a>
-    <a routerLink="/cliente/computacion/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
-        >Computación
+    <a
+      routerLink="/computacion"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+      >Computación
     </a>
-    <a routerLink="/cliente/impresiones/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
-        >Impresiones
+    <a
+      routerLink="/impresiones"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+      >Impresiones
     </a>
-    <a routerLink="/cliente/disenio/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
-        >Diseño Gráfico
+    <a
+      routerLink="/disenio"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+      >Diseño Gráfico
     </a>
-    <a routerLink="/cliente/sellos/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
-        >Sellos
-    </a>  
-    <a routerLink="/cliente/libreria/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
-        >Librería
+    <a
+      routerLink="/sellos"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+      >Sellos
     </a>
- </nav>
+    <a
+      routerLink="/libreria"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+      >Librería
+    </a>
+  </nav>
 </header>
-

@@ -5,8 +5,5 @@ import { NavbarComponent } from '../../../components/shared/navbar/navbar.compon
   selector: 'app-perfil-page',
   imports: [NavbarComponent],
   templateUrl: './perfil-page.component.html',
-  styleUrl: './perfil-page.component.css'
 })
-export class PerfilPageComponent {
-
-}
+export class PerfilPageComponent {}

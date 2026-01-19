@@ -5,8 +5,5 @@ import { NavbarComponent } from '../../../components/shared/navbar/navbar.compon
   selector: 'app-impresiones-page',
   imports: [NavbarComponent],
   templateUrl: './impresiones-page.component.html',
-  styleUrl: './impresiones-page.component.css'
 })
-export class ImpresionesPageComponent {
-
-}
+export class ImpresionesPageComponent {}

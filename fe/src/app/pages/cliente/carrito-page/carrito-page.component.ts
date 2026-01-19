@@ -5,8 +5,5 @@ import { NavbarComponent } from '../../../components/shared/navbar/navbar.compon
   selector: 'app-carrito-page',
   imports: [NavbarComponent],
   templateUrl: './carrito-page.component.html',
-  styleUrl: './carrito-page.component.css'
 })
-export class CarritoPageComponent {
-
-}
+export class CarritoPageComponent {}

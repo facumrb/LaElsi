@@ -5,8 +5,5 @@ import { NavbarComponent } from '../../../components/shared/navbar/navbar.compon
   selector: 'app-sellos-page',
   imports: [NavbarComponent],
   templateUrl: './sellos-page.component.html',
-  styleUrl: './sellos-page.component.css'
 })
-export class SellosPageComponent {
-
-}
+export class SellosPageComponent {}

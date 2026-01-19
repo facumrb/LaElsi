@@ -5,8 +5,5 @@ import { NavbarComponent } from '../../../components/shared/navbar/navbar.compon
   selector: 'app-computacion-page',
   imports: [NavbarComponent],
   templateUrl: './computacion-page.component.html',
-  styleUrl: './computacion-page.component.css'
 })
-export class ComputacionPageComponent {
-
-}
+export class ComputacionPageComponent {}

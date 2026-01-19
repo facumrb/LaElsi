@@ -19,6 +19,7 @@ import { DisenoGraficoPageComponent } from './pages/cliente/diseno-grafico-page/
 
 export const routes: Routes = [
   { path: 'login', component: LoginHomeComponent },
+  // ADMIN
   {
     path: 'admin',
     canActivate: [adminGuard],
@@ -31,11 +32,12 @@ export const routes: Routes = [
       { path: 'items', component: ItemsComponent },
     ],
   },
-  // { path: '**', redirectTo: 'login', pathMatch: 'full' },
+  // CLIENTE
   {
-    path: 'cliente',
+    path: '',
     children: [
-      { path: 'main', component: MainPageComponent },
+      { path: '', component: MainPageComponent },
+      { path: 'main', redirectTo: '' },
       { path: 'perfil', component: PerfilPageComponent },
       { path: 'carrito', component: CarritoPageComponent },
       { path: 'computacion', component: ComputacionPageComponent },
@@ -46,4 +48,5 @@ export const routes: Routes = [
       { path: 'disenio', component: DisenoGraficoPageComponent },
     ],
   },
+  { path: '**', redirectTo: '', pathMatch: 'full' },
 ];

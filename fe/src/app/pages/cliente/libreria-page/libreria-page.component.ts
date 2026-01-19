@@ -5,8 +5,5 @@ import { NavbarComponent } from '../../../components/shared/navbar/navbar.compon
   selector: 'app-libreria-page',
   imports: [NavbarComponent],
   templateUrl: './libreria-page.component.html',
-  styleUrl: './libreria-page.component.css'
 })
-export class LibreriaPageComponent {
-
-}
+export class LibreriaPageComponent {}

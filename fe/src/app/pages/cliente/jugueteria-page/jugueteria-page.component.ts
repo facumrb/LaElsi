@@ -5,8 +5,5 @@ import { NavbarComponent } from '../../../components/shared/navbar/navbar.compon
   selector: 'app-jugueteria-page',
   imports: [NavbarComponent],
   templateUrl: './jugueteria-page.component.html',
-  styleUrl: './jugueteria-page.component.css'
 })
-export class JugueteriaPageComponent {
-
-}
+export class JugueteriaPageComponent {}
