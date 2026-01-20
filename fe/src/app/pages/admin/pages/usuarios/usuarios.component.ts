@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { ApiAdministradorService } from '../../../services/api-administrador.service';
-import { IApiAdmin } from '../../../models/admin.model';
+import { ApiAdministradorService } from '../../../../services/api-administrador.service';
+import { IApiAdmin } from '../../../../models/admin.model';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -14,7 +14,6 @@ import {
   selector: 'app-usuarios',
   imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './usuarios.component.html',
-  styleUrl: '../home/home.component.css',
 })
 export class UsuariosComponent implements OnInit {
   formUsuario!: FormGroup;

@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { HeaderComponent } from '../header/header.component';
+import { HeaderComponent } from '../../components/layout/header/header.component';
 import {
   FormBuilder,
   FormGroup,
@@ -7,9 +7,9 @@ import {
   Validators,
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ApiAdministradorService } from '../../../services/api-administrador.service';
+import { ApiAdministradorService } from '../../../../services/api-administrador.service';
 import { CommonModule } from '@angular/common';
-import { IApiAccountInfo } from '../../../models/accountInfo.model';
+import { IApiAccountInfo } from '../../../../models/accountInfo.model';
 
 @Component({
   selector: 'app-edit-profile',

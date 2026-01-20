@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { IApiItem } from '../../../models/item.model';
+import { IApiItem } from '../../../../models/item.model';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -8,15 +8,14 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { ApiItemService } from '../../../services/api-item.service';
-import { IApiCategoria } from '../../../models/categoria.model';
-import { ApiCategoriaService } from '../../../services/api-categoria.service';
+import { ApiItemService } from '../../../../services/api-item.service';
+import { IApiCategoria } from '../../../../models/categoria.model';
+import { ApiCategoriaService } from '../../../../services/api-categoria.service';
 
 @Component({
   selector: 'app-items',
   imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './items.component.html',
-  styleUrl: '../home/home.component.css',
 })
 export class ItemsComponent implements OnInit {
   formItem!: FormGroup;
@@ -163,7 +162,7 @@ export class ItemsComponent implements OnInit {
         (item) =>
           item.nombre.toLowerCase().includes(trimmedQuery) ||
           item.descripcion.toLowerCase().includes(trimmedQuery) ||
-          item.marca.toLowerCase().includes(trimmedQuery)
+          item.marca.toLowerCase().includes(trimmedQuery),
       );
     } else {
       this.items = [...this.allItems]; // Restablecer la lista completa si la consulta está vacía

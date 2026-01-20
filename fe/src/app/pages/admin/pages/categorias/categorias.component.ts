@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { ApiCategoriaService } from '../../../services/api-categoria.service';
-import { IApiCategoria } from '../../../models/categoria.model';
+import { ApiCategoriaService } from '../../../../services/api-categoria.service';
+import { IApiCategoria } from '../../../../models/categoria.model';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -14,7 +14,6 @@ import {
   selector: 'app-categorias',
   imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './categorias.component.html',
-  styleUrl: '../home/home.component.css',
 })
 export class CategoriasComponent implements OnInit {
   formCategory!: FormGroup;
@@ -61,7 +60,7 @@ export class CategoriasComponent implements OnInit {
 
   applyFilters(): void {
     this.categorias = this.categorias.filter((categoria) =>
-      this.filterState ? categoria.estado === this.filterState : true
+      this.filterState ? categoria.estado === this.filterState : true,
     );
   }
 
@@ -121,7 +120,7 @@ export class CategoriasComponent implements OnInit {
     if (confirm('¿Seguro que deseas eliminar esta categoría?')) {
       this._apiService.deleteCategoria(id).subscribe(() => {
         this.categorias = this.categorias.filter(
-          (categoria) => categoria.id !== id
+          (categoria) => categoria.id !== id,
         );
       });
     }

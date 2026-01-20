@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-import { HeaderComponent } from '../header/header.component';
-import { SideBarComponent } from '../side-bar/side-bar.component';
+import { HeaderComponent } from '../components/layout/header/header.component';
+import { SideBarComponent } from '../components/layout/side-bar/side-bar.component';
 import { CommonModule } from '@angular/common';
-import { CategoriasComponent } from '../categorias/categorias.component';
-import { ItemsComponent } from '../items/items.component';
-import { UsuariosComponent } from '../usuarios/usuarios.component';
+import { CategoriasComponent } from '../pages/categorias/categorias.component';
+import { ItemsComponent } from '../pages/items/items.component';
+import { UsuariosComponent } from '../pages/usuarios/usuarios.component';
 
 @Component({
   selector: 'app-home',
