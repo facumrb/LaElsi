@@ -3,6 +3,16 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    // Acortar rutas
+    "baseUrl": "./",
+    "paths": {
+      "@admin/*": ["./src/app/pages/admin/*"],
+      "@auth/*": ["./src/app/pages/auth/*"],
+      "@cliente/*": ["./src/app/pages/cliente/*"],
+      "@services/*": ["./src/app/services/*"],
+      "@models/*": ["./src/app/models/*"]
+    },
+
     "outDir": "./dist/out-tsc",
     "strict": true,
     "noImplicitOverride": true,

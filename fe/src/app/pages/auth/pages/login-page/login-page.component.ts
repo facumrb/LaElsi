@@ -7,9 +7,8 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ApiAdministradorService } from '../../../../services/api-administrador.service';
-import { AuthService } from '../../../../services/auth.service';
-import { AdminDataService } from '../../../../services/admin-data-service.service';
+import { AuthService } from '@services/auth.service';
+import { AdminDataService } from '@services/admin-data-service.service';
 
 @Component({
   selector: 'app-login-page',

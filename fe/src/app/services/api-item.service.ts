@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
-import { IApiItem } from '../models/item.model';
+import { IApiItem } from '@models/item.model';
 
 @Injectable({
   providedIn: 'root',
@@ -24,17 +24,19 @@ export class ApiItemService {
 
   searchItems(query: string): Observable<IApiItem[]> {
     return this._http
-      .get<{ message: string; data: IApiItem[] }>(
-        `${this.apiUrl}/search?query=${query}`
-      )
+      .get<{
+        message: string;
+        data: IApiItem[];
+      }>(`${this.apiUrl}/search?query=${query}`)
       .pipe(map((response) => response.data));
   }
 
   getItemsByCategory(categoryId: number): Observable<IApiItem[]> {
     return this._http
-      .get<{ message: string; data: IApiItem[] }>(
-        `${this.apiUrl}/category/${categoryId}`
-      )
+      .get<{
+        message: string;
+        data: IApiItem[];
+      }>(`${this.apiUrl}/category/${categoryId}`)
       .pipe(map((response) => response.data));
   }
 

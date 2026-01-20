@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AdminDataService } from '../../../../../services/admin-data-service.service';
+import { AdminDataService } from '@services/admin-data-service.service';
 
 @Component({
   selector: 'app-header',

@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
-import { IApiCategoria } from '../models/categoria.model';
+import { IApiCategoria } from '@models/categoria.model';
 
 @Injectable({
   providedIn: 'root',
@@ -24,30 +24,31 @@ export class ApiCategoriaService {
 
   searchCategorias(query: string): Observable<IApiCategoria[]> {
     return this._http
-      .get<{ message: string; data: IApiCategoria[] }>(
-        `${this.apiUrl}/search?query=${query}`
-      )
+      .get<{
+        message: string;
+        data: IApiCategoria[];
+      }>(`${this.apiUrl}/search?query=${query}`)
       .pipe(map((response) => response.data));
   }
 
   addCategoria(categoria: IApiCategoria): Observable<IApiCategoria> {
     return this._http
-      .post<{ message: string; data: IApiCategoria }>(
-        `${this.apiUrl}`,
-        categoria
-      )
+      .post<{
+        message: string;
+        data: IApiCategoria;
+      }>(`${this.apiUrl}`, categoria)
       .pipe(map((response) => response.data));
   }
 
   updateCategoria(
     id: number,
-    categoria: IApiCategoria
+    categoria: IApiCategoria,
   ): Observable<IApiCategoria> {
     return this._http
-      .patch<{ message: string; data: IApiCategoria }>(
-        `${this.apiUrl}/${id}`,
-        categoria
-      )
+      .patch<{
+        message: string;
+        data: IApiCategoria;
+      }>(`${this.apiUrl}/${id}`, categoria)
       .pipe(map((response) => response.data));
   }
 

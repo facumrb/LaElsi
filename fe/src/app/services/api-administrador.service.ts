@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
-import { IApiAdmin } from '../models/admin.model';
-import { IApiAccountInfo } from '../models/accountInfo.model';
+import { IApiAdmin } from '@models/admin.model';
+import { IApiAccountInfo } from '@models/accountInfo.model';
 
 @Injectable({
   providedIn: 'root',
@@ -19,9 +19,10 @@ export class ApiAdministradorService {
 
   getAdmin(id: number): Observable<IApiAccountInfo> {
     return this._http
-      .get<{ message: string; data: IApiAccountInfo }>(
-        `${this.apiUrl}/account/${id}`
-      )
+      .get<{
+        message: string;
+        data: IApiAccountInfo;
+      }>(`${this.apiUrl}/account/${id}`)
       .pipe(map((response) => response.data));
   }
 
@@ -37,15 +38,12 @@ export class ApiAdministradorService {
       .pipe(map((response) => response.data));
   }
 
-  updateAdmin(
-    id: number,
-    admin: IApiAccountInfo
-  ): Observable<IApiAccountInfo> {
+  updateAdmin(id: number, admin: IApiAccountInfo): Observable<IApiAccountInfo> {
     return this._http
-      .patch<{ message: string; data: IApiAccountInfo }>(
-        `${this.apiUrl}/${id}`,
-        admin
-      )
+      .patch<{
+        message: string;
+        data: IApiAccountInfo;
+      }>(`${this.apiUrl}/${id}`, admin)
       .pipe(map((response) => response.data));
   }
 
