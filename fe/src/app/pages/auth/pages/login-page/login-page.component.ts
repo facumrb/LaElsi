@@ -7,17 +7,17 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ApiAdministradorService } from '../../services/api-administrador.service';
-import { AuthService } from '../../services/auth.service';
-import { AdminDataService } from '../../services/admin-data-service.service';
+import { ApiAdministradorService } from '../../../../services/api-administrador.service';
+import { AuthService } from '../../../../services/auth.service';
+import { AdminDataService } from '../../../../services/admin-data-service.service';
 
 @Component({
-  selector: 'app-login-home',
+  selector: 'app-login-page',
   imports: [CommonModule, ReactiveFormsModule, NgClass],
-  templateUrl: './login-home.component.html',
-  styleUrl: './login-home.component.css',
+  templateUrl: './login-page.component.html',
+  styleUrl: './login-page.component.css',
 })
-export class LoginHomeComponent {
+export class LoginPageComponent {
   formLoginAdmin!: FormGroup;
   private _adminDataService = inject(AdminDataService);
   private _authService = inject(AuthService);
@@ -34,7 +34,7 @@ export class LoginHomeComponent {
         [
           Validators.required,
           Validators.pattern(
-            '^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9áéíóúÁÉÍÓÚñÑ.,;:?!()_\'"-s]*$'
+            '^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9áéíóúÁÉÍÓÚñÑ.,;:?!()_\'"-s]*$',
           ),
         ],
       ],

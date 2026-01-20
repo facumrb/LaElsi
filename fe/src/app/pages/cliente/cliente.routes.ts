@@ -1,0 +1,31 @@
+import { Routes } from '@angular/router';
+import { MainPageComponent } from './pages/main-page/main-page.component';
+import { PerfilPageComponent } from './pages/perfil-page/perfil-page.component';
+import { CarritoPageComponent } from './pages/carrito-page/carrito-page.component';
+import { ComputacionPageComponent } from './pages/computacion-page/computacion-page.component';
+import { JugueteriaPageComponent } from './pages/jugueteria-page/jugueteria-page.component';
+import { LibreriaPageComponent } from './pages/libreria-page/libreria-page.component';
+import { ImpresionesPageComponent } from './pages/impresiones-page/impresiones-page.component';
+import { SellosPageComponent } from './pages/sellos-page/sellos-page.component';
+import { DisenoGraficoPageComponent } from './pages/diseno-grafico-page/diseno-grafico-page.component';
+
+export const clienteRoutes: Routes = [
+  {
+    path: '',
+    children: [
+      { path: '', component: MainPageComponent },
+      { path: 'main', redirectTo: '', pathMatch: 'full' },
+      { path: 'perfil', component: PerfilPageComponent },
+      { path: 'carrito', component: CarritoPageComponent },
+      { path: 'computacion', component: ComputacionPageComponent },
+      { path: 'jugueteria', component: JugueteriaPageComponent },
+      { path: 'libreria', component: LibreriaPageComponent },
+      { path: 'impresiones', component: ImpresionesPageComponent },
+      { path: 'sellos', component: SellosPageComponent },
+      { path: 'disenio', component: DisenoGraficoPageComponent },
+      { path: '**', redirectTo: 'main' },
+    ],
+  },
+];
+
+export default clienteRoutes;
