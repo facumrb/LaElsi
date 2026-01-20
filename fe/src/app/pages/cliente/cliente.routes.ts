@@ -8,13 +8,14 @@ import { LibreriaPageComponent } from './pages/libreria-page/libreria-page.compo
 import { ImpresionesPageComponent } from './pages/impresiones-page/impresiones-page.component';
 import { SellosPageComponent } from './pages/sellos-page/sellos-page.component';
 import { DisenoGraficoPageComponent } from './pages/diseno-grafico-page/diseno-grafico-page.component';
+import { LayoutComponent } from './components/layout/layout.component';
 
 export const clienteRoutes: Routes = [
   {
     path: '',
+    component: LayoutComponent,
     children: [
       { path: '', component: MainPageComponent },
-      { path: 'main', redirectTo: '', pathMatch: 'full' },
       { path: 'perfil', component: PerfilPageComponent },
       { path: 'carrito', component: CarritoPageComponent },
       { path: 'computacion', component: ComputacionPageComponent },
@@ -23,7 +24,7 @@ export const clienteRoutes: Routes = [
       { path: 'impresiones', component: ImpresionesPageComponent },
       { path: 'sellos', component: SellosPageComponent },
       { path: 'disenio', component: DisenoGraficoPageComponent },
-      { path: '**', redirectTo: 'main' },
+      { path: '**', redirectTo: '' },
     ],
   },
 ];
