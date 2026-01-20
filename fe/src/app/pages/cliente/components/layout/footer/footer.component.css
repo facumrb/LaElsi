@@ -1,0 +1,28 @@
+.footer {
+  background-color: #3d4494;
+  color: white;
+}
+
+h4 {
+  color: #f4abac;
+  font-weight: bold;
+  margin-top: 5px;
+}
+
+.footer-link {
+  text-decoration: none;
+  color: white;
+}
+
+.footer-link:hover {
+  color: #f4abac;
+}
+
+.social-icons i {
+  font-size: 1.5rem;
+  color: white;
+}
+
+.social-icons i:hover {
+  color: #f4abac;
+}
