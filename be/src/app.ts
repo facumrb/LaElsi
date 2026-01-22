@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import express from 'express';
 import { administradorRouter } from './usuario/administrador/administrador.routes.js';
 import { clienteRouter } from './usuario/cliente/cliente.routes.js';
-import { categoriaRouter } from './producto/categoria.routes.js';
+import { categoriaRouter } from './categoria/categoria.routes.js';
 import { itemRouter } from './producto/item.routes.js';
 // import { uploadDir } from './producto/item.controler.js';
 import { orm, syncSchema } from './shared/db/orm.js';
