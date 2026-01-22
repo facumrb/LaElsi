@@ -5,7 +5,7 @@ import { SqlHighlighter } from '@mikro-orm/sql-highlighter';
 import 'dotenv/config';
 import { Administrador } from '../../usuario/administrador/administrador.entity.js';
 import { Cliente } from '../../usuario/cliente/cliente.entity.js';
-import { Categoria } from '../../producto/categoria.entity.js';
+import { Categoria } from '../../categoria/categoria.entity.js';
 import { Item } from '../../producto/item.entity.js';
 import { BaseEntity } from './baseEntity.entity.js';
 

@@ -1,6 +1,6 @@
 import { Entity, OneToMany, Property, Cascade, Collection } from '@mikro-orm/core';
 import { BaseEntity } from '../shared/db/baseEntity.entity.js';
-import { Item } from './item.entity.js';
+import { Item } from '../producto/item.entity.js';
 
 @Entity()
 export class Categoria extends BaseEntity {
