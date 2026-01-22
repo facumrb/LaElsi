@@ -1,67 +1,138 @@
 <header>
-  <nav class="sup">
+  <nav
+    class="flex items-center justify-between bg-[#3d4494] px-5 py-3 text-black"
+  >
     <a routerLink="/">
-      <img src="assets/Logo.png" alt="La Elsi logo" width="120" />
+      <img src="assets/Logo.png" alt="La Elsi logo" class="w-30" />
     </a>
-    <div class="buscar">
+
+    <div class="flex items-center justify-center gap-3">
       <input
         type="text"
-        class="form-control"
+        class="h-10 w-100 rounded-md bg-white px-3 text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#049A8F]"
         placeholder="Buscar articulo..."
       />
-      <button class="btn btn-primary" type="submit">
-        <i class="bi bi-search"></i>
+      <button
+        class="flex h-10 w-12 items-center justify-center rounded-md bg-[#037971] text-white transition-colors hover:bg-[#049A8F]"
+        type="submit"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="size-6"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+          />
+        </svg>
       </button>
     </div>
-    <div class="login-carrito">
+
+    <div class="ml-6 flex items-center gap-3">
       <a routerLink="/auth/login">
-        <button class="btn btn-primary">
-          <i class="bi bi-person-circle"></i> {{ userSignal() }}
+        <button
+          class="flex items-center gap-2 rounded-md bg-[#037971] px-4 py-2 font-medium text-white transition-colors hover:bg-[#049A8F]"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="size-6"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+            />
+          </svg>
+          {{ userSignal() }}
         </button>
       </a>
+
       <a routerLink="/carrito">
-        <button class="btn btn-primary">
-          <i class="bi bi-cart4"></i> {{ carritoSignal() }}
+        <button
+          class="flex items-center gap-2 rounded-md bg-[#037971] px-4 py-2 font-medium text-white transition-colors hover:bg-[#049A8F]"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="size-6"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"
+            />
+          </svg>
+          {{ carritoSignal() }}
         </button>
       </a>
     </div>
   </nav>
-  <nav class="inf">
+
+  <nav class="flex justify-around bg-[#9574a4] p-2.5 text-[#f4abac]">
     <a
       routerLink="/jugueteria"
-      routerLinkActive="active"
+      routerLinkActive="text-[#f4abac] underline decoration-2 underline-offset-4"
       [routerLinkActiveOptions]="{ exact: true }"
-      >Juguetería
+      class="text-white no-underline transition-colors hover:text-[#f4abac]"
+    >
+      Juguetería
     </a>
+
     <a
       routerLink="/computacion"
-      routerLinkActive="active"
+      routerLinkActive="text-[#f4abac] underline decoration-2 underline-offset-4"
       [routerLinkActiveOptions]="{ exact: true }"
-      >Computación
+      class="text-white no-underline transition-colors hover:text-[#f4abac]"
+    >
+      Computación
     </a>
+
     <a
       routerLink="/impresiones"
-      routerLinkActive="active"
+      routerLinkActive="text-[#f4abac] underline decoration-2 underline-offset-4"
       [routerLinkActiveOptions]="{ exact: true }"
-      >Impresiones
+      class="text-white no-underline transition-colors hover:text-[#f4abac]"
+    >
+      Impresiones
     </a>
+
     <a
       routerLink="/disenio"
-      routerLinkActive="active"
+      routerLinkActive="text-[#f4abac] underline decoration-2 underline-offset-4"
       [routerLinkActiveOptions]="{ exact: true }"
-      >Diseño Gráfico
+      class="text-white no-underline transition-colors hover:text-[#f4abac]"
+    >
+      Diseño Gráfico
     </a>
+
     <a
       routerLink="/sellos"
-      routerLinkActive="active"
+      routerLinkActive="text-[#f4abac] underline decoration-2 underline-offset-4"
       [routerLinkActiveOptions]="{ exact: true }"
-      >Sellos
+      class="text-white no-underline transition-colors hover:text-[#f4abac]"
+    >
+      Sellos
     </a>
+
     <a
       routerLink="/libreria"
-      routerLinkActive="active"
+      routerLinkActive="text-[#f4abac] underline decoration-2 underline-offset-4"
       [routerLinkActiveOptions]="{ exact: true }"
-      >Librería
+      class="text-white no-underline transition-colors hover:text-[#f4abac]"
+    >
+      Librería
     </a>
   </nav>
 </header>

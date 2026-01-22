@@ -1,5 +1,4 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { HeaderComponent } from '@admin/components/layout/header/header.component';
 import {
   FormBuilder,
   FormGroup,
@@ -12,12 +11,12 @@ import { CommonModule } from '@angular/common';
 import { IApiAccountInfo } from '@models/accountInfo.model';
 
 @Component({
-  selector: 'app-edit-profile',
-  imports: [HeaderComponent, CommonModule, ReactiveFormsModule],
-  templateUrl: './edit-profile.component.html',
-  styleUrl: './edit-profile.component.css',
+  selector: 'app-edit-profile-page',
+  imports: [CommonModule, ReactiveFormsModule],
+  templateUrl: './edit-profile-page.component.html',
+  styleUrl: './edit-profile-page.component.css',
 })
-export class EditProfileComponent implements OnInit {
+export class EditProfilePageComponent implements OnInit {
   formEditProfile!: FormGroup;
   loading: boolean = true;
   admin?: IApiAccountInfo;

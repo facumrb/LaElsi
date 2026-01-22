@@ -11,11 +11,11 @@ import {
 } from '@angular/forms';
 
 @Component({
-  selector: 'app-categorias',
+  selector: 'app-categorias-page',
   imports: [CommonModule, ReactiveFormsModule, FormsModule],
-  templateUrl: './categorias.component.html',
+  templateUrl: './categorias-page.component.html',
 })
-export class CategoriasComponent implements OnInit {
+export class CategoriasPageComponent implements OnInit {
   formCategory!: FormGroup;
   loading: boolean = true;
   errorMessage: string = '';

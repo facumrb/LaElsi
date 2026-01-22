@@ -13,11 +13,11 @@ import { IApiCategoria } from '@models/categoria.model';
 import { ApiCategoriaService } from '@services/api-categoria.service';
 
 @Component({
-  selector: 'app-items',
+  selector: 'app-productos-page',
   imports: [CommonModule, ReactiveFormsModule, FormsModule],
-  templateUrl: './items.component.html',
+  templateUrl: './productos-page.component.html',
 })
-export class ItemsComponent implements OnInit {
+export class ProductosPageComponent implements OnInit {
   formItem!: FormGroup;
   loading: boolean = true;
   errorMessage: string = '';
@@ -118,7 +118,7 @@ export class ItemsComponent implements OnInit {
 
   closeModal(): void {
     this.isModalOpen = false;
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = '';
   }
 
   onSubmit(): void {
