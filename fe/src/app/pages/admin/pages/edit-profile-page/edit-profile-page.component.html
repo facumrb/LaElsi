@@ -1,0 +1,175 @@
+<div class="container mt-5">
+  @if (loading) {
+    <h5 class="text-center">Loading...</h5>
+  } @else {
+    <div class="card">
+      <div class="card-body">
+        @if (errorMessage) {
+          <div class="alert alert-danger text-center">
+            {{ errorMessage }}
+          </div>
+        }
+        <form
+          [formGroup]="formEditProfile"
+          class="needs-validation"
+          novalidate
+          (ngSubmit)="guardarCambios($event)"
+        >
+          <div class="row">
+            <!-- Nombre -->
+            <div class="col-md-6 mb-3">
+              <label for="nombre" class="form-label">Nombre</label>
+              <input
+                type="text"
+                class="form-control"
+                id="nombre"
+                formControlName="nombre"
+                name="nombre"
+                [ngClass]="{
+                  'is-invalid':
+                    hasErrors('nombre', 'required') ||
+                    hasErrors('nombre', 'pattern'),
+                }"
+              />
+              <!-- Contenedor de mensajes de error -->
+              <div class="error-container">
+                @if (hasErrors("nombre", "required")) {
+                  <div class="text-danger">El nombre es obligatorio.</div>
+                }
+                @if (hasErrors("nombre", "pattern")) {
+                  <div class="text-danger">
+                    El formato del nombre es inválido.
+                  </div>
+                }
+              </div>
+            </div>
+
+            <!-- Apellido -->
+            <div class="col-md-6 mb-3">
+              <label for="apellido" class="form-label">Apellido</label>
+              <input
+                type="text"
+                class="form-control"
+                id="apellido"
+                name="apellido"
+                formControlName="apellido"
+                [ngClass]="{
+                  'is-invalid':
+                    hasErrors('apellido', 'required') ||
+                    hasErrors('apellido', 'pattern'),
+                }"
+              />
+              <!-- Contenedor de mensajes de error -->
+              <div class="error-container">
+                @if (hasErrors("apellido", "required")) {
+                  <div class="text-danger">El apellido es obligatorio.</div>
+                }
+                @if (hasErrors("apellido", "pattern")) {
+                  <div class="text-danger">
+                    El formato del apellido es inválido.
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <!-- Teléfono -->
+            <div class="col-md-6 mb-3">
+              <label for="telefono" class="form-label">Teléfono</label>
+              <input
+                type="text"
+                class="form-control"
+                id="telefono"
+                name="telefono"
+                formControlName="telefono"
+                [ngClass]="{
+                  'is-invalid':
+                    hasErrors('telefono', 'required') ||
+                    hasErrors('telefono', 'pattern'),
+                }"
+              />
+              <!-- Contenedor de mensajes de error -->
+              <div class="error-container">
+                @if (hasErrors("telefono", "required")) {
+                  <div class="text-danger">El teléfono es obligatorio.</div>
+                }
+                @if (hasErrors("telefono", "pattern")) {
+                  <div class="text-danger">
+                    El formato del teléfono es inválido.
+                  </div>
+                }
+              </div>
+            </div>
+
+            <!-- Usuario -->
+            <div class="col-md-6 mb-3">
+              <label for="usuario" class="form-label">Usuario</label>
+              <input
+                type="text"
+                class="form-control"
+                id="usuario"
+                name="usuario"
+                formControlName="usuario"
+                [ngClass]="{
+                  'is-invalid':
+                    hasErrors('usuario', 'required') ||
+                    hasErrors('usuario', 'pattern'),
+                }"
+              />
+              <!-- Contenedor de mensajes de error -->
+              <div class="error-container">
+                @if (hasErrors("usuario", "required")) {
+                  <div class="text-danger">El usuario es obligatorio.</div>
+                }
+                @if (hasErrors("usuario", "pattern")) {
+                  <div class="text-danger">
+                    El formato del usuario es inválido.
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Email -->
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input
+              type="email"
+              class="form-control"
+              id="email"
+              name="email"
+              formControlName="email"
+              [ngClass]="{
+                'is-invalid':
+                  hasErrors('email', 'required') || hasErrors('email', 'email'),
+              }"
+            />
+            <div class="error-container">
+              @if (hasErrors("email", "required")) {
+                <div class="text-danger">El correo es obligatorio.</div>
+              }
+              @if (hasErrors("email", "email")) {
+                <div class="text-danger">
+                  El formato del correo es inválido.
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- Botones -->
+          <div class="d-flex justify-content-between">
+            <button type="submit" class="btn btn-primary">Guardar</button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              (click)="volverAtras()"
+            >
+              Cancelar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</div>

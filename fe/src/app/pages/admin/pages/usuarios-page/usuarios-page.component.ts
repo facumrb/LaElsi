@@ -11,11 +11,11 @@ import {
 } from '@angular/forms';
 
 @Component({
-  selector: 'app-usuarios',
+  selector: 'app-usuarios-page',
   imports: [CommonModule, ReactiveFormsModule, FormsModule],
-  templateUrl: './usuarios.component.html',
+  templateUrl: './usuarios-page.component.html',
 })
-export class UsuariosComponent implements OnInit {
+export class UsuariosPageComponent implements OnInit {
   formUsuario!: FormGroup;
   loading: boolean = true;
   errorMessage: string = '';
@@ -79,7 +79,7 @@ export class UsuariosComponent implements OnInit {
 
   closeModal(): void {
     this.isModalOpen = false;
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = '';
   }
 
   onSubmit(): void {

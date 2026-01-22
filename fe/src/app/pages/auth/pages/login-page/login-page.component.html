@@ -1,84 +1,177 @@
-<div class="login-container">
-  <div class="card shadow">
-    <div class="card-body">
-      <h2 class="text-center mb-3 title-style">Panel Administrador</h2>
-      @if(errorMessage){
-      <div class="alert alert-danger text-center">
+<div class="flex min-h-screen items-center justify-center bg-gray-50 p-4">
+  <div class="w-full max-w-119 rounded-lg bg-white p-8 shadow-lg">
+    <h2
+      class="mb-6 border-b-4 border-gray-300 pb-2 text-center text-3xl font-bold uppercase tracking-widest text-gray-800"
+    >
+      LaElsi
+    </h2>
+
+    @if (errorMessage) {
+      <div
+        class="mb-6 rounded-md bg-red-100 p-3 text-center text-sm font-medium text-red-700 border border-red-200"
+      >
         {{ errorMessage }}
       </div>
-      }
-      <form
-        [formGroup]="formLoginAdmin"
-        class="row g-2 needs-validation"
-        novalidate
-        (ngSubmit)="enviar($event)"
-      >
-        <!-- Campo de Usuario -->
-        <div class="mb-2">
-          <label for="usuario" class="form-label">Usuario</label>
-          <input
-            type="text"
-            class="form-control"
-            id="usuario"
-            formControlName="usuario"
-            [ngClass]="{
-              'is-invalid':
-                hasErrors('usuario', 'required') ||
-                hasErrors('usuario', 'pattern')
-            }"
-          />
-          <!-- Contenedor de mensajes de error -->
-          <div class="error-container">
-            @if (hasErrors('usuario', 'required')) {
-            <div class="text-danger">El usuario es obligatorio.</div>
-            } @if (hasErrors('usuario', 'pattern')) {
-            <div class="text-danger">El formato del usuario es inválido.</div>
-            }
-          </div>
+    }
+
+    <form
+      [formGroup]="formLoginAdmin"
+      novalidate
+      (ngSubmit)="enviar($event)"
+      class="space-y-4"
+    >
+      <div>
+        <label
+          for="usuario"
+          class="mb-2 block text-sm font-medium text-gray-700"
+        >
+          Usuario
+        </label>
+
+        <input
+          type="text"
+          id="usuario"
+          formControlName="usuario"
+          class="block w-full rounded-md border p-2.5 text-gray-900 shadow-sm focus:outline-none focus:ring-2 sm:text-sm"
+          [class.border-red-500]="
+            hasErrors('usuario', 'required') || hasErrors('usuario', 'pattern')
+          "
+          [class.focus:border-red-500]="
+            hasErrors('usuario', 'required') || hasErrors('usuario', 'pattern')
+          "
+          [class.focus:ring-red-500]="
+            hasErrors('usuario', 'required') || hasErrors('usuario', 'pattern')
+          "
+          [class.border-gray-300]="
+            !hasErrors('usuario', 'required') &&
+            !hasErrors('usuario', 'pattern')
+          "
+          [class.focus:border-[#049A8F]]="
+            !hasErrors('usuario', 'required') &&
+            !hasErrors('usuario', 'pattern')
+          "
+          [class.focus:ring-[#049A8F]]="
+            !hasErrors('usuario', 'required') &&
+            !hasErrors('usuario', 'pattern')
+          "
+        />
+
+        <div class="mt-1 min-h-5 text-sm">
+          @if (hasErrors("usuario", "required")) {
+            <div class="text-red-600">El usuario es obligatorio.</div>
+          } @else if (hasErrors("usuario", "pattern")) {
+            <div class="text-red-600">El formato del usuario es inválido.</div>
+          }
         </div>
-        <!-- Campo de contraseña -->
-        <div class="mb-2 position-relative">
-          <label for="password" class="form-label">Contraseña</label>
-          <div class="password-container">
-            <input
-              [type]="passwordVisible ? 'text' : 'password'"
-              class="form-control"
-              id="password"
-              formControlName="password"
-              (input)="onPasswordInput()"
-              [ngClass]="{
-                'is-invalid': hasErrors('password', 'required')
-              }"
-            />
-            @if(showEyeIcon){
-            <i
-              class="bi toggle-password"
-              [ngClass]="passwordVisible ? 'bi-eye' : 'bi-eye-slash'"
+      </div>
+
+      <div>
+        <label
+          for="password"
+          class="mb-2 block text-sm font-medium text-gray-700"
+        >
+          Contraseña
+        </label>
+
+        <div class="relative">
+          <input
+            [type]="passwordVisible ? 'text' : 'password'"
+            id="password"
+            formControlName="password"
+            (input)="onPasswordInput()"
+            class="block w-full rounded-md border p-2.5 pr-10 text-gray-900 shadow-sm focus:outline-none focus:ring-2 sm:text-sm"
+            [class.border-red-500]="hasErrors('password', 'required')"
+            [class.focus:border-red-500]="hasErrors('password', 'required')"
+            [class.focus:ring-red-500]="hasErrors('password', 'required')"
+            [class.border-gray-300]="!hasErrors('password', 'required')"
+            [class.focus:border-[#049A8F]]="!hasErrors('password', 'required')"
+            [class.focus:ring-[#049A8F]]="!hasErrors('password', 'required')"
+          />
+
+          @if (showEyeIcon) {
+            <button
+              type="button"
               (click)="togglePasswordVisibility()"
-            ></i
-            >}
-          </div>
-          <!-- Contenedor de mensajes de error -->
-          <div class="error-container">
-            @if (hasErrors('password', 'required')) {
-            <div class="text-danger">La contraseña es obligatoria.</div>
-            }
-          </div>
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+            >
+              @if (passwordVisible) {
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="size-5"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"
+                  />
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                  />
+                </svg>
+              } @else {
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="size-5"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88"
+                  />
+                </svg>
+              }
+            </button>
+          }
         </div>
 
-        <!-- Botón de envío -->
-        <div class="col-12 d-flex justify-content-between align-items-center">
-          <button
-            class="btn btn-primary w-100"
-            type="submit"
-            [disabled]="loading"
-          >
-            @if (loading) {
-            <span class="spinner-border spinner-border-sm me-2"></span>
-            } Iniciar Sesión
-          </button>
+        <div class="mt-1 min-h-5 text-sm">
+          @if (hasErrors("password", "required")) {
+            <div class="text-red-600">La contraseña es obligatoria.</div>
+          }
         </div>
-      </form>
-    </div>
+      </div>
+
+      <div>
+        <button
+          type="submit"
+          [disabled]="loading"
+          class="flex w-full justify-center rounded-md bg-[#037971] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#049A8F] focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-[#037971] disabled:cursor-not-allowed disabled:bg-gray-400"
+        >
+          @if (loading) {
+            <svg
+              class="-ml-1 mr-3 h-5 w-5 animate-spin text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              ></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+          }
+          Iniciar Sesión
+        </button>
+      </div>
+    </form>
   </div>
 </div>

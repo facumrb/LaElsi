@@ -1,0 +1,42 @@
+<div class="container">
+  @if (loading) {
+    <h5 class="text-center">Loading...</h5>
+  }
+  @if (!loading) {
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title text-center mb-4">Perfil del Administrador</h4>
+        @if (errorMessage) {
+          <div class="alert alert-danger text-center">
+            {{ errorMessage }}
+          </div>
+        }
+        <p class="card-text"><strong>Nombre:</strong> {{ admin?.nombre }}</p>
+        <p class="card-text">
+          <strong>Apellido:</strong> {{ admin?.apellido }}
+        </p>
+        <p class="card-text">
+          <strong>Teléfono:</strong> {{ admin?.telefono }}
+        </p>
+        <p class="card-text"><strong>Usuario:</strong> {{ admin?.usuario }}</p>
+        <p class="card-text"><strong>Email:</strong> {{ admin?.email }}</p>
+        <div class="d-flex justify-content-between mt-4">
+          <button
+            type="button"
+            class="btn btn-outline-primary"
+            (click)="editarPerfil()"
+          >
+            Editar Perfil
+          </button>
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            (click)="volverAtras()"
+          >
+            Volver Atrás
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

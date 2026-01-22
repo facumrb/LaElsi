@@ -1,17 +1,16 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { HeaderComponent } from '@admin/components/layout/header/header.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiAdministradorService } from '@services/api-administrador.service';
 import { CommonModule } from '@angular/common';
 import { IApiAccountInfo } from '@models/accountInfo.model';
 
 @Component({
-  selector: 'app-view-profile',
-  imports: [CommonModule, HeaderComponent],
-  templateUrl: './view-profile.component.html',
-  styleUrl: './view-profile.component.css',
+  selector: 'app-view-profile-page',
+  imports: [CommonModule],
+  templateUrl: './view-profile-page.component.html',
+  styleUrl: './view-profile-page.component.css',
 })
-export class ViewProfileComponent implements OnInit {
+export class ViewProfilePageComponent implements OnInit {
   loading: boolean = true;
   admin?: IApiAccountInfo;
   errorMessage: string = '';

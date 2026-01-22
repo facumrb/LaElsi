@@ -1,4 +1,4 @@
-import { CommonModule, NgClass } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import {
   FormBuilder,
@@ -12,9 +12,8 @@ import { AdminDataService } from '@services/admin-data-service.service';
 
 @Component({
   selector: 'app-login-page',
-  imports: [CommonModule, ReactiveFormsModule, NgClass],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './login-page.component.html',
-  styleUrl: './login-page.component.css',
 })
 export class LoginPageComponent {
   formLoginAdmin!: FormGroup;
@@ -61,7 +60,7 @@ export class LoginPageComponent {
       next: (data) => {
         this.loading = false;
         this._adminDataService.setAdminId(data.id);
-        this._router.navigate(['/admin/home']); // Redirigimos al home del administrador.
+        this._router.navigate(['/admin']); // Redirigimos al home del administrador.
       },
       error: (error) => {
         this.loading = false;

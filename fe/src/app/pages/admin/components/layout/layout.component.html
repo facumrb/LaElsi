@@ -1,0 +1,184 @@
+<div class="flex h-screen bg-gray-50 font-sans overflow-hidden">
+  <div
+    class="fixed inset-0 z-20 bg-black/50 transition-opacity duration-300 md:hidden"
+    [class.opacity-0]="!mobileMenuOpen()"
+    [class.pointer-events-none]="!mobileMenuOpen()"
+    (click)="toggleMobileMenu()"
+  ></div>
+
+  <aside
+    class="fixed inset-y-0 left-0 z-30 w-64 bg-slate-900 text-white transform transition-transform duration-300 ease-in-out md:hidden"
+    [class.-translate-x-full]="!mobileMenuOpen()"
+  >
+    <div
+      class="h-16 flex items-center px-6 bg-slate-950 font-bold tracking-widest border-b border-slate-800"
+    >
+      LAELSI
+    </div>
+
+    <nav class="p-4 space-y-2">
+      @for (item of menuItems; track item.label) {
+        <a
+          [routerLink]="item.route"
+          (click)="toggleMobileMenu()"
+          routerLinkActive="bg-slate-800 text-white border-l-4 border-indigo-500"
+          class="flex items-center p-3 rounded-lg hover:bg-slate-800 transition-colors text-slate-300"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="w-6 h-6 mr-3"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              [attr.d]="item.iconSVG"
+            />
+          </svg>
+          <span class="font-medium">{{ item.label }}</span>
+        </a>
+      }
+    </nav>
+  </aside>
+
+  <aside
+    class="hidden md:flex flex-col bg-slate-900 text-slate-300 transition-all duration-300 ease-in-out shadow-xl z-10"
+    [class.w-64]="sidebarOpen()"
+    [class.w-20]="!sidebarOpen()"
+  >
+    <div
+      class="h-16 flex items-center justify-center bg-slate-950 text-white overflow-hidden whitespace-nowrap border-b border-slate-800"
+    >
+      @if (sidebarOpen()) {
+        <span class="font-bold text-xl tracking-wider">LAELSI</span>
+      }
+    </div>
+
+    <nav class="flex-1 py-6 flex flex-col gap-1 px-3">
+      @for (item of menuItems; track item.label) {
+        <a
+          [routerLink]="item.route"
+          routerLinkActive="bg-indigo-600 text-white"
+          class="flex items-center p-3 rounded-md hover:bg-slate-800 hover:text-white transition-colors group relative"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="shrink-0"
+          >
+            <path [attr.d]="item.iconSVG" />
+          </svg>
+
+          <span
+            class="ml-3 font-medium whitespace-nowrap overflow-hidden transition-all duration-300"
+            [class.opacity-0]="!sidebarOpen()"
+            [class.w-0]="!sidebarOpen()"
+          >
+            {{ item.label }}
+          </span>
+
+          @if (!sidebarOpen()) {
+            <div
+              class="absolute left-14 bg-slate-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity z-50 pointer-events-none whitespace-nowrap"
+            >
+              {{ item.label }}
+            </div>
+          }
+        </a>
+      }
+    </nav>
+  </aside>
+
+  <main class="flex-1 flex flex-col h-full overflow-hidden">
+    <header
+      class="h-16 bg-white shadow-sm border-b flex items-center justify-between px-4 z-10"
+    >
+      <div class="flex items-center">
+        <button
+          (click)="toggleMobileMenu()"
+          class="md:hidden p-2 rounded hover:bg-gray-100"
+        >
+          <svg
+            class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+              d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+            ></path>
+          </svg>
+        </button>
+
+        <button
+          (click)="toggleSidebar()"
+          class="hidden md:block p-2 rounded hover:bg-gray-100 text-gray-600"
+        >
+          <svg
+            class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+              d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+            ></path>
+          </svg>
+        </button>
+      </div>
+
+      <div class="relative">
+        <button
+          (click)="toggleUserMenu()"
+          class="flex items-center space-x-2 focus:outline-none"
+        >
+          <div
+            class="w-9 h-9 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold border border-indigo-200"
+          >
+            {{ currentUser.name.charAt(0) }}
+          </div>
+          <span class="hidden md:block text-sm font-medium text-gray-700">
+            {{ currentUser.name }}
+          </span>
+        </button>
+
+        @if (userMenuOpen()) {
+          <div
+            class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 border border-gray-100 animate-in fade-in slide-in-from-top-1 duration-200"
+          >
+            <a
+              href="#"
+              class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+              >Ver Perfil</a
+            >
+            <a
+              href="#"
+              class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+              >Cerrar Sesión</a
+            >
+          </div>
+        }
+      </div>
+    </header>
+
+    <div class="flex-1 overflow-auto p-6">
+      <router-outlet />
+    </div>
+  </main>
+</div>
