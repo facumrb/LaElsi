@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import express from 'express';
 import { Item } from './item.entity.js';
-import { orm } from '@shared/db/orm.js';
+import { orm } from '../shared/db/orm.js';
 /* import multer from 'multer';
 import fs from 'node:fs';
 import path from 'node:path';
