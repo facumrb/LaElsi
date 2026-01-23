@@ -1,135 +1,79 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { ApiCategoriaService } from '@services/api-categoria.service';
 import { IApiCategoria } from '@models/categoria.model';
-import { CommonModule } from '@angular/common';
-import {
-  FormBuilder,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { CategoriasModalComponent } from './categorias-modal/categorias-modal.component';
+import { CategoriasListComponent } from './categorias-list/categorias-list.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-categorias-page',
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [
+    ReactiveFormsModule,
+    CategoriasModalComponent,
+    CategoriasListComponent,
+  ],
   templateUrl: './categorias-page.component.html',
 })
-export class CategoriasPageComponent implements OnInit {
-  formCategory!: FormGroup;
-  loading: boolean = true;
-  errorMessage: string = '';
+export class CategoriasPageComponent {
   private _apiService = inject(ApiCategoriaService);
-  categorias: IApiCategoria[] = [];
-  isModalOpen = false;
-  categoriaSeleccionada?: IApiCategoria;
-  modalMode: 'add' | 'edit' = 'add';
-  searchQuery: string = '';
-  filterState: string = '';
+  private categoriasRaw = signal<IApiCategoria[]>([]);
 
-  constructor(private formBuilder: FormBuilder) {
-    this.formCategory = this.formBuilder.group({
-      nombre: [
-        '',
-        [
-          Validators.required,
-          Validators.pattern('^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9.,;:?!()_\'"-\\s]*$'),
-        ],
-      ],
-      descripcion: [
-        '',
-        [
-          Validators.required,
-          Validators.pattern('^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9.,;:?!()_\'"-\\s]*$'),
-        ],
-      ],
-      estado: ['', [Validators.required]],
-    });
-  }
+  // Estado del modal
+  isModalOpen = signal(false);
+  selectedCategory = signal<IApiCategoria | null>(null);
 
-  ngOnInit(): void {
+  categorias = computed(() => this.categoriasRaw());
+
+  ngOnInit() {
     this.loadCategorias();
   }
 
-  loadCategorias(): void {
+  loadCategorias() {
     this._apiService.getAllCategorias().subscribe((data) => {
-      this.categorias = data;
-      this.applyFilters();
+      this.categoriasRaw.set(data);
     });
   }
 
-  applyFilters(): void {
-    this.categorias = this.categorias.filter((categoria) =>
-      this.filterState ? categoria.estado === this.filterState : true,
-    );
+  // --- Lógica del Modal ---
+
+  openAddModal() {
+    this.selectedCategory.set(null);
+    this.isModalOpen.set(true);
   }
 
-  /* onSearch(): void {
-    const trimmedQuery = this.searchQuery.trim();
-    if (trimmedQuery) {
-      this._apiService.searchCategorias(trimmedQuery).subscribe({
-        next: (data) => {
-          this.categorias = data;
-        },
-        error: (error) => {
-          console.error('Error en la búsqueda:', error);
-          this.categorias = [];
-        },
-      });
+  openEditModal(categoria: IApiCategoria) {
+    this.selectedCategory.set(categoria);
+    this.isModalOpen.set(true);
+  }
+
+  handleModalSave(formData: any) {
+    const currentCat = this.selectedCategory();
+
+    if (currentCat) {
+      // Editar
+      const updatedCat = { ...currentCat, ...formData };
+      this._apiService
+        .updateCategoria(currentCat.id, updatedCat)
+        .subscribe(() => {
+          this.loadCategorias();
+          this.isModalOpen.set(false);
+        });
     } else {
-      this.loadCategorias(); // Cargar todas las categorías si no hay búsqueda
-    }
-  } */
-
-  openModal(mode: 'add' | 'edit', categoria?: IApiCategoria): void {
-    this.modalMode = mode;
-    this.isModalOpen = true;
-    if (mode === 'edit' && categoria) {
-      this.categoriaSeleccionada = categoria;
-      this.formCategory.patchValue(categoria);
-    } else {
-      this.formCategory.reset();
-      this.formCategory.patchValue({ estado: '' });
-    }
-  }
-
-  closeModal(): void {
-    this.isModalOpen = false;
-    document.body.style.overflow = 'hidden';
-  }
-
-  onSubmit(): void {
-    if (this.formCategory.valid) {
-      const categoriaData = {
-        ...this.categoriaSeleccionada,
-        ...this.formCategory.value,
-      };
-      const request =
-        this.modalMode === 'add'
-          ? this._apiService.addCategoria(categoriaData)
-          : this._apiService.updateCategoria(categoriaData.id, categoriaData);
-
-      request.subscribe(() => {
+      // Crear
+      this._apiService.addCategoria(formData).subscribe(() => {
         this.loadCategorias();
-        this.closeModal();
+        this.isModalOpen.set(false);
       });
     }
   }
 
-  deleteCategoria(id: number): void {
+  // --- Lógica de borrado ---
+
+  handleDelete(id: number) {
     if (confirm('¿Seguro que deseas eliminar esta categoría?')) {
       this._apiService.deleteCategoria(id).subscribe(() => {
-        this.categorias = this.categorias.filter(
-          (categoria) => categoria.id !== id,
-        );
+        this.categoriasRaw.update((cats) => cats.filter((c) => c.id !== id));
       });
     }
-  }
-
-  hasErrors(field: string, typeError: string) {
-    return (
-      this.formCategory.get(field)?.hasError(typeError) &&
-      this.formCategory.get(field)?.touched
-    );
   }
 }

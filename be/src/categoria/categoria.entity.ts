@@ -7,7 +7,7 @@ export class Categoria extends BaseEntity {
   @Property({ nullable: false, unique: true }) // debe ser unique
   nombre!: string;
 
-  @Property({ nullable: false }) // Capaz si permite nulos
+  @Property({ type: 'text', nullable: false }) // Capaz si permite nulos
   descripcion!: string;
 
   @Property({ nullable: false })
