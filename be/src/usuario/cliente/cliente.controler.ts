@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { Cliente } from './cliente.entity.js';
-import { orm } from '../../shared/db/orm.js';
+import { orm } from '@shared/db/orm.js';
 // import bcrypt from 'bcryptjs';
 // Crear endpoint, verificar credencial y manejar respuesta.
 
@@ -16,7 +16,7 @@ function sanitizeClienteInput(req: Request, res: Response, next: NextFunction) {
     // fechaDeAlta: req.body.fechaDeAlta,
     usuario: req.body.usuario,
     password: req.body.password,
-    email: req.body.email,
+    email: req.body.email
   };
   //more checks here
 
@@ -41,7 +41,7 @@ async function getAccountInfo(req: Request, res: Response) {
       apellido: cliente.apellido,
       telefono: cliente.telefono,
       usuario: cliente.usuario,
-      email: cliente.email,
+      email: cliente.email
       // password: cliente.password, // Considera no enviar la contraseña en la respuesta
     };
 
@@ -99,7 +99,7 @@ async function login(req: Request, res: Response) {
       apellido: cliente.apellido,
       telefono: cliente.telefono,
       usuario: cliente.usuario,
-      email: cliente.email,
+      email: cliente.email
       // password: cliente.password, // Considera no enviar la contraseña en la respuesta
     };
 

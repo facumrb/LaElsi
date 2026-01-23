@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { Categoria } from './categoria.entity.js';
-import { orm } from '../shared/db/orm.js';
+import { orm } from '@shared/db/orm.js';
 
 const em = orm.em; // Entity Manager
 

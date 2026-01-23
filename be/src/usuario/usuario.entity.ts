@@ -1,31 +1,31 @@
-import { BaseEntity } from '../shared/db/baseEntity.entity.js';
+import { BaseEntity } from '@shared/db/baseEntity.entity.js';
 import { Property } from '@mikro-orm/core';
 
 export abstract class UsuarioBaseEntity extends BaseEntity {
-    // @Property({ type: 'string', nullable: true })
-    // foto?: string;
+  // @Property({ type: 'string', nullable: true })
+  // foto?: string;
 
-    @Property({ type: 'string', nullable: false })
-    nombre!: string;
+  @Property({ type: 'string', nullable: false })
+  nombre!: string;
 
-    @Property({ type: 'string', nullable: false })
-    apellido!: string;
+  @Property({ type: 'string', nullable: false })
+  apellido!: string;
 
-    @Property({ type: 'string', nullable: false }) // Capaz si permite nulos
-    telefono!: string;
+  @Property({ type: 'string', nullable: false }) // Capaz si permite nulos
+  telefono!: string;
 
-    // @Property({ type: 'string', nullable: true })
-    // direccion?: string;
+  // @Property({ type: 'string', nullable: true })
+  // direccion?: string;
 
-    // @Property({ type: 'Date' })
-    // fechaDeAlta!: Date;
+  // @Property({ type: 'Date' })
+  // fechaDeAlta!: Date;
 
-    @Property({ type: 'string', nullable: false, unique: true })
-    usuario!: string;
+  @Property({ type: 'string', nullable: false, unique: true })
+  usuario!: string;
 
-    @Property({ type: 'string', nullable: false })
-    password!: string;
+  @Property({ type: 'string', nullable: false })
+  password!: string;
 
-    @Property({ type: 'string', nullable: false, unique: true }) // Capaz si permite nulos
-    email!: string;
+  @Property({ type: 'string', nullable: false, unique: true }) // Capaz si permite nulos
+  email!: string;
 }
