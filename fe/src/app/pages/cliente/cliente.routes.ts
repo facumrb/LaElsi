@@ -9,6 +9,8 @@ import { ImpresionesPageComponent } from './pages/impresiones-page/impresiones-p
 import { SellosPageComponent } from './pages/sellos-page/sellos-page.component';
 import { DisenoGraficoPageComponent } from './pages/diseno-grafico-page/diseno-grafico-page.component';
 import { LayoutComponent } from './components/layout/layout.component';
+import { AboutUsPageComponent } from './pages/about-us-page/about-us-page.component';
+import { FaqPageComponent } from './pages/faq-page/faq-page.component';
 
 export const clienteRoutes: Routes = [
   {
@@ -24,6 +26,8 @@ export const clienteRoutes: Routes = [
       { path: 'impresiones', component: ImpresionesPageComponent },
       { path: 'sellos', component: SellosPageComponent },
       { path: 'disenio', component: DisenoGraficoPageComponent },
+      { path: 'about-us', component: AboutUsPageComponent },
+      { path: 'faq', component: FaqPageComponent },
       { path: '**', redirectTo: '' },
     ],
   },
