@@ -1,5 +1,13 @@
 {
   "compilerOptions": {
+    // Acortar rutas
+    "baseUrl": "./",
+    "paths": {
+      "@categoria/*": ["./src/categoria/*"],
+      "@producto/*": ["./src/producto/*"],
+      "@shared/*": ["./src/shared/*"],
+      "@usuario/*": ["./src/usuario/*"]
+    },
     "incremental": true,
     "target": "es2020",
     "module": "ES2022",

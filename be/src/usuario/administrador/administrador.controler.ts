@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { Administrador } from './administrador.entity.js';
-import { orm } from '../../shared/db/orm.js';
+import { orm } from '@shared/db/orm.js';
 // import bcrypt from 'bcryptjs';
 // Crear endpoint, verificar credencial y manejar respuesta.
 
@@ -16,7 +16,7 @@ function sanitizeAdministradorInput(req: Request, res: Response, next: NextFunct
     // fechaDeAlta: req.body.fechaDeAlta,
     usuario: req.body.usuario,
     password: req.body.password,
-    email: req.body.email,
+    email: req.body.email
   };
   //more checks here
 
@@ -41,7 +41,7 @@ async function getAccountInfo(req: Request, res: Response) {
       apellido: administrador.apellido,
       telefono: administrador.telefono,
       usuario: administrador.usuario,
-      email: administrador.email,
+      email: administrador.email
       // password: administrador.password, // Considera no enviar la contraseña en la respuesta
     };
 
@@ -99,7 +99,7 @@ async function login(req: Request, res: Response) {
       apellido: administrador.apellido,
       telefono: administrador.telefono,
       usuario: administrador.usuario,
-      email: administrador.email,
+      email: administrador.email
       // password: administrador.password, // Considera no enviar la contraseña en la respuesta
     };
 

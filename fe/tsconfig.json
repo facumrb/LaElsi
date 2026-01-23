@@ -10,7 +10,8 @@
       "@auth/*": ["./src/app/pages/auth/*"],
       "@cliente/*": ["./src/app/pages/cliente/*"],
       "@services/*": ["./src/app/services/*"],
-      "@models/*": ["./src/app/models/*"]
+      "@models/*": ["./src/app/models/*"],
+      "@shared/*": ["./src/app/shared/*"]
     },
 
     "outDir": "./dist/out-tsc",
