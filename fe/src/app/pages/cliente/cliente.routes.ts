@@ -11,6 +11,7 @@ import { DisenoGraficoPageComponent } from './pages/diseno-grafico-page/diseno-g
 import { LayoutComponent } from './components/layout/layout.component';
 import { AboutUsPageComponent } from './pages/about-us-page/about-us-page.component';
 import { FaqPageComponent } from './pages/faq-page/faq-page.component';
+import { CategoryPageComponent } from './pages/category-page/category-page.component';
 
 export const clienteRoutes: Routes = [
   {
@@ -20,9 +21,10 @@ export const clienteRoutes: Routes = [
       { path: '', component: MainPageComponent },
       { path: 'perfil', component: PerfilPageComponent },
       { path: 'carrito', component: CarritoPageComponent },
-      { path: 'computacion', component: ComputacionPageComponent },
-      { path: 'jugueteria', component: JugueteriaPageComponent },
-      { path: 'libreria', component: LibreriaPageComponent },
+      { path: 'categoria/:id', component: CategoryPageComponent },
+      //     { path: 'computacion', component: ComputacionPageComponent },
+      //    { path: 'jugueteria', component: JugueteriaPageComponent },
+      //     { path: 'libreria', component: LibreriaPageComponent },
       { path: 'impresiones', component: ImpresionesPageComponent },
       { path: 'sellos', component: SellosPageComponent },
       { path: 'disenio', component: DisenoGraficoPageComponent },

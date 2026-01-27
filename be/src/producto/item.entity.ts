@@ -1,17 +1,16 @@
-import { Entity, Property, ManyToOne, Rel } from '@mikro-orm/core';
-import { BaseEntity } from '../shared/db/baseEntity.entity.js';
-import { Categoria } from '../categoria/categoria.entity.js';
+import { Entity, Property, ManyToOne, Rel } from "@mikro-orm/core";
+import { BaseEntity } from "../shared/db/baseEntity.entity.js";
+import { Categoria } from "../categoria/categoria.entity.js";
 
 @Entity()
 export class Item extends BaseEntity {
   @Property({ nullable: false, unique: true })
   nombre!: string;
 
-  /* // Campo para almacenar las rutas de las imágenes
   @Property({ nullable: true })
-  fotos?: string[]; // Array de rutas de imágenes */
+  fotos?: string[]; // Array de rutas de imágenes
 
-  @Property({ type: 'text', nullable: false })
+  @Property({ type: "text", nullable: false })
   descripcion!: string;
 
   @Property({ nullable: false })

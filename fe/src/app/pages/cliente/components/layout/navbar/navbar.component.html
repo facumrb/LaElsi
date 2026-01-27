@@ -81,24 +81,16 @@
   </nav>
 
   <nav class="flex justify-around bg-[#9574a4] p-2.5 text-[#f4abac]">
-    <a
-      routerLink="/libreria"
-      routerLinkActive="text-[#f4abac] underline decoration-2 underline-offset-4"
-      [routerLinkActiveOptions]="{ exact: true }"
-      class="text-white no-underline transition-colors hover:text-[#f4abac]"
-    >
-      Librería
-    </a>
-
-    <a
-      routerLink="/computacion"
-      routerLinkActive="text-[#f4abac] underline decoration-2 underline-offset-4"
-      [routerLinkActiveOptions]="{ exact: true }"
-      class="text-white no-underline transition-colors hover:text-[#f4abac]"
-    >
-      Computación
-    </a>
-
+    @for (cat of categorias; track cat.id) {
+      <a
+        [routerLink]="['/categoria', cat.id]"
+        routerLinkActive="text-[#f4abac] underline decoration-2 underline-offset-4"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="text-white no-underline transition-colors hover:text-[#f4abac]"
+      >
+        {{ cat.nombre }}
+      </a>
+    }
     <a
       routerLink="/impresiones"
       routerLinkActive="text-[#f4abac] underline decoration-2 underline-offset-4"
@@ -124,15 +116,6 @@
       class="text-white no-underline transition-colors hover:text-[#f4abac]"
     >
       Sellos
-    </a>
-
-    <a
-      routerLink="/jugueteria"
-      routerLinkActive="text-[#f4abac] underline decoration-2 underline-offset-4"
-      [routerLinkActiveOptions]="{ exact: true }"
-      class="text-white no-underline transition-colors hover:text-[#f4abac]"
-    >
-      Juguetería
     </a>
   </nav>
 </header>

@@ -1,0 +1,34 @@
+<div
+  class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 border border-gray-100"
+>
+  <div class="relative">
+    <img
+      class="h-48 w-full object-cover"
+      [src]="product.imageUrl || 'https://via.placeholder.com/300'"
+      [alt]="product.name"
+    />
+    <div
+      class="absolute top-2 right-2 bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded"
+    >
+      NUEVO
+    </div>
+  </div>
+
+  <div class="p-4">
+    <h3 class="text-lg font-semibold text-gray-800 truncate">
+      {{ product.name }}
+    </h3>
+    <p class="text-gray-500 text-sm mb-4 line-clamp-2">
+      Descripción breve del producto...
+    </p>
+
+    <div class="flex items-center justify-between">
+      <span class="text-xl font-bold text-gray-900">${{ product.price }}</span>
+      <button
+        class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+      >
+        Agregar
+      </button>
+    </div>
+  </div>
+</div>
