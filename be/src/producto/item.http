@@ -18,8 +18,8 @@ Content-Type: application/json
     "cant_vendidos": 250,
     "estado": "Activo",
     "stock": 100,
-    "categoria": 1
-    "foto": https://i.imgur.com/Byi3gBg.jpeg
+    "categoria": 1,
+    "fotos": [ "https://i.imgur.com/Byi3gBg.jpeg" ]
 }
 
 

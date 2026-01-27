@@ -63,7 +63,7 @@ function sanitizeItemInput(req: Request, res: Response, next: NextFunction) {
   req.body.sanitizedInput = {
     nombre: req.body.nombre,
     categoria: req.body.categoria,
-    //fotos: req.body.fotos,
+    fotos: req.body.fotos,
     descripcion: req.body.descripcion,
     precio: req.body.precio,
     marca: req.body.marca,
@@ -75,7 +75,6 @@ function sanitizeItemInput(req: Request, res: Response, next: NextFunction) {
     //aReservar: req.body.aReservar,
     //cantidadAReservar: req.body.cantidadAReservar,
   };
-  //more checks here
 
   Object.keys(req.body.sanitizedInput).forEach((key) => {
     if (req.body.sanitizedInput[key] === undefined) {
@@ -149,7 +148,7 @@ async function searchItemsByText(req: Request, res: Response) {
 
 // Función para obtener items por categoría
 async function findItemsByCategory(req: Request, res: Response) {
-  const categoriaId = Number(req.params.id); // Obtener ID de categoría
+  const categoriaId = Number.parseInt(req.params.id); // Obtener ID de categoría
 
   try {
     const items = await em.find(Item, { categoria: categoriaId }); // Buscar por categoría

@@ -1,13 +1,12 @@
-import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, input } from '@angular/core';
+import { IApiItem } from '@models/item.model';
 
 @Component({
   selector: 'app-item-card',
-  standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './item-card.component.html',
 })
 export class ItemCardComponent {
   // Recibimos el item desde el @for del padre
-  @Input({ required: true }) product: any;
+  product = input.required<IApiItem>();
 }
