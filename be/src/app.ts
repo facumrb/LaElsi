@@ -10,7 +10,7 @@ import { RequestContext } from '@mikro-orm/core';
 import cors from 'cors';
 
 const app = express();
-app.use(cors());
+app.use(cors({ origin: 'http://localhost:4200' }));
 app.use(express.json());
 
 //luego de los middlewares base
@@ -26,12 +26,24 @@ app.use('/api/clientes', clienteRouter);
 // Ruta para ver imágenes
 /* app.use('/api/items/imagenesProductos', express.static(uploadDir));
  */
+
 app.use((_, res) => {
   return res.status(404).send({ message: 'Recurso no encontrado' });
 });
 
-await syncSchema(); //never in production
+async function startServer() {
+  try {
+    // Sincronizamos base de datos antes de abrir el puerto
+    await syncSchema();
+    console.log('Base de datos sincronizada');
 
-app.listen(3000, () => {
-  console.log('Server runnning on http://localhost:3000/');
-});
+    app.listen(3000, () => {
+      console.log('Server running on http://localhost:3000/');
+    });
+  } catch (error) {
+    console.error('No se pudo iniciar el servidor:', error);
+    process.exit(1); // Cierra el proceso si no hay DB
+  }
+}
+
+startServer();
