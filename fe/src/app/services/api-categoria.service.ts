@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { IApiCategoria } from '@models/categoria.model';
@@ -13,7 +13,7 @@ export class ApiCategoriaService {
 
   getAllCategorias(): Observable<IApiCategoria[]> {
     return this._http
-      .get<{ message: string; data: IApiCategoria[] }>(`${this.apiUrl}`)
+      .get<{ message: string; data: IApiCategoria[] }>(this.apiUrl)
       .pipe(map((response) => response.data));
   }
 
@@ -24,11 +24,12 @@ export class ApiCategoriaService {
   }
 
   searchCategorias(query: string): Observable<IApiCategoria[]> {
+    const params = new HttpParams().set('query', query);
     return this._http
       .get<{
         message: string;
         data: IApiCategoria[];
-      }>(`${this.apiUrl}/search?query=${query}`)
+      }>(`${this.apiUrl}/search`, { params })
       .pipe(map((response) => response.data));
   }
 
@@ -37,7 +38,7 @@ export class ApiCategoriaService {
       .post<{
         message: string;
         data: IApiCategoria;
-      }>(`${this.apiUrl}`, categoria)
+      }>(this.apiUrl, categoria)
       .pipe(map((response) => response.data));
   }
 

@@ -14,7 +14,7 @@ export class ApiAdministradorService {
 
   getAllAdmins(): Observable<IApiAdmin[]> {
     return this._http
-      .get<{ message: string; data: IApiAdmin[] }>(`${this.apiUrl}`)
+      .get<{ message: string; data: IApiAdmin[] }>(this.apiUrl)
       .pipe(map((response) => response.data));
   }
 
@@ -35,7 +35,7 @@ export class ApiAdministradorService {
 
   addAdmin(admin: IApiAdmin): Observable<IApiAdmin> {
     return this._http
-      .post<{ message: string; data: IApiAdmin }>(`${this.apiUrl}`, admin)
+      .post<{ message: string; data: IApiAdmin }>(this.apiUrl, admin)
       .pipe(map((response) => response.data));
   }
 

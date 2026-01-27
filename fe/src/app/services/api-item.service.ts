@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { IApiItem } from '@models/item.model';
@@ -13,7 +13,7 @@ export class ApiItemService {
 
   getAllItems(): Observable<IApiItem[]> {
     return this._http
-      .get<{ message: string; data: IApiItem[] }>(`${this.apiUrl}`)
+      .get<{ message: string; data: IApiItem[] }>(this.apiUrl)
       .pipe(map((response) => response.data));
   }
 
@@ -24,11 +24,12 @@ export class ApiItemService {
   }
 
   searchItems(query: string): Observable<IApiItem[]> {
+    const params = new HttpParams().set('query', query);
     return this._http
       .get<{
         message: string;
         data: IApiItem[];
-      }>(`${this.apiUrl}/search?query=${query}`)
+      }>(`${this.apiUrl}/search`, { params })
       .pipe(map((response) => response.data));
   }
 
@@ -43,7 +44,7 @@ export class ApiItemService {
 
   addItem(item: IApiItem): Observable<IApiItem> {
     return this._http
-      .post<{ message: string; data: IApiItem }>(`${this.apiUrl}`, item)
+      .post<{ message: string; data: IApiItem }>(this.apiUrl, item)
       .pipe(map((response) => response.data));
   }
 
