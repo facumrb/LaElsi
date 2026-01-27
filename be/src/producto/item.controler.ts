@@ -192,10 +192,14 @@ async function update(req: Request, res: Response) {
 async function remove(req: Request, res: Response) {
   try {
     const id = Number.parseInt(req.params.id);
-    const item = em.getReference(Item, id);
-    await em.removeAndFlush(item);
+    const item = await em.findOneOrFail(Item, { id });
+    em.remove(item);
+    await em.flush();
     res.status(200).send({ message: 'Item eliminado' });
   } catch (error: any) {
+    if (error.name === 'NotFoundError') {
+      return res.status(404).json({ message: 'El item no existe' });
+    }
     res.status(500).json({ message: error.message });
   }
 }

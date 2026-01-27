@@ -15,8 +15,8 @@ if (!process.env.DB_USER || !process.env.DB_NAME) {
 }
 
 export const orm = await MikroORM.init({
-  entities: [Administrador, Cliente, Categoria, Item, BaseEntity],
-  entitiesTs: [Administrador, Cliente, Categoria, Item, BaseEntity],
+  entities: ['dist/**/*.entity.js'],
+  entitiesTs: ['src/**/*.entity.ts'],
   dbName: process.env.DB_NAME,
   clientUrl: `mysql://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`,
   highlighter: new SqlHighlighter(),
@@ -31,7 +31,7 @@ export const orm = await MikroORM.init({
 });
 
 export const syncSchema = async () => {
-  const generator = orm.getSchemaGenerator();
+  const generator = orm.schema;
   /*   
   await generator.dropSchema()
   await generator.createSchema()

@@ -16,7 +16,7 @@ function sanitizeAdministradorInput(req: Request, res: Response, next: NextFunct
     // fechaDeAlta: req.body.fechaDeAlta,
     usuario: req.body.usuario,
     password: req.body.password,
-    email: req.body.email,
+    email: req.body.email
   };
   //more checks here
 
@@ -41,7 +41,7 @@ async function getAccountInfo(req: Request, res: Response) {
       apellido: administrador.apellido,
       telefono: administrador.telefono,
       usuario: administrador.usuario,
-      email: administrador.email,
+      email: administrador.email
       // password: administrador.password, // Considera no enviar la contraseña en la respuesta
     };
 
@@ -99,7 +99,7 @@ async function login(req: Request, res: Response) {
       apellido: administrador.apellido,
       telefono: administrador.telefono,
       usuario: administrador.usuario,
-      email: administrador.email,
+      email: administrador.email
       // password: administrador.password, // Considera no enviar la contraseña en la respuesta
     };
 
@@ -164,10 +164,14 @@ async function update(req: Request, res: Response) {
 async function remove(req: Request, res: Response) {
   try {
     const id = Number.parseInt(req.params.id);
-    const administrador = em.getReference(Administrador, id);
-    await em.removeAndFlush(administrador);
+    const administrador = em.findOneOrFail(Administrador, { id });
+    em.remove(administrador);
+    await em.flush();
     res.status(200).send({ message: 'Administrador eliminado' });
   } catch (error: any) {
+    if (error.name === 'NotFoundError') {
+      return res.status(404).json({ message: 'El administrador no existe' });
+    }
     res.status(500).json({ message: error.message });
   }
 }

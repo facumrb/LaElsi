@@ -16,7 +16,7 @@ function sanitizeClienteInput(req: Request, res: Response, next: NextFunction) {
     // fechaDeAlta: req.body.fechaDeAlta,
     usuario: req.body.usuario,
     password: req.body.password,
-    email: req.body.email,
+    email: req.body.email
   };
   //more checks here
 
@@ -41,7 +41,7 @@ async function getAccountInfo(req: Request, res: Response) {
       apellido: cliente.apellido,
       telefono: cliente.telefono,
       usuario: cliente.usuario,
-      email: cliente.email,
+      email: cliente.email
       // password: cliente.password, // Considera no enviar la contraseña en la respuesta
     };
 
@@ -99,7 +99,7 @@ async function login(req: Request, res: Response) {
       apellido: cliente.apellido,
       telefono: cliente.telefono,
       usuario: cliente.usuario,
-      email: cliente.email,
+      email: cliente.email
       // password: cliente.password, // Considera no enviar la contraseña en la respuesta
     };
 
@@ -164,10 +164,14 @@ async function update(req: Request, res: Response) {
 async function remove(req: Request, res: Response) {
   try {
     const id = Number.parseInt(req.params.id);
-    const cliente = em.getReference(Cliente, id);
-    await em.removeAndFlush(cliente);
+    const cliente = em.findOneOrFail(Cliente, { id });
+    em.remove(cliente);
+    await em.flush();
     res.status(200).send({ message: 'Cliente eliminado' });
   } catch (error: any) {
+    if (error.name === 'NotFoundError') {
+      return res.status(404).json({ message: 'El cliente no existe' });
+    }
     res.status(500).json({ message: error.message });
   }
 }

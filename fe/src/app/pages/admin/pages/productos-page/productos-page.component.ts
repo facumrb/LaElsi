@@ -59,7 +59,7 @@ export class ProductosPageComponent implements OnInit {
       ],
       estado: ['', [Validators.required]],
       stock: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
-      categoria: ['', [Validators.required]],
+      categoria: [''],
     });
   }
 
@@ -91,7 +91,7 @@ export class ProductosPageComponent implements OnInit {
     this.selectedCategoria = id;
 
     if (id > 0) {
-      this.items = this.allItems.filter((item) => item.categoria.id === id);
+      this.items = this.allItems.filter((item) => item.categoria?.id === id);
     } else {
       this.items = [...this.allItems];
     }
@@ -109,7 +109,7 @@ export class ProductosPageComponent implements OnInit {
     document.body.style.overflow = 'hidden';
     if (mode === 'edit' && item) {
       this.itemSeleccionado = item;
-      this.formItem.patchValue({ ...item, categoria: item.categoria.id });
+      this.formItem.patchValue({ ...item, categoria: item.categoria?.id });
     } else {
       this.formItem.reset();
       this.formItem.patchValue({ estado: '', categoria: '', cant_vendidos: 0 });

@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { Categoria } from './categoria.entity.js';
 import { orm } from '../shared/db/orm.js';
 
-const em = orm.em; // Entity Manager
+const em = orm.em;
 
 function sanitizeCategoriaInput(req: Request, res: Response, next: NextFunction) {
   req.body.sanitizedInput = {
@@ -11,7 +11,6 @@ function sanitizeCategoriaInput(req: Request, res: Response, next: NextFunction)
     estado: req.body.estado,
     items: req.body.items
   };
-  //more checks here
 
   Object.keys(req.body.sanitizedInput).forEach((key) => {
     if (req.body.sanitizedInput[key] === undefined) {
@@ -96,10 +95,14 @@ async function update(req: Request, res: Response) {
 async function remove(req: Request, res: Response) {
   try {
     const id = Number.parseInt(req.params.id);
-    const categoria = await em.findOneOrFail(Categoria, { id }, { populate: ['items'] });
-    await em.removeAndFlush(categoria);
+    const categoria = await em.findOneOrFail(Categoria, { id });
+    em.remove(categoria);
+    await em.flush();
     res.status(200).send({ message: 'Categoría eliminada' });
   } catch (error: any) {
+    if (error.name === 'NotFoundError') {
+      return res.status(404).json({ message: 'La categoría no existe' });
+    }
     res.status(500).json({ message: error.message });
   }
 }

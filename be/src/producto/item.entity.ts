@@ -25,21 +25,24 @@ export class Item extends BaseEntity {
   @Property({ nullable: false })
   stock!: number;
 
-  // @Property({ nullable: false })
-  // fechaDeAlta!: date?;
-
-  // @Property({ nullable: false })
-  //fechaDeActualizacion!: date?;
-
-  // @Property({ nullable: false })
-  // aReservar!: boolean;
-
-  // @Property({ nullable: false })
-  // cantidadAReservar!: number;
-
   @Property({ nullable: true })
   fotos?: string[]; // Array de rutas de imágenes
 
-  @ManyToOne(() => Categoria, { nullable: false })
-  categoria!: Rel<Categoria>;
+  @ManyToOne(() => Categoria, {
+    nullable: true,
+    deleteRule: 'set null'
+  })
+  categoria?: Rel<Categoria>;
 }
+
+// @Property({ nullable: false })
+// fechaDeAlta!: date?;
+
+// @Property({ nullable: false })
+//fechaDeActualizacion!: date?;
+
+// @Property({ nullable: false })
+// aReservar!: boolean;
+
+// @Property({ nullable: false })
+// cantidadAReservar!: number;

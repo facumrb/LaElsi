@@ -1,14 +1,16 @@
 import { IApiCategoria } from './categoria.model';
 
+export type EstadoEntidad = 'Activo' | 'Inactivo';
+
 export interface IApiItem {
-  id: number; // Identificador único del item
-  nombre: string; // Nombre del item
+  id: number;
+  nombre: string;
   fotos?: string[]; // Array de URLs de las fotos del item
-  descripcion: string; // Descripción del item
-  precio: number; // Precio del item
-  marca: string; // Marca del item
-  cant_vendidos: number; // Cantidad de veces que el item ha sido vendido
-  estado: string; // Estado del item (por ejemplo: "Activo" o "Inactivo")
-  stock: number; // Cantidad disponible en stock
-  categoria: IApiCategoria; // Categoría a la que pertenece el item
+  descripcion: string;
+  precio: number;
+  marca: string;
+  cant_vendidos: number;
+  estado: EstadoEntidad;
+  stock: number;
+  categoria?: IApiCategoria | null;
 }
