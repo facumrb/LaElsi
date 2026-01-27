@@ -2,13 +2,14 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { IApiItem } from '@models/item.model';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ApiItemService {
   private _http = inject(HttpClient);
-  private apiUrl: string = 'http://localhost:3000/api/items';
+  private readonly apiUrl = `${environment.baseUrl}/items`;
 
   getAllItems(): Observable<IApiItem[]> {
     return this._http

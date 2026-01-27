@@ -3,13 +3,14 @@ import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { IApiAdmin } from '@models/admin.model';
 import { IApiAccountInfo } from '@models/accountInfo.model';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ApiAdministradorService {
   private _http = inject(HttpClient);
-  private apiUrl: string = 'http://localhost:3000/api/administradores';
+  private readonly apiUrl = `${environment.baseUrl}/administradores`;
 
   getAllAdmins(): Observable<IApiAdmin[]> {
     return this._http
