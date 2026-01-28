@@ -53,14 +53,14 @@ Content-Type: application/json
 
 {
     "nombre": "Sombrero",
-    // foto?
     "descripcion": "Sombrero de mago",
     "precio": 25,
     "marca": "Magic",
-    "cantVendidos": 10,
+    "cant_vendidos": 10,
     "estado": "Activo",
     "stock": 45,
-    "categoria": 8
+    "categoria": 1,
+    "fotos": [ "https://i.imgur.com/Byi3gBg.jpeg" ]
 }
 
 

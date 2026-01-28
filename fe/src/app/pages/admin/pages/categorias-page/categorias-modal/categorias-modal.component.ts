@@ -16,7 +16,7 @@ export class CategoriasModalComponent {
   categoryData = input<IApiCategoria | null>(null);
 
   close = output<void>();
-  save = output<any>(); // Emitirá los valores del form
+  save = output<any>();
 
   formCategory = this.fb.group({
     nombre: [

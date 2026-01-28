@@ -29,7 +29,7 @@
   <app-categorias-list
     [categorias]="categorias()"
     (onEdit)="openEditModal($event)"
-    (onDelete)="handleDelete($event)"
+    (onDelete)="delete($event)"
   />
 </div>
 
@@ -37,6 +37,6 @@
   <app-categorias-modal
     [categoryData]="selectedCategory()"
     (close)="isModalOpen.set(false)"
-    (save)="handleModalSave($event)"
+    (save)="modalSubmit($event)"
   />
 }

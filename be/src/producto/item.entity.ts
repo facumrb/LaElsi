@@ -28,11 +28,8 @@ export class Item extends BaseEntity {
   @Property({ nullable: true })
   fotos?: string[]; // Array de rutas de imágenes
 
-  @ManyToOne(() => Categoria, {
-    nullable: true,
-    deleteRule: 'set null'
-  })
-  categoria?: Rel<Categoria>;
+  @ManyToOne(() => Categoria, { nullable: false })
+  categoria!: Rel<Categoria>;
 }
 
 // @Property({ nullable: false })

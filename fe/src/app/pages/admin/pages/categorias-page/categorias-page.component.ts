@@ -1,9 +1,11 @@
-import { Component, inject, signal, computed, OnInit } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { ApiCategoriaService } from '@services/api-categoria.service';
 import { IApiCategoria } from '@models/categoria.model';
 import { CategoriasModalComponent } from './categorias-modal/categorias-modal.component';
 import { CategoriasListComponent } from './categorias-list/categorias-list.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { AlertService } from '@shared/alert.service';
+import { ApiErrorService } from '@shared/api-error.service';
 
 @Component({
   selector: 'app-categorias-page',
@@ -15,6 +17,8 @@ import { ReactiveFormsModule } from '@angular/forms';
   templateUrl: './categorias-page.component.html',
 })
 export class CategoriasPageComponent {
+  private _alertService = inject(AlertService);
+  private _errorService = inject(ApiErrorService);
   private _apiService = inject(ApiCategoriaService);
   private categoriasRaw = signal<IApiCategoria[]>([]);
 
@@ -35,7 +39,6 @@ export class CategoriasPageComponent {
   }
 
   // --- Lógica del Modal ---
-
   openAddModal() {
     this.selectedCategory.set(null);
     this.isModalOpen.set(true);
@@ -46,34 +49,50 @@ export class CategoriasPageComponent {
     this.isModalOpen.set(true);
   }
 
-  handleModalSave(formData: any) {
+  modalSubmit(formData: any) {
     const currentCat = this.selectedCategory();
+    const esEdicion = !!currentCat;
+    const request$ = esEdicion
+      ? this._apiService.updateCategoria(currentCat.id, {
+          ...currentCat,
+          ...formData,
+        })
+      : this._apiService.addCategoria(formData);
 
-    if (currentCat) {
-      // Editar
-      const updatedCat = { ...currentCat, ...formData };
-      this._apiService
-        .updateCategoria(currentCat.id, updatedCat)
-        .subscribe(() => {
-          this.loadCategorias();
-          this.isModalOpen.set(false);
-        });
-    } else {
-      // Crear
-      this._apiService.addCategoria(formData).subscribe(() => {
+    request$.subscribe({
+      next: () => {
         this.loadCategorias();
         this.isModalOpen.set(false);
-      });
-    }
+        this._alertService.toast(
+          `Categoría ${esEdicion ? 'editada' : 'creada'} con éxito`,
+          'success',
+        );
+      },
+      error: (err) => {
+        this._errorService.handle(
+          err,
+          esEdicion ? 'editar la categoría' : 'crear la categoría',
+        );
+      },
+    });
   }
 
   // --- Lógica de borrado ---
-
-  handleDelete(id: number) {
-    if (confirm('¿Seguro que deseas eliminar esta categoría?')) {
-      this._apiService.deleteCategoria(id).subscribe(() => {
-        this.categoriasRaw.update((cats) => cats.filter((c) => c.id !== id));
-      });
-    }
+  delete(id: number) {
+    this._alertService.confirmDelete().then((confirmado) => {
+      if (confirmado) {
+        this._apiService.deleteCategoria(id).subscribe({
+          next: () => {
+            this.categoriasRaw.update((cats) =>
+              cats.filter((c) => c.id !== id),
+            );
+            this._alertService.toast('Categoría eliminada', 'success');
+          },
+          error: (err) => {
+            this._errorService.handle(err, 'eliminar la categoría');
+          },
+        });
+      }
+    });
   }
 }

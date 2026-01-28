@@ -95,7 +95,14 @@ async function update(req: Request, res: Response) {
 async function remove(req: Request, res: Response) {
   try {
     const id = Number.parseInt(req.params.id);
-    const categoria = await em.findOneOrFail(Categoria, { id });
+    const categoria = await em.findOneOrFail(Categoria, { id }, { populate: ['items'] });
+
+    if (categoria.items.length > 0) {
+      return res.status(400).json({
+        message: 'Esta categoría tiene productos asociados.\n\n 💡 Consejo: Cámbia el estado a "Inactivo" en lugar de borrarla.'
+      });
+    }
+
     em.remove(categoria);
     await em.flush();
     res.status(200).send({ message: 'Categoría eliminada' });
