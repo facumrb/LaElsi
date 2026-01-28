@@ -10,7 +10,7 @@ import Swal from 'sweetalert2';
 export class CategoriasListComponent {
   categorias = input.required<IApiCategoria[]>();
   onEdit = output<IApiCategoria>();
-  onDelete = output<number>();
+  onDelete = output<IApiCategoria>();
 
   verProductos(categoria: IApiCategoria) {
     if (!categoria.items || categoria.items.length === 0) return;

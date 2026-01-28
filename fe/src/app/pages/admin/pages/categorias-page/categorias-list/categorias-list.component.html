@@ -1,54 +1,69 @@
-<div class="overflow-hidden rounded-lg border border-gray-200 shadow-md">
+<div
+  class="md:overflow-hidden md:rounded-lg md:border md:border-gray-200 md:shadow-md md:bg-white"
+>
   <div class="overflow-x-auto">
-    <table
-      class="w-full border-collapse bg-white text-left text-sm text-gray-500"
-    >
+    <table class="w-full border-collapse text-left text-sm text-gray-500">
       <thead class="hidden bg-[#3d4494] text-white md:table-header-group">
         <tr>
-          <th class="px-6 py-4 font-semibold uppercase tracking-wider">
+          <th class="px-6 py-4 font-semibold uppercase tracking-wider w-50">
             Nombre
           </th>
+
           <th class="px-6 py-4 font-semibold uppercase tracking-wider">
             Descripción
           </th>
+
           <th
-            class="px-6 py-4 text-center font-semibold uppercase tracking-wider"
+            class="px-6 py-4 text-center font-semibold uppercase tracking-wider w-30 whitespace-nowrap"
           >
             Productos
           </th>
-          <th class="px-6 py-4 font-semibold uppercase tracking-wider">
+          <th
+            class="px-6 py-4 font-semibold uppercase tracking-wider w-30 whitespace-nowrap"
+          >
             Estado
           </th>
           <th
-            class="px-6 py-4 text-center font-semibold uppercase tracking-wider"
+            class="px-6 py-4 text-center font-semibold uppercase tracking-wider w-30 whitespace-nowrap"
           >
             Acciones
           </th>
         </tr>
       </thead>
 
-      <tbody class="divide-y divide-gray-100 border-t border-gray-100">
+      <tbody
+        class="md:divide-y md:divide-gray-100 md:border-t md:border-gray-100"
+      >
         @for (categoria of categorias(); track categoria.id) {
           <tr
-            class="block transition-colors hover:bg-gray-50 md:table-row border-b md:border-none mb-4 md:mb-0"
+            class="block mb-4 bg-white rounded-lg border border-gray-200 shadow-sm md:table-row md:mb-0 md:bg-transparent md:rounded-none md:shadow-none md:border-0 hover:bg-gray-50 transition-colors"
           >
-            <td class="block px-6 py-4 font-medium text-gray-900 md:table-cell">
+            <td
+              class="block px-6 py-4 font-medium text-gray-900 md:table-cell align-top"
+            >
               <span class="font-bold text-[#3d4494] md:hidden block mb-1"
                 >Nombre:</span
               >
-              {{ categoria.nombre }}
+              <div class="truncate" title="{{ categoria.nombre }}">
+                {{ categoria.nombre }}
+              </div>
             </td>
 
-            <td class="block px-6 py-4 text-gray-600 md:table-cell md:max-w-50">
+            <td class="block px-6 py-4 text-gray-600 md:table-cell align-top">
               <span class="font-bold text-[#3d4494] md:hidden block mb-1"
                 >Descripción:</span
               >
-              <div class="whitespace-normal wrap-break-words">
+              <div
+                class="line-clamp-2 md:line-clamp-3 whitespace-normal wrap-break-words"
+                title="{{ categoria.descripcion }}"
+              >
                 {{ categoria.descripcion }}
               </div>
             </td>
 
-            <td class="block px-6 py-4 md:table-cell text-left md:text-center">
+            <td
+              class="block px-6 py-4 md:table-cell text-left md:text-center align-middle"
+            >
               <span class="font-bold text-[#3d4494] md:hidden inline-block mr-2"
                 >Productos:</span
               >
@@ -73,14 +88,13 @@
                 <span class="font-bold">{{
                   categoria.items?.length || 0
                 }}</span>
-
                 @if ((categoria.items?.length || 0) > 0) {
                   <span>Ver</span>
                 }
               </button>
             </td>
 
-            <td class="block px-6 py-4 md:table-cell">
+            <td class="block px-6 py-4 md:table-cell align-middle">
               <span class="font-bold text-[#3d4494] md:hidden inline-block mr-2"
                 >Estado:</span
               >
@@ -95,7 +109,7 @@
               </span>
             </td>
 
-            <td class="block px-6 py-4 md:table-cell">
+            <td class="block px-6 py-4 md:table-cell align-middle">
               <span class="font-bold text-[#3d4494] md:hidden block mb-2"
                 >Acciones:</span
               >
@@ -121,7 +135,7 @@
                   </svg>
                 </button>
                 <button
-                  (click)="onDelete.emit(categoria.id)"
+                  (click)="onDelete.emit(categoria)"
                   class="text-red-600 hover:text-red-900"
                   title="Eliminar"
                 >
@@ -140,6 +154,36 @@
                     />
                   </svg>
                 </button>
+              </div>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td
+              colspan="5"
+              class="py-12 text-center bg-white rounded-lg md:rounded-none"
+            >
+              <div
+                class="flex flex-col items-center justify-center text-gray-400"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="size-10 mb-2"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+                  />
+                </svg>
+                <p class="text-base font-medium text-gray-500">
+                  No se encontraron resultados
+                </p>
+                <p class="text-sm">Intenta ajustar tu búsqueda o filtros.</p>
               </div>
             </td>
           </tr>

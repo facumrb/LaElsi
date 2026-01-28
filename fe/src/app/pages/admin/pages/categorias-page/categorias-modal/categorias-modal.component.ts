@@ -21,7 +21,12 @@ export class CategoriasModalComponent {
   formCategory = this.fb.group({
     nombre: [
       '',
-      [Validators.required, Validators.pattern(FormUtils.descripcionPattern)],
+      [
+        Validators.required,
+        Validators.minLength(3),
+        Validators.maxLength(50),
+        Validators.pattern(FormUtils.nombrePattern),
+      ],
     ],
     descripcion: ['', [Validators.required, Validators.maxLength(1000)]],
     estado: ['', Validators.required],

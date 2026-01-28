@@ -20,8 +20,9 @@ function sanitizeCategoriaInput(req: Request, res: Response, next: NextFunction)
   next();
 }
 
-async function searchCategorias(req: Request, res: Response) {
-  const { query } = req.query; // Obtener el texto de búsqueda
+// Este metodo permite buscar categorías cuyo nombre o descripción contenga el texto proporcionado.
+async function searchCategoriasByText(req: Request, res: Response) {
+  const { query } = req.query;
 
   try {
     const categorias = await em.find(
@@ -114,4 +115,4 @@ async function remove(req: Request, res: Response) {
   }
 }
 
-export { sanitizeCategoriaInput, findAll, findOne, add, update, remove, searchCategorias };
+export { sanitizeCategoriaInput, findAll, findOne, add, update, remove, searchCategoriasByText };

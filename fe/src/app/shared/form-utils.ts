@@ -7,43 +7,50 @@ import {
 
 export class FormUtils {
   //EXPRESIONES REGULARES
-  static nombrePattern = '([a-zA-Z]+) ([a-zA-Z]+)';
+  static nombrePattern = "^[a-zA-ZáéíóúÁÉÍÓÚñÑ'\\-\\s]+$";
   static emailPattern = '^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$';
-  static descripcionPattern = '^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9.,;:?!()_\'"-\\s]*$';
-  static notOnlySpacesPattern = '^[a-zA-Z0-9]+$';
+  static descripcionPattern = '^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9.,;:?!()_\\-\'"\\s\\n]*$';
 
-  static getTextError(errors: ValidationErrors) {
+  // Mínimo 8 caracteres, 1 letra, 1 número.
+  static passwordPattern = '^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d@$!%*#?&]{8,}$';
+
+  static getTextError(
+    errors: ValidationErrors,
+    fieldName: string = 'campo',
+  ): string | null {
     for (const key of Object.keys(errors)) {
       switch (key) {
         case 'required':
-          return 'Este campo es requerido.';
+          return `El ${fieldName} es requerido.`;
 
         case 'minlength':
-          return `Minimo de ${errors['minlength'].requiredLength} caracteres.`;
+          return `Mínimo de ${errors['minlength'].requiredLength} caracteres.`;
 
         case 'maxlength':
-          return `Maximo de ${errors['maxlength'].requiredLength} caracteres.`;
+          return `Máximo de ${errors['maxlength'].requiredLength} caracteres.`;
 
         case 'min':
-          return `Valor minimo de ${errors['min'].min}.`;
-
-        case 'email':
-          return `El valor ingresado no es un correo electronico`;
+          return `El valor mínimo es ${errors['min'].min}.`;
 
         case 'emailTaken':
           return `El correo electronico ya esta siendo usado por otro usuario.`;
 
+        case 'mustMatch':
+          return `Las contraseñas no coinciden.`;
+
         case 'pattern':
           if (errors['pattern'].requiredPattern === this.emailPattern) {
-            return 'El correo electronico no es permitido';
+            return 'Formato de correo no válido.';
           }
-          if (errors['pattern'].requiredPattern === this.descripcionPattern) {
-            return 'La descripcion utilizada no es permitida';
+          if (errors['pattern'].requiredPattern === this.nombrePattern) {
+            return 'El nombre contiene caracteres no permitidos.';
           }
-          return 'Error de expresion regular';
-
+          if (errors['pattern'].requiredPattern === this.passwordPattern) {
+            return 'La contraseña debe tener al menos 8 caracteres, una letra y un número.';
+          }
+          return `El formato del ${fieldName} no es válido.`;
         default:
-          return 'Error de validación no controlado';
+          return `Error: ${key}`;
       }
     }
     return null;
