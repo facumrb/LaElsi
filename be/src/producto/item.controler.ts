@@ -1,7 +1,7 @@
-import { Request, Response, NextFunction } from 'express';
-import express from 'express';
-import { Item } from './item.entity.js';
-import { orm } from '../shared/db/orm.js';
+import { Request, Response, NextFunction } from "express";
+import express from "express";
+import { Item } from "./item.entity.js";
+import { orm } from "../shared/db/orm.js";
 /* import multer from 'multer';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -69,7 +69,7 @@ function sanitizeItemInput(req: Request, res: Response, next: NextFunction) {
     marca: req.body.marca,
     cant_vendidos: req.body.cant_vendidos,
     estado: req.body.estado,
-    stock: req.body.stock
+    stock: req.body.stock,
     //fechaDeAlta: req.body.fechaDeAlta,
     //fechaDeActualizacion: req.body.fechaDeActualizacion,
     //aReservar: req.body.aReservar,
@@ -125,10 +125,12 @@ async function add(req: Request, res: Response) {
     const item = em.create(Item, req.body.sanitizedInput); //anteriormente itemData
     await em.flush();
 
-    res.status(201).json({ message: 'Item creado', data: item });
+    res.status(201).json({ message: "Item creado", data: item });
   } catch (error: any) {
-    console.error('Error al crear el item:', error);
-    res.status(500).json({ message: 'Error al crear el item: ' + error.message });
+    console.error("Error al crear el item:", error);
+    res
+      .status(500)
+      .json({ message: "Error al crear el item: " + error.message });
   }
 }
 
@@ -138,9 +140,13 @@ async function searchItemsByText(req: Request, res: Response) {
 
   try {
     const items = await em.find(Item, {
-      $or: [{ nombre: { $like: `%${query}%` } }, { descripcion: { $like: `%${query}%` } }, { marca: { $like: `%${query}%` } }]
+      $or: [
+        { nombre: { $like: `%${query}%` } },
+        { descripcion: { $like: `%${query}%` } },
+        { marca: { $like: `%${query}%` } },
+      ],
     }); // Buscar por nombre, descripcion y marca
-    res.status(200).json({ message: 'Items encontrados', data: items });
+    res.status(200).json({ message: "Items encontrados", data: items });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
@@ -148,11 +154,13 @@ async function searchItemsByText(req: Request, res: Response) {
 
 // Función para obtener items por categoría
 async function findItemsByCategory(req: Request, res: Response) {
-  const categoriaId = Number.parseInt(req.params.id); // Obtener ID de categoría
+  const categoriaId = Number.parseInt(req.params.categoryId); // Obtener ID de categoría
 
   try {
     const items = await em.find(Item, { categoria: categoriaId }); // Buscar por categoría
-    res.status(200).json({ message: 'Items encontrados en la categoría', data: items });
+    res
+      .status(200)
+      .json({ message: "Items encontrados en la categoría", data: items });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
@@ -160,8 +168,10 @@ async function findItemsByCategory(req: Request, res: Response) {
 
 async function findAll(req: Request, res: Response) {
   try {
-    const items = await em.find(Item, {}, { populate: ['categoria'] });
-    res.status(200).json({ message: 'Todos los Items fueron encontrados', data: items });
+    const items = await em.find(Item, {}, { populate: ["categoria"] });
+    res
+      .status(200)
+      .json({ message: "Todos los Items fueron encontrados", data: items });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
@@ -170,8 +180,12 @@ async function findAll(req: Request, res: Response) {
 async function findOne(req: Request, res: Response) {
   try {
     const id = Number.parseInt(req.params.id);
-    const item = await em.findOneOrFail(Item, { id }, { populate: ['categoria'] });
-    res.status(200).json({ message: 'Item encontrado', data: item });
+    const item = await em.findOneOrFail(
+      Item,
+      { id },
+      { populate: ["categoria"] },
+    );
+    res.status(200).json({ message: "Item encontrado", data: item });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
@@ -183,7 +197,7 @@ async function update(req: Request, res: Response) {
     const item = await em.findOneOrFail(Item, { id });
     em.assign(item, req.body.sanitizedInput);
     await em.flush();
-    res.status(200).json({ message: 'Item actualizado', data: item });
+    res.status(200).json({ message: "Item actualizado", data: item });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
@@ -195,13 +209,22 @@ async function remove(req: Request, res: Response) {
     const item = await em.findOneOrFail(Item, { id });
     em.remove(item);
     await em.flush();
-    res.status(200).send({ message: 'Item eliminado' });
+    res.status(200).send({ message: "Item eliminado" });
   } catch (error: any) {
-    if (error.name === 'NotFoundError') {
-      return res.status(404).json({ message: 'El item no existe' });
+    if (error.name === "NotFoundError") {
+      return res.status(404).json({ message: "El item no existe" });
     }
     res.status(500).json({ message: error.message });
   }
 }
 
-export { sanitizeItemInput, findAll, findOne, add, update, remove, searchItemsByText, findItemsByCategory /* cargaImagenes, imagenProducto, uploadDir */ };
+export {
+  sanitizeItemInput,
+  findAll,
+  findOne,
+  add,
+  update,
+  remove,
+  searchItemsByText,
+  findItemsByCategory /* cargaImagenes, imagenProducto, uploadDir */,
+};

@@ -7,6 +7,5 @@ import { IApiItem } from '@models/item.model';
   templateUrl: './item-card.component.html',
 })
 export class ItemCardComponent {
-  // Recibimos el item desde el @for del padre
   product = input.required<IApiItem>();
 }

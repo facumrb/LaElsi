@@ -11,15 +11,17 @@ POST http://localhost:3000/api/items HTTP/1.1
 Content-Type: application/json
 
 {
-    "nombre": "Pista de Autos",
-    "descripcion": "Pista para autos con curvas y elevaciones.",
-    "precio": 29.99,
-    "marca": "TrackMasters",
-    "cant_vendidos": 250,
-    "estado": "Activo",
-    "stock": 100,
-    "categoria": 1,
-    "fotos": [ "https://i.imgur.com/Byi3gBg.jpeg" ]
+  "cant_vendidos": 250,
+  "categoria": 1,
+  "descripcion": "Pista para autos con curvas y elevaciones.",
+  "estado": "Activo",
+  "fotos": [
+    "https://i.imgur.com/Byi3gBg.jpeg"
+  ],
+  "marca": "TrackMasters",
+  "nombre": "Pista de Autos",
+  "precio": 29.99,
+  "stock": 100
 }
 
 
@@ -72,15 +74,17 @@ POST http://localhost:3000/api/items HTTP/1.1
 Content-Type: application/json
 
 {
-    "nombre": "Tijera",
-    // foto?
-    "descripcion": "",
-    "precio": 25,
-    "marca": "Modul",
-    "cantVendidos": 100,
-    "estado": 10,
-    "stock": 90,
-    "categoria": 2
+  "cant_vendidos": 100,
+  "categoria": 2,
+  "descripcion": "tijera muy buena.",
+  "estado": 10,
+  "fotos": [
+    "https://i.imgur.com/Byi3gBg.jpeg"
+  ],
+  "marca": "Modul",
+  "nombre": "Tijera",
+  "precio": 25,
+  "stock": 90
 }
 
 
