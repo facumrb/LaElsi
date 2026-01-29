@@ -3,10 +3,10 @@ import { MikroORM } from '@mikro-orm/core';
 import { MySqlDriver } from '@mikro-orm/mysql';
 import { SqlHighlighter } from '@mikro-orm/sql-highlighter';
 import 'dotenv/config';
-import { Administrador } from '../../usuario/administrador/administrador.entity.js';
-import { Cliente } from '../../usuario/cliente/cliente.entity.js';
+import { Administrador } from '../../user/admin/admin.entity.js';
+import { Cliente } from '../../user/client/client.entity.js';
 import { Categoria } from '../../categoria/categoria.entity.js';
-import { Item } from '../../producto/item.entity.js';
+import { Item } from '../../item/item.entity.js';
 import { BaseEntity } from './baseEntity.entity.js';
 
 // Validación básica para no intentar conectar si faltan datos

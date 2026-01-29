@@ -1,14 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
-import { Categoria } from './categoria.entity.js';
+import { Category } from './category.entity.js';
 import { orm } from '../shared/db/orm.js';
 
 const em = orm.em;
 
-function sanitizeCategoriaInput(req: Request, res: Response, next: NextFunction) {
+function sanitizeCategoryInput(req: Request, res: Response, next: NextFunction) {
   req.body.sanitizedInput = {
-    nombre: req.body.nombre,
-    descripcion: req.body.descripcion,
-    estado: req.body.estado,
+    name: req.body.name,
+    description: req.body.description,
+    state: req.body.state,
     items: req.body.items
   };
 
@@ -21,18 +21,18 @@ function sanitizeCategoriaInput(req: Request, res: Response, next: NextFunction)
 }
 
 // Este metodo permite buscar categorías cuyo nombre o descripción contenga el texto proporcionado.
-async function searchCategoriasByText(req: Request, res: Response) {
+async function searchCategoriesByText(req: Request, res: Response) {
   const { query } = req.query;
 
   try {
-    const categorias = await em.find(
-      Categoria,
+    const categories = await em.find(
+      Category,
       {
-        $or: [{ nombre: { $like: `%${query}%` } }, { descripcion: { $like: `%${query}%` } }]
+        $or: [{ name: { $like: `%${query}%` } }, { description: { $like: `%${query}%` } }]
       },
       { populate: ['items'] }
     );
-    res.status(200).json({ message: 'Categorías encontradas', data: categorias });
+    res.status(200).json({ message: 'Categorías encontradas', data: categories });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
@@ -40,22 +40,22 @@ async function searchCategoriasByText(req: Request, res: Response) {
 
 async function add(req: Request, res: Response) {
   try {
-    const { nombre, descripcion } = req.body.sanitizedInput;
+    const { name, description } = req.body.sanitizedInput;
 
-    if (!nombre || !descripcion) {
+    if (!name || !description) {
       return res.status(400).json({ message: 'Nombre y descripción son requeridos' });
     }
 
-    const categoriaData = {
-      nombre,
-      descripcion,
-      estado: req.body.sanitizedInput.estado || 'Activo'
+    const categoryData = {
+      name,
+      description,
+      state: req.body.sanitizedInput.state || 'Activo'
     };
 
-    const categoria = em.create(Categoria, categoriaData);
+    const category = em.create(Category, categoryData);
     await em.flush();
 
-    res.status(201).json({ message: 'Categoría creada', data: categoria });
+    res.status(201).json({ message: 'Categoría creada', data: category });
   } catch (error: any) {
     console.error('Error al crear categoría:', error);
     res.status(500).json({ message: 'Error al crear la categoría' });
@@ -64,8 +64,8 @@ async function add(req: Request, res: Response) {
 
 async function findAll(req: Request, res: Response) {
   try {
-    const categorias = await em.find(Categoria, {}, { populate: ['items'] });
-    res.status(200).json({ message: 'Todas las Categorías fueron encontradas', data: categorias });
+    const categories = await em.find(Category, {}, { populate: ['items'] });
+    res.status(200).json({ message: 'Todas las Categorías fueron encontradas', data: categories });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
@@ -73,9 +73,9 @@ async function findAll(req: Request, res: Response) {
 
 async function findOne(req: Request, res: Response) {
   try {
-    const id = Number.parseInt(req.params.id);
-    const categoria = await em.findOneOrFail(Categoria, { id }, { populate: ['items'] });
-    res.status(200).json({ message: 'Categoría encontrada', data: categoria });
+    const name = req.params.name;
+    const category = await em.findOneOrFail(Category, { name }, { populate: ['items'] });
+    res.status(200).json({ message: 'Categoría encontrada', data: category });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
@@ -83,11 +83,11 @@ async function findOne(req: Request, res: Response) {
 
 async function update(req: Request, res: Response) {
   try {
-    const id = Number.parseInt(req.params.id);
-    const categoria = await em.findOneOrFail(Categoria, { id }, { populate: ['items'] });
-    em.assign(categoria, req.body.sanitizedInput);
+    const name = req.params.name;
+    const category = await em.findOneOrFail(Category, { name }, { populate: ['items'] });
+    em.assign(category, req.body.sanitizedInput);
     await em.flush();
-    res.status(200).json({ message: 'Categoría actualizada', data: categoria });
+    res.status(200).json({ message: 'Categoría actualizada', data: category });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
@@ -95,16 +95,16 @@ async function update(req: Request, res: Response) {
 
 async function remove(req: Request, res: Response) {
   try {
-    const id = Number.parseInt(req.params.id);
-    const categoria = await em.findOneOrFail(Categoria, { id }, { populate: ['items'] });
+    const name = req.params.name;
+    const category = await em.findOneOrFail(Category, { name }, { populate: ['items'] });
 
-    if (categoria.items.length > 0) {
+    if (category.items.length > 0) {
       return res.status(400).json({
         message: 'Esta categoría tiene productos asociados.\n\n 💡 Consejo: Cámbia el estado a "Inactivo" en lugar de borrarla.'
       });
     }
 
-    em.remove(categoria);
+    em.remove(category);
     await em.flush();
     res.status(200).send({ message: 'Categoría eliminada' });
   } catch (error: any) {
@@ -115,4 +115,4 @@ async function remove(req: Request, res: Response) {
   }
 }
 
-export { sanitizeCategoriaInput, findAll, findOne, add, update, remove, searchCategoriasByText };
+export { sanitizeCategoryInput, findAll, findOne, add, update, remove, searchCategoriesByText };

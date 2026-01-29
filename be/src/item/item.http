@@ -11,15 +11,15 @@ POST http://localhost:3000/api/items HTTP/1.1
 Content-Type: application/json
 
 {
-    "nombre": "Pista de Autos",
-    "descripcion": "Pista para autos con curvas y elevaciones.",
-    "precio": 29.99,
-    "marca": "TrackMasters",
-    "cant_vendidos": 250,
-    "estado": "Activo",
+    "name": "Pista de Autos",
+    "description": "Pista para autos con curvas y elevaciones.",
+    "price": 29.99,
+    "brand": "TrackMasters",
+    "number_sold": 250,
+    "state": "Activo",
     "stock": 100,
-    "categoria": 1,
-    "fotos": [ "https://i.imgur.com/Byi3gBg.jpeg" ]
+    "category": 1,
+    "photos": [ "https://i.imgur.com/Byi3gBg.jpeg" ]
 }
 
 
@@ -40,8 +40,8 @@ Content-Type: application/json
 
 {
     // foto?
-    "precio": 25,
-    "cantVendidos": 300,
+    "price": 25,
+    "number_sold": 300,
     "stock": 50
 }
 
@@ -52,15 +52,15 @@ POST http://localhost:3000/api/items HTTP/1.1
 Content-Type: application/json
 
 {
-    "nombre": "Sombrero",
-    "descripcion": "Sombrero de mago",
-    "precio": 25,
-    "marca": "Magic",
-    "cant_vendidos": 10,
-    "estado": "Activo",
+    "name": "Sombrero",
+    "description": "Sombrero de mago",
+    "price": 25,
+    "brand": "Magic",
+    "number_sold": 10,
+    "state": "Activo",
     "stock": 45,
-    "categoria": 1,
-    "fotos": [ "https://i.imgur.com/Byi3gBg.jpeg" ]
+    "category": 1,
+    "photos": [ "https://i.imgur.com/Byi3gBg.jpeg" ]
 }
 
 
@@ -72,15 +72,15 @@ POST http://localhost:3000/api/items HTTP/1.1
 Content-Type: application/json
 
 {
-    "nombre": "Tijera",
+    "name": "Tijera",
     // foto?
-    "descripcion": "",
-    "precio": 25,
-    "marca": "Modul",
-    "cantVendidos": 100,
-    "estado": 10,
+    "description": "",
+    "price": 25,
+    "brand": "Modul",
+    "number_sold": 100,
+    "state": 10,
     "stock": 90,
-    "categoria": 2
+    "category": 2
 }
 
 
@@ -88,7 +88,7 @@ Content-Type: application/json
 
 @idToDelete = {{createItemToDelete.response.body.data.id}}
 
-DELETE http://localhost:3000/api/characters/{{idToDelete}} HTTP/1.1
+DELETE http://localhost:3000/api/items/{{idToDelete}} HTTP/1.1
 
 
 ### PATCH a item
@@ -98,8 +98,8 @@ Content-Type: application/json
 
 {
     // foto?
-    "precio": 25,
-    "cantVendidos": 100,
+    "price": 25,
+    "number_sold": 100,
     "stock": 20
 }
 

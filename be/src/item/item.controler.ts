@@ -25,8 +25,8 @@ const storage = multer.diskStorage({
   }
 });
 
-let cantMaxFotos = 10;
-const imagenProducto = multer({ storage }).array('Fotos', cantMaxFotos); // 'Fotos' es el nombre del campo en el formulario
+let cantMaxPhotos = 10;
+const imagenProducto = multer({ storage }).array('photos', cantMaxPhotos); // 'Fotos' es el nombre del campo en el formulario
 
 // Definir la función de carga de imágenes
 async function cargaImagenes(req: express.Request, res: express.Response) {
@@ -61,19 +61,19 @@ const em = orm.em;
 
 function sanitizeItemInput(req: Request, res: Response, next: NextFunction) {
   req.body.sanitizedInput = {
-    nombre: req.body.nombre,
-    categoria: req.body.categoria,
-    fotos: req.body.fotos,
-    descripcion: req.body.descripcion,
-    precio: req.body.precio,
-    marca: req.body.marca,
-    cant_vendidos: req.body.cant_vendidos,
-    estado: req.body.estado,
-    stock: req.body.stock
-    //fechaDeAlta: req.body.fechaDeAlta,
-    //fechaDeActualizacion: req.body.fechaDeActualizacion,
-    //aReservar: req.body.aReservar,
-    //cantidadAReservar: req.body.cantidadAReservar,
+    name: req.body.name,
+    category: req.body.category,
+    photos: req.body.photos,
+    description: req.body.description,
+    price: req.body.price,
+    brand: req.body.brand,
+    number_sold: req.body.number_sold,
+    state: req.body.state,
+    stock: req.body.stock,
+    /* registration_date: req.body.registration_date,
+    update_date: req.body.update_date,
+    to_reserve: req.body.to_reserve,
+    quantity_to_reserve: req.body.quantity_to_reserve */
   };
 
   Object.keys(req.body.sanitizedInput).forEach((key) => {
@@ -86,19 +86,19 @@ function sanitizeItemInput(req: Request, res: Response, next: NextFunction) {
 
 async function add(req: Request, res: Response) {
   try {
-    /* const { nombre, categoria, precio, marca, stock } = req.body.sanitizedInput;
-    //  descripcion, estado, cant_vendidos ?
+    /* const { name, category, price, brand, stock } = req.body.sanitizedInput;
+    //  description, state, number_sold ?
     // Validaciones para asegurarse de que los atributos no sean nulos
-    if (!nombre) {
+    if (!name) {
       return res.status(400).json({ message: 'El nombre es requerido' });
     }
-    if (!categoria) {
+    if (!category) {
       return res.status(400).json({ message: 'La categoría es requerida' });
     }
-    if (precio === undefined || precio === null) {
+    if (price === undefined || price === null) {
       return res.status(400).json({ message: 'El precio es requerido' });
     }
-    if (!marca) {
+    if (!brand) {
       return res.status(400).json({ message: 'La marca es requerida' });
     }
     if (stock === undefined || stock === null) {
@@ -106,10 +106,10 @@ async function add(req: Request, res: Response) {
     }
 
     // Obtener las rutas de todas las imágenes cargadas
-    const fotos = [];
+    const photos = [];
     if (Array.isArray(req.files)) {
       for (let i = 0; i < req.files.length; i++) {
-        fotos.push(req.files[i].path);
+        photos.push(req.files[i].path);
       }
     } else {
       console.error('req.files no es un arreglo');
@@ -117,9 +117,9 @@ async function add(req: Request, res: Response) {
     // Crear un nuevo item utilizando los datos sanitizados del cuerpo de la solicitud
     const itemData = {
       ...req.body.sanitizedInput,
-      fotos // Asignar la ruta de la imagen al item
-      // aReservar: false,
-      // cantidadAReservar: 0,
+      photos // Asignar la ruta de la imagen al item
+      // to_reserve: false,
+      // quantity_to_reserve: 0,
     }; */
 
     const item = em.create(Item, req.body.sanitizedInput); //anteriormente itemData
@@ -138,7 +138,7 @@ async function searchItemsByText(req: Request, res: Response) {
 
   try {
     const items = await em.find(Item, {
-      $or: [{ nombre: { $like: `%${query}%` } }, { descripcion: { $like: `%${query}%` } }, { marca: { $like: `%${query}%` } }]
+      $or: [{ name: { $like: `%${query}%` } }, { description: { $like: `%${query}%` } }, { brand: { $like: `%${query}%` } }]
     }); // Buscar por nombre, descripcion y marca
     res.status(200).json({ message: 'Items encontrados', data: items });
   } catch (error: any) {
@@ -148,10 +148,10 @@ async function searchItemsByText(req: Request, res: Response) {
 
 // Función para obtener items por categoría
 async function findItemsByCategory(req: Request, res: Response) {
-  const categoriaId = Number.parseInt(req.params.id); // Obtener ID de categoría
+  const categoryName = req.params.categoryName; // Obtener nombre de categoría
 
   try {
-    const items = await em.find(Item, { categoria: categoriaId }); // Buscar por categoría
+    const items = await em.find(Item, { category: { name: categoryName } }); // Buscar por categoría
     res.status(200).json({ message: 'Items encontrados en la categoría', data: items });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
@@ -160,7 +160,7 @@ async function findItemsByCategory(req: Request, res: Response) {
 
 async function findAll(req: Request, res: Response) {
   try {
-    const items = await em.find(Item, {}, { populate: ['categoria'] });
+    const items = await em.find(Item, {}, { populate: ['category'] });
     res.status(200).json({ message: 'Todos los Items fueron encontrados', data: items });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
@@ -170,7 +170,7 @@ async function findAll(req: Request, res: Response) {
 async function findOne(req: Request, res: Response) {
   try {
     const id = Number.parseInt(req.params.id);
-    const item = await em.findOneOrFail(Item, { id }, { populate: ['categoria'] });
+    const item = await em.findOneOrFail(Item, { id }, { populate: ['category'] });
     res.status(200).json({ message: 'Item encontrado', data: item });
   } catch (error: any) {
     res.status(500).json({ message: error.message });

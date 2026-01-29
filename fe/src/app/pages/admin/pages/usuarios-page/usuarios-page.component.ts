@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { ApiAdministradorService } from '@services/api-administrador.service';
+import { ApiAdministradorService } from '@services/api-admin.service';
 import { IApiAdmin } from '@models/admin.model';
 import { CommonModule } from '@angular/common';
 import {

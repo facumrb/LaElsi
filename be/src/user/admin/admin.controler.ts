@@ -1,20 +1,20 @@
 import { Request, Response, NextFunction } from 'express';
-import { Cliente } from './cliente.entity.js';
+import { Admin } from './admin.entity.js';
 import { orm } from '../../shared/db/orm.js';
 // import bcrypt from 'bcryptjs';
 // Crear endpoint, verificar credencial y manejar respuesta.
 
 const em = orm.em;
 
-function sanitizeClienteInput(req: Request, res: Response, next: NextFunction) {
+function sanitizeAdminInput(req: Request, res: Response, next: NextFunction) {
   req.body.sanitizedInput = {
-    // foto: req.body.foto,
-    nombre: req.body.nombre,
-    apellido: req.body.apellido,
-    telefono: req.body.telefono,
-    // direccion: req.body.direccion,
-    // fechaDeAlta: req.body.fechaDeAlta,
-    usuario: req.body.usuario,
+    // photo: req.body.photo,
+    name: req.body.name,
+    last_name: req.body.last_name,
+    phone: req.body.phone,
+    // address: req.body.address,
+    // registration_date: req.body.registration_date,
+    user: req.body.user,
     password: req.body.password,
     email: req.body.email
   };
@@ -28,21 +28,24 @@ function sanitizeClienteInput(req: Request, res: Response, next: NextFunction) {
   next();
 }
 
-// Obtener información de cuenta del cliente
+// Obtener información de cuenta del administrador
 async function getAccountInfo(req: Request, res: Response) {
   try {
     const id = Number.parseInt(req.params.id);
-    const cliente = await em.findOneOrFail(Cliente, id);
+    const admin = await em.findOneOrFail(Admin, id);
     // Filtrar los datos que se enviarán al cliente
     const accountInfo = {
-      // foto: cliente.foto,
-      id: cliente.id,
-      nombre: cliente.nombre,
-      apellido: cliente.apellido,
-      telefono: cliente.telefono,
-      usuario: cliente.usuario,
-      email: cliente.email
-      // password: cliente.password, // Considera no enviar la contraseña en la respuesta
+      // photo: admin.photo,
+      id: admin.id,
+      name: admin.name,
+      last_name: admin.last_name,
+      phone: admin.phone,
+      // address: admin.address,
+      // registration_date: admin.registration_date,
+      user: admin.user,
+      password: admin.password,
+      email: admin.email
+      // password: admin.password, // Considera no enviar la contraseña en la respuesta
     };
 
     res.status(200).json({ message: 'Información de cuenta obtenida', data: accountInfo });
@@ -54,8 +57,8 @@ async function getAccountInfo(req: Request, res: Response) {
 async function findOne(req: Request, res: Response) {
   try {
     const id = Number.parseInt(req.params.id);
-    const cliente = await em.findOneOrFail(Cliente, id);
-    res.status(200).json({ message: 'Cliente encontrado', data: cliente });
+    const admin = await em.findOneOrFail(Admin, id);
+    res.status(200).json({ message: 'Administrador encontrado', data: admin });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
@@ -64,7 +67,7 @@ async function findOne(req: Request, res: Response) {
 //Agregar Políticas de Contraseña y Autenticación y Tokens
 
 async function login(req: Request, res: Response) {
-  const { usuario, password } = req.body;
+  const { user, password } = req.body;
 
   // Validaciones para asegurarse de que el usuario y la contraseña fueron ingresados
   /*if (!usuario) {
@@ -75,17 +78,17 @@ async function login(req: Request, res: Response) {
   }*/
 
   try {
-    // Buscar el cliente por usuario y contraseña
-    const cliente = await em.findOneOrFail(Cliente, { usuario, password });
+    // Buscar el administrador por usuario y contraseña
+    const admin = await em.findOneOrFail(Admin, { user, password });
 
-    if (!cliente) {
+    if (!admin) {
       return res.status(401).json({ message: 'Usuario o contraseña incorrecta' });
     }
     // Este enfoque es incorrecto porque no se deben almacenar contraseñas en texto plano en la base de datos. Las contraseñas deberían ser almacenadas en forma hasheada por razones de seguridad.
     // En el futuro generar un token de autenticación
 
     /* Comparar la contraseña proporcionada con la contraseña hasheada
-    const passwordValida = await bcrypt.compare(password, cliente.password);
+    const passwordValida = await bcrypt.compare(password, administrador.password);
 
     if (!passwordValida) {
       return res.status(401).json({ message: 'Usuario o contraseña incorrecta' });
@@ -93,14 +96,14 @@ async function login(req: Request, res: Response) {
     */
 
     const accountInfo = {
-      // foto: cliente.foto,
-      id: cliente.id, // Obtengo el id de Cliente porque luego es el que uso para acceder al cliente mediante otras funciones
-      nombre: cliente.nombre,
-      apellido: cliente.apellido,
-      telefono: cliente.telefono,
-      usuario: cliente.usuario,
-      email: cliente.email
-      // password: cliente.password, // Considera no enviar la contraseña en la respuesta
+      // foto: admin.foto,
+      id: admin.id, // Obtengo el id de Admin porque luego es el que uso para acceder al administrador mediante otras funciones
+      name: admin.name,
+      last_name: admin.last_name,
+      phone: admin.phone,
+      user: admin.user,
+      email: admin.email
+      // password: admin.password, // Considera no enviar la contraseña en la respuesta
     };
 
     // Si todo es correcto, puedes devolver algún tipo de token o mensaje
@@ -119,8 +122,8 @@ async function login(req: Request, res: Response) {
 
 async function findAll(req: Request, res: Response) {
   try {
-    const clientes = await em.find(Cliente, {});
-    res.status(200).json({ message: 'Todos los Clientes fueron encontrados', data: clientes });
+    const admins = await em.find(Admin, {});
+    res.status(200).json({ message: 'Todos los Administradores fueron encontrados', data: admins });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
@@ -128,29 +131,29 @@ async function findAll(req: Request, res: Response) {
 
 async function add(req: Request, res: Response) {
   try {
-    const cliente = em.create(Cliente, req.body.sanitizedInput);
+    const admin = em.create(Admin, req.body.sanitizedInput);
     /* Si la contraseña se está creando, hashearla
     if (req.body.sanitizedInput.password) {
-      cliente.password = await bcrypt.hash(req.body.sanitizedInput.password, 10);
+      admin.password = await bcrypt.hash(req.body.sanitizedInput.password, 10);
     }
     */
     await em.flush();
-    res.status(201).json({ message: 'Cliente creado', data: cliente });
+    res.status(201).json({ message: 'Administrador creado', data: admin });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
 }
 
-// Actualizar información de cuenta del cliente
+// Actualizar información de cuenta del administrador
 async function update(req: Request, res: Response) {
   try {
     const id = Number.parseInt(req.params.id);
-    const clienteToUpdate = await em.getReference(Cliente, id);
-    em.assign(clienteToUpdate, req.body.sanitizedInput);
+    const adminToUpdate = await em.getReference(Admin, id);
+    em.assign(adminToUpdate, req.body.sanitizedInput);
 
     /* Si la contraseña se está actualizando, hashearla
     if (req.body.sanitizedInput.password) {
-      clienteToUpdate.password = await bcrypt.hash(req.body.sanitizedInput.password, 10);
+      adminToUpdate.password = await bcrypt.hash(req.body.sanitizedInput.password, 10);
     }
     */
 
@@ -164,16 +167,16 @@ async function update(req: Request, res: Response) {
 async function remove(req: Request, res: Response) {
   try {
     const id = Number.parseInt(req.params.id);
-    const cliente = em.findOneOrFail(Cliente, { id });
-    em.remove(cliente);
+    const admin = em.findOneOrFail(Admin, { id });
+    em.remove(admin);
     await em.flush();
-    res.status(200).send({ message: 'Cliente eliminado' });
+    res.status(200).send({ message: 'Administrador eliminado' });
   } catch (error: any) {
     if (error.name === 'NotFoundError') {
-      return res.status(404).json({ message: 'El cliente no existe' });
+      return res.status(404).json({ message: 'El administrador no existe' });
     }
     res.status(500).json({ message: error.message });
   }
 }
 
-export { login, sanitizeClienteInput, findAll, findOne, add, update, remove, getAccountInfo };
+export { login, sanitizeAdminInput, findAll, findOne, add, update, remove, getAccountInfo };

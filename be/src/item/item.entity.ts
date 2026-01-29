@@ -1,45 +1,48 @@
-import { Entity, Property, ManyToOne, Rel } from '@mikro-orm/core';
+import { PrimaryKey, Entity, Property, ManyToOne, Rel } from '@mikro-orm/core';
 import { BaseEntity } from '../shared/db/baseEntity.entity.js';
-import { Categoria } from '../categoria/categoria.entity.js';
+import { Category } from '../category/category.entity.js';
 
 @Entity()
 export class Item extends BaseEntity {
+  @PrimaryKey()
+  id!: number;
+
   @Property({ nullable: false, unique: true })
-  nombre!: string;
+  name!: string;
 
   @Property({ type: 'text', nullable: false })
-  descripcion!: string;
+  description!: string;
 
   @Property({ nullable: false })
-  precio!: number;
+  price!: number;
 
   @Property({ nullable: false })
-  marca!: string;
+  brand!: string;
 
   @Property({ nullable: false })
-  cant_vendidos!: number;
+  number_sold!: number;
 
   @Property({ nullable: false })
-  estado!: string; // Activo o Inactivo
+  state!: string; // Activo o Inactivo
 
   @Property({ nullable: false })
   stock!: number;
 
   @Property({ nullable: true })
-  fotos?: string[]; // Array de rutas de imágenes
+  photos?: string[]; // Array de rutas de imágenes
 
-  @ManyToOne(() => Categoria, { nullable: false })
-  categoria!: Rel<Categoria>;
+  @ManyToOne(() => Category, { nullable: false })
+  category!: Rel<Category>;
 }
 
 // @Property({ nullable: false })
-// fechaDeAlta!: date?;
+// registration_date?: Date;
 
 // @Property({ nullable: false })
-//fechaDeActualizacion!: date?;
+// update_date?: Date;
 
 // @Property({ nullable: false })
-// aReservar!: boolean;
+// to_reserve!: boolean;
 
 // @Property({ nullable: false })
-// cantidadAReservar!: number;
+// quantity_to_reserve!: number;

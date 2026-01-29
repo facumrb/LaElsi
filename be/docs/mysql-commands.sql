@@ -1,11 +1,10 @@
 CREATE DATABASE IF NOT EXISTS laelsi;
 
-CREATE USER IF NOT EXISTS administrador@'%' IDENTIFIED BY 'administrador';
-GRANT ALL ON laelsi.* TO administrador@'%';
+CREATE USER IF NOT EXISTS admin@'%' IDENTIFIED BY 'admin';
+GRANT ALL ON laelsi.* TO admin@'%';
 
 /*
-
-INSERT INTO administrador (nombre, apellido, password, email, telefono, usuario)
+INSERT INTO admin (nombre, apellido, password, email, telefono, usuario)
 VALUES 
 ('Cesar', 'Ramírez', '9dejulio2325', 'tintapapelymusica@gmail.com', '3415076254', 'cramirez'),
 ('María', 'Gómez', 'securePass456', 'maria.gomez@example.com', '987654321', 'mgomez'),

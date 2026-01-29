@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ApiAdministradorService } from '@services/api-administrador.service';
+import { ApiAdministradorService } from '@services/api-admin.service';
 import { CommonModule } from '@angular/common';
 import { IApiAccountInfo } from '@models/accountInfo.model';
 

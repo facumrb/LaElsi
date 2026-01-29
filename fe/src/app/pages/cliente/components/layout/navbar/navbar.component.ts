@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { IApiCategoria } from '@models/categoria.model';
-import { ApiCategoriaService } from 'src/app/services/api-categoria.service';
+import { ApiCategoriaService } from '@services/api-category.service';
 
 @Component({
   selector: 'app-navbar',

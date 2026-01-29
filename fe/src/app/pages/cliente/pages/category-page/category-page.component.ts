@@ -1,7 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ApiItemService } from '@services/api-item.service';
-import { ApiCategoriaService } from '@services/api-categoria.service';
+import { ApiCategoriaService } from '@services/api-category.service';
 import { ItemCardComponent } from '@cliente/components/item-card/item-card.component';
 import { IApiCategoria } from '@models/categoria.model';
 import { IApiItem } from '@models/item.model';

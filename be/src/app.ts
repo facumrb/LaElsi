@@ -1,9 +1,9 @@
 import 'reflect-metadata';
 import express from 'express';
-import { administradorRouter } from './usuario/administrador/administrador.routes.js';
-import { clienteRouter } from './usuario/cliente/cliente.routes.js';
-import { categoriaRouter } from './categoria/categoria.routes.js';
-import { itemRouter } from './producto/item.routes.js';
+import { adminRouter } from './user/admin/admin.routes.js';
+import { clientRouter } from './user/client/client.routes.js';
+import { categoryRouter } from './category/category.routes.js';
+import { itemRouter } from './item/item.routes.js';
 // import { uploadDir } from './producto/item.controler.js';
 import { orm, syncSchema } from './shared/db/orm.js';
 import { RequestContext } from '@mikro-orm/core';
@@ -19,10 +19,10 @@ app.use((req, res, next) => {
 });
 //antes de las rutas y middlewares de negocio
 
-app.use('/api/categorias', categoriaRouter);
+app.use('/api/categories', categoryRouter);
 app.use('/api/items', itemRouter);
-app.use('/api/administradores', administradorRouter);
-app.use('/api/clientes', clienteRouter);
+app.use('/api/admins', adminRouter);
+app.use('/api/clients', clientRouter);
 // Ruta para ver imágenes
 /* app.use('/api/items/imagenesProductos', express.static(uploadDir));
  */

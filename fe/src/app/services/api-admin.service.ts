@@ -8,9 +8,9 @@ import { environment } from 'src/environments/environment';
 @Injectable({
   providedIn: 'root',
 })
-export class ApiAdministradorService {
+export class ApiAdminService {
   private _http = inject(HttpClient);
-  private readonly apiUrl = `${environment.baseUrl}/administradores`;
+  private readonly apiUrl = `${environment.baseUrl}/admins`;
 
   getAllAdmins(): Observable<IApiAdmin[]> {
     return this._http

@@ -10,7 +10,7 @@ import {
 } from '@angular/forms';
 import { ApiItemService } from '@services/api-item.service';
 import { IApiCategoria } from '@models/categoria.model';
-import { ApiCategoriaService } from '@services/api-categoria.service';
+import { ApiCategoriaService } from '@services/api-category.service';
 
 @Component({
   selector: 'app-productos-page',

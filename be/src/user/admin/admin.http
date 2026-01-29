@@ -1,0 +1,36 @@
+### GET ALL Administradores
+GET http://localhost:3000/api/admins
+
+### POST Crear un Administrador
+# @name createAdmin
+POST http://localhost:3000/api/admins
+Content-Type: application/json
+
+{
+  "name": "Cesar",
+  "last_name": "Ramírez",
+  "phone": "3415076254",
+  "user": "cesar_ramirez",
+  "password": "9deJulio2325",
+  "email": "tintapapelymusica@gmail.com"
+}
+
+### ID del Administrador creado
+@id = {{createAdmin.response.body.data.id}}
+
+### GET Un Administrador por ID
+GET http://localhost:3000/api/admins/{{id}}
+
+### PATCH Actualizar un Administrador
+PATCH http://localhost:3000/api/admins/{{id}}
+Content-Type: application/json
+
+{
+  "name": "Cesar Actualizado",
+  "last_name": "Ramírez Actualizado",
+  "phone": "123456789",
+  "email": "nuevoemail@gmail.com"
+}
+
+### DELETE Eliminar un Administrador
+DELETE http://localhost:3000/api/admins/{{id}}

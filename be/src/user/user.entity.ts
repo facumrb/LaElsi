@@ -1,18 +1,19 @@
 import { BaseEntity } from '../shared/db/baseEntity.entity.js';
-import { Property } from '@mikro-orm/core';
+import { Property, Entity } from '@mikro-orm/core';
 
-export abstract class UsuarioBaseEntity extends BaseEntity {
+@Entity({ abstract: true })
+export abstract class UserBaseEntity extends BaseEntity {
   // @Property({ type: 'string', nullable: true })
   // foto?: string;
 
   @Property({ type: 'string', nullable: false })
-  nombre!: string;
+  name!: string;
 
   @Property({ type: 'string', nullable: false })
-  apellido!: string;
+  last_name!: string;
 
   @Property({ type: 'string', nullable: false }) // Capaz si permite nulos
-  telefono!: string;
+  phone!: string;
 
   // @Property({ type: 'string', nullable: true })
   // direccion?: string;
@@ -21,7 +22,7 @@ export abstract class UsuarioBaseEntity extends BaseEntity {
   // fechaDeAlta!: Date;
 
   @Property({ type: 'string', nullable: false, unique: true })
-  usuario!: string;
+  user!: string;
 
   @Property({ hidden: true, type: 'string', nullable: false })
   password!: string;
