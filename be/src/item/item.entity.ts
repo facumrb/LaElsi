@@ -1,6 +1,6 @@
-import { PrimaryKey, Entity, Property, ManyToOne, Rel } from '@mikro-orm/core';
-import { BaseEntity } from '../shared/db/baseEntity.entity.js';
-import { Category } from '../category/category.entity.js';
+import { PrimaryKey, Entity, Property, ManyToOne, Rel } from "@mikro-orm/core";
+import { BaseEntity } from "../shared/db/baseEntity.entity.js";
+import { Category } from "../category/category.entity.js";
 
 @Entity()
 export class Item extends BaseEntity {
@@ -10,7 +10,7 @@ export class Item extends BaseEntity {
   @Property({ nullable: false, unique: true })
   name!: string;
 
-  @Property({ type: 'text', nullable: false })
+  @Property({ type: "text", nullable: false })
   description!: string;
 
   @Property({ nullable: false })

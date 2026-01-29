@@ -1,254 +1,125 @@
-<div
-  class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6"
->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
   <h2 class="text-2xl font-bold text-[#3d4494]">Gestión de Categorías</h2>
 
   <div class="flex flex-col md:flex-row gap-3 w-full md:w-auto">
     <div class="relative w-full md:w-60">
-      <div
-        class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-          class="size-5 text-gray-400"
-        >
-          <path
-            fill-rule="evenodd"
+      <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5 text-gray-400">
+          <path fill-rule="evenodd"
             d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z"
-            clip-rule="evenodd"
-          />
+            clip-rule="evenodd" />
         </svg>
       </div>
-      <input
-        type="text"
-        [ngModel]="searchQuery()"
-        (ngModelChange)="searchQuery.set($event)"
-        placeholder="Buscar..."
-        class="block w-full rounded-lg border-0 py-2 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#3d4494] sm:text-sm sm:leading-6"
-      />
+      <input type="text" [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)" placeholder="Buscar..."
+        class="block w-full rounded-lg border-0 py-2 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#3d4494] sm:text-sm sm:leading-6" />
       @if (searchQuery()) {
-        <button
-          (click)="searchQuery.set('')"
-          class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 cursor-pointer"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            class="size-5"
-          >
-            <path
-              d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"
-            />
-          </svg>
-        </button>
+      <button (click)="searchQuery.set('')"
+        class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 cursor-pointer">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
+          <path
+            d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
+        </svg>
+      </button>
       }
     </div>
 
     <div class="flex flex-row gap-2 w-full md:w-auto">
       <div class="relative flex-1 md:flex-none">
-        <button
-          (click)="toggleMenu()"
+        <button (click)="toggleMenu()"
           class="flex w-full md:w-auto justify-center items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-all"
-          [class.ring-2]="hayFiltrosActivos()"
-          [class.ring-[#3d4494]]="hayFiltrosActivos()"
-          [class.bg-indigo-50]="hayFiltrosActivos()"
-        >
+          [class.ring-2]="hayFiltrosActivos()" [class.ring-[#3d4494]]="hayFiltrosActivos()"
+          [class.bg-indigo-50]="hayFiltrosActivos()">
           @if (hayFiltrosActivos()) {
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              class="size-5 text-[#3d4494]"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M3.792 2.938A49.069 49.069 0 0 1 12 2.25c2.797 0 5.432.232 7.956.688a1.875 1.875 0 0 1 1.543 1.835v1.035c0 .417-.162.815-.45 1.107l-6 6.033a1.875 1.875 0 0 0-.549 1.326v5.292c0 .262-.12.513-.327.683l-1.5 1.25a.75.75 0 0 1-1.22-.58v-6.645c0-.498-.198-.976-.55-1.327l-6-6.033a1.566 1.566 0 0 1-.45-1.107V4.773a1.875 1.875 0 0 1 1.543-1.835Z"
-                clip-rule="evenodd"
-              />
-            </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5 text-[#3d4494]">
+            <path fill-rule="evenodd"
+              d="M3.792 2.938A49.069 49.069 0 0 1 12 2.25c2.797 0 5.432.232 7.956.688a1.875 1.875 0 0 1 1.543 1.835v1.035c0 .417-.162.815-.45 1.107l-6 6.033a1.875 1.875 0 0 0-.549 1.326v5.292c0 .262-.12.513-.327.683l-1.5 1.25a.75.75 0 0 1-1.22-.58v-6.645c0-.498-.198-.976-.55-1.327l-6-6.033a1.566 1.566 0 0 1-.45-1.107V4.773a1.875 1.875 0 0 1 1.543-1.835Z"
+              clip-rule="evenodd" />
+          </svg>
           } @else {
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="size-5"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.819V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z"
-              />
-            </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor" class="size-5">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.819V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z" />
+          </svg>
           }
           Filtros
         </button>
 
         @if (showMenu) {
-          <div
-            class="absolute left-0 md:left-auto md:right-0 mt-2 w-72 max-w-[90vw] origin-top-left md:origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 z-50"
-          >
-            <div class="p-4 space-y-4">
-              <div>
-                <h3
-                  class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2"
-                >
-                  Por Estado
-                </h3>
-                <div class="space-y-2">
-                  <label
-                    class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded"
-                  >
-                    <input
-                      type="radio"
-                      name="estado"
-                      [checked]="filterEstado() === 'Todos'"
-                      (change)="filterEstado.set('Todos')"
-                      class="text-[#3d4494] focus:ring-[#3d4494]"
-                    />
-                    <span class="text-sm text-gray-700">Todos</span>
-                  </label>
-                  <label
-                    class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded"
-                  >
-                    <input
-                      type="radio"
-                      name="estado"
-                      [checked]="filterEstado() === 'Activo'"
-                      (change)="filterEstado.set('Activo')"
-                      class="text-[#3d4494] focus:ring-[#3d4494]"
-                    />
-                    <span class="text-sm text-gray-700">Activos</span>
-                  </label>
-                  <label
-                    class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded"
-                  >
-                    <input
-                      type="radio"
-                      name="estado"
-                      [checked]="filterEstado() === 'Inactivo'"
-                      (change)="filterEstado.set('Inactivo')"
-                      class="text-[#3d4494] focus:ring-[#3d4494]"
-                    />
-                    <span class="text-sm text-gray-700">Inactivos</span>
-                  </label>
-                </div>
+        <div
+          class="absolute left-0 md:left-auto md:right-0 mt-2 w-72 max-w-[90vw] origin-top-left md:origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 z-50">
+          <div class="p-4 space-y-4">
+            <div>
+              <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                Por Estado
+              </h3>
+              <div class="space-y-2">
+                <label class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
+                  <input type="radio" name="estado" [checked]="filterEstado() === 'Todos'"
+                    (change)="filterEstado.set('Todos')" class="text-[#3d4494] focus:ring-[#3d4494]" />
+                  <span class="text-sm text-gray-700">Todos</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
+                  <input type="radio" name="estado" [checked]="filterEstado() === 'Activo'"
+                    (change)="filterEstado.set('Activo')" class="text-[#3d4494] focus:ring-[#3d4494]" />
+                  <span class="text-sm text-gray-700">Activos</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
+                  <input type="radio" name="estado" [checked]="filterEstado() === 'Inactivo'"
+                    (change)="filterEstado.set('Inactivo')" class="text-[#3d4494] focus:ring-[#3d4494]" />
+                  <span class="text-sm text-gray-700">Inactivos</span>
+                </label>
               </div>
-              <hr class="border-gray-100" />
-              <div>
-                <h3
-                  class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2"
-                >
-                  Por Inventario
-                </h3>
-                <div class="space-y-2">
-                  <label
-                    class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded"
-                  >
-                    <input
-                      type="radio"
-                      name="inv"
-                      [checked]="filterInventario() === 'Todos'"
-                      (change)="filterInventario.set('Todos')"
-                      class="text-[#3d4494] focus:ring-[#3d4494]"
-                    />
-                    <span class="text-sm text-gray-700">Cualquiera</span>
-                  </label>
-                  <label
-                    class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded"
-                  >
-                    <input
-                      type="radio"
-                      name="inv"
-                      [checked]="filterInventario() === 'ConProductos'"
-                      (change)="filterInventario.set('ConProductos')"
-                      class="text-[#3d4494] focus:ring-[#3d4494]"
-                    />
-                    <span class="text-sm text-gray-700"
-                      >Solo con productos</span
-                    >
-                  </label>
-                  <label
-                    class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded"
-                  >
-                    <input
-                      type="radio"
-                      name="inv"
-                      [checked]="filterInventario() === 'SinProductos'"
-                      (change)="filterInventario.set('SinProductos')"
-                      class="text-[#3d4494] focus:ring-[#3d4494]"
-                    />
-                    <span class="text-sm text-gray-700"
-                      >Vacíos (0 productos)</span
-                    >
-                  </label>
-                  <div class="border-t border-gray-100 my-1"></div>
-                  <label
-                    class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded"
-                  >
-                    <input
-                      type="radio"
-                      name="inv"
-                      [checked]="filterInventario() === 'MasProductos'"
-                      (change)="filterInventario.set('MasProductos')"
-                      class="text-[#3d4494] focus:ring-[#3d4494]"
-                    />
-                    <span class="text-sm text-gray-700"
-                      >Mayor cantidad (Desc)</span
-                    >
-                  </label>
-                  <label
-                    class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded"
-                  >
-                    <input
-                      type="radio"
-                      name="inv"
-                      [checked]="filterInventario() === 'MenosProductos'"
-                      (change)="filterInventario.set('MenosProductos')"
-                      class="text-[#3d4494] focus:ring-[#3d4494]"
-                    />
-                    <span class="text-sm text-gray-700"
-                      >Menor cantidad (Asc)</span
-                    >
-                  </label>
-                </div>
-              </div>
-              <button
-                (click)="limpiar()"
-                class="w-full mt-2 px-3 py-2 text-xs font-medium text-[#3d4494] bg-indigo-50 rounded hover:bg-indigo-100 transition-colors"
-              >
-                Limpiar Filtros
-              </button>
             </div>
+            <hr class="border-gray-100" />
+            <div>
+              <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                Filtrar por Productos
+              </h3>
+              <div class="space-y-2">
+                <label class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
+                  <input type="radio" name="inv" [checked]="filterInventario() === 'Todos'"
+                    (change)="filterInventario.set('Todos')" class="text-[#3d4494] focus:ring-[#3d4494]" />
+                  <span class="text-sm text-gray-700">Todos</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
+                  <input type="radio" name="inv" [checked]="filterInventario() === 'ConProductos'"
+                    (change)="filterInventario.set('ConProductos')" class="text-[#3d4494] focus:ring-[#3d4494]" />
+                  <span class="text-sm text-gray-700">Con existencias</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
+                  <input type="radio" name="inv" [checked]="filterInventario() === 'SinProductos'"
+                    (change)="filterInventario.set('SinProductos')" class="text-[#3d4494] focus:ring-[#3d4494]" />
+                  <span class="text-sm text-gray-700">Sin existencias (0 productos)</span>
+                </label>
+                <div class="border-t border-gray-100 my-1"></div>
+                <label class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
+                  <input type="radio" name="inv" [checked]="filterInventario() === 'MasProductos'"
+                    (change)="filterInventario.set('MasProductos')" class="text-[#3d4494] focus:ring-[#3d4494]" />
+                  <span class="text-sm text-gray-700">Mayor cantidad</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
+                  <input type="radio" name="inv" [checked]="filterInventario() === 'MenosProductos'"
+                    (change)="filterInventario.set('MenosProductos')" class="text-[#3d4494] focus:ring-[#3d4494]" />
+                  <span class="text-sm text-gray-700">Menor cantidad</span>
+                </label>
+              </div>
+            </div>
+            <button (click)="limpiar()"
+              class="w-full mt-2 px-3 py-2 text-xs font-medium text-[#3d4494] bg-indigo-50 rounded hover:bg-indigo-100 transition-colors">
+              Limpiar Filtros
+            </button>
           </div>
-          <div
-            (click)="showMenu = false"
-            class="fixed inset-0 z-40 cursor-default"
-          ></div>
+        </div>
+        <div (click)="showMenu = false" class="fixed inset-0 z-40 cursor-default"></div>
         }
       </div>
 
-      <button
-        (click)="onAdd.emit()"
-        class="flex-1 md:flex-none bg-[#3d4494] text-white px-4 py-2 rounded-lg hover:bg-[#2a2f63] transition-colors flex justify-center items-center gap-2 shadow-sm whitespace-nowrap"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="1.5"
-          stroke="currentColor"
-          class="size-5"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M12 4.5v15m7.5-7.5h-15"
-          />
+      <button (click)="onAdd.emit()"
+        class="flex-1 md:flex-none bg-[#3d4494] text-white px-4 py-2 rounded-lg hover:bg-[#2a2f63] transition-colors flex justify-center items-center gap-2 shadow-sm whitespace-nowrap">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="size-5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
         </svg>
         Agregar
         <span class="hidden sm:inline">Categoría</span>
