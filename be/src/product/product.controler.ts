@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import express from 'express';
 import { Product } from './product.entity.js';
 import { orm } from '../shared/db/orm.js';
+import { Photo } from '../photo/photo.entity.js';
 /* import multer from "multer";
 import fs from "node:fs";
 import path from "node:path";
@@ -68,7 +69,6 @@ function sanitizeProductInput(req: Request, res: Response, next: NextFunction) {
     total_sold: req.body.total_sold,
     state: req.body.state,
     stock: req.body.stock,
-    photos: req.body.photos,
     category: req.body.category
     /* registration_date: req.body.registration_date,
     update_date: req.body.update_date,
@@ -86,42 +86,6 @@ function sanitizeProductInput(req: Request, res: Response, next: NextFunction) {
 
 async function add(req: Request, res: Response) {
   try {
-    /* const { name, category, price, brand, stock } = req.body.sanitizedInput;
-    //  description, state, total_sold ?
-    // Validaciones para asegurarse de que los atributos no sean nulos
-    if (!name) {
-      return res.status(400).json({ message: "El nombre es requerido" });
-    }
-    if (!category) {
-      return res.status(400).json({ message: "La categoría es requerida" });
-    }
-    if (price === undefined || price === null) {
-      return res.status(400).json({ message: "El precio es requerido" });
-    }
-    if (!brand) {
-      return res.status(400).json({ message: "La marca es requerida" });
-    }
-    if (stock === undefined || stock === null) {
-      return res.status(400).json({ message: "El stock es requerido" });
-    }
-
-    // Obtener las rutas de todas las imágenes cargadas
-    const photos = [];
-    if (Array.isArray(req.files)) {
-      for (let i = 0; i < req.files.length; i++) {
-        photos.push(req.files[i].path);
-      }
-    } else {
-      console.error("req.files no es un arreglo");
-    }
-    // Crear un nuevo producto utilizando los datos sanitizados del cuerpo de la solicitud
-    const productData = {
-      ...req.body.sanitizedInput,
-      photos // Asignar la ruta de la imagen al product
-      // to_reserve: false,
-      // quantity_to_reserve: 0,
-    }; */
-
     const product = em.create(Product, req.body.sanitizedInput);
     await em.flush();
 
@@ -129,6 +93,47 @@ async function add(req: Request, res: Response) {
   } catch (error: any) {
     console.error('Error al crear el producto:', error);
     res.status(500).json({ message: 'Error al crear el producto: ' + error.message });
+  }
+}
+
+async function uploadPhotos(req: Request, res: Response) {
+  try {
+    const id = Number(req.params.id);
+    const files = req.files as Express.Multer.File[]; // Multer pone los archivos aquí
+
+    // 1. Validaciones
+    if (!id) return res.status(400).json({ message: 'ID de Producto inválido' });
+    if (!files || files.length === 0) {
+      return res.status(400).json({ message: 'No se enviaron imágenes' });
+    }
+
+    // 2. Buscamos el producto al que le vamos a asignar las fotos
+    // Usamos el EntityManager (em)
+    const product = await em.findOne(Product, { id });
+
+    if (!product) {
+      return res.status(404).json({ message: 'El item no existe' });
+    }
+
+    // 3. Recorremos los archivos y creamos entidades Foto
+    for (const file of files) {
+      const photo = new Photo();
+      photo.fileName = file.filename; // Nombre generado (uuid)
+      photo.originalName = file.originalname; // Nombre original
+      photo.mimeType = file.mimetype;
+      photo.product = product;
+      em.persist(photo); // Preparamos para guardar
+    }
+
+    // 4. Guardamos todo en la base de datos
+    await em.flush();
+    return res.status(201).json({
+      message: 'Fotos subidas correctamente',
+      cantidad: files.length
+    });
+  } catch (error: any) {
+    console.error('Error al subir fotos:', error);
+    return res.status(500).json({ message: 'Error interno: ' + error.message });
   }
 }
 
@@ -204,4 +209,4 @@ async function remove(req: Request, res: Response) {
   }
 }
 
-export { sanitizeProductInput, findAll, findOne, add, update, remove, searchProductsByText, findProductsByCategory /* cargaImagenes, imagenProducto, uploadDir */ };
+export { sanitizeProductInput, findAll, findOne, add, uploadPhotos, update, remove, searchProductsByText, findProductsByCategory /* cargaImagenes, imagenProducto, uploadDir */ };

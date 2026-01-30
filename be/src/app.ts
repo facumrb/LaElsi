@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import express from 'express';
+import path from 'path';
 import { adminRouter } from './user/admin/admin.routes.js';
 import { clientRouter } from './user/client/client.routes.js';
 import { categoryRouter } from './category/category.routes.js';
@@ -26,6 +27,7 @@ app.use('/api/clients', clientRouter);
 // Ruta para ver imágenes
 /* app.use('/api/products/imagenesProductos', express.static(uploadDir));
  */
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 app.use((_, res) => {
   return res.status(404).send({ message: 'Recurso no encontrado' });
