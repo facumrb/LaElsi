@@ -18,6 +18,10 @@ coverage/
 # Archivos intermedios de NestJS/TS
 tsconfig.build.tsbuildinfo
 
+# Ignorar subidas de imágenes
+uploads/*
+!uploads/.gitkeep
+
 # --- Frameworks Específicos (Angular, Sass, etc.) ---
 **/.angular/
 .sass-cache/
