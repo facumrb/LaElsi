@@ -7,12 +7,12 @@ POST http://localhost:3000/api/admins
 Content-Type: application/json
 
 {
-  "name": "Cesar",
+  "name": "test",
   "last_name": "Ramírez",
-  "phone": "3415076254",
-  "user": "cesar_ramirez",
-  "password": "9deJulio2325",
-  "email": "tintapapelymusica@gmail.com"
+  "phone": "423423423",
+  "user": "test",
+  "password": "12345",
+  "email": "testing@gmail.com"
 }
 
 ### ID del Administrador creado

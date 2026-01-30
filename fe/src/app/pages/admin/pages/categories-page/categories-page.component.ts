@@ -96,11 +96,12 @@ export class CategoriesPageComponent {
   modalSubmit(formData: any) {
     const currentCat = this.selectedCategory();
     const esEdicion = !!currentCat;
+
+    // Al editar, pasamos currentCat.name para la URL (ID viejo)
+    // y formData DIRECTO como body (datos nuevos).
+
     const request$ = esEdicion
-      ? this._apiService.updateCategory(currentCat.name, {
-          ...currentCat,
-          ...formData,
-        })
+      ? this._apiService.updateCategory(currentCat.name, formData)
       : this._apiService.addCategory(formData);
 
     request$.subscribe({

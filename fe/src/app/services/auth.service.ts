@@ -9,7 +9,7 @@ import { environment } from 'src/environments/environment';
 })
 export class AuthService {
   private _http = inject(HttpClient);
-  private readonly apiUrl = `${environment.baseUrl}/admins`;
+  private readonly apiUrl = `${environment.apiUrl}/admins`;
 
   login(user: string, password: string): Observable<IApiAccountInfo> {
     return this._http

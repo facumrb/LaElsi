@@ -246,38 +246,35 @@
               >
               <input
                 type="text"
-                formControlName="nombre"
+                formControlName="name"
                 class="block w-full rounded-md border p-2.5 text-gray-900 shadow-sm focus:outline-none focus:ring-1 sm:text-sm"
                 [class.border-red-500]="
-                  hasErrors('nombre', 'required') ||
-                  hasErrors('nombre', 'pattern')
+                  hasErrors('name', 'required') || hasErrors('name', 'pattern')
                 "
                 [class.focus:border-red-500]="
-                  hasErrors('nombre', 'required') ||
-                  hasErrors('nombre', 'pattern')
+                  hasErrors('name', 'required') || hasErrors('name', 'pattern')
                 "
                 [class.focus:ring-red-500]="
-                  hasErrors('nombre', 'required') ||
-                  hasErrors('nombre', 'pattern')
+                  hasErrors('name', 'required') || hasErrors('name', 'pattern')
                 "
                 [class.border-gray-300]="
-                  !hasErrors('nombre', 'required') &&
-                  !hasErrors('nombre', 'pattern')
+                  !hasErrors('name', 'required') &&
+                  !hasErrors('name', 'pattern')
                 "
                 [class.focus:border-[#049A8F]]="
-                  !hasErrors('nombre', 'required') &&
-                  !hasErrors('nombre', 'pattern')
+                  !hasErrors('name', 'required') &&
+                  !hasErrors('name', 'pattern')
                 "
                 [class.focus:ring-[#049A8F]]="
-                  !hasErrors('nombre', 'required') &&
-                  !hasErrors('nombre', 'pattern')
+                  !hasErrors('name', 'required') &&
+                  !hasErrors('name', 'pattern')
                 "
               />
               <div class="mt-1 min-h-4 text-xs text-red-600">
-                @if (hasErrors("nombre", "required")) {
+                @if (hasErrors("name", "required")) {
                   <span>Obligatorio.</span>
                 }
-                @if (hasErrors("nombre", "pattern")) {
+                @if (hasErrors("name", "pattern")) {
                   <span>Inválido.</span>
                 }
               </div>
@@ -289,17 +286,17 @@
               >
               <input
                 type="text"
-                formControlName="marca"
+                formControlName="brand"
                 class="block w-full rounded-md border p-2.5 text-gray-900 shadow-sm focus:outline-none focus:ring-1 sm:text-sm"
-                [class.border-red-500]="hasErrors('marca', 'required')"
-                [class.focus:border-red-500]="hasErrors('marca', 'required')"
-                [class.focus:ring-red-500]="hasErrors('marca', 'required')"
-                [class.border-gray-300]="!hasErrors('marca', 'required')"
-                [class.focus:border-[#049A8F]]="!hasErrors('marca', 'required')"
-                [class.focus:ring-[#049A8F]]="!hasErrors('marca', 'required')"
+                [class.border-red-500]="hasErrors('brand', 'required')"
+                [class.focus:border-red-500]="hasErrors('brand', 'required')"
+                [class.focus:ring-red-500]="hasErrors('brand', 'required')"
+                [class.border-gray-300]="!hasErrors('brand', 'required')"
+                [class.focus:border-[#049A8F]]="!hasErrors('brand', 'required')"
+                [class.focus:ring-[#049A8F]]="!hasErrors('brand', 'required')"
               />
               <div class="mt-1 min-h-4 text-xs text-red-600">
-                @if (hasErrors("marca", "required")) {
+                @if (hasErrors("brand", "required")) {
                   <span>Obligatorio.</span>
                 }
               </div>
@@ -310,36 +307,36 @@
                 >Descripción</label
               >
               <textarea
-                formControlName="descripcion"
+                formControlName="description"
                 rows="3"
                 class="block w-full rounded-md border p-2.5 text-gray-900 shadow-sm focus:outline-none focus:ring-1 sm:text-sm"
                 [class.border-red-500]="
-                  hasErrors('descripcion', 'required') ||
-                  hasErrors('descripcion', 'pattern')
+                  hasErrors('description', 'required') ||
+                  hasErrors('description', 'pattern')
                 "
                 [class.focus:border-red-500]="
-                  hasErrors('descripcion', 'required') ||
-                  hasErrors('descripcion', 'pattern')
+                  hasErrors('description', 'required') ||
+                  hasErrors('description', 'pattern')
                 "
                 [class.focus:ring-red-500]="
-                  hasErrors('descripcion', 'required') ||
-                  hasErrors('descripcion', 'pattern')
+                  hasErrors('description', 'required') ||
+                  hasErrors('description', 'pattern')
                 "
                 [class.border-gray-300]="
-                  !hasErrors('descripcion', 'required') &&
-                  !hasErrors('descripcion', 'pattern')
+                  !hasErrors('description', 'required') &&
+                  !hasErrors('description', 'pattern')
                 "
                 [class.focus:border-[#049A8F]]="
-                  !hasErrors('descripcion', 'required') &&
-                  !hasErrors('descripcion', 'pattern')
+                  !hasErrors('description', 'required') &&
+                  !hasErrors('description', 'pattern')
                 "
                 [class.focus:ring-[#049A8F]]="
-                  !hasErrors('descripcion', 'required') &&
-                  !hasErrors('descripcion', 'pattern')
+                  !hasErrors('description', 'required') &&
+                  !hasErrors('description', 'pattern')
                 "
               ></textarea>
               <div class="mt-1 min-h-4 text-xs text-red-600">
-                @if (hasErrors("descripcion", "required")) {
+                @if (hasErrors("description", "required")) {
                   <span>Obligatoria.</span>
                 }
               </div>
@@ -351,38 +348,38 @@
               >
               <input
                 type="text"
-                formControlName="precio"
+                formControlName="price"
                 class="block w-full rounded-md border p-2.5 text-gray-900 shadow-sm focus:outline-none focus:ring-1 sm:text-sm"
                 [class.border-red-500]="
-                  hasErrors('precio', 'required') ||
-                  hasErrors('precio', 'pattern')
+                  hasErrors('price', 'required') ||
+                  hasErrors('price', 'pattern')
                 "
                 [class.focus:border-red-500]="
-                  hasErrors('precio', 'required') ||
-                  hasErrors('precio', 'pattern')
+                  hasErrors('price', 'required') ||
+                  hasErrors('price', 'pattern')
                 "
                 [class.focus:ring-red-500]="
-                  hasErrors('precio', 'required') ||
-                  hasErrors('precio', 'pattern')
+                  hasErrors('price', 'required') ||
+                  hasErrors('price', 'pattern')
                 "
                 [class.border-gray-300]="
-                  !hasErrors('precio', 'required') &&
-                  !hasErrors('precio', 'pattern')
+                  !hasErrors('price', 'required') &&
+                  !hasErrors('price', 'pattern')
                 "
                 [class.focus:border-[#049A8F]]="
-                  !hasErrors('precio', 'required') &&
-                  !hasErrors('precio', 'pattern')
+                  !hasErrors('price', 'required') &&
+                  !hasErrors('price', 'pattern')
                 "
                 [class.focus:ring-[#049A8F]]="
-                  !hasErrors('precio', 'required') &&
-                  !hasErrors('precio', 'pattern')
+                  !hasErrors('price', 'required') &&
+                  !hasErrors('price', 'pattern')
                 "
               />
               <div class="mt-1 min-h-4 text-xs text-red-600">
-                @if (hasErrors("precio", "required")) {
+                @if (hasErrors("price", "required")) {
                   <span>Obligatorio.</span>
                 }
-                @if (hasErrors("precio", "pattern")) {
+                @if (hasErrors("price", "pattern")) {
                   <span>Solo números.</span>
                 }
               </div>
@@ -436,23 +433,21 @@
                 >Estado</label
               >
               <select
-                formControlName="estado"
+                formControlName="state"
                 class="block w-full rounded-md border p-2.5 text-gray-900 shadow-sm focus:outline-none focus:ring-1 sm:text-sm"
-                [class.border-red-500]="hasErrors('estado', 'required')"
-                [class.focus:border-red-500]="hasErrors('estado', 'required')"
-                [class.focus:ring-red-500]="hasErrors('estado', 'required')"
-                [class.border-gray-300]="!hasErrors('estado', 'required')"
-                [class.focus:border-[#049A8F]]="
-                  !hasErrors('estado', 'required')
-                "
-                [class.focus:ring-[#049A8F]]="!hasErrors('estado', 'required')"
+                [class.border-red-500]="hasErrors('state', 'required')"
+                [class.focus:border-red-500]="hasErrors('state', 'required')"
+                [class.focus:ring-red-500]="hasErrors('state', 'required')"
+                [class.border-gray-300]="!hasErrors('state', 'required')"
+                [class.focus:border-[#049A8F]]="!hasErrors('state', 'required')"
+                [class.focus:ring-[#049A8F]]="!hasErrors('state', 'required')"
               >
                 <option value="" disabled selected>Seleccione</option>
                 <option value="Activo">Activo</option>
                 <option value="Inactivo">Inactivo</option>
               </select>
               <div class="mt-1 min-h-4 text-xs text-red-600">
-                @if (hasErrors("estado", "required")) {
+                @if (hasErrors("state", "required")) {
                   <span>Obligatorio.</span>
                 }
               </div>
@@ -464,35 +459,35 @@
               >
               <input
                 type="text"
-                formControlName="cant_vendidos"
+                formControlName="total_sold"
                 class="block w-full rounded-md border p-2.5 text-gray-900 shadow-sm focus:outline-none focus:ring-1 sm:text-sm"
                 [class.border-red-500]="
-                  hasErrors('cant_vendidos', 'required') ||
-                  hasErrors('cant_vendidos', 'pattern')
+                  hasErrors('total_sold', 'required') ||
+                  hasErrors('total_sold', 'pattern')
                 "
                 [class.focus:border-red-500]="
-                  hasErrors('cant_vendidos', 'required') ||
-                  hasErrors('cant_vendidos', 'pattern')
+                  hasErrors('total_sold', 'required') ||
+                  hasErrors('total_sold', 'pattern')
                 "
                 [class.focus:ring-red-500]="
-                  hasErrors('cant_vendidos', 'required') ||
-                  hasErrors('cant_vendidos', 'pattern')
+                  hasErrors('total_sold', 'required') ||
+                  hasErrors('total_sold', 'pattern')
                 "
                 [class.border-gray-300]="
-                  !hasErrors('cant_vendidos', 'required') &&
-                  !hasErrors('cant_vendidos', 'pattern')
+                  !hasErrors('total_sold', 'required') &&
+                  !hasErrors('total_sold', 'pattern')
                 "
                 [class.focus:border-[#049A8F]]="
-                  !hasErrors('cant_vendidos', 'required') &&
-                  !hasErrors('cant_vendidos', 'pattern')
+                  !hasErrors('total_sold', 'required') &&
+                  !hasErrors('total_sold', 'pattern')
                 "
                 [class.focus:ring-[#049A8F]]="
-                  !hasErrors('cant_vendidos', 'required') &&
-                  !hasErrors('cant_vendidos', 'pattern')
+                  !hasErrors('total_sold', 'required') &&
+                  !hasErrors('total_sold', 'pattern')
                 "
               />
               <div class="mt-1 min-h-4 text-xs text-red-600">
-                @if (hasErrors("cant_vendidos", "required")) {
+                @if (hasErrors("total_sold", "required")) {
                   <span>Obligatorio.</span>
                 }
               </div>

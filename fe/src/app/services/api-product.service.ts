@@ -9,7 +9,7 @@ import { environment } from 'src/environments/environment';
 })
 export class ApiProductService {
   private _http = inject(HttpClient);
-  private readonly apiUrl = `${environment.baseUrl}/products`;
+  private readonly apiUrl = `${environment.apiUrl}/products`;
 
   getAllProducts(): Observable<IApiProduct[]> {
     return this._http

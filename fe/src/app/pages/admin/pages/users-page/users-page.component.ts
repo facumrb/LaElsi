@@ -29,21 +29,21 @@ export class UsersPageComponent implements OnInit {
 
   constructor(private formBuilder: FormBuilder) {
     this.formUser = this.formBuilder.group({
-      nombre: [
+      name: [
         '',
         [
           Validators.required,
           Validators.pattern('^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9.,;:?!()_\'"-\\s]*$'),
         ],
       ],
-      apellido: [
+      last_name: [
         '',
         [
           Validators.required,
           Validators.pattern('^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9.,;:?!()_\'"-\\s]*$'),
         ],
       ],
-      telefono: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
+      phone: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
       user: [
         '',
         [

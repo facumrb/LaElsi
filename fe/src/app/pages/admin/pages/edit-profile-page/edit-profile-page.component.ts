@@ -28,14 +28,14 @@ export class EditProfilePageComponent implements OnInit {
 
   constructor(private formBuilder: FormBuilder) {
     this.formEditProfile = this.formBuilder.group({
-      nombre: [
+      name: [
         '',
         [
           Validators.required,
           Validators.pattern('^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9.,;:?!()_\'"-\\s]*$'),
         ],
       ],
-      apellido: [
+      last_name: [
         '',
         [
           Validators.required,
@@ -43,8 +43,8 @@ export class EditProfilePageComponent implements OnInit {
         ],
       ],
 
-      telefono: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
-      usuario: [
+      phone: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
+      user: [
         '',
         [
           Validators.required,
@@ -69,10 +69,10 @@ export class EditProfilePageComponent implements OnInit {
         this.admin = data;
         this.loading = false;
         this.formEditProfile.patchValue({
-          nombre: this.admin.name,
-          apellido: this.admin.last_name,
-          telefono: this.admin.phone,
-          usuario: this.admin.user,
+          name: this.admin.name,
+          last_name: this.admin.last_name,
+          phone: this.admin.phone,
+          user: this.admin.user,
           email: this.admin.email,
         });
       },

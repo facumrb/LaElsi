@@ -1,10 +1,9 @@
 import { MikroORM } from '@mikro-orm/core';
-// import { EntityManager } from '@mikro-orm/core';
 import { MySqlDriver } from '@mikro-orm/mysql';
 import { SqlHighlighter } from '@mikro-orm/sql-highlighter';
 import 'dotenv/config';
 
-// Validación básica para no intentar conectar si faltan datos
+// Validación para no intentar conectar si faltan datos
 if (!process.env.DB_USER || !process.env.DB_NAME) {
   throw new Error('Faltan variables de entorno de base de datos (DB_USER o DB_NAME)');
 }

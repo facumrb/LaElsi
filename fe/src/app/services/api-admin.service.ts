@@ -10,7 +10,7 @@ import { environment } from 'src/environments/environment';
 })
 export class ApiAdminService {
   private _http = inject(HttpClient);
-  private readonly apiUrl = `${environment.baseUrl}/admins`;
+  private readonly apiUrl = `${environment.apiUrl}/admins`;
 
   getAllAdmins(): Observable<IApiAdmin[]> {
     return this._http

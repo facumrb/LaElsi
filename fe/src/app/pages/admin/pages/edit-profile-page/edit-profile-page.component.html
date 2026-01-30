@@ -18,25 +18,25 @@
           <div class="row">
             <!-- Nombre -->
             <div class="col-md-6 mb-3">
-              <label for="nombre" class="form-label">Nombre</label>
+              <label for="name" class="form-label">Nombre</label>
               <input
                 type="text"
                 class="form-control"
-                id="nombre"
-                formControlName="nombre"
-                name="nombre"
+                id="name"
+                formControlName="name"
+                name="name"
                 [ngClass]="{
                   'is-invalid':
-                    hasErrors('nombre', 'required') ||
-                    hasErrors('nombre', 'pattern'),
+                    hasErrors('name', 'required') ||
+                    hasErrors('name', 'pattern'),
                 }"
               />
               <!-- Contenedor de mensajes de error -->
               <div class="error-container">
-                @if (hasErrors("nombre", "required")) {
+                @if (hasErrors("name", "required")) {
                   <div class="text-danger">El nombre es obligatorio.</div>
                 }
-                @if (hasErrors("nombre", "pattern")) {
+                @if (hasErrors("name", "pattern")) {
                   <div class="text-danger">
                     El formato del nombre es inválido.
                   </div>
@@ -46,25 +46,25 @@
 
             <!-- Apellido -->
             <div class="col-md-6 mb-3">
-              <label for="apellido" class="form-label">Apellido</label>
+              <label for="last_name" class="form-label">Apellido</label>
               <input
                 type="text"
                 class="form-control"
-                id="apellido"
-                name="apellido"
-                formControlName="apellido"
+                id="last_name"
+                name="last_name"
+                formControlName="last_name"
                 [ngClass]="{
                   'is-invalid':
-                    hasErrors('apellido', 'required') ||
-                    hasErrors('apellido', 'pattern'),
+                    hasErrors('last_name', 'required') ||
+                    hasErrors('last_name', 'pattern'),
                 }"
               />
               <!-- Contenedor de mensajes de error -->
               <div class="error-container">
-                @if (hasErrors("apellido", "required")) {
+                @if (hasErrors("last_name", "required")) {
                   <div class="text-danger">El apellido es obligatorio.</div>
                 }
-                @if (hasErrors("apellido", "pattern")) {
+                @if (hasErrors("last_name", "pattern")) {
                   <div class="text-danger">
                     El formato del apellido es inválido.
                   </div>
@@ -76,25 +76,25 @@
           <div class="row">
             <!-- Teléfono -->
             <div class="col-md-6 mb-3">
-              <label for="telefono" class="form-label">Teléfono</label>
+              <label for="phone" class="form-label">Teléfono</label>
               <input
                 type="text"
                 class="form-control"
-                id="telefono"
-                name="telefono"
-                formControlName="telefono"
+                id="phone"
+                name="phone"
+                formControlName="phone"
                 [ngClass]="{
                   'is-invalid':
-                    hasErrors('telefono', 'required') ||
-                    hasErrors('telefono', 'pattern'),
+                    hasErrors('phone', 'required') ||
+                    hasErrors('phone', 'pattern'),
                 }"
               />
               <!-- Contenedor de mensajes de error -->
               <div class="error-container">
-                @if (hasErrors("telefono", "required")) {
+                @if (hasErrors("phone", "required")) {
                   <div class="text-danger">El teléfono es obligatorio.</div>
                 }
-                @if (hasErrors("telefono", "pattern")) {
+                @if (hasErrors("phone", "pattern")) {
                   <div class="text-danger">
                     El formato del teléfono es inválido.
                   </div>
@@ -104,25 +104,25 @@
 
             <!-- Usuario -->
             <div class="col-md-6 mb-3">
-              <label for="usuario" class="form-label">Usuario</label>
+              <label for="user" class="form-label">Usuario</label>
               <input
                 type="text"
                 class="form-control"
-                id="usuario"
-                name="usuario"
-                formControlName="usuario"
+                id="user"
+                name="user"
+                formControlName="user"
                 [ngClass]="{
                   'is-invalid':
-                    hasErrors('usuario', 'required') ||
-                    hasErrors('usuario', 'pattern'),
+                    hasErrors('user', 'required') ||
+                    hasErrors('user', 'pattern'),
                 }"
               />
               <!-- Contenedor de mensajes de error -->
               <div class="error-container">
-                @if (hasErrors("usuario", "required")) {
+                @if (hasErrors("user", "required")) {
                   <div class="text-danger">El usuario es obligatorio.</div>
                 }
-                @if (hasErrors("usuario", "pattern")) {
+                @if (hasErrors("user", "pattern")) {
                   <div class="text-danger">
                     El formato del usuario es inválido.
                   </div>

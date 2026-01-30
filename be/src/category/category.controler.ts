@@ -83,8 +83,8 @@ async function findOne(req: Request, res: Response) {
 
 async function update(req: Request, res: Response) {
   try {
-    const name = req.params.name;
-    const category = await em.findOneOrFail(Category, { name }, { populate: ['products'] });
+    const nameParam = req.params.name;
+    const category = await em.findOneOrFail(Category, { name: nameParam });
     em.assign(category, req.body.sanitizedInput);
     await em.flush();
     res.status(200).json({ message: 'Categoría actualizada', data: category });

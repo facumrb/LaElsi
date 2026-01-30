@@ -37,27 +37,24 @@ export class ProductsPageComponent implements OnInit {
 
   constructor(private formBuilder: FormBuilder) {
     this.formProduct = this.formBuilder.group({
-      nombre: [
+      name: [
         '',
         [
           Validators.required,
           Validators.pattern('^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9.,;:?!()_\'"-\\s]*$'),
         ],
       ],
-      descripcion: [
+      description: [
         '',
         [
           Validators.required,
           Validators.pattern('^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9.,;:?!()_\'"-\\s]*$'),
         ],
       ],
-      precio: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
-      marca: ['', [Validators.required]],
-      cant_vendidos: [
-        '',
-        [Validators.required, Validators.pattern('^[0-9]*$')],
-      ],
-      estado: ['', [Validators.required]],
+      price: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
+      brand: ['', [Validators.required]],
+      total_sold: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
+      state: ['', [Validators.required]],
       stock: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
       category: ['', [Validators.required]],
     });
@@ -116,9 +113,9 @@ export class ProductsPageComponent implements OnInit {
     } else {
       this.formProduct.reset();
       this.formProduct.patchValue({
-        estado: '',
+        state: '',
         category: '',
-        cant_vendidos: 0,
+        total_sold: 0,
       });
     }
   }

@@ -9,7 +9,7 @@ import { environment } from 'src/environments/environment';
 })
 export class ApiCategoryService {
   private _http = inject(HttpClient);
-  private readonly apiUrl = `${environment.baseUrl}/categories`;
+  private readonly apiUrl = `${environment.apiUrl}/categories`;
 
   getAllCategories(): Observable<IApiCategory[]> {
     return this._http

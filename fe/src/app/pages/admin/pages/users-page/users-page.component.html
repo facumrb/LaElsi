@@ -167,45 +167,42 @@
           <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
               <label
-                for="nombre"
+                for="name"
                 class="mb-1 block text-sm font-medium text-gray-700"
                 >Nombre</label
               >
               <input
                 type="text"
-                id="nombre"
-                formControlName="nombre"
+                id="name"
+                formControlName="name"
                 class="block w-full rounded-md border p-2.5 text-gray-900 shadow-sm focus:outline-none focus:ring-1 sm:text-sm"
                 [class.border-red-500]="
-                  hasErrors('nombre', 'required') ||
-                  hasErrors('nombre', 'pattern')
+                  hasErrors('name', 'required') || hasErrors('name', 'pattern')
                 "
                 [class.focus:border-red-500]="
-                  hasErrors('nombre', 'required') ||
-                  hasErrors('nombre', 'pattern')
+                  hasErrors('name', 'required') || hasErrors('name', 'pattern')
                 "
                 [class.focus:ring-red-500]="
-                  hasErrors('nombre', 'required') ||
-                  hasErrors('nombre', 'pattern')
+                  hasErrors('name', 'required') || hasErrors('name', 'pattern')
                 "
                 [class.border-gray-300]="
-                  !hasErrors('nombre', 'required') &&
-                  !hasErrors('nombre', 'pattern')
+                  !hasErrors('name', 'required') &&
+                  !hasErrors('name', 'pattern')
                 "
                 [class.focus:border-[#049A8F]]="
-                  !hasErrors('nombre', 'required') &&
-                  !hasErrors('nombre', 'pattern')
+                  !hasErrors('name', 'required') &&
+                  !hasErrors('name', 'pattern')
                 "
                 [class.focus:ring-[#049A8F]]="
-                  !hasErrors('nombre', 'required') &&
-                  !hasErrors('nombre', 'pattern')
+                  !hasErrors('name', 'required') &&
+                  !hasErrors('name', 'pattern')
                 "
               />
               <div class="mt-1 min-h-4 text-xs text-red-600">
-                @if (hasErrors("nombre", "required")) {
+                @if (hasErrors("name", "required")) {
                   <span>El nombre es obligatorio.</span>
                 }
-                @if (hasErrors("nombre", "pattern")) {
+                @if (hasErrors("name", "pattern")) {
                   <span>Formato inválido.</span>
                 }
               </div>
@@ -213,45 +210,45 @@
 
             <div>
               <label
-                for="apellido"
+                for="last_name"
                 class="mb-1 block text-sm font-medium text-gray-700"
                 >Apellido</label
               >
               <input
                 type="text"
-                id="apellido"
-                formControlName="apellido"
+                id="last_name"
+                formControlName="last_name"
                 class="block w-full rounded-md border p-2.5 text-gray-900 shadow-sm focus:outline-none focus:ring-1 sm:text-sm"
                 [class.border-red-500]="
-                  hasErrors('apellido', 'required') ||
-                  hasErrors('apellido', 'pattern')
+                  hasErrors('last_name', 'required') ||
+                  hasErrors('last_name', 'pattern')
                 "
                 [class.focus:border-red-500]="
-                  hasErrors('apellido', 'required') ||
-                  hasErrors('apellido', 'pattern')
+                  hasErrors('last_name', 'required') ||
+                  hasErrors('last_name', 'pattern')
                 "
                 [class.focus:ring-red-500]="
-                  hasErrors('apellido', 'required') ||
-                  hasErrors('apellido', 'pattern')
+                  hasErrors('last_name', 'required') ||
+                  hasErrors('last_name', 'pattern')
                 "
                 [class.border-gray-300]="
-                  !hasErrors('apellido', 'required') &&
-                  !hasErrors('apellido', 'pattern')
+                  !hasErrors('last_name', 'required') &&
+                  !hasErrors('last_name', 'pattern')
                 "
                 [class.focus:border-[#049A8F]]="
-                  !hasErrors('apellido', 'required') &&
-                  !hasErrors('apellido', 'pattern')
+                  !hasErrors('last_name', 'required') &&
+                  !hasErrors('last_name', 'pattern')
                 "
                 [class.focus:ring-[#049A8F]]="
-                  !hasErrors('apellido', 'required') &&
-                  !hasErrors('apellido', 'pattern')
+                  !hasErrors('last_name', 'required') &&
+                  !hasErrors('last_name', 'pattern')
                 "
               />
               <div class="mt-1 min-h-4 text-xs text-red-600">
-                @if (hasErrors("apellido", "required")) {
+                @if (hasErrors("last_name", "required")) {
                   <span>El apellido es obligatorio.</span>
                 }
-                @if (hasErrors("apellido", "pattern")) {
+                @if (hasErrors("last_name", "pattern")) {
                   <span>Formato inválido.</span>
                 }
               </div>
@@ -259,45 +256,45 @@
 
             <div>
               <label
-                for="telefono"
+                for="phone"
                 class="mb-1 block text-sm font-medium text-gray-700"
                 >Teléfono</label
               >
               <input
                 type="text"
-                id="telefono"
-                formControlName="telefono"
+                id="phone"
+                formControlName="phone"
                 class="block w-full rounded-md border p-2.5 text-gray-900 shadow-sm focus:outline-none focus:ring-1 sm:text-sm"
                 [class.border-red-500]="
-                  hasErrors('telefono', 'required') ||
-                  hasErrors('telefono', 'pattern')
+                  hasErrors('phone', 'required') ||
+                  hasErrors('phone', 'pattern')
                 "
                 [class.focus:border-red-500]="
-                  hasErrors('telefono', 'required') ||
-                  hasErrors('telefono', 'pattern')
+                  hasErrors('phone', 'required') ||
+                  hasErrors('phone', 'pattern')
                 "
                 [class.focus:ring-red-500]="
-                  hasErrors('telefono', 'required') ||
-                  hasErrors('telefono', 'pattern')
+                  hasErrors('phone', 'required') ||
+                  hasErrors('phone', 'pattern')
                 "
                 [class.border-gray-300]="
-                  !hasErrors('telefono', 'required') &&
-                  !hasErrors('telefono', 'pattern')
+                  !hasErrors('phone', 'required') &&
+                  !hasErrors('phone', 'pattern')
                 "
                 [class.focus:border-[#049A8F]]="
-                  !hasErrors('telefono', 'required') &&
-                  !hasErrors('telefono', 'pattern')
+                  !hasErrors('phone', 'required') &&
+                  !hasErrors('phone', 'pattern')
                 "
                 [class.focus:ring-[#049A8F]]="
-                  !hasErrors('telefono', 'required') &&
-                  !hasErrors('telefono', 'pattern')
+                  !hasErrors('phone', 'required') &&
+                  !hasErrors('phone', 'pattern')
                 "
               />
               <div class="mt-1 min-h-4 text-xs text-red-600">
-                @if (hasErrors("telefono", "required")) {
+                @if (hasErrors("phone", "required")) {
                   <span>El teléfono es obligatorio.</span>
                 }
-                @if (hasErrors("telefono", "pattern")) {
+                @if (hasErrors("phone", "pattern")) {
                   <span>Formato inválido.</span>
                 }
               </div>
