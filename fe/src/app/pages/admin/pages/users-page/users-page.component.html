@@ -77,23 +77,23 @@
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-100 border-t border-gray-100">
-          @for (usuario of usuarios; track $index) {
+          @for (user of users; track $index) {
             <tr class="transition-colors hover:bg-gray-50">
               <td class="px-6 py-4 font-medium text-gray-900">
-                {{ usuario.nombre }}
+                {{ user.name }}
               </td>
-              <td class="px-6 py-4 text-gray-900">{{ usuario.apellido }}</td>
-              <td class="px-6 py-4">{{ usuario.telefono }}</td>
+              <td class="px-6 py-4 text-gray-900">{{ user.last_name }}</td>
+              <td class="px-6 py-4">{{ user.phone }}</td>
               <td class="px-6 py-4 font-medium text-gray-700">
-                {{ usuario.usuario }}
+                {{ user.user }}
               </td>
               <td class="px-6 py-4 font-mono text-xs">
-                {{ usuario.password }}
+                {{ user.password }}
               </td>
-              <td class="px-6 py-4">{{ usuario.email }}</td>
+              <td class="px-6 py-4">{{ user.email }}</td>
               <td class="flex justify-center gap-3 px-6 py-4">
                 <button
-                  (click)="openModal('edit', usuario)"
+                  (click)="openModal('edit', user)"
                   class="text-blue-600 transition-colors hover:text-blue-900"
                   title="Editar"
                 >
@@ -113,7 +113,7 @@
                   </svg>
                 </button>
                 <button
-                  (click)="deleteUsuario(usuario.id)"
+                  (click)="deleteUser(user.id)"
                   class="text-red-600 transition-colors hover:text-red-900"
                   title="Eliminar"
                 >
@@ -163,11 +163,7 @@
           </div>
         }
 
-        <form
-          [formGroup]="formUsuario"
-          (ngSubmit)="onSubmit()"
-          class="space-y-4"
-        >
+        <form [formGroup]="formUser" (ngSubmit)="onSubmit()" class="space-y-4">
           <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
               <label
@@ -352,45 +348,42 @@
 
             <div>
               <label
-                for="usuario"
+                for="user"
                 class="mb-1 block text-sm font-medium text-gray-700"
                 >Usuario</label
               >
               <input
                 type="text"
-                id="usuario"
-                formControlName="usuario"
+                id="user"
+                formControlName="user"
                 class="block w-full rounded-md border p-2.5 text-gray-900 shadow-sm focus:outline-none focus:ring-1 sm:text-sm"
                 [class.border-red-500]="
-                  hasErrors('usuario', 'required') ||
-                  hasErrors('usuario', 'pattern')
+                  hasErrors('user', 'required') || hasErrors('user', 'pattern')
                 "
                 [class.focus:border-red-500]="
-                  hasErrors('usuario', 'required') ||
-                  hasErrors('usuario', 'pattern')
+                  hasErrors('user', 'required') || hasErrors('user', 'pattern')
                 "
                 [class.focus:ring-red-500]="
-                  hasErrors('usuario', 'required') ||
-                  hasErrors('usuario', 'pattern')
+                  hasErrors('user', 'required') || hasErrors('user', 'pattern')
                 "
                 [class.border-gray-300]="
-                  !hasErrors('usuario', 'required') &&
-                  !hasErrors('usuario', 'pattern')
+                  !hasErrors('user', 'required') &&
+                  !hasErrors('user', 'pattern')
                 "
                 [class.focus:border-[#049A8F]]="
-                  !hasErrors('usuario', 'required') &&
-                  !hasErrors('usuario', 'pattern')
+                  !hasErrors('user', 'required') &&
+                  !hasErrors('user', 'pattern')
                 "
                 [class.focus:ring-[#049A8F]]="
-                  !hasErrors('usuario', 'required') &&
-                  !hasErrors('usuario', 'pattern')
+                  !hasErrors('user', 'required') &&
+                  !hasErrors('user', 'pattern')
                 "
               />
               <div class="mt-1 min-h-4 text-xs text-red-600">
-                @if (hasErrors("usuario", "required")) {
+                @if (hasErrors("user", "required")) {
                   <span>El usuario es obligatorio.</span>
                 }
-                @if (hasErrors("usuario", "pattern")) {
+                @if (hasErrors("user", "pattern")) {
                   <span>Formato inválido.</span>
                 }
               </div>
@@ -453,7 +446,7 @@
             </button>
             <button
               type="submit"
-              [disabled]="!formUsuario.valid"
+              [disabled]="!formUser.valid"
               class="rounded-md bg-[#037971] px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-[#049A8F] disabled:cursor-not-allowed disabled:bg-gray-400"
             >
               Guardar

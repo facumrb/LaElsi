@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ApiAdministradorService } from '@services/api-admin.service';
+import { ApiAdminService } from '@services/api-admin.service';
 import { CommonModule } from '@angular/common';
 import { IApiAccountInfo } from '@models/accountInfo.model';
 
@@ -17,7 +17,7 @@ export class ViewProfilePageComponent implements OnInit {
 
   private _route = inject(ActivatedRoute);
   private _router = inject(Router);
-  private _apiService = inject(ApiAdministradorService);
+  private _apiService = inject(ApiAdminService);
 
   ngOnInit(): void {
     this._route.params.subscribe((params) => {

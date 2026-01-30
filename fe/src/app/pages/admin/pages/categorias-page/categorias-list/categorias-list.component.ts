@@ -1,5 +1,5 @@
 import { Component, input, output } from '@angular/core';
-import { IApiCategoria } from '@models/categoria.model';
+import { IApiCategoria } from '@models/category.model';
 import Swal from 'sweetalert2';
 
 @Component({

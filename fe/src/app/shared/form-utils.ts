@@ -7,9 +7,9 @@ import {
 
 export class FormUtils {
   //EXPRESIONES REGULARES
-  static nombrePattern = "^[a-zA-ZáéíóúÁÉÍÓÚñÑ'\\-\\s]+$";
+  static namePattern = "^[a-zA-ZáéíóúÁÉÍÓÚñÑ'\\-\\s]+$";
   static emailPattern = '^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$';
-  static descripcionPattern = '^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9.,;:?!()_\\-\'"\\s\\n]*$';
+  static descriptionPattern = '^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9.,;:?!()_\\-\'"\\s\\n]*$';
 
   // Mínimo 8 caracteres, 1 letra, 1 número.
   static passwordPattern = '^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d@$!%*#?&]{8,}$';
@@ -42,7 +42,7 @@ export class FormUtils {
           if (errors['pattern'].requiredPattern === this.emailPattern) {
             return 'Formato de correo no válido.';
           }
-          if (errors['pattern'].requiredPattern === this.nombrePattern) {
+          if (errors['pattern'].requiredPattern === this.namePattern) {
             return 'El nombre contiene caracteres no permitidos.';
           }
           if (errors['pattern'].requiredPattern === this.passwordPattern) {

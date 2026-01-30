@@ -1,6 +1,6 @@
 import { Component, inject, input, output, effect } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { IApiCategoria } from '@models/categoria.model';
+import { IApiCategoria } from '@models/category.model';
 import { FormUtils } from '@shared/form-utils';
 
 @Component({

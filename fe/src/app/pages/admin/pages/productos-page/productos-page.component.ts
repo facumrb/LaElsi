@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { IApiItem } from '@models/item.model';
+import { IApiItem } from '@models/product.model';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -8,8 +8,8 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { ApiItemService } from '@services/api-item.service';
-import { IApiCategoria } from '@models/categoria.model';
+import { ApiItemService } from '@services/api-product.service';
+import { IApiCategoria } from '@models/category.model';
 import { ApiCategoriaService } from '@services/api-category.service';
 
 @Component({

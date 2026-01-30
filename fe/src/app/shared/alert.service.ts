@@ -53,21 +53,4 @@ export class AlertService {
       confirmButtonColor: '#d33',
     });
   }
-
-  // Método de procesando...
-  showLoading(text: string = 'Procesando...') {
-    Swal.fire({
-      title: text,
-      allowEscapeKey: false,
-      allowOutsideClick: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    });
-  }
-
-  // Método para cerrar el Loading
-  close() {
-    Swal.close();
-  }
 }

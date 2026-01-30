@@ -4,8 +4,8 @@
   <div class="relative">
     <img
       class="h-48 w-full object-cover"
-      [src]="product().fotos"
-      [alt]="product().nombre"
+      [src]="product().photos"
+      [alt]="product().name"
     />
     <div
       class="absolute top-2 right-2 bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded"
@@ -16,7 +16,7 @@
 
   <div class="p-4">
     <h3 class="text-lg font-semibold text-gray-800 truncate">
-      {{ product().nombre }}
+      {{ product().name }}
     </h3>
     <p class="text-gray-500 text-sm mb-4 line-clamp-2">
       Descripción breve del producto...
@@ -24,7 +24,7 @@
 
     <div class="flex items-center justify-between">
       <span class="text-xl font-bold text-gray-900"
-        >${{ product().precio }}</span
+        >${{ product().price }}</span
       >
       <button
         class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"

@@ -11,7 +11,7 @@ export const routes: Routes = [
   },
   {
     path: '',
-    loadChildren: () => import('./pages/cliente/cliente.routes'),
+    loadChildren: () => import('./pages/client/client.routes'),
   },
   { path: '**', redirectTo: '', pathMatch: 'full' },
 ];

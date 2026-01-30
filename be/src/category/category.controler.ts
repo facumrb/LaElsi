@@ -9,7 +9,7 @@ function sanitizeCategoryInput(req: Request, res: Response, next: NextFunction) 
     name: req.body.name,
     description: req.body.description,
     state: req.body.state,
-    items: req.body.items
+    products: req.body.products
   };
 
   Object.keys(req.body.sanitizedInput).forEach((key) => {
@@ -30,7 +30,7 @@ async function searchCategoriesByText(req: Request, res: Response) {
       {
         $or: [{ name: { $like: `%${query}%` } }, { description: { $like: `%${query}%` } }]
       },
-      { populate: ['items'] }
+      { populate: ['products'] }
     );
     res.status(200).json({ message: 'Categorías encontradas', data: categories });
   } catch (error: any) {
@@ -64,7 +64,7 @@ async function add(req: Request, res: Response) {
 
 async function findAll(req: Request, res: Response) {
   try {
-    const categories = await em.find(Category, {}, { populate: ['items'] });
+    const categories = await em.find(Category, {}, { populate: ['products'] });
     res.status(200).json({ message: 'Todas las Categorías fueron encontradas', data: categories });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
@@ -74,7 +74,7 @@ async function findAll(req: Request, res: Response) {
 async function findOne(req: Request, res: Response) {
   try {
     const name = req.params.name;
-    const category = await em.findOneOrFail(Category, { name }, { populate: ['items'] });
+    const category = await em.findOneOrFail(Category, { name }, { populate: ['products'] });
     res.status(200).json({ message: 'Categoría encontrada', data: category });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
@@ -84,7 +84,7 @@ async function findOne(req: Request, res: Response) {
 async function update(req: Request, res: Response) {
   try {
     const name = req.params.name;
-    const category = await em.findOneOrFail(Category, { name }, { populate: ['items'] });
+    const category = await em.findOneOrFail(Category, { name }, { populate: ['products'] });
     em.assign(category, req.body.sanitizedInput);
     await em.flush();
     res.status(200).json({ message: 'Categoría actualizada', data: category });
@@ -96,9 +96,9 @@ async function update(req: Request, res: Response) {
 async function remove(req: Request, res: Response) {
   try {
     const name = req.params.name;
-    const category = await em.findOneOrFail(Category, { name }, { populate: ['items'] });
+    const category = await em.findOneOrFail(Category, { name }, { populate: ['products'] });
 
-    if (category.items.length > 0) {
+    if (category.products.length > 0) {
       return res.status(400).json({
         message: 'Esta categoría tiene productos asociados.\n\n 💡 Consejo: Cámbia el estado a "Inactivo" en lugar de borrarla.'
       });

@@ -1,23 +1,23 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ApiItemService } from '@services/api-item.service';
-import { ApiCategoriaService } from '@services/api-category.service';
-import { ItemCardComponent } from '@cliente/components/item-card/item-card.component';
-import { IApiCategoria } from '@models/categoria.model';
-import { IApiItem } from '@models/item.model';
+import { ApiProductService } from '@services/api-product.service';
+import { ApiCategoryService } from '@services/api-category.service';
+import { ProductCardComponent } from '@cliente/components/product-card/product-card.component';
+import { IApiCategory } from '@models/category.model';
+import { IApiProduct } from '@models/product.model';
 
 @Component({
   selector: 'app-category-page',
   standalone: true,
-  imports: [ItemCardComponent],
+  imports: [ProductCardComponent],
   templateUrl: './category-page.component.html',
 })
 export class CategoryPageComponent implements OnInit {
-  categoria?: IApiCategoria; // Guardamos el objeto completo aquí
-  items: IApiItem[] = [];
+  category?: IApiCategory; // Guardamos el objeto completo aquí
+  products: IApiProduct[] = [];
 
-  private ApiCategoriaService = inject(ApiCategoriaService);
-  private ApiItemService = inject(ApiItemService);
+  private ApiCategoryService = inject(ApiCategoryService);
+  private ApiProductService = inject(ApiProductService);
   private route = inject(ActivatedRoute);
 
   ngOnInit(): void {
@@ -29,14 +29,14 @@ export class CategoryPageComponent implements OnInit {
 
   cargarDatosDePagina(id: number) {
     // 1. Llamamos a tu función para obtener el nombre de la categoría
-    this.ApiCategoriaService.getCategoriaById(id).subscribe({
-      next: (data) => (this.categoria = data),
+    this.ApiCategoryService.getCategoryById(id).subscribe({
+      next: (data) => (this.category = data),
       error: (err) => console.error('Error al obtener categoría', err),
     });
 
     // 2. Llamamos a la función que ya teníamos para los productos
-    this.ApiItemService.getItemsByCategory(id).subscribe({
-      next: (data) => (this.items = data),
+    this.ApiProductService.getProductsByCategory(id).subscribe({
+      next: (data) => (this.products = data),
       error: (err) => console.error('Error al obtener productos', err),
     });
   }

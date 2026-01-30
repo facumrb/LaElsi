@@ -1,6 +1,6 @@
 import { Component, inject, signal, computed } from '@angular/core';
 import { ApiCategoriaService } from '@services/api-category.service';
-import { IApiCategoria } from '@models/categoria.model';
+import { IApiCategoria } from '@models/category.model';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AlertService } from '@shared/alert.service';
 import { ApiErrorService } from '@shared/api-error.service';
@@ -98,9 +98,9 @@ export class CategoriasPageComponent {
     const esEdicion = !!currentCat;
     const request$ = esEdicion
       ? this._apiService.updateCategoria(currentCat.id, {
-        ...currentCat,
-        ...formData,
-      })
+          ...currentCat,
+          ...formData,
+        })
       : this._apiService.addCategoria(formData);
 
     request$.subscribe({

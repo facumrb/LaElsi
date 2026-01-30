@@ -1,60 +1,57 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
-import { IApiCategoria } from '@models/categoria.model';
+import { IApiCategory } from '@models/category.model';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
-export class ApiCategoriaService {
+export class ApiCategoryService {
   private _http = inject(HttpClient);
-  private readonly apiUrl = `${environment.baseUrl}/categorias`;
+  private readonly apiUrl = `${environment.baseUrl}/categories`;
 
-  getAllCategorias(): Observable<IApiCategoria[]> {
+  getAllCategories(): Observable<IApiCategory[]> {
     return this._http
-      .get<{ message: string; data: IApiCategoria[] }>(this.apiUrl)
+      .get<{ message: string; data: IApiCategory[] }>(this.apiUrl)
       .pipe(map((response) => response.data));
   }
 
-  getCategoriaById(id: number): Observable<IApiCategoria> {
+  getCategoryById(id: number): Observable<IApiCategory> {
     return this._http
-      .get<{ message: string; data: IApiCategoria }>(`${this.apiUrl}/${id}`)
+      .get<{ message: string; data: IApiCategory }>(`${this.apiUrl}/${id}`)
       .pipe(map((response) => response.data));
   }
 
-  searchCategorias(query: string): Observable<IApiCategoria[]> {
+  searchCategories(query: string): Observable<IApiCategory[]> {
     const params = new HttpParams().set('query', query);
     return this._http
       .get<{
         message: string;
-        data: IApiCategoria[];
+        data: IApiCategory[];
       }>(`${this.apiUrl}/search`, { params })
       .pipe(map((response) => response.data));
   }
 
-  addCategoria(categoria: IApiCategoria): Observable<IApiCategoria> {
+  addCategory(category: IApiCategory): Observable<IApiCategory> {
     return this._http
       .post<{
         message: string;
-        data: IApiCategoria;
-      }>(this.apiUrl, categoria)
+        data: IApiCategory;
+      }>(this.apiUrl, category)
       .pipe(map((response) => response.data));
   }
 
-  updateCategoria(
-    id: number,
-    categoria: IApiCategoria,
-  ): Observable<IApiCategoria> {
+  updateCategory(id: number, category: IApiCategory): Observable<IApiCategory> {
     return this._http
       .patch<{
         message: string;
-        data: IApiCategoria;
-      }>(`${this.apiUrl}/${id}`, categoria)
+        data: IApiCategory;
+      }>(`${this.apiUrl}/${id}`, category)
       .pipe(map((response) => response.data));
   }
 
-  deleteCategoria(id: number): Observable<void> {
+  deleteCategory(id: number): Observable<void> {
     return this._http
       .delete<{ message: string }>(`${this.apiUrl}/${id}`)
       .pipe(map(() => void 0));

@@ -8,7 +8,7 @@
     "paths": {
       "@admin/*": ["./src/app/pages/admin/*"],
       "@auth/*": ["./src/app/pages/auth/*"],
-      "@cliente/*": ["./src/app/pages/cliente/*"],
+      "@cliente/*": ["./src/app/pages/client/*"],
       "@services/*": ["./src/app/services/*"],
       "@models/*": ["./src/app/models/*"],
       "@shared/*": ["./src/app/shared/*"]

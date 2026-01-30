@@ -1,7 +1,7 @@
-import { Request, Response, NextFunction } from "express";
-import express from "express";
-import { Item } from "./item.entity.js";
-import { orm } from "../shared/db/orm.js";
+import { Request, Response, NextFunction } from 'express';
+import express from 'express';
+import { Product } from './product.entity.js';
+import { orm } from '../shared/db/orm.js';
 /* import multer from "multer";
 import fs from "node:fs";
 import path from "node:path";
@@ -59,17 +59,17 @@ async function cargaImagenes(req: express.Request, res: express.Response) {
 
 const em = orm.em;
 
-function sanitizeItemInput(req: Request, res: Response, next: NextFunction) {
+function sanitizeProductInput(req: Request, res: Response, next: NextFunction) {
   req.body.sanitizedInput = {
     name: req.body.name,
-    category: req.body.category,
-    photos: req.body.photos,
     description: req.body.description,
     price: req.body.price,
     brand: req.body.brand,
-    number_sold: req.body.number_sold,
+    total_sold: req.body.total_sold,
     state: req.body.state,
     stock: req.body.stock,
+    photos: req.body.photos,
+    category: req.body.category
     /* registration_date: req.body.registration_date,
     update_date: req.body.update_date,
     to_reserve: req.body.to_reserve,
@@ -87,7 +87,7 @@ function sanitizeItemInput(req: Request, res: Response, next: NextFunction) {
 async function add(req: Request, res: Response) {
   try {
     /* const { name, category, price, brand, stock } = req.body.sanitizedInput;
-    //  description, state, number_sold ?
+    //  description, state, total_sold ?
     // Validaciones para asegurarse de que los atributos no sean nulos
     if (!name) {
       return res.status(400).json({ message: "El nombre es requerido" });
@@ -114,45 +114,45 @@ async function add(req: Request, res: Response) {
     } else {
       console.error("req.files no es un arreglo");
     }
-    // Crear un nuevo item utilizando los datos sanitizados del cuerpo de la solicitud
-    const itemData = {
+    // Crear un nuevo producto utilizando los datos sanitizados del cuerpo de la solicitud
+    const productData = {
       ...req.body.sanitizedInput,
-      photos // Asignar la ruta de la imagen al item
+      photos // Asignar la ruta de la imagen al product
       // to_reserve: false,
       // quantity_to_reserve: 0,
     }; */
 
-    const item = em.create(Item, req.body.sanitizedInput); //anteriormente itemData
+    const product = em.create(Product, req.body.sanitizedInput);
     await em.flush();
 
-    res.status(201).json({ message: "Item creado", data: item });
+    res.status(201).json({ message: 'Producto creado', data: product });
   } catch (error: any) {
-    console.error("Error al crear el item:", error);
-    res.status(500).json({ message: "Error al crear el item: " + error.message });
+    console.error('Error al crear el producto:', error);
+    res.status(500).json({ message: 'Error al crear el producto: ' + error.message });
   }
 }
 
-// Función para buscar items por texto
-async function searchItemsByText(req: Request, res: Response) {
+// Función para buscar productos por texto
+async function searchProductsByText(req: Request, res: Response) {
   const { query } = req.query; // Obtener el texto de búsqueda
 
   try {
-    const items = await em.find(Item, {
+    const products = await em.find(Product, {
       $or: [{ name: { $like: `%${query}%` } }, { description: { $like: `%${query}%` } }, { brand: { $like: `%${query}%` } }]
     }); // Buscar por nombre, descripcion y marca
-    res.status(200).json({ message: "Items encontrados", data: items });
+    res.status(200).json({ message: 'Productos encontrados', data: products });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
 }
 
-// Función para obtener items por categoría
-async function findItemsByCategory(req: Request, res: Response) {
+// Función para obtener productos por categoría
+async function findProductsByCategory(req: Request, res: Response) {
   const categoryName = req.params.categoryName; // Obtener nombre de categoría
 
   try {
-    const items = await em.find(Item, { category: { name: categoryName } }); // Buscar por categoría
-    res.status(200).json({ message: "Items encontrados en la categoría", data: items });
+    const products = await em.find(Product, { category: { name: categoryName } }); // Buscar por categoría
+    res.status(200).json({ message: 'Productos encontrados en la categoría', data: products });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
@@ -160,8 +160,8 @@ async function findItemsByCategory(req: Request, res: Response) {
 
 async function findAll(req: Request, res: Response) {
   try {
-    const items = await em.find(Item, {}, { populate: ["category"] });
-    res.status(200).json({ message: "Todos los Items fueron encontrados", data: items });
+    const products = await em.find(Product, {}, { populate: ['category'] });
+    res.status(200).json({ message: 'Todos los Productos fueron encontrados', data: products });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
@@ -170,8 +170,8 @@ async function findAll(req: Request, res: Response) {
 async function findOne(req: Request, res: Response) {
   try {
     const id = Number.parseInt(req.params.id);
-    const item = await em.findOneOrFail(Item, { id }, { populate: ["category"] });
-    res.status(200).json({ message: "Item encontrado", data: item });
+    const product = await em.findOneOrFail(Product, { id }, { populate: ['category'] });
+    res.status(200).json({ message: 'Producto encontrado', data: product });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
@@ -180,10 +180,10 @@ async function findOne(req: Request, res: Response) {
 async function update(req: Request, res: Response) {
   try {
     const id = Number.parseInt(req.params.id);
-    const item = await em.findOneOrFail(Item, { id });
-    em.assign(item, req.body.sanitizedInput);
+    const product = await em.findOneOrFail(Product, { id });
+    em.assign(product, req.body.sanitizedInput);
     await em.flush();
-    res.status(200).json({ message: "Item actualizado", data: item });
+    res.status(200).json({ message: 'Producto actualizado', data: product });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
@@ -192,16 +192,16 @@ async function update(req: Request, res: Response) {
 async function remove(req: Request, res: Response) {
   try {
     const id = Number.parseInt(req.params.id);
-    const item = await em.findOneOrFail(Item, { id });
-    em.remove(item);
+    const product = await em.findOneOrFail(Product, { id });
+    em.remove(product);
     await em.flush();
-    res.status(200).send({ message: "Item eliminado" });
+    res.status(200).send({ message: 'Producto eliminado' });
   } catch (error: any) {
-    if (error.name === "NotFoundError") {
-      return res.status(404).json({ message: "El item no existe" });
+    if (error.name === 'NotFoundError') {
+      return res.status(404).json({ message: 'El producto no existe' });
     }
     res.status(500).json({ message: error.message });
   }
 }
 
-export { sanitizeItemInput, findAll, findOne, add, update, remove, searchItemsByText, findItemsByCategory /* cargaImagenes, imagenProducto, uploadDir */ };
+export { sanitizeProductInput, findAll, findOne, add, update, remove, searchProductsByText, findProductsByCategory /* cargaImagenes, imagenProducto, uploadDir */ };

@@ -1,0 +1,114 @@
+### GET all products
+
+GET http://localhost:3000/api/products HTTP/1.1
+
+
+### POST a product
+
+# @name createProduct
+
+POST http://localhost:3000/api/products HTTP/1.1
+Content-Type: application/json
+
+{
+    "name": "Pista de Autos",
+    "description": "Pista para autos con curvas y elevaciones.",
+    "price": 29.99,
+    "brand": "TrackMasters",
+    "total_sold": 250,
+    "state": "Activo",
+    "stock": 100,
+    "category": 1,
+    "photos": [ "https://i.imgur.com/Byi3gBg.jpeg" ]
+}
+
+
+### ID
+
+@id = {{createProduct.response.body.data.id}}
+
+
+### GET one product
+
+GET http://localhost:3000/api/products/{{id}} HTTP/1.1
+
+
+### PATCH a product
+
+PATCH http://localhost:3000/api/products/{{id}} HTTP/1.1
+Content-Type: application/json
+
+{
+    // foto?
+    "price": 25,
+    "total_sold": 300,
+    "stock": 50
+}
+
+
+### POST a product
+
+POST http://localhost:3000/api/products HTTP/1.1
+Content-Type: application/json
+
+{
+    "name": "Sombrero",
+    "description": "Sombrero de mago",
+    "price": 25,
+    "brand": "Magic",
+    "total_sold": 10,
+    "state": "Activo",
+    "stock": 45,
+    "category": 1,
+    "photos": [ "https://i.imgur.com/Byi3gBg.jpeg" ]
+}
+
+
+### POST a product
+
+# @name createProductToDelete
+
+POST http://localhost:3000/api/products HTTP/1.1
+Content-Type: application/json
+
+{
+    "name": "Tijera",
+    // foto?
+    "description": "",
+    "price": 25,
+    "brand": "Modul",
+    "total_sold": 100,
+    "state": 10,
+    "stock": 90,
+    "category": 2
+}
+
+
+### DELETE a product
+
+@idToDelete = {{createProductToDelete.response.body.data.id}}
+
+DELETE http://localhost:3000/api/products/{{idToDelete}} HTTP/1.1
+
+
+### PATCH a product
+
+PATCH http://localhost:3000/api/products/{{idToDelete}} HTTP/1.1
+Content-Type: application/json
+
+{
+    // foto?
+    "price": 25,
+    "total_sold": 100,
+    "stock": 20
+}
+
+
+### DELETE a product
+
+DELETE http://localhost:3000/api/products/{{idToDelete}} HTTP/1.1
+
+
+### SEARCH
+
+GET http://localhost:3000/api/products/search?query=Bloques HTTP/1.1

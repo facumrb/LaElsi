@@ -1,16 +1,5 @@
 import { PrimaryKey, Entity, OneToMany, Property, Collection } from '@mikro-orm/core';
-import { Item } from '../item/item.entity.js';
-
-/*
-@Property({ type: 'date' })
-registration_date? = new Date()
-
-@Property({
-  type: 'date',
-  onUpdate: () => new Date(),
-})
-update_date? = new Date()
-*/
+import { Product } from '../product/product.entity.js';
 
 @Entity()
 export class Category {
@@ -23,6 +12,17 @@ export class Category {
   @Property({ nullable: false })
   state!: 'Activo' | 'Inactivo';
 
-  @OneToMany(() => Item, (item) => item.category)
-  items = new Collection<Item>(this);
+  @OneToMany(() => Product, (product) => product.category)
+  products = new Collection<Product>(this);
 }
+
+/*
+@Property({ type: 'date' })
+registration_date? = new Date()
+
+@Property({
+  type: 'date',
+  onUpdate: () => new Date(),
+})
+update_date? = new Date()
+*/

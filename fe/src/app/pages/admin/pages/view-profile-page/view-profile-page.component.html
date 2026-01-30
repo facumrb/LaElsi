@@ -11,14 +11,12 @@
             {{ errorMessage }}
           </div>
         }
-        <p class="card-text"><strong>Nombre:</strong> {{ admin?.nombre }}</p>
+        <p class="card-text"><strong>Nombre:</strong> {{ admin?.name }}</p>
         <p class="card-text">
-          <strong>Apellido:</strong> {{ admin?.apellido }}
+          <strong>Apellido:</strong> {{ admin?.last_name }}
         </p>
-        <p class="card-text">
-          <strong>Teléfono:</strong> {{ admin?.telefono }}
-        </p>
-        <p class="card-text"><strong>Usuario:</strong> {{ admin?.usuario }}</p>
+        <p class="card-text"><strong>Teléfono:</strong> {{ admin?.phone }}</p>
+        <p class="card-text"><strong>Usuario:</strong> {{ admin?.user }}</p>
         <p class="card-text"><strong>Email:</strong> {{ admin?.email }}</p>
         <div class="d-flex justify-content-between mt-4">
           <button

@@ -16,7 +16,7 @@ INSERT INTO categoria (nombre, descripcion, estado) VALUES
 ('Juguetería', 'Amplia variedad de juguetes y juegos educativos para niños de todas las edades.', 'Activo'),
 ('Librería', 'Artículos de librería, materiales de estudio y artículos de papelería para todas las necesidades.', 'Activo');
 
-INSERT INTO item (nombre, foto, descripcion, precio, marca, cantVendidos, estado, stock, categoria_id) VALUES
+INSERT INTO product (nombre, foto, descripcion, precio, marca, cantVendidos, estado, stock, categoria_id) VALUES
 /*Librería
 ('Cuaderno A5', 'cuaderno_a5.jpg', 'Cuaderno tamaño A5 con 100 hojas rayadas.', 2.99, 'EscribePro', 500, 'activo', 100, 2),
 ('Pluma Estilográfica', 'pluma_estilografica.jpg', 'Pluma estilográfica de alta calidad con tinta azul.', 19.99, 'InkFlow', 120, 'activo', 50, 2),

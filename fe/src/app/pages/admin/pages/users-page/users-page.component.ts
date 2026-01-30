@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { ApiAdministradorService } from '@services/api-admin.service';
+import { ApiAdminService } from '@services/api-admin.service';
 import { IApiAdmin } from '@models/admin.model';
 import { CommonModule } from '@angular/common';
 import {
@@ -11,24 +11,24 @@ import {
 } from '@angular/forms';
 
 @Component({
-  selector: 'app-usuarios-page',
+  selector: 'app-users-page',
   imports: [CommonModule, ReactiveFormsModule, FormsModule],
-  templateUrl: './usuarios-page.component.html',
+  templateUrl: './users-page.component.html',
 })
-export class UsuariosPageComponent implements OnInit {
-  formUsuario!: FormGroup;
+export class UsersPageComponent implements OnInit {
+  formUser!: FormGroup;
   loading: boolean = true;
   errorMessage: string = '';
-  private _apiService = inject(ApiAdministradorService);
-  usuarios: IApiAdmin[] = [];
+  private _apiService = inject(ApiAdminService);
+  users: IApiAdmin[] = [];
   isModalOpen = false;
-  administradorSeleccionado?: IApiAdmin;
+  adminSeleccionado?: IApiAdmin;
   modalMode: 'add' | 'edit' = 'add';
   searchQuery: string = '';
   filterState: string = '';
 
   constructor(private formBuilder: FormBuilder) {
-    this.formUsuario = this.formBuilder.group({
+    this.formUser = this.formBuilder.group({
       nombre: [
         '',
         [
@@ -44,7 +44,7 @@ export class UsuariosPageComponent implements OnInit {
         ],
       ],
       telefono: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
-      usuario: [
+      user: [
         '',
         [
           Validators.required,
@@ -57,23 +57,23 @@ export class UsuariosPageComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadUsuarios();
+    this.loadUsers();
   }
 
-  loadUsuarios(): void {
+  loadUsers(): void {
     this._apiService.getAllAdmins().subscribe((data) => {
-      this.usuarios = data;
+      this.users = data;
     });
   }
 
-  openModal(mode: 'add' | 'edit', administrador?: IApiAdmin): void {
+  openModal(mode: 'add' | 'edit', admin?: IApiAdmin): void {
     this.modalMode = mode;
     this.isModalOpen = true;
-    if (mode === 'edit' && administrador) {
-      this.administradorSeleccionado = administrador;
-      this.formUsuario.patchValue(administrador);
+    if (mode === 'edit' && admin) {
+      this.adminSeleccionado = admin;
+      this.formUser.patchValue(admin);
     } else {
-      this.formUsuario.reset();
+      this.formUser.reset();
     }
   }
 
@@ -83,35 +83,35 @@ export class UsuariosPageComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.formUsuario.valid) {
-      const usuarioData = {
-        ...this.administradorSeleccionado,
-        ...this.formUsuario.value,
+    if (this.formUser.valid) {
+      const userData = {
+        ...this.adminSeleccionado,
+        ...this.formUser.value,
       };
       const request =
         this.modalMode === 'add'
-          ? this._apiService.addAdmin(usuarioData)
-          : this._apiService.updateAdmin(usuarioData.id, usuarioData);
+          ? this._apiService.addAdmin(userData)
+          : this._apiService.updateAdmin(userData.id, userData);
 
       request.subscribe(() => {
-        this.loadUsuarios();
+        this.loadUsers();
         this.closeModal();
       });
     }
   }
 
-  deleteUsuario(id: number): void {
-    if (confirm('¿Seguro que deseas eliminar este usuario?')) {
+  deleteUser(id: number): void {
+    if (confirm('¿Seguro que deseas eliminar este user?')) {
       this._apiService.deleteAdmin(id).subscribe(() => {
-        this.usuarios = this.usuarios.filter((usuario) => usuario.id !== id);
+        this.users = this.users.filter((user) => user.id !== id);
       });
     }
   }
 
   hasErrors(field: string, typeError: string) {
     return (
-      this.formUsuario.get(field)?.hasError(typeError) &&
-      this.formUsuario.get(field)?.touched
+      this.formUser.get(field)?.hasError(typeError) &&
+      this.formUser.get(field)?.touched
     );
   }
 }
