@@ -1,4 +1,5 @@
 import { IApiCategory } from './category.model';
+import { IApiPhoto } from './foto.model';
 
 export interface IApiProduct {
   id: number;
@@ -9,6 +10,6 @@ export interface IApiProduct {
   total_sold: number;
   state: 'Activo' | 'Inactivo';
   stock: number;
-  photos?: string[]; // Array de URLs de las fotos del producto
+  photos: IApiPhoto[]; // Array de URLs de las fotos del producto
   category: IApiCategory;
 }

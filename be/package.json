@@ -17,9 +17,10 @@
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "express": "^4.21.1",
-    "multer": "^2.0.0",
+    "multer": "^2.0.2",
     "mysql2": "^3.11.4",
-    "reflect-metadata": "0.1.13"
+    "reflect-metadata": "0.1.13",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

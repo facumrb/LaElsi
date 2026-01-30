@@ -1,5 +1,16 @@
 import { Router } from 'express';
-import { sanitizeProductInput, findAll, findOne, add, update, remove, searchProductsByText, findProductsByCategory /* imagenProducto, cargaImagenes, uploadDir */ } from './product.controler.js';
+import {
+  sanitizeProductInput,
+  findAll,
+  findOne,
+  add,
+  uploadPhotos,
+  update,
+  remove,
+  searchProductsByText,
+  findProductsByCategory /* imagenProducto, cargaImagenes, uploadDir */
+} from './product.controler.js';
+import { upload } from '../shared/multer.config.js';
 
 export const productRouter = Router();
 
@@ -17,3 +28,9 @@ productRouter.get('/:id', findOne);
 // Ruta para manejar la carga de imágenes
 /* productRouter.post("/imagenesProductos/multi", imagenProducto, cargaImagenes);
  */
+
+productRouter.post(
+  '/:id/fotos',
+  upload.array('fotos', 5), // 'fotos' es el nombre del campo en el FormData, 5 es el máximo
+  uploadPhotos
+);
