@@ -81,9 +81,9 @@
   </nav>
 
   <nav class="flex justify-around bg-[#9574a4] p-2.5 text-[#f4abac]">
-    @for (cat of categorias; track cat.name) {
+    @for (cat of categories; track cat.name) {
       <a
-        [routerLink]="['/categoria', cat.name]"
+        [routerLink]="['/category', cat.name]"
         routerLinkActive="text-[#f4abac] underline decoration-2 underline-offset-4"
         [routerLinkActiveOptions]="{ exact: true }"
         class="text-white no-underline transition-colors hover:text-[#f4abac]"

@@ -8,17 +8,16 @@ const em = orm.em;
 
 function sanitizeAdminInput(req: Request, res: Response, next: NextFunction) {
   req.body.sanitizedInput = {
-    // photo: req.body.photo,
     name: req.body.name,
     last_name: req.body.last_name,
     phone: req.body.phone,
-    // address: req.body.address,
-    // registration_date: req.body.registration_date,
     user: req.body.user,
     password: req.body.password,
     email: req.body.email
+    // address: req.body.address,
+    // registration_date: req.body.registration_date,
+    // photo: req.body.photo,
   };
-  //more checks here
 
   Object.keys(req.body.sanitizedInput).forEach((key) => {
     if (req.body.sanitizedInput[key] === undefined) {
@@ -35,16 +34,16 @@ async function getAccountInfo(req: Request, res: Response) {
     const admin = await em.findOneOrFail(Admin, id);
     // Filtrar los datos que se enviarán al cliente
     const accountInfo = {
-      // photo: admin.photo,
       id: admin.id,
       name: admin.name,
       last_name: admin.last_name,
       phone: admin.phone,
-      // address: admin.address,
-      // registration_date: admin.registration_date,
       user: admin.user,
       password: admin.password,
       email: admin.email
+      // photo: admin.photo,
+      // address: admin.address,
+      // registration_date: admin.registration_date,
       // password: admin.password, // Considera no enviar la contraseña en la respuesta
     };
 
@@ -96,13 +95,13 @@ async function login(req: Request, res: Response) {
     */
 
     const accountInfo = {
-      // foto: admin.foto,
       id: admin.id, // Obtengo el id de Admin porque luego es el que uso para acceder al administrador mediante otras funciones
       name: admin.name,
       last_name: admin.last_name,
       phone: admin.phone,
       user: admin.user,
       email: admin.email
+      // foto: admin.foto,
       // password: admin.password, // Considera no enviar la contraseña en la respuesta
     };
 

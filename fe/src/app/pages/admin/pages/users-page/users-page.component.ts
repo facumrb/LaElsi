@@ -22,7 +22,7 @@ export class UsersPageComponent implements OnInit {
   private _apiService = inject(ApiAdminService);
   users: IApiAdmin[] = [];
   isModalOpen = false;
-  adminSeleccionado?: IApiAdmin;
+  adminSelected?: IApiAdmin;
   modalMode: 'add' | 'edit' = 'add';
   searchQuery: string = '';
   filterState: string = '';
@@ -70,7 +70,7 @@ export class UsersPageComponent implements OnInit {
     this.modalMode = mode;
     this.isModalOpen = true;
     if (mode === 'edit' && admin) {
-      this.adminSeleccionado = admin;
+      this.adminSelected = admin;
       this.formUser.patchValue(admin);
     } else {
       this.formUser.reset();
@@ -85,7 +85,7 @@ export class UsersPageComponent implements OnInit {
   onSubmit(): void {
     if (this.formUser.valid) {
       const userData = {
-        ...this.adminSeleccionado,
+        ...this.adminSelected,
         ...this.formUser.value,
       };
       const request =

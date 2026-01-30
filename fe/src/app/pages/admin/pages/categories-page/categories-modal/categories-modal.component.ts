@@ -1,35 +1,35 @@
 import { Component, inject, input, output, effect } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { IApiCategoria } from '@models/category.model';
+import { IApiCategory } from '@models/category.model';
 import { FormUtils } from '@shared/form-utils';
 
 @Component({
-  selector: 'app-categorias-modal',
+  selector: 'app-categories-modal',
   imports: [ReactiveFormsModule],
-  templateUrl: './categorias-modal.component.html',
+  templateUrl: './categories-modal.component.html',
 })
-export class CategoriasModalComponent {
+export class CategoriesModalComponent {
   private fb = inject(FormBuilder);
   formUtils = FormUtils;
 
   // Si viene data, es edición. Si es null, es creación.
-  categoryData = input<IApiCategoria | null>(null);
+  categoryData = input<IApiCategory | null>(null);
 
   close = output<void>();
   save = output<any>();
 
   formCategory = this.fb.group({
-    nombre: [
+    name: [
       '',
       [
         Validators.required,
         Validators.minLength(3),
         Validators.maxLength(50),
-        Validators.pattern(FormUtils.nombrePattern),
+        Validators.pattern(FormUtils.namePattern),
       ],
     ],
-    descripcion: ['', [Validators.required, Validators.maxLength(1000)]],
-    estado: ['', Validators.required],
+    description: ['', [Validators.required, Validators.maxLength(1000)]],
+    state: ['', Validators.required],
   });
 
   constructor() {
@@ -39,7 +39,7 @@ export class CategoriasModalComponent {
       if (data) {
         this.formCategory.patchValue(data);
       } else {
-        this.formCategory.reset({ estado: '' });
+        this.formCategory.reset({ state: '' });
       }
     });
   }

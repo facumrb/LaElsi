@@ -9,14 +9,14 @@ import { environment } from 'src/environments/environment';
 })
 export class AuthService {
   private _http = inject(HttpClient);
-  private readonly apiUrl = `${environment.baseUrl}/administradores`;
+  private readonly apiUrl = `${environment.baseUrl}/admins`;
 
-  login(usuario: string, password: string): Observable<IApiAccountInfo> {
+  login(user: string, password: string): Observable<IApiAccountInfo> {
     return this._http
       .post<{ message: string; data: IApiAccountInfo }>(
         `${this.apiUrl}/login`,
         {
-          usuario,
+          user,
           password,
         },
       )

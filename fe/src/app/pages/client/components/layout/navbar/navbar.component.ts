@@ -13,11 +13,11 @@ export class NavbarComponent implements OnInit {
   carritoSignal = signal(0);
 
   private ApiCategoryService = inject(ApiCategoryService);
-  categorias: IApiCategory[] = [];
+  categories: IApiCategory[] = [];
 
   ngOnInit() {
     this.ApiCategoryService.getAllCategories().subscribe({
-      next: (data) => (this.categorias = data),
+      next: (data) => (this.categories = data),
       error: (err) => console.error('Error al traer categorías', err),
     });
   }

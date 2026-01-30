@@ -6,7 +6,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ApiAdministradorService } from '@services/api-admin.service';
+import { ApiAdminService } from '@services/api-admin.service';
 import { CommonModule } from '@angular/common';
 import { IApiAccountInfo } from '@models/accountInfo.model';
 
@@ -24,7 +24,7 @@ export class EditProfilePageComponent implements OnInit {
 
   private _route = inject(ActivatedRoute);
   private _router = inject(Router);
-  private _apiService = inject(ApiAdministradorService);
+  private _apiService = inject(ApiAdminService);
 
   constructor(private formBuilder: FormBuilder) {
     this.formEditProfile = this.formBuilder.group({
@@ -69,10 +69,10 @@ export class EditProfilePageComponent implements OnInit {
         this.admin = data;
         this.loading = false;
         this.formEditProfile.patchValue({
-          nombre: this.admin.nombre,
-          apellido: this.admin.apellido,
-          telefono: this.admin.telefono,
-          usuario: this.admin.usuario,
+          nombre: this.admin.name,
+          apellido: this.admin.last_name,
+          telefono: this.admin.phone,
+          usuario: this.admin.user,
           email: this.admin.email,
         });
       },

@@ -27,7 +27,7 @@ export class LoginPageComponent {
 
   constructor(private formBuilder: FormBuilder) {
     this.formLoginAdmin = this.formBuilder.group({
-      usuario: [
+      user: [
         '',
         [
           Validators.required,
@@ -53,10 +53,10 @@ export class LoginPageComponent {
     this.loading = true;
     this.errorMessage = ''; // Limpiamos cualquier mensaje de error anterior.
 
-    const { usuario, password } = this.formLoginAdmin.value;
+    const { user, password } = this.formLoginAdmin.value;
 
     // Llamamos al servicio de autenticación.
-    this._authService.login(usuario, password).subscribe({
+    this._authService.login(user, password).subscribe({
       next: (data) => {
         this.loading = false;
         this._adminDataService.setAdminId(data.id);

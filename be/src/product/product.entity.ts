@@ -30,7 +30,7 @@ export class Product {
   @Property({ nullable: true })
   photos?: string[]; // Array de rutas de imágenes
 
-  @ManyToOne(() => Category, { nullable: false })
+  @ManyToOne(() => Category, { nullable: false, updateRule: 'cascade' })
   category!: Rel<Category>;
 }
 

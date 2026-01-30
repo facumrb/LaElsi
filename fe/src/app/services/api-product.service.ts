@@ -33,12 +33,12 @@ export class ApiProductService {
       .pipe(map((response) => response.data));
   }
 
-  getProductsByCategory(categoryId: number): Observable<IApiProduct[]> {
+  getProductsByCategory(categoryName: string): Observable<IApiProduct[]> {
     return this._http
       .get<{
         message: string;
         data: IApiProduct[];
-      }>(`${this.apiUrl}/category/${categoryId}`)
+      }>(`${this.apiUrl}/category/${categoryName}`)
       .pipe(map((response) => response.data));
   }
 

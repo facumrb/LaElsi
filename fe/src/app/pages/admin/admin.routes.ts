@@ -16,7 +16,7 @@ export const adminRoutes: Routes = [
     component: LayoutComponent,
     children: [
       { path: 'dashboard', component: DashboardPageComponent },
-      { path: 'usuarios', component: UsersPageComponent },
+      { path: 'users', component: UsersPageComponent },
       { path: 'categories', component: CategoriesPageComponent },
       { path: 'products', component: ProductsPageComponent },
       { path: 'orders', component: OrdersPageComponent },

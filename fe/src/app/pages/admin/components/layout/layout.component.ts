@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
-interface MenuProduct {
+interface menuItems {
   label: string;
   route: string;
   iconSVG: string; // Ruta del SVG

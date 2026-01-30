@@ -21,45 +21,39 @@
       class="space-y-4"
     >
       <div>
-        <label
-          for="usuario"
-          class="mb-2 block text-sm font-medium text-gray-700"
-        >
+        <label for="user" class="mb-2 block text-sm font-medium text-gray-700">
           Usuario
         </label>
 
         <input
           type="text"
-          id="usuario"
-          formControlName="usuario"
+          id="user"
+          formControlName="user"
           class="block w-full rounded-md border p-2.5 text-gray-900 shadow-sm focus:outline-none focus:ring-2 sm:text-sm"
           [class.border-red-500]="
-            hasErrors('usuario', 'required') || hasErrors('usuario', 'pattern')
+            hasErrors('user', 'required') || hasErrors('user', 'pattern')
           "
           [class.focus:border-red-500]="
-            hasErrors('usuario', 'required') || hasErrors('usuario', 'pattern')
+            hasErrors('user', 'required') || hasErrors('user', 'pattern')
           "
           [class.focus:ring-red-500]="
-            hasErrors('usuario', 'required') || hasErrors('usuario', 'pattern')
+            hasErrors('user', 'required') || hasErrors('user', 'pattern')
           "
           [class.border-gray-300]="
-            !hasErrors('usuario', 'required') &&
-            !hasErrors('usuario', 'pattern')
+            !hasErrors('user', 'required') && !hasErrors('user', 'pattern')
           "
           [class.focus:border-[#049A8F]]="
-            !hasErrors('usuario', 'required') &&
-            !hasErrors('usuario', 'pattern')
+            !hasErrors('user', 'required') && !hasErrors('user', 'pattern')
           "
           [class.focus:ring-[#049A8F]]="
-            !hasErrors('usuario', 'required') &&
-            !hasErrors('usuario', 'pattern')
+            !hasErrors('user', 'required') && !hasErrors('user', 'pattern')
           "
         />
 
         <div class="mt-1 min-h-5 text-sm">
-          @if (hasErrors("usuario", "required")) {
+          @if (hasErrors("user", "required")) {
             <div class="text-red-600">El usuario es obligatorio.</div>
-          } @else if (hasErrors("usuario", "pattern")) {
+          } @else if (hasErrors("user", "pattern")) {
             <div class="text-red-600">El formato del usuario es inválido.</div>
           }
         </div>

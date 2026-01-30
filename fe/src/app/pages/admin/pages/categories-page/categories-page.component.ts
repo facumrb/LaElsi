@@ -1,67 +1,67 @@
 import { Component, inject, signal, computed } from '@angular/core';
-import { ApiCategoriaService } from '@services/api-category.service';
-import { IApiCategoria } from '@models/category.model';
+import { ApiCategoryService } from '@services/api-category.service';
+import { IApiCategory } from '@models/category.model';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AlertService } from '@shared/alert.service';
 import { ApiErrorService } from '@shared/api-error.service';
-import { CategoriasModalComponent } from './categorias-modal/categorias-modal.component';
-import { CategoriasListComponent } from './categorias-list/categorias-list.component';
-import { CategoriasToolbarComponent } from './categorias-toolbar/categorias-toolbar.component';
-import { FiltroInventario } from './categorias-toolbar/categorias-toolbar.component';
+import { CategoriesModalComponent } from './categories-modal/categories-modal.component';
+import { CategoriesListComponent } from './categories-list/categories-list.component';
+import { CategoriesToolbarComponent } from './categories-toolbar/categories-toolbar.component';
+import { StockFilter } from './categories-toolbar/categories-toolbar.component';
 
 @Component({
-  selector: 'app-categorias-page',
+  selector: 'app-categories-page',
   imports: [
     ReactiveFormsModule,
-    CategoriasModalComponent,
-    CategoriasListComponent,
-    CategoriasToolbarComponent,
+    CategoriesModalComponent,
+    CategoriesListComponent,
+    CategoriesToolbarComponent,
   ],
-  templateUrl: './categorias-page.component.html',
+  templateUrl: './categories-page.component.html',
 })
-export class CategoriasPageComponent {
+export class CategoriesPageComponent {
   private _alertService = inject(AlertService);
   private _errorService = inject(ApiErrorService);
-  private _apiService = inject(ApiCategoriaService);
-  private categoriasRaw = signal<IApiCategoria[]>([]);
+  private _apiService = inject(ApiCategoryService);
+  private categoriesRaw = signal<IApiCategory[]>([]);
 
-  filtroEstado = signal<'Todos' | 'Activo' | 'Inactivo'>('Todos');
-  filtroInventario = signal<FiltroInventario>('Todos');
+  statusFilter = signal<'Todos' | 'Activo' | 'Inactivo'>('Todos');
+  stockFilter = signal<StockFilter>('Todos');
   searchQuery = signal('');
 
-  categorias = computed(() => {
-    const raw = this.categoriasRaw();
-    const estado = this.filtroEstado();
-    const inv = this.filtroInventario();
+  categories = computed(() => {
+    const raw = this.categoriesRaw();
+    const state = this.statusFilter();
+    const inv = this.stockFilter();
 
     const query = this.searchQuery().toLowerCase().trim();
 
     let filtered = raw.filter((cat) => {
       // Filtro de Estado
-      const cumpleEstado = estado === 'Todos' || cat.estado === estado;
+      const cumpleEstado = state === 'Todos' || cat.state === state;
 
       // Filtro de Inventario
-      const cant = cat.items?.length || 0;
+      const cant = cat.products?.length || 0;
       let cumpleInv = true;
       if (inv === 'ConProductos') cumpleInv = cant > 0;
       if (inv === 'SinProductos') cumpleInv = cant === 0;
 
       // Filtro de Búsqueda
       const cumpleBusqueda =
-        cat.nombre.toLowerCase().includes(query) ||
-        (cat.descripcion && cat.descripcion.toLowerCase().includes(query));
+        cat.name.toLowerCase().includes(query) ||
+        (cat.description && cat.description.toLowerCase().includes(query));
 
       return cumpleEstado && cumpleInv && cumpleBusqueda;
     });
     if (inv === 'MasProductos') {
       // Ordenar de Mayor a Menor (Descendente)
       filtered = filtered.sort(
-        (a, b) => (b.items?.length || 0) - (a.items?.length || 0),
+        (a, b) => (b.products?.length || 0) - (a.products?.length || 0),
       );
     } else if (inv === 'MenosProductos') {
       // Ordenar de Menor a Mayor (Ascendente)
       filtered = filtered.sort(
-        (a, b) => (a.items?.length || 0) - (b.items?.length || 0),
+        (a, b) => (a.products?.length || 0) - (b.products?.length || 0),
       );
     }
 
@@ -70,15 +70,15 @@ export class CategoriasPageComponent {
 
   // Estado del modal
   isModalOpen = signal(false);
-  selectedCategory = signal<IApiCategoria | null>(null);
+  selectedCategory = signal<IApiCategory | null>(null);
 
   ngOnInit() {
-    this.loadCategorias();
+    this.loadCategories();
   }
 
-  loadCategorias() {
-    this._apiService.getAllCategorias().subscribe((data) => {
-      this.categoriasRaw.set(data);
+  loadCategories() {
+    this._apiService.getAllCategories().subscribe((data) => {
+      this.categoriesRaw.set(data);
     });
   }
 
@@ -88,8 +88,8 @@ export class CategoriasPageComponent {
     this.isModalOpen.set(true);
   }
 
-  openEditModal(categoria: IApiCategoria) {
-    this.selectedCategory.set(categoria);
+  openEditModal(category: IApiCategory) {
+    this.selectedCategory.set(category);
     this.isModalOpen.set(true);
   }
 
@@ -97,15 +97,15 @@ export class CategoriasPageComponent {
     const currentCat = this.selectedCategory();
     const esEdicion = !!currentCat;
     const request$ = esEdicion
-      ? this._apiService.updateCategoria(currentCat.id, {
+      ? this._apiService.updateCategory(currentCat.name, {
           ...currentCat,
           ...formData,
         })
-      : this._apiService.addCategoria(formData);
+      : this._apiService.addCategory(formData);
 
     request$.subscribe({
       next: () => {
-        this.loadCategorias();
+        this.loadCategories();
         this.isModalOpen.set(false);
         this._alertService.toast(
           `Categoría ${esEdicion ? 'editada' : 'creada'} con éxito`,
@@ -122,22 +122,22 @@ export class CategoriasPageComponent {
   }
 
   // --- Lógica para borrar la categoria ---
-  delete(categoria: IApiCategoria) {
-    const cantidadProductos = categoria.items?.length || 0;
+  delete(category: IApiCategory) {
+    const cantidadProductos = category.products?.length || 0;
     if (cantidadProductos > 0) {
       this._alertService.error(
         'Acción Bloqueada',
-        `No puedes eliminar la categoría <b>"${categoria.nombre}"</b> porque tiene <b>${cantidadProductos}</b> productos asociados.<br><br>💡 Primero elimina o mueve esos productos.`,
+        `No puedes eliminar la categoría <b>"${category.name}"</b> porque tiene <b>${cantidadProductos}</b> productos asociados.<br><br>💡 Primero elimina o mueve esos productos.`,
       );
       return;
     }
 
-    this._alertService.confirmDelete().then((confirmado) => {
-      if (confirmado) {
-        this._apiService.deleteCategoria(categoria.id).subscribe({
+    this._alertService.confirmDelete().then((confirm) => {
+      if (confirm) {
+        this._apiService.deleteCategory(category.name).subscribe({
           next: () => {
-            this.categoriasRaw.update((cats) =>
-              cats.filter((c) => c.id !== categoria.id),
+            this.categoriesRaw.update((cats) =>
+              cats.filter((c) => c.name !== category.name),
             );
             this._alertService.toast('Categoría eliminada', 'success');
           },

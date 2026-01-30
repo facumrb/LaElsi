@@ -56,17 +56,17 @@
       />
     </div>
 
-    <div class="w-full md:w-1/4">
+    <!-- <div class="w-full md:w-1/4">
       <select
         class="block w-full rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-base focus:border-[#049A8F] focus:outline-none focus:ring-1 focus:ring-[#049A8F] sm:text-sm"
-        (change)="filterByCategoria($event)"
+        (change)="filterByCategory($event)"
       >
         <option value="">Todas las Categorías</option>
-        @for (categoria of categorias; track $index) {
-          <option [value]="categoria.id">{{ categoria.nombre }}</option>
+        @for (category of categories; track $index) {
+          <option [value]="category.id">{{ category.nombre }}</option>
         }
       </select>
-    </div>
+    </div> -->
   </div>
 
   <div class="overflow-hidden rounded-lg border border-gray-200 shadow-md">
@@ -133,40 +133,40 @@
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-100 border-t border-gray-100">
-          @for (item of items; track $index) {
+          @for (product of products; track $index) {
             <tr class="transition-colors hover:bg-gray-50">
               <td class="whitespace-nowrap px-6 py-4 font-medium text-gray-900">
-                {{ item.nombre }}
+                {{ product.name }}
               </td>
               <td
                 class="max-w-xs truncate px-6 py-4"
-                title="{{ item.descripcion }}"
+                title="{{ product.description }}"
               >
-                {{ item.descripcion }}
+                {{ product.description }}
               </td>
-              <td class="px-6 py-4">{{ item.marca }}</td>
+              <td class="px-6 py-4">{{ product.brand }}</td>
               <td class="whitespace-nowrap px-6 py-4 font-medium text-gray-900">
-                {{ item.precio | currency }}
+                {{ product.price | currency }}
               </td>
               <td class="px-6 py-4">
                 <span
                   class="inline-flex rounded-full px-2 text-xs font-semibold leading-5"
-                  [class.bg-green-100]="item.estado === 'Activo'"
-                  [class.text-green-800]="item.estado === 'Activo'"
-                  [class.bg-red-100]="item.estado === 'Inactivo'"
-                  [class.text-red-800]="item.estado === 'Inactivo'"
+                  [class.bg-green-100]="product.state === 'Activo'"
+                  [class.text-green-800]="product.state === 'Activo'"
+                  [class.bg-red-100]="product.state === 'Inactivo'"
+                  [class.text-red-800]="product.state === 'Inactivo'"
                 >
-                  {{ item.estado }}
+                  {{ product.state }}
                 </span>
               </td>
-              <td class="px-6 py-4">{{ item.stock }}</td>
-              <td class="px-6 py-4">{{ item.cant_vendidos }}</td>
+              <td class="px-6 py-4">{{ product.stock }}</td>
+              <td class="px-6 py-4">{{ product.total_sold }}</td>
               <td class="px-6 py-4 text-gray-900">
-                {{ item.categoria.nombre }}
+                {{ product.category.name }}
               </td>
               <td class="flex justify-center gap-3 px-6 py-4">
                 <button
-                  (click)="openModal('edit', item)"
+                  (click)="openModal('edit', product)"
                   class="text-blue-600 hover:text-blue-900"
                 >
                   <svg
@@ -185,7 +185,7 @@
                   </svg>
                 </button>
                 <button
-                  (click)="deleteItem(item.id)"
+                  (click)="deleteProduct(product.id)"
                   class="text-red-600 hover:text-red-900"
                 >
                   <svg
@@ -234,7 +234,11 @@
           </div>
         }
 
-        <form [formGroup]="formItem" (ngSubmit)="onSubmit()" class="space-y-4">
+        <form
+          [formGroup]="formProduct"
+          (ngSubmit)="onSubmit()"
+          class="space-y-4"
+        >
           <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
               <label class="mb-1 block text-sm font-medium text-gray-700"
@@ -499,30 +503,28 @@
                 >Categoría</label
               >
               <select
-                formControlName="categoria"
+                formControlName="category"
                 class="block w-full rounded-md border p-2.5 text-gray-900 shadow-sm focus:outline-none focus:ring-1 sm:text-sm"
-                [class.border-red-500]="hasErrors('categoria', 'required')"
-                [class.focus:border-red-500]="
-                  hasErrors('categoria', 'required')
-                "
-                [class.focus:ring-red-500]="hasErrors('categoria', 'required')"
-                [class.border-gray-300]="!hasErrors('categoria', 'required')"
+                [class.border-red-500]="hasErrors('category', 'required')"
+                [class.focus:border-red-500]="hasErrors('category', 'required')"
+                [class.focus:ring-red-500]="hasErrors('category', 'required')"
+                [class.border-gray-300]="!hasErrors('category', 'required')"
                 [class.focus:border-[#049A8F]]="
-                  !hasErrors('categoria', 'required')
+                  !hasErrors('category', 'required')
                 "
                 [class.focus:ring-[#049A8F]]="
-                  !hasErrors('categoria', 'required')
+                  !hasErrors('category', 'required')
                 "
               >
                 <option value="" disabled selected>
                   Seleccione una categoría
                 </option>
-                @for (categoria of categorias; track $index) {
-                  <option [value]="categoria.id">{{ categoria.nombre }}</option>
+                @for (category of categories; track $index) {
+                  <option [value]="category.name">{{ category.name }}</option>
                 }
               </select>
               <div class="mt-1 min-h-4 text-xs text-red-600">
-                @if (hasErrors("categoria", "required")) {
+                @if (hasErrors("category", "required")) {
                   <span>Obligatoria.</span>
                 }
               </div>
@@ -539,7 +541,7 @@
             </button>
             <button
               type="submit"
-              [disabled]="!formItem.valid"
+              [disabled]="!formProduct.valid"
               class="rounded-md bg-[#037971] px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-[#049A8F] disabled:cursor-not-allowed disabled:bg-gray-400"
             >
               Guardar

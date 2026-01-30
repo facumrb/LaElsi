@@ -1,12 +1,9 @@
 ### GET all products
-
 GET http://localhost:3000/api/products HTTP/1.1
 
 
 ### POST a product
-
 # @name createProduct
-
 POST http://localhost:3000/api/products HTTP/1.1
 Content-Type: application/json
 
@@ -18,7 +15,7 @@ Content-Type: application/json
     "total_sold": 250,
     "state": "Activo",
     "stock": 100,
-    "category": 1,
+    "category": "Juguetería", 
     "photos": [ "https://i.imgur.com/Byi3gBg.jpeg" ]
 }
 
@@ -39,7 +36,6 @@ PATCH http://localhost:3000/api/products/{{id}} HTTP/1.1
 Content-Type: application/json
 
 {
-    // foto?
     "price": 25,
     "total_sold": 300,
     "stock": 50
@@ -59,7 +55,7 @@ Content-Type: application/json
     "total_sold": 10,
     "state": "Activo",
     "stock": 45,
-    "category": 1,
+    "category": "Juguetería",
     "photos": [ "https://i.imgur.com/Byi3gBg.jpeg" ]
 }
 
@@ -72,15 +68,14 @@ POST http://localhost:3000/api/products HTTP/1.1
 Content-Type: application/json
 
 {
-    "name": "Tijera",
-    // foto?
-    "description": "",
-    "price": 25,
+    "name": "Tijera Escolar",
+    "description": "Tijera punta redonda",
+    "price": 5.50,
     "brand": "Modul",
     "total_sold": 100,
-    "state": 10,
+    "state": "Inactivo", 
     "stock": 90,
-    "category": 2
+    "category": "Librería"
 }
 
 
@@ -97,7 +92,6 @@ PATCH http://localhost:3000/api/products/{{idToDelete}} HTTP/1.1
 Content-Type: application/json
 
 {
-    // foto?
     "price": 25,
     "total_sold": 100,
     "stock": 20

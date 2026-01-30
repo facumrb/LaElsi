@@ -22,20 +22,20 @@ export class CategoryPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe((params) => {
-      const id = +params['id'];
-      this.cargarDatosDePagina(id);
+      const name = params['name'];
+      this.cargarDatosDePagina(name);
     });
   }
 
-  cargarDatosDePagina(id: number) {
-    // 1. Llamamos a tu función para obtener el nombre de la categoría
-    this.ApiCategoryService.getCategoryById(id).subscribe({
+  cargarDatosDePagina(name: string) {
+    // 1. Llamamos a la función para obtener el nombre de la categoría
+    this.ApiCategoryService.getCategoryByName(name).subscribe({
       next: (data) => (this.category = data),
       error: (err) => console.error('Error al obtener categoría', err),
     });
 
     // 2. Llamamos a la función que ya teníamos para los productos
-    this.ApiProductService.getProductsByCategory(id).subscribe({
+    this.ApiProductService.getProductsByCategory(name).subscribe({
       next: (data) => (this.products = data),
       error: (err) => console.error('Error al obtener productos', err),
     });
