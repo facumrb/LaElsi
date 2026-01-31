@@ -6,8 +6,8 @@ import { UsersPageComponent } from './pages/users-page/users-page.component';
 import { CategoriesPageComponent } from './pages/categories-page/categories-page.component';
 import { ProductsPageComponent } from './pages/products-page/products-page.component';
 import { OrdersPageComponent } from './pages/orders-page/orders-page.component';
-import { ViewProfilePageComponent } from './pages/view-profile-page/view-profile-page.component';
-import { EditProfilePageComponent } from './pages/edit-profile-page/edit-profile-page.component';
+import { ViewProfilePageComponent } from './pages/profile-page/view-profile-page/view-profile-page.component';
+import { EditProfilePageComponent } from './pages/profile-page/edit-profile-page/edit-profile-page.component';
 
 export const adminRoutes: Routes = [
   {
