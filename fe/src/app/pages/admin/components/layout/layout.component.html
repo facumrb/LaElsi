@@ -158,20 +158,30 @@
           </span>
         </button>
 
-        @if (userMenuOpen()) {
+        @if (showUserMenu()) {
           <div
-            class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 border border-gray-100 animate-in fade-in slide-in-from-top-1 duration-200"
+            (click)="showUserMenu.set(false)"
+            class="fixed inset-0 z-10 cursor-default"
+          ></div>
+
+          <div
+            class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 border border-gray-100 animate-in fade-in slide-in-from-top-1 duration-200 z-20"
           >
             <a
               href="#"
+              (click)="showUserMenu.set(false)"
               class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-              >Ver Perfil</a
             >
+              Ver Perfil
+            </a>
+
             <a
               href="#"
+              (click)="showUserMenu.set(false)"
               class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50"
-              >Cerrar Sesión</a
             >
+              Cerrar Sesión
+            </a>
           </div>
         }
       </div>

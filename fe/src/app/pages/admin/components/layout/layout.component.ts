@@ -20,7 +20,7 @@ interface menuItems {
 export class LayoutComponent {
   sidebarOpen = signal(true);
   mobileMenuOpen = signal(false);
-  userMenuOpen = signal(false);
+  showUserMenu = signal(false);
 
   currentUser = { name: 'Admin Usuario', email: 'admin@laelsi.com' };
 
@@ -67,6 +67,6 @@ export class LayoutComponent {
   }
 
   toggleUserMenu() {
-    this.userMenuOpen.update((v) => !v);
+    this.showUserMenu.update((v) => !v);
   }
 }

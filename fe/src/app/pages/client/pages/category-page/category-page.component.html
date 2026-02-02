@@ -2,12 +2,12 @@
   <header class="mb-10 border-b-2 border-[#f4abac] pb-4">
     <h1 class="text-4xl font-extrabold text-gray-900 uppercase">
       Sección:
-      <span class="text-[#f4abac]">{{ category?.name }}</span>
+      <span class="text-[#f4abac]">{{ category()?.name }}</span>
     </h1>
   </header>
 
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-    @for (product of products; track product.id) {
+    @for (product of products(); track product.id) {
       <app-product-card [product]="product" />
     } @empty {
       <p class="text-gray-400">No hay productos en esta categoría.</p>

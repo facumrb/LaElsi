@@ -86,7 +86,7 @@
             <button
               type="button"
               (click)="togglePasswordVisibility()"
-              class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+              class="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
             >
               @if (passwordVisible) {
                 <svg
@@ -139,7 +139,7 @@
         <button
           type="submit"
           [disabled]="loading"
-          class="flex w-full justify-center rounded-md bg-[#037971] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#049A8F] focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-[#037971] disabled:cursor-not-allowed disabled:bg-gray-400"
+          class="cursor-pointer flex w-full justify-center rounded-md bg-[#037971] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#049A8F] focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-[#037971] disabled:cursor-not-allowed disabled:bg-gray-400"
         >
           @if (loading) {
             <svg
