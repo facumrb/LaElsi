@@ -45,7 +45,8 @@
                 >Nombre:</span
               >
               <div
-                class="w-full whitespace-normal wrap-break-word md:truncate md:w-50"
+                (click)="onEdit.emit(category)"
+                class="cursor-pointer w-full whitespace-normal wrap-break-word md:truncate md:w-50 hover:underline"
                 title="{{ category.name }}"
               >
                 {{ category.name }}

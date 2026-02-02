@@ -11,18 +11,21 @@ export class ApiCategoryService {
   private _http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiUrl}/categories`;
 
+  // Obtener todas las categorías
   getAllCategories(): Observable<IApiCategory[]> {
     return this._http
       .get<{ message: string; data: IApiCategory[] }>(this.apiUrl)
       .pipe(map((response) => response.data));
   }
 
+  // Obtener una categoría por nombre
   getCategoryByName(name: string): Observable<IApiCategory> {
     return this._http
       .get<{ message: string; data: IApiCategory }>(`${this.apiUrl}/${name}`)
       .pipe(map((response) => response.data));
   }
 
+  // Buscar categorías por nombre o descripción
   searchCategories(query: string): Observable<IApiCategory[]> {
     const params = new HttpParams().set('query', query);
     return this._http
@@ -33,6 +36,7 @@ export class ApiCategoryService {
       .pipe(map((response) => response.data));
   }
 
+  // Crea una nueva categoría
   addCategory(category: IApiCategory): Observable<IApiCategory> {
     return this._http
       .post<{
@@ -42,6 +46,7 @@ export class ApiCategoryService {
       .pipe(map((response) => response.data));
   }
 
+  // Actualiza una categoría
   updateCategory(
     name: string,
     category: IApiCategory,
@@ -54,6 +59,7 @@ export class ApiCategoryService {
       .pipe(map((response) => response.data));
   }
 
+  // Elimina una categoría
   deleteCategory(name: string): Observable<void> {
     return this._http
       .delete<{ message: string }>(`${this.apiUrl}/${name}`)

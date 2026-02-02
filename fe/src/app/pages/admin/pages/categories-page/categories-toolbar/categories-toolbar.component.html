@@ -25,7 +25,7 @@
         type="text"
         [ngModel]="searchQuery()"
         (ngModelChange)="searchQuery.set($event)"
-        placeholder="Buscar..."
+        placeholder="Buscar categoría..."
         class="block w-full rounded-lg border-0 py-2 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#3d4494] sm:text-sm sm:leading-6"
       />
       @if (searchQuery()) {
@@ -228,7 +228,7 @@
 
       <button
         (click)="onAdd.emit()"
-        class="cursor-pointer flex-1 md:flex-none bg-[#3d4494] text-white px-4 py-2 rounded-lg hover:bg-[#2a2f63] transition-colors flex justify-center items-center gap-2 shadow-sm whitespace-nowrap"
+        class="cursor-pointer flex-1 md:w-50 bg-[#3d4494] text-white px-4 py-2 rounded-lg hover:bg-[#2a2f63] transition-colors flex justify-center items-center gap-2 shadow-sm whitespace-nowrap"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

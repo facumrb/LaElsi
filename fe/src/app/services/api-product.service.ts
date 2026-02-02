@@ -11,18 +11,21 @@ export class ApiProductService {
   private _http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiUrl}/products`;
 
+  // Obtener todos los productos
   getAllProducts(): Observable<IApiProduct[]> {
     return this._http
       .get<{ message: string; data: IApiProduct[] }>(this.apiUrl)
       .pipe(map((response) => response.data));
   }
 
+  // Obtener un producto por ID
   getProductById(id: number): Observable<IApiProduct> {
     return this._http
       .get<{ message: string; data: IApiProduct }>(`${this.apiUrl}/${id}`)
       .pipe(map((response) => response.data));
   }
 
+  // Buscar productos por nombre o descripción
   searchProducts(query: string): Observable<IApiProduct[]> {
     const params = new HttpParams().set('query', query);
     return this._http
@@ -33,6 +36,7 @@ export class ApiProductService {
       .pipe(map((response) => response.data));
   }
 
+  // Obtener productos segun una categoría
   getProductsByCategory(categoryName: string): Observable<IApiProduct[]> {
     return this._http
       .get<{
@@ -42,27 +46,14 @@ export class ApiProductService {
       .pipe(map((response) => response.data));
   }
 
-  // PASO 1: Envía JSON
+  // Crea un nuevo producto (solo datos, las fotos se suben desde el api-photo.service)
   addProduct(product: ICreateProduct): Observable<IApiProduct> {
     return this._http
       .post<{ message: string; data: IApiProduct }>(this.apiUrl, product)
       .pipe(map((response) => response.data));
   }
 
-  // PASO 2: Envía FormData (Fotos)
-  uploadPhotos(productId: number, photosData: FormData): Observable<any> {
-    return this._http.post(`${this.apiUrl}/${productId}/photos`, photosData);
-  }
-
-  reorderPhotos(photosOrder: { id: number; order: number }[]): Observable<any> {
-    return this._http.post(`${this.apiUrl}/photos/reorder`, { photosOrder });
-  }
-
-  // Método para borrar una foto específica
-  deletePhoto(photoId: number): Observable<any> {
-    return this._http.delete(`${this.apiUrl}/photos/${photoId}`);
-  }
-
+  // Actualiza un producto
   updateProduct(id: number, product: ICreateProduct): Observable<IApiProduct> {
     return this._http
       .patch<{
@@ -72,6 +63,7 @@ export class ApiProductService {
       .pipe(map((response) => response.data));
   }
 
+  // Elimina un producto
   deleteProduct(id: number): Observable<void> {
     return this._http
       .delete<{ message: string }>(`${this.apiUrl}/${id}`)

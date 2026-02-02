@@ -1,4 +1,11 @@
-import { Component, inject, input, output, effect } from '@angular/core';
+import {
+  Component,
+  inject,
+  input,
+  output,
+  effect,
+  signal,
+} from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IApiCategory } from '@models/category.model';
 import { FormUtils } from '@shared/form-utils';
@@ -29,7 +36,7 @@ export class CategoriesModalComponent {
       ],
     ],
     description: ['', [Validators.required, Validators.maxLength(1000)]],
-    state: ['', Validators.required],
+    state: ['Activo' as 'Activo' | 'Inactivo', [Validators.required]],
   });
 
   constructor() {
@@ -39,9 +46,19 @@ export class CategoriesModalComponent {
       if (data) {
         this.formCategory.patchValue(data);
       } else {
-        this.formCategory.reset({ state: '' });
+        this.formCategory.reset({ state: 'Activo' });
       }
     });
+  }
+  showStateMenu = signal(false);
+
+  toggleStateMenu() {
+    this.showStateMenu.set(!this.showStateMenu());
+  }
+
+  selectState(state: string) {
+    this.formCategory.patchValue({ state: state as 'Activo' | 'Inactivo' });
+    this.showStateMenu.set(false);
   }
 
   onSubmit() {

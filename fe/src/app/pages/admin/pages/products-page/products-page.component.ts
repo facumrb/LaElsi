@@ -17,7 +17,6 @@ import { Router } from '@angular/router';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    FormsModule,
     ProductsListComponent,
     ProductsToolbarComponent,
   ],
@@ -78,10 +77,5 @@ export class ProductsPageComponent {
         });
       }
     });
-  }
-
-  handleViewDetail(product: IApiProduct) {
-    // Aquí iría la lógica para mostrar el detalle
-    console.log('Ver detalle:', product);
   }
 }

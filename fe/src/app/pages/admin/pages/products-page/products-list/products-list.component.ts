@@ -12,7 +12,6 @@ export class ProductsListComponent {
   products = input.required<IApiProduct[]>();
   onEdit = output<IApiProduct>();
   onDelete = output<IApiProduct>();
-  onViewDetail = output<IApiProduct>();
 
   private readonly imageBaseUrl = environment.imageBaseUrl;
 
