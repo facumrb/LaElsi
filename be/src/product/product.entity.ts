@@ -28,7 +28,7 @@ export class Product {
   @Property({ nullable: false })
   stock!: number;
 
-  @OneToMany({ entity: 'Photo', mappedBy: 'product' })
+  @OneToMany({ entity: 'Photo', nullable: true, mappedBy: 'product' })
   photos = new Collection<Photo>(this);
 
   @ManyToOne(() => Category, { nullable: false, updateRule: 'cascade' })

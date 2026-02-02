@@ -1,36 +1,24 @@
 import { Router } from 'express';
-import {
-  sanitizeProductInput,
-  findAll,
-  findOne,
-  add,
-  uploadPhotos,
-  update,
-  remove,
-  searchProductsByText,
-  findProductsByCategory /* imagenProducto, cargaImagenes, uploadDir */
-} from './product.controler.js';
+import { sanitizeProductInput, findAll, findOne, add, uploadPhotos, reorderPhotos, update, remove, searchProductsByText, findProductsByCategory, deletePhoto } from './product.controler.js';
 import { upload } from '../shared/multer.config.js';
 
 export const productRouter = Router();
 
-// No se usan:
 productRouter.get('/', findAll);
-
-// Se usan:
-productRouter.post('/', sanitizeProductInput, add);
 productRouter.patch('/:id', sanitizeProductInput, update);
 productRouter.delete('/:id', remove);
-// productRouter.post("/", imagenProducto.single("foto"), sanitizeProductInput, add); ???
-productRouter.get('/search', searchProductsByText); // Buscar productos por texto
-productRouter.get('/category/:categoryName', findProductsByCategory); // Obtener productos por categoría
+productRouter.get('/search', searchProductsByText);
+productRouter.get('/category/:categoryName', findProductsByCategory);
 productRouter.get('/:id', findOne);
-// Ruta para manejar la carga de imágenes
-/* productRouter.post("/imagenesProductos/multi", imagenProducto, cargaImagenes);
- */
 
-productRouter.post(
-  '/:id/fotos',
-  upload.array('fotos', 5), // 'fotos' es el nombre del campo en el FormData, 5 es el máximo
-  uploadPhotos
-);
+// PASO 1: Crear Producto (Recibe JSON, usa sanitize)
+productRouter.post('/', sanitizeProductInput, add);
+
+// PASO 2: Subir Fotos (Recibe Multipart, usa Multer)
+productRouter.post('/:id/photos', upload.array('files', 10), uploadPhotos);
+// 'files' es el nombre del campo en el FormData en el front, 10 es el máximo
+
+productRouter.post('/photos/reorder', reorderPhotos);
+
+// Ruta para borrar una foto específica
+productRouter.delete('/photos/:photoId', deletePhoto);

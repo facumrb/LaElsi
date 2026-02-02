@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
-import { IApiProduct } from '@models/product.model';
+import { IApiProduct, ICreateProduct } from '@models/product.model';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -42,16 +42,28 @@ export class ApiProductService {
       .pipe(map((response) => response.data));
   }
 
-  addProduct(product: IApiProduct): Observable<IApiProduct> {
+  // PASO 1: Envía JSON
+  addProduct(product: ICreateProduct): Observable<IApiProduct> {
     return this._http
       .post<{ message: string; data: IApiProduct }>(this.apiUrl, product)
       .pipe(map((response) => response.data));
   }
 
-  updateProduct(
-    id: number,
-    product: Partial<IApiProduct>,
-  ): Observable<IApiProduct> {
+  // PASO 2: Envía FormData (Fotos)
+  uploadPhotos(productId: number, photosData: FormData): Observable<any> {
+    return this._http.post(`${this.apiUrl}/${productId}/photos`, photosData);
+  }
+
+  reorderPhotos(photosOrder: { id: number; order: number }[]): Observable<any> {
+    return this._http.post(`${this.apiUrl}/photos/reorder`, { photosOrder });
+  }
+
+  // Método para borrar una foto específica
+  deletePhoto(photoId: number): Observable<any> {
+    return this._http.delete(`${this.apiUrl}/photos/${photoId}`);
+  }
+
+  updateProduct(id: number, product: ICreateProduct): Observable<IApiProduct> {
     return this._http
       .patch<{
         message: string;

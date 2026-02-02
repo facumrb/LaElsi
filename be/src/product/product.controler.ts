@@ -1,64 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
-import express from 'express';
-import { Product } from './product.entity.js';
 import { orm } from '../shared/db/orm.js';
+import { Product } from './product.entity.js';
+import { Category } from '../category/category.entity.js';
 import { Photo } from '../photo/photo.entity.js';
-/* import multer from "multer";
-import fs from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const uploadDir = path.join(__dirname, "imagenesProductos");
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-// Configuración de multer para cargar múltiples imágenes
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "imagenesProductos"); // Carpeta donde se guardarán las imágenes
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname)); // Renombrar el archivo
-  }
-});
-
-let cantMaxPhotos = 10;
-const imagenProducto = multer({ storage }).array("photos", cantMaxPhotos); // "Fotos" es el nombre del campo en el formulario
-
-// Definir la función de carga de imágenes
-async function cargaImagenes(req: express.Request, res: express.Response) {
-  // Verificar si se han subido archivos
-  if (!req.files || (Array.isArray(req.files) && req.files.length === 0)) {
-    return res.status(400).send("No se han subido archivos.");
-  }
-
-  try {
-    const filePaths: string[] = [];
-
-    // Convertir req.files a un arreglo si es necesario
-    const filesArray = Array.isArray(req.files) ? req.files : Object.values(req.files).flat();
-
-    for (const file of filesArray) {
-      const uploadPath = path.join(__dirname, "imagenes", file.originalname);
-      await fs.promises.writeFile(uploadPath, file.buffer);
-      filePaths.push(uploadPath);
-    }
-
-    res.status(200).send("Imágenes guardadas: " + filePaths.join(", "));
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      res.status(500).send("Error al guardar las imágenes: " + error.message);
-    } else {
-      res.status(500).send("Error al guardar las imágenes: " + String(error));
-    }
-  }
-} */
-
-const em = orm.em;
+import path from 'path';
+import fs from 'fs/promises';
 
 function sanitizeProductInput(req: Request, res: Response, next: NextFunction) {
   req.body.sanitizedInput = {
@@ -69,7 +15,7 @@ function sanitizeProductInput(req: Request, res: Response, next: NextFunction) {
     total_sold: req.body.total_sold,
     state: req.body.state,
     stock: req.body.stock,
-    category: req.body.category
+    category: req.body.categoryName
     /* registration_date: req.body.registration_date,
     update_date: req.body.update_date,
     to_reserve: req.body.to_reserve,
@@ -85,8 +31,13 @@ function sanitizeProductInput(req: Request, res: Response, next: NextFunction) {
 }
 
 async function add(req: Request, res: Response) {
+  const em = orm.em.fork();
   try {
-    const product = em.create(Product, req.body.sanitizedInput);
+    const input = req.body.sanitizedInput;
+
+    input.category = em.getReference(Category, input.category);
+
+    const product = em.create(Product, input);
     await em.flush();
 
     res.status(201).json({ message: 'Producto creado', data: product });
@@ -97,6 +48,7 @@ async function add(req: Request, res: Response) {
 }
 
 async function uploadPhotos(req: Request, res: Response) {
+  const em = orm.em.fork();
   try {
     const id = Number(req.params.id);
     const files = req.files as Express.Multer.File[]; // Multer pone los archivos aquí
@@ -108,15 +60,15 @@ async function uploadPhotos(req: Request, res: Response) {
     }
 
     // 2. Buscamos el producto al que le vamos a asignar las fotos
-    // Usamos el EntityManager (em)
     const product = await em.findOne(Product, { id });
 
     if (!product) {
-      return res.status(404).json({ message: 'El item no existe' });
+      return res.status(404).json({ message: 'El producto no existe' });
     }
 
     // 3. Recorremos los archivos y creamos entidades Foto
     for (const file of files) {
+      console.log('4. Procesando archivo:', file.filename);
       const photo = new Photo();
       photo.fileName = file.filename; // Nombre generado (uuid)
       photo.originalName = file.originalname; // Nombre original
@@ -127,24 +79,57 @@ async function uploadPhotos(req: Request, res: Response) {
 
     // 4. Guardamos todo en la base de datos
     await em.flush();
+
     return res.status(201).json({
       message: 'Fotos subidas correctamente',
       cantidad: files.length
     });
   } catch (error: any) {
-    console.error('Error al subir fotos:', error);
     return res.status(500).json({ message: 'Error interno: ' + error.message });
   }
 }
 
-// Función para buscar productos por texto
+async function reorderPhotos(req: Request, res: Response) {
+  const em = orm.em.fork();
+  try {
+    const { photosOrder } = req.body; // Esperamos un array: [{ id: 1, order: 0 }, { id: 5, order: 1 }]
+
+    if (!photosOrder || !Array.isArray(photosOrder)) {
+      return res.status(400).json({ message: 'Formato inválido' });
+    }
+
+    for (const item of photosOrder) {
+      // Solo actualizamos fotos existentes (tienen ID numérico)
+      if (item.id) {
+        const photo = await em.findOne(Photo, { id: item.id });
+        if (photo) {
+          photo.order = item.order;
+        }
+      }
+    }
+
+    await em.flush();
+    res.status(200).json({ message: 'Orden actualizado' });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
+// Función para buscar productos por nombre, descripcion y marca
 async function searchProductsByText(req: Request, res: Response) {
+  const em = orm.em.fork();
   const { query } = req.query; // Obtener el texto de búsqueda
 
   try {
-    const products = await em.find(Product, {
-      $or: [{ name: { $like: `%${query}%` } }, { description: { $like: `%${query}%` } }, { brand: { $like: `%${query}%` } }]
-    }); // Buscar por nombre, descripcion y marca
+    const products = await em.find(
+      Product,
+      {
+        $or: [{ name: { $like: `%${query}%` } }, { description: { $like: `%${query}%` } }, { brand: { $like: `%${query}%` } }]
+      },
+      {
+        populate: ['category', 'photos']
+      }
+    );
     res.status(200).json({ message: 'Productos encontrados', data: products });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
@@ -153,10 +138,19 @@ async function searchProductsByText(req: Request, res: Response) {
 
 // Función para obtener productos por categoría
 async function findProductsByCategory(req: Request, res: Response) {
+  const em = orm.em.fork();
   const categoryName = req.params.categoryName; // Obtener nombre de categoría
 
   try {
-    const products = await em.find(Product, { category: { name: categoryName } }); // Buscar por categoría
+    const products = await em.find(
+      Product,
+      {
+        category: { name: categoryName }
+      },
+      {
+        populate: ['category', 'photos']
+      }
+    );
     res.status(200).json({ message: 'Productos encontrados en la categoría', data: products });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
@@ -164,8 +158,16 @@ async function findProductsByCategory(req: Request, res: Response) {
 }
 
 async function findAll(req: Request, res: Response) {
+  const em = orm.em.fork();
   try {
-    const products = await em.find(Product, {}, { populate: ['category'] });
+    const products = await em.find(
+      Product,
+      {},
+      {
+        populate: ['category', 'photos'],
+        populateOrderBy: { photos: { order: 'ASC' } }
+      }
+    );
     res.status(200).json({ message: 'Todos los Productos fueron encontrados', data: products });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
@@ -173,9 +175,10 @@ async function findAll(req: Request, res: Response) {
 }
 
 async function findOne(req: Request, res: Response) {
+  const em = orm.em.fork();
   try {
     const id = Number.parseInt(req.params.id);
-    const product = await em.findOneOrFail(Product, { id }, { populate: ['category'] });
+    const product = await em.findOneOrFail(Product, { id }, { populate: ['category', 'photos'], populateOrderBy: { photos: { order: 'ASC' } } });
     res.status(200).json({ message: 'Producto encontrado', data: product });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
@@ -183,9 +186,16 @@ async function findOne(req: Request, res: Response) {
 }
 
 async function update(req: Request, res: Response) {
+  const em = orm.em.fork();
   try {
     const id = Number.parseInt(req.params.id);
-    const product = await em.findOneOrFail(Product, { id });
+    const product = await em.findOneOrFail(
+      Product,
+      { id },
+      {
+        populate: ['category', 'photos']
+      }
+    );
     em.assign(product, req.body.sanitizedInput);
     await em.flush();
     res.status(200).json({ message: 'Producto actualizado', data: product });
@@ -194,10 +204,59 @@ async function update(req: Request, res: Response) {
   }
 }
 
+async function deletePhoto(req: Request, res: Response) {
+  const em = orm.em.fork();
+  try {
+    const id = Number(req.params.photoId);
+
+    // 1. Buscamos la foto en la BD para saber su nombre
+    const photo = await em.findOneOrFail(Photo, { id });
+
+    // 2. Construimos la ruta absoluta al archivo
+    // Debe coincidir con la carpeta donde Multer las guarda
+    const filePath = path.join(process.cwd(), 'uploads', photo.fileName);
+
+    // 3. Intentamos borrar el archivo físico
+    try {
+      await fs.unlink(filePath);
+      console.log(`Archivo borrado: ${filePath}`);
+    } catch (err) {
+      // Si el archivo no existe en disco, solo avisamos pero seguimos
+      // para poder borrar el registro de la BD.
+      console.warn(`No se pudo borrar el archivo físico (quizás no existía): ${err}`);
+    }
+
+    // 4. Borramos el registro de la Base de Datos
+    em.remove(photo);
+    await em.flush();
+
+    res.status(200).json({ message: 'Foto eliminada correctamente' });
+  } catch (error: any) {
+    console.error(error);
+    if (error.name === 'NotFoundError') {
+      return res.status(404).json({ message: 'La foto no existe' });
+    }
+    res.status(500).json({ message: error.message });
+  }
+}
+
 async function remove(req: Request, res: Response) {
+  const em = orm.em.fork();
   try {
     const id = Number.parseInt(req.params.id);
-    const product = await em.findOneOrFail(Product, { id });
+    const product = await em.findOneOrFail(Product, { id }, { populate: ['photos'] });
+    for (const photo of product.photos) {
+      const filePath = path.join(process.cwd(), 'uploads', photo.fileName);
+
+      try {
+        await fs.unlink(filePath);
+        console.log(`Foto eliminada del disco: ${photo.fileName}`);
+      } catch (err) {
+        // Si falla (ej: el archivo ya no existía manualmente), solo avisamos en consola
+        // pero NO detenemos el proceso, para que se termine de borrar el producto de la BD.
+        console.warn(`No se pudo borrar el archivo físico (quizás no existía): ${photo.fileName}`);
+      }
+    }
     em.remove(product);
     await em.flush();
     res.status(200).send({ message: 'Producto eliminado' });
@@ -209,4 +268,16 @@ async function remove(req: Request, res: Response) {
   }
 }
 
-export { sanitizeProductInput, findAll, findOne, add, uploadPhotos, update, remove, searchProductsByText, findProductsByCategory /* cargaImagenes, imagenProducto, uploadDir */ };
+export {
+  sanitizeProductInput,
+  findAll,
+  findOne,
+  add,
+  uploadPhotos,
+  reorderPhotos,
+  deletePhoto,
+  update,
+  remove,
+  searchProductsByText,
+  findProductsByCategory /* cargaImagenes, imagenProducto, uploadDir */
+};
