@@ -25,7 +25,7 @@ export async function seedDatabase(em: EntityManager) {
     superAdmin.phone = '123456789';
 
     // IMPORTANTE: Este es el usuario con el que te vas a loguear
-    superAdmin.user = 'admin';
+    superAdmin.username = 'admin';
     superAdmin.role = UserRole.ADMIN;
 
     // IMPORTANTE: Usamos el método de la entidad para hashear la password
@@ -36,7 +36,7 @@ export async function seedDatabase(em: EntityManager) {
     await forkEm.flush();
 
     console.log('✅ Admin creado exitosamente');
-    console.log('👉 User: admin');
+    console.log('👉 Username: admin');
     console.log('👉 Pass: admin123');
   } catch (error) {
     console.error('❌ Error ejecutando seedDatabase:', error);

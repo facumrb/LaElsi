@@ -108,21 +108,21 @@
               <input
                 type="text"
                 class="form-control"
-                id="user"
-                name="user"
-                formControlName="user"
+                id="username"
+                name="username"
+                formControlName="username"
                 [ngClass]="{
                   'is-invalid':
-                    hasErrors('user', 'required') ||
-                    hasErrors('user', 'pattern'),
+                    hasErrors('username', 'required') ||
+                    hasErrors('username', 'pattern'),
                 }"
               />
               <!-- Contenedor de mensajes de error -->
               <div class="error-container">
-                @if (hasErrors("user", "required")) {
+                @if (hasErrors("username", "required")) {
                   <div class="text-danger">El usuario es obligatorio.</div>
                 }
-                @if (hasErrors("user", "pattern")) {
+                @if (hasErrors("username", "pattern")) {
                   <div class="text-danger">
                     El formato del usuario es inválido.
                   </div>

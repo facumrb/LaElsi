@@ -3,14 +3,13 @@ import bcrypt from 'bcrypt';
 
 export enum UserRole {
   ADMIN = 'Admin',
-  CLIENT = 'Client',
+  CLIENT = 'Client'
 }
 
 // Usamos STI (Single Table Inheritance) porque UserPhoto necesita apuntar a una tabla "User".
 // Admin y Client se guardarán en la misma tabla 'user' diferenciados por una columna 'dtype'.
 @Entity({ discriminatorColumn: 'dtype' })
 export abstract class User {
-
   @PrimaryKey()
   id!: number;
 
@@ -24,7 +23,7 @@ export abstract class User {
   phone!: string;
 
   @Property({ nullable: false, unique: true })
-  user!: string;
+  username!: string;
 
   @Property({ hidden: true, type: 'string', nullable: false })
   password!: string;

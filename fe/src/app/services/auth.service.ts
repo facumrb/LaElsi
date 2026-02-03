@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { map, Observable, tap } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 export interface LoginResponse {
@@ -22,14 +22,14 @@ export class AuthService {
   private readonly TOKEN_KEY = 'auth_token';
   private readonly USER_KEY = 'auth_user';
 
-  login(user: string, password: string): Observable<LoginResponse> {
+  login(username: string, password: string): Observable<LoginResponse> {
     return this._http
-      .post<LoginResponse>(`${this.apiUrl}/login`, { user, password })
+      .post<LoginResponse>(`${this.apiUrl}/login`, { username, password })
       .pipe(
         tap((response) => {
           this.setToken(response.token);
           this.setUser(response.user);
-        })
+        }),
       );
   }
 

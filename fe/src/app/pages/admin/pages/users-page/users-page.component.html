@@ -85,7 +85,7 @@
               <td class="px-6 py-4 text-gray-900">{{ user.last_name }}</td>
               <td class="px-6 py-4">{{ user.phone }}</td>
               <td class="px-6 py-4 font-medium text-gray-700">
-                {{ user.user }}
+                {{ user.username }}
               </td>
               <td class="px-6 py-4 font-mono text-xs">
                 {{ user.password }}
@@ -355,32 +355,35 @@
                 formControlName="user"
                 class="block w-full rounded-md border p-2.5 text-gray-900 shadow-sm focus:outline-none focus:ring-1 sm:text-sm"
                 [class.border-red-500]="
-                  hasErrors('user', 'required') || hasErrors('user', 'pattern')
+                  hasErrors('username', 'required') ||
+                  hasErrors('username', 'pattern')
                 "
                 [class.focus:border-red-500]="
-                  hasErrors('user', 'required') || hasErrors('user', 'pattern')
+                  hasErrors('username', 'required') ||
+                  hasErrors('username', 'pattern')
                 "
                 [class.focus:ring-red-500]="
-                  hasErrors('user', 'required') || hasErrors('user', 'pattern')
+                  hasErrors('username', 'required') ||
+                  hasErrors('username', 'pattern')
                 "
                 [class.border-gray-300]="
-                  !hasErrors('user', 'required') &&
-                  !hasErrors('user', 'pattern')
+                  !hasErrors('username', 'required') &&
+                  !hasErrors('username', 'pattern')
                 "
                 [class.focus:border-[#049A8F]]="
-                  !hasErrors('user', 'required') &&
-                  !hasErrors('user', 'pattern')
+                  !hasErrors('username', 'required') &&
+                  !hasErrors('username', 'pattern')
                 "
                 [class.focus:ring-[#049A8F]]="
-                  !hasErrors('user', 'required') &&
-                  !hasErrors('user', 'pattern')
+                  !hasErrors('username', 'required') &&
+                  !hasErrors('username', 'pattern')
                 "
               />
               <div class="mt-1 min-h-4 text-xs text-red-600">
-                @if (hasErrors("user", "required")) {
-                  <span>El usuario es obligatorio.</span>
+                @if (hasErrors("username", "required")) {
+                  <span>El nombre de usuario es obligatorio.</span>
                 }
-                @if (hasErrors("user", "pattern")) {
+                @if (hasErrors("username", "pattern")) {
                   <span>Formato inválido.</span>
                 }
               </div>

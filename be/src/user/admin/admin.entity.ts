@@ -1,7 +1,5 @@
-import { Entity, Property } from '@mikro-orm/core';
+import { Entity } from '@mikro-orm/core';
 import { User } from '../user.entity.js';
 
 @Entity()
-export class Admin extends User { // Updated extends
-    // ...
-}
+export class Admin extends User {}

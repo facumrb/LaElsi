@@ -10,7 +10,7 @@ Content-Type: application/json
   "name": "AdminSeguro",
   "last_name": "Ramírez",
   "phone": "423423423",
-  "user": "admin1",
+  "username": "admin1",
   "password": "12345",
   "email": "admin1@gmail.com"
 }

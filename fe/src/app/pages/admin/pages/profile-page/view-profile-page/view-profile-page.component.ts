@@ -2,7 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiAdminService } from '@services/api-admin.service';
 import { CommonModule } from '@angular/common';
-import { IApiAccountInfo } from '@models/accountInfo.model';
+import { IApiAdmin } from '@models/user.model';
 
 @Component({
   selector: 'app-view-profile-page',
@@ -12,7 +12,7 @@ import { IApiAccountInfo } from '@models/accountInfo.model';
 })
 export class ViewProfilePageComponent implements OnInit {
   loading: boolean = true;
-  admin?: IApiAccountInfo;
+  admin?: IApiAdmin;
   errorMessage: string = '';
 
   private _route = inject(ActivatedRoute);
@@ -27,8 +27,8 @@ export class ViewProfilePageComponent implements OnInit {
   }
 
   private fetchAdmin(id: number): void {
-    this._apiService.getAdmin(id).subscribe({
-      next: (data: IApiAccountInfo) => {
+    this._apiService.getAdminById(id).subscribe({
+      next: (data: IApiAdmin) => {
         this.admin = data;
         this.loading = false;
       },
