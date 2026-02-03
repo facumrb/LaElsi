@@ -3,6 +3,7 @@ import { Admin } from './admin.entity.js';
 import { orm } from '../../shared/db/orm.js';
 // import bcrypt from 'bcryptjs';
 // Crear endpoint, verificar credencial y manejar respuesta.
+import { UserRole } from '../user.entity.js';
 
 const em = orm.em;
 
@@ -130,13 +131,18 @@ async function findAll(req: Request, res: Response) {
 
 async function add(req: Request, res: Response) {
   try {
-    const admin = em.create(Admin, req.body.sanitizedInput);
-    /* Si la contraseña se está creando, hashearla
-    if (req.body.sanitizedInput.password) {
-      admin.password = await bcrypt.hash(req.body.sanitizedInput.password, 10);
-    }
-    */
-    await em.flush();
+    const admin = new Admin();
+    // Asignar propiedades manualmente o con assign, pero cuidando el password
+    const { password, ...rest } = req.body.sanitizedInput;
+    em.assign(admin, rest);
+
+    admin.role = UserRole.ADMIN;
+
+    if (password) {
+      await admin.setPassword(password);
+    } // Si no hay password, fallará en la base si es required.
+
+    await em.persistAndFlush(admin);
     res.status(201).json({ message: 'Administrador creado', data: admin });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
@@ -178,4 +184,4 @@ async function remove(req: Request, res: Response) {
   }
 }
 
-export { login, sanitizeAdminInput, findAll, findOne, add, update, remove, getAccountInfo };
+export { sanitizeAdminInput, findAll, findOne, add, update, remove, getAccountInfo };

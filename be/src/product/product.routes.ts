@@ -1,14 +1,17 @@
 import { Router } from 'express';
 import { sanitizeProductInput, findAll, findOne, add, update, remove, searchProductsByText, findProductsByCategory } from './product.controler.js';
+import { verifyToken, verifyRole } from '../shared/auth.middleware.js';
+import { UserRole } from '../user/user.entity.js';
 
 export const productRouter = Router();
 
+// Rutas públicas (cualquier usuario puede ver productos)
 productRouter.get('/', findAll);
-productRouter.patch('/:id', sanitizeProductInput, update);
-productRouter.delete('/:id', remove);
 productRouter.get('/search', searchProductsByText);
 productRouter.get('/category/:categoryName', findProductsByCategory);
 productRouter.get('/:id', findOne);
 
-// Crear Producto (Solo recibe JSON para el sanitize, las fotos se manejan aparte)
-productRouter.post('/', sanitizeProductInput, add);
+// Rutas protegidas (solo Admin puede crear/editar/eliminar)
+productRouter.post('/', verifyToken, verifyRole([UserRole.ADMIN]), sanitizeProductInput, add);
+productRouter.patch('/:id', verifyToken, verifyRole([UserRole.ADMIN]), sanitizeProductInput, update);
+productRouter.delete('/:id', verifyToken, verifyRole([UserRole.ADMIN]), remove);

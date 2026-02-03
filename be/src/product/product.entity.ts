@@ -1,6 +1,7 @@
 import { PrimaryKey, Entity, Property, ManyToOne, Rel, OneToMany, Collection } from '@mikro-orm/core';
 import { Category } from '../category/category.entity.js';
 import { Photo } from '../photo/photo.entity.js';
+import { ProductPhoto } from '../photo/productPhoto/productPhoto.entity.js';
 
 @Entity()
 export class Product {
@@ -28,8 +29,8 @@ export class Product {
   @Property({ nullable: false })
   stock!: number;
 
-  @OneToMany({ entity: 'Photo', nullable: true, mappedBy: 'product' })
-  photos = new Collection<Photo>(this);
+  @OneToMany({ entity: 'ProductPhoto', nullable: true, mappedBy: 'product' })
+  photos = new Collection<ProductPhoto>(this);
 
   @ManyToOne(() => Category, { nullable: false, updateRule: 'cascade' })
   category!: Rel<Category>;

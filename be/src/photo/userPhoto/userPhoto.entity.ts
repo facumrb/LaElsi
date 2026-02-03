@@ -1,0 +1,11 @@
+import { Entity, OneToOne, Property } from '@mikro-orm/core';
+import { User } from '../../user/user.entity.js';
+import { Photo } from '../photo.entity.js';
+
+@Entity()
+export class UserPhoto extends Photo {
+
+    @OneToOne(() => User, { deleteRule: 'cascade', nullable: false })
+    user!: User;
+    // Si se borra el User, se borra su foto de la BD
+}

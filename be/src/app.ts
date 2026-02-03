@@ -9,6 +9,7 @@ import { orm, syncSchema } from './shared/db/orm.js';
 import { RequestContext } from '@mikro-orm/core';
 import cors from 'cors';
 import { photoRouter } from './photo/photo.routes.js';
+import { userRouter } from './user/user.routes.js';
 
 const app = express();
 app.use(cors({ origin: 'http://localhost:4200' }));
@@ -25,6 +26,7 @@ app.use('/api/products', productRouter);
 app.use('/api/admins', adminRouter);
 app.use('/api/clients', clientRouter);
 app.use('/api/photos', photoRouter);
+app.use('/api/users', userRouter);
 
 // Ruta para ver imágenes
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));

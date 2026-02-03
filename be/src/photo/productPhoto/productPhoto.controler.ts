@@ -1,11 +1,12 @@
 import { Request, Response } from 'express';
-import { orm } from '../shared/db/orm.js';
-import { Product } from '../product/product.entity.js';
-import { Photo } from './photo.entity.js';
+import { orm } from '../../shared/db/orm.js';
+import { Product } from '../../product/product.entity.js';
+import { Photo } from '../photo.entity.js'; // Import base Photo for general operations if needed, or remove if unused/replaced completely
+import { ProductPhoto } from './productPhoto.entity.js';
 import path from 'path';
 import fs from 'fs/promises';
 
-async function uploadPhotos(req: Request, res: Response) {
+async function uploadProductPhotos(req: Request, res: Response) {
   const em = orm.em.fork();
   const files = req.files as Express.Multer.File[];
   const { orders } = req.body;
@@ -19,16 +20,17 @@ async function uploadPhotos(req: Request, res: Response) {
     }
 
     // Buscamos el producto al que le vamos a asignar las fotos
+    // Populate 'photos' matches the property name in Product entity
     const product = await em.findOne(Product, { id }, { populate: ['photos'] });
     if (!product) {
-      await deleteUploadedFiles(files);
+      await deleteProductUploadedFiles(files);
       return res.status(404).json({ message: 'El producto no existe' });
     }
 
     // Validamos el límite de fotos por producto
     const MAX_PHOTOS = 10;
     if (product.photos.length + files.length > MAX_PHOTOS) {
-      await deleteUploadedFiles(files);
+      await deleteProductUploadedFiles(files);
       return res.status(400).json({
         message: `Limite de ${MAX_PHOTOS} fotos excedido.`
       });
@@ -42,12 +44,14 @@ async function uploadPhotos(req: Request, res: Response) {
       ordersArray = [Number(orders)];
     }
     const useExplicitOrder = ordersArray.length === files.length;
+
+    // Calculate next order. product.photos is Collection<ProductPhoto>, so accessing .order is valid.
     let nextFallbackOrder = (product.photos.length > 0 ? Math.max(...product.photos.getItems().map((p) => p.order)) : -1) + 1;
 
-    // Recorremos los archivos y creamos entidades Foto
+    // Recorremos los archivos y creamos entidades ProductPhoto
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
-      const photo = new Photo();
+      const photo = new ProductPhoto();
       photo.fileName = file.filename; // Nombre generado (uuid)
       photo.originalName = file.originalname; // Nombre original
       photo.mimeType = file.mimetype;
@@ -68,13 +72,13 @@ async function uploadPhotos(req: Request, res: Response) {
       cantidad: files.length
     });
   } catch (error: any) {
-    if (files) await deleteUploadedFiles(files);
+    if (files) await deleteProductUploadedFiles(files);
     return res.status(500).json({ message: 'Error interno: ' + error.message });
   }
 }
 
 // Función auxiliar para limpiar fotos basura si la validación falla
-async function deleteUploadedFiles(files: Express.Multer.File[]) {
+async function deleteProductUploadedFiles(files: Express.Multer.File[]) {
   for (const file of files) {
     try {
       await fs.unlink(file.path);
@@ -84,7 +88,7 @@ async function deleteUploadedFiles(files: Express.Multer.File[]) {
   }
 }
 
-async function reorderPhotos(req: Request, res: Response) {
+async function reorderProductPhotos(req: Request, res: Response) {
   const em = orm.em.fork();
   try {
     const { photosOrder } = req.body; // Esperamos un array: [{ id: 1, order: 0 }, { id: 5, order: 1 }]
@@ -96,7 +100,8 @@ async function reorderPhotos(req: Request, res: Response) {
     for (const item of photosOrder) {
       // Solo actualizamos fotos existentes (tienen ID numérico)
       if (item.id) {
-        const photo = await em.findOne(Photo, { id: item.id });
+        // Use ProductPhoto to access 'order'
+        const photo = await em.findOne(ProductPhoto, { id: item.id });
         if (photo) {
           photo.order = item.order;
         }
@@ -110,15 +115,16 @@ async function reorderPhotos(req: Request, res: Response) {
   }
 }
 
-async function deletePhoto(req: Request, res: Response) {
+async function deleteProductPhoto(req: Request, res: Response) {
   const em = orm.em.fork();
   try {
     const id = Number(req.params.photoId);
 
-    // 1. Buscamos la foto en la BD para saber su nombre
-    const photo = await em.findOneOrFail(Photo, { id });
+    // 1. Buscamos la foto en la BD para saber su nombre. Can use ProductPhoto for specificity.
+    const photo = await em.findOneOrFail(ProductPhoto, { id });
 
     // 2. Construimos la ruta absoluta al archivo debe coincidir con la carpeta donde Multer las guarda
+    // Assuming uploads go to 'uploads' generally, or specific folder? keeping 'uploads' as per current state.
     const filePath = path.join(process.cwd(), 'uploads', photo.fileName);
 
     // 3. Intentamos borrar el archivo físico
@@ -144,4 +150,4 @@ async function deletePhoto(req: Request, res: Response) {
   }
 }
 
-export { uploadPhotos, reorderPhotos, deletePhoto };
+export { uploadProductPhotos, reorderProductPhotos, deleteProductPhoto };

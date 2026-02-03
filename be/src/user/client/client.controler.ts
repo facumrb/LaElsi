@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { Client } from './client.entity.js';
 import { orm } from '../../shared/db/orm.js';
+import { UserRole } from '../user.entity.js';
 // import bcrypt from 'bcryptjs';
 // Crear endpoint, verificar credencial y manejar respuesta.
 
@@ -16,7 +17,14 @@ function sanitizeClientInput(req: Request, res: Response, next: NextFunction) {
     // registration_date: req.body.registration_date,
     user: req.body.user,
     password: req.body.password,
-    email: req.body.email
+    email: req.body.email,
+    street: req.body.street,
+    streetNumber: req.body.streetNumber,
+    city: req.body.city,
+    province: req.body.province,
+    postalCode: req.body.postalCode,
+    floor: req.body.floor,
+    apartment: req.body.apartment
   };
   //more checks here
 
@@ -128,13 +136,17 @@ async function findAll(req: Request, res: Response) {
 
 async function add(req: Request, res: Response) {
   try {
-    const client = em.create(Client, req.body.sanitizedInput);
-    /* Si la contraseña se está creando, hashearla
-    if (req.body.sanitizedInput.password) {
-      client.password = await bcrypt.hash(req.body.sanitizedInput.password, 10);
+    const client = new Client();
+    const { password, ...rest } = req.body.sanitizedInput;
+    em.assign(client, rest);
+
+    client.role = UserRole.CLIENT;
+
+    if (password) {
+      await client.setPassword(password);
     }
-    */
-    await em.flush();
+
+    await em.persistAndFlush(client);
     res.status(201).json({ message: 'Cliente creado', data: client });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
@@ -176,4 +188,4 @@ async function remove(req: Request, res: Response) {
   }
 }
 
-export { login, sanitizeClientInput, findAll, findOne, add, update, remove, getAccountInfo };
+export { sanitizeClientInput, findAll, findOne, add, update, remove, getAccountInfo };

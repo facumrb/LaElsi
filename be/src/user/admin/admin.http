@@ -7,12 +7,21 @@ POST http://localhost:3000/api/admins
 Content-Type: application/json
 
 {
-  "name": "test",
+  "name": "AdminSeguro",
   "last_name": "Ramírez",
   "phone": "423423423",
-  "user": "test",
+  "user": "admin1",
   "password": "12345",
-  "email": "testing@gmail.com"
+  "email": "admin1@gmail.com"
+}
+
+### POST Iniciar Sesión (Login)
+POST http://localhost:3000/api/users/login
+Content-Type: application/json
+
+{
+  "identifier": "admin1",
+  "password": "password123"
 }
 
 ### ID del Administrador creado

@@ -1,31 +1,54 @@
-import { BaseEntity } from '../shared/db/baseEntity.entity.js';
-import { Property, Entity } from '@mikro-orm/core';
+import { Property, Entity, PrimaryKey, Enum } from '@mikro-orm/core';
+import bcrypt from 'bcrypt';
 
-@Entity({ abstract: true })
-export abstract class UserBaseEntity extends BaseEntity {
-  @Property({ type: 'string', nullable: false })
+export enum UserRole {
+  ADMIN = 'Admin',
+  CLIENT = 'Client',
+}
+
+// Usamos STI (Single Table Inheritance) porque UserPhoto necesita apuntar a una tabla "User".
+// Admin y Client se guardarán en la misma tabla 'user' diferenciados por una columna 'dtype'.
+@Entity({ discriminatorColumn: 'dtype' })
+export abstract class User {
+
+  @PrimaryKey()
+  id!: number;
+
+  @Property({ nullable: false })
   name!: string;
 
-  @Property({ type: 'string', nullable: false })
+  @Property({ nullable: false })
   last_name!: string;
 
-  @Property({ type: 'string', nullable: false }) // Capaz si permite nulos
+  @Property({ nullable: false }) // Capaz sí permite nulos
   phone!: string;
 
-  @Property({ type: 'string', nullable: false, unique: true })
+  @Property({ nullable: false, unique: true })
   user!: string;
 
   @Property({ hidden: true, type: 'string', nullable: false })
   password!: string;
 
-  @Property({ type: 'string', nullable: false, unique: true }) // Capaz si permite nulos
+  @Property({ nullable: false, unique: true })
   email!: string;
+
+  @Enum(() => UserRole)
+  role!: UserRole;
+
+  @Property()
+  createdAt: Date = new Date();
+
+  @Property({ onUpdate: () => new Date() })
+  updatedAt: Date = new Date();
+
+  @Property({ nullable: true })
+  deletedAt?: Date;
+
+  async setPassword(password: string) {
+    this.password = await bcrypt.hash(password, 10);
+  }
+
+  async verifyPassword(password: string): Promise<boolean> {
+    return bcrypt.compare(password, this.password);
+  }
 }
-// @Property({ type: 'string', nullable: true })
-// foto?: string;
-
-// @Property({ type: 'string', nullable: true })
-// direccion?: string;
-
-// @Property({ type: 'Date' })
-// fechaDeAlta!: Date;

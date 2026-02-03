@@ -57,9 +57,9 @@ export class LoginPageComponent {
 
     // Llamamos al servicio de autenticación.
     this._authService.login(user, password).subscribe({
-      next: (data) => {
+      next: (response) => {
         this.loading = false;
-        this._adminDataService.setAdminId(data.id);
+        this._adminDataService.setAdminId(response.user.id);
         this._router.navigate(['/admin']); // Redirigimos al home del administrador.
       },
       error: (error) => {
