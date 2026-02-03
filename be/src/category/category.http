@@ -1,3 +1,16 @@
+### 1. LOGIN DE ADMIN (Creado por el Seed)
+# @name loginRequest
+POST http://localhost:3000/api/admins/login
+Content-Type: application/json
+
+{
+  "identifier": "admin", 
+  "password": "admin123"
+}
+
+### 2. CREAR CATEGORÍA (Usa el token del paso 1 automáticamente)
+@authToken = {{loginRequest.response.body.token}}
+
 ### GET ALL
 GET http://localhost:3000/api/categories HTTP/1.1
 
@@ -6,6 +19,7 @@ GET http://localhost:3000/api/categories HTTP/1.1
 # @name createCategory
 POST http://localhost:3000/api/categories HTTP/1.1
 Content-Type: application/json
+Authorization: Bearer {{authToken}}
 
 {
   "description": "Amplia variedad de juguetes y juegos educativos.",

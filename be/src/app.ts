@@ -10,6 +10,7 @@ import { RequestContext } from '@mikro-orm/core';
 import cors from 'cors';
 import { photoRouter } from './photo/photo.routes.js';
 import { userRouter } from './user/user.routes.js';
+import { seedDatabase } from './shared/db/seeds.js';
 
 const app = express();
 app.use(cors({ origin: 'http://localhost:4200' }));
@@ -40,7 +41,7 @@ async function startServer() {
     // Sincronizamos base de datos antes de abrir el puerto
     await syncSchema();
     console.log('Base de datos sincronizada');
-
+    await seedDatabase(orm.em);
     app.listen(3000, () => {
       console.log('Server running on http://localhost:3000/');
     });
