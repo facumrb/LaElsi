@@ -142,7 +142,8 @@ async function add(req: Request, res: Response) {
       await admin.setPassword(password);
     } // Si no hay password, fallará en la base si es required.
 
-    await em.persistAndFlush(admin);
+    em.persist(admin);
+    await em.flush();
     res.status(201).json({ message: 'Administrador creado', data: admin });
   } catch (error: any) {
     res.status(500).json({ message: error.message });

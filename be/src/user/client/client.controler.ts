@@ -146,7 +146,8 @@ async function add(req: Request, res: Response) {
       await client.setPassword(password);
     }
 
-    await em.persistAndFlush(client);
+    em.persist(client);
+    await em.flush();
     res.status(201).json({ message: 'Cliente creado', data: client });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
