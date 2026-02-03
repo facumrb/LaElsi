@@ -6,7 +6,7 @@ import path from 'path';
 import fs from 'fs/promises';
 
 async function uploadUserPhoto(req: Request, res: Response) {
-  const em = orm.em;
+  const em = orm.em.fork();
   const file = req.file;
 
   try {
@@ -80,7 +80,7 @@ async function uploadUserPhoto(req: Request, res: Response) {
 }
 
 async function deleteUserPhoto(req: Request, res: Response) {
-  const em = orm.em;
+  const em = orm.em.fork();
   try {
     const photoId = Number(req.params.photoId);
 
