@@ -1,5 +1,11 @@
-import { Component, signal } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { Component, inject, signal } from '@angular/core';
+import {
+  Router,
+  RouterLink,
+  RouterLinkActive,
+  RouterOutlet,
+} from '@angular/router';
+import { AuthService } from '@services/auth.service';
 
 interface menuItems {
   label: string;
@@ -18,14 +24,17 @@ interface menuItems {
   `,
 })
 export class LayoutComponent {
+  private _authService = inject(AuthService);
+  private _router = inject(Router);
+
   sidebarOpen = signal(true);
   mobileMenuOpen = signal(false);
   showUserMenu = signal(false);
 
-  currentUser = { name: 'Admin Usuario', email: 'admin@laelsi.com' };
+  currentUser = signal<{ id: number; name: string; role: string } | null>(null);
 
   // Rutas SVG (Heroicons) - Copiar desde d=.
-  menuItems = [
+  menuItems: menuItems[] = [
     {
       label: 'Dashboard',
       route: '/admin/dashboard',
@@ -58,6 +67,17 @@ export class LayoutComponent {
     },
   ];
 
+  ngOnInit() {
+    // Recuperar usuario del LocalStorage
+    const user = this._authService.getUser();
+    if (user) {
+      this.currentUser.set(user);
+    } else {
+      // Si no hay usuario, forzamos salida
+      this._router.navigate(['/']);
+    }
+  }
+
   toggleSidebar() {
     this.sidebarOpen.update((v) => !v);
   }
@@ -68,5 +88,12 @@ export class LayoutComponent {
 
   toggleUserMenu() {
     this.showUserMenu.update((v) => !v);
+  }
+
+  // Metodo para Cerrar Sesión
+  handleLogout() {
+    this._authService.logout();
+    this.showUserMenu.set(false);
+    this._router.navigate(['/']);
   }
 }
