@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { Category } from './category.entity.js';
 import { orm } from '../shared/db/orm.js';
+import { CategoryState } from '../shared/state.enum.js';
 
 function sanitizeCategoryInput(req: Request, res: Response, next: NextFunction) {
   req.body.sanitizedInput = {
@@ -49,7 +50,7 @@ async function add(req: Request, res: Response) {
     const categoryData = {
       name,
       description,
-      state: req.body.sanitizedInput.state || 'Activo'
+      state: req.body.sanitizedInput.state || CategoryState.ACTIVO
     };
 
     const category = em.create(Category, categoryData);

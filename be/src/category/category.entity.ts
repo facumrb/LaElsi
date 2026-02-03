@@ -1,5 +1,6 @@
-import { PrimaryKey, Entity, OneToMany, Property, Collection } from '@mikro-orm/core';
+import { PrimaryKey, Entity, OneToMany, Property, Collection, Enum } from '@mikro-orm/core';
 import { Product } from '../product/product.entity.js';
+import { CategoryState } from '../shared/state.enum.js';
 
 @Entity()
 export class Category {
@@ -9,8 +10,8 @@ export class Category {
   @Property({ nullable: true, length: 1000 })
   description!: string;
 
-  @Property({ nullable: false })
-  state!: 'Activo' | 'Inactivo';
+  @Enum(() => CategoryState)
+  state: CategoryState = CategoryState.ACTIVO;
 
   @OneToMany(() => Product, (product) => product.category)
   products = new Collection<Product>(this);

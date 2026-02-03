@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { sanitizeProductInput, findAll, findOne, add, update, remove, searchProductsByText, findProductsByCategory } from './product.controller.js';
+import { findPage, sanitizeProductInput, findAll, findOne, add, update, remove, searchProductsByText, findProductsByCategory } from './product.controller.js';
 import { verifyToken, verifyRole } from '../shared/auth.middleware.js';
 import { UserRole } from '../user/user.entity.js';
 
@@ -7,6 +7,7 @@ export const productRouter = Router();
 
 // Rutas públicas (cualquier usuario puede ver productos)
 productRouter.get('/', findAll);
+productRouter.get('/page', findPage);
 productRouter.get('/search', searchProductsByText);
 productRouter.get('/category/:categoryName', findProductsByCategory);
 productRouter.get('/:id', findOne);

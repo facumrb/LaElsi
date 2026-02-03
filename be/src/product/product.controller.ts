@@ -163,4 +163,41 @@ async function remove(req: Request, res: Response) {
   }
 }
 
-export { sanitizeProductInput, findAll, findOne, add, update, remove, searchProductsByText, findProductsByCategory };
+const DEFAULT_LIMIT = 10;
+
+async function findPage(req: Request, res: Response) {
+  const em = orm.em;
+
+  // Obtenemos los parámetros de la query (con valores por defecto)
+  const page = Number.parseInt(req.query.page as string) || 1;
+  const limit = Number.parseInt(req.query.limit as string) || DEFAULT_LIMIT;
+  const offset = (page - 1) * limit; // Salta los productos anteriores a la página actual (page - 1)
+
+  try {
+    // findAndCount devuelve un array: [items, totalCount]
+    const [products, total] = await em.findAndCount(
+      Product,
+      {},
+      {
+        populate: ['category', 'photos'],
+        limit,
+        offset,
+        populateOrderBy: { photos: { order: 'ASC' } } // Ordena las fotos por orden creciente basado en "order"
+      }
+    );
+
+    // construimos un objeto que le da al frontend todo lo que necesita para dibujar la barrita de paginación
+    res.status(200).json({
+      message: 'Página de productos encontrada',
+      data: products,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit)
+    });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
+export { findPage, sanitizeProductInput, findAll, findOne, add, update, remove, searchProductsByText, findProductsByCategory };

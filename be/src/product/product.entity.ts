@@ -1,6 +1,7 @@
-import { PrimaryKey, Entity, Property, ManyToOne, Rel, OneToMany, Collection } from '@mikro-orm/core';
+import { PrimaryKey, Entity, Property, ManyToOne, Rel, OneToMany, Collection, Enum } from '@mikro-orm/core';
 import { Category } from '../category/category.entity.js';
 import { ProductPhoto } from '../photo/productPhoto/productPhoto.entity.js';
+import { ProductState } from '../shared/state.enum.js';
 
 @Entity()
 export class Product {
@@ -22,8 +23,8 @@ export class Product {
   @Property({ nullable: false })
   total_sold!: number;
 
-  @Property({ nullable: false })
-  state!: 'Activo' | 'Inactivo';
+  @Enum(() => ProductState)
+  state: ProductState = ProductState.ACTIVO;
 
   @Property({ nullable: false })
   stock!: number;
