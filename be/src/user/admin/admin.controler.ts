@@ -5,8 +5,6 @@ import { orm } from '../../shared/db/orm.js';
 // Crear endpoint, verificar credencial y manejar respuesta.
 import { UserRole } from '../user.entity.js';
 
-const em = orm.em;
-
 function sanitizeAdminInput(req: Request, res: Response, next: NextFunction) {
   req.body.sanitizedInput = {
     name: req.body.name,
@@ -30,6 +28,7 @@ function sanitizeAdminInput(req: Request, res: Response, next: NextFunction) {
 
 // Obtener información de cuenta del administrador
 async function getAccountInfo(req: Request, res: Response) {
+  const em = orm.em;
   try {
     const id = Number.parseInt(req.params.id);
     const admin = await em.findOneOrFail(Admin, id);
@@ -55,6 +54,7 @@ async function getAccountInfo(req: Request, res: Response) {
 }
 
 async function findOne(req: Request, res: Response) {
+  const em = orm.em;
   try {
     const id = Number.parseInt(req.params.id);
     const admin = await em.findOneOrFail(Admin, id);
@@ -67,10 +67,11 @@ async function findOne(req: Request, res: Response) {
 //Agregar Políticas de Contraseña y Autenticación y Tokens
 
 async function login(req: Request, res: Response) {
+  const em = orm.em;
   const { user, password } = req.body;
 
   // Validaciones para asegurarse de que el usuario y la contraseña fueron ingresados
-  /*if (!usuario) {
+  /*if (!user) {
     return res.status(400).json({ message: 'El usuario es requerido' });
   }
   if (!password) {
@@ -121,6 +122,7 @@ async function login(req: Request, res: Response) {
 }
 
 async function findAll(req: Request, res: Response) {
+  const em = orm.em;
   try {
     const admins = await em.find(Admin, {});
     res.status(200).json({ message: 'Todos los Administradores fueron encontrados', data: admins });
@@ -130,6 +132,7 @@ async function findAll(req: Request, res: Response) {
 }
 
 async function add(req: Request, res: Response) {
+  const em = orm.em;
   try {
     const admin = new Admin();
     // Asignar propiedades manualmente o con assign, pero cuidando el password
@@ -152,6 +155,7 @@ async function add(req: Request, res: Response) {
 
 // Actualizar información de cuenta del administrador
 async function update(req: Request, res: Response) {
+  const em = orm.em;
   try {
     const id = Number.parseInt(req.params.id);
     const adminToUpdate = await em.getReference(Admin, id);
@@ -171,6 +175,7 @@ async function update(req: Request, res: Response) {
 }
 
 async function remove(req: Request, res: Response) {
+  const em = orm.em;
   try {
     const id = Number.parseInt(req.params.id);
     const admin = em.findOneOrFail(Admin, { id });

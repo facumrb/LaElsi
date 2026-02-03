@@ -5,8 +5,6 @@ import { UserRole } from '../user.entity.js';
 // import bcrypt from 'bcryptjs';
 // Crear endpoint, verificar credencial y manejar respuesta.
 
-const em = orm.em;
-
 function sanitizeClientInput(req: Request, res: Response, next: NextFunction) {
   req.body.sanitizedInput = {
     // foto: req.body.foto,
@@ -38,6 +36,7 @@ function sanitizeClientInput(req: Request, res: Response, next: NextFunction) {
 
 // Obtener información de cuenta del cliente
 async function getAccountInfo(req: Request, res: Response) {
+  const em = orm.em;
   try {
     const id = Number.parseInt(req.params.id);
     const client = await em.findOneOrFail(Client, id);
@@ -60,6 +59,7 @@ async function getAccountInfo(req: Request, res: Response) {
 }
 
 async function findOne(req: Request, res: Response) {
+  const em = orm.em;
   try {
     const id = Number.parseInt(req.params.id);
     const client = await em.findOneOrFail(Client, id);
@@ -72,6 +72,7 @@ async function findOne(req: Request, res: Response) {
 //Agregar Políticas de Contraseña y Autenticación y Tokens
 
 async function login(req: Request, res: Response) {
+  const em = orm.em;
   const { user, password } = req.body;
 
   // Validaciones para asegurarse de que el usuario y la contraseña fueron ingresados
@@ -126,6 +127,7 @@ async function login(req: Request, res: Response) {
 }
 
 async function findAll(req: Request, res: Response) {
+  const em = orm.em;
   try {
     const clients = await em.find(Client, {});
     res.status(200).json({ message: 'Todos los Clientes fueron encontrados', data: clients });
@@ -135,6 +137,7 @@ async function findAll(req: Request, res: Response) {
 }
 
 async function add(req: Request, res: Response) {
+  const em = orm.em;
   try {
     const client = new Client();
     const { password, ...rest } = req.body.sanitizedInput;
@@ -156,6 +159,7 @@ async function add(req: Request, res: Response) {
 
 // Actualizar información de cuenta del cliente
 async function update(req: Request, res: Response) {
+  const em = orm.em;
   try {
     const id = Number.parseInt(req.params.id);
     const clientToUpdate = await em.getReference(Client, id);
@@ -175,6 +179,7 @@ async function update(req: Request, res: Response) {
 }
 
 async function remove(req: Request, res: Response) {
+  const em = orm.em;
   try {
     const id = Number.parseInt(req.params.id);
     const client = em.findOneOrFail(Client, { id });

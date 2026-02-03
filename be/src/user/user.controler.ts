@@ -6,7 +6,7 @@ import { Admin } from './admin/admin.entity.js';
 import { generateToken } from '../shared/auth.middleware.js';
 
 async function login(req: Request, res: Response) {
-  const em = orm.em.fork();
+  const em = orm.em;
   const { user, email, identifier, password } = req.body;
   const loginValue = identifier || user || email;
 
@@ -60,7 +60,7 @@ async function login(req: Request, res: Response) {
 }
 
 async function register(req: Request, res: Response) {
-  const em = orm.em.fork();
+  const em = orm.em;
   const { name, last_name, phone, user, password, email, ...otherClientFields } = req.body;
 
   try {

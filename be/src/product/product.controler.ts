@@ -30,7 +30,7 @@ function sanitizeProductInput(req: Request, res: Response, next: NextFunction) {
 }
 
 async function add(req: Request, res: Response) {
-  const em = orm.em.fork();
+  const em = orm.em;
   try {
     const input = req.body.sanitizedInput;
 
@@ -48,7 +48,7 @@ async function add(req: Request, res: Response) {
 
 // Función para buscar productos por nombre, descripcion y marca
 async function searchProductsByText(req: Request, res: Response) {
-  const em = orm.em.fork();
+  const em = orm.em;
   const { query } = req.query; // Obtener el texto de búsqueda
 
   try {
@@ -69,7 +69,7 @@ async function searchProductsByText(req: Request, res: Response) {
 
 // Función para obtener productos por categoría
 async function findProductsByCategory(req: Request, res: Response) {
-  const em = orm.em.fork();
+  const em = orm.em;
   const categoryName = req.params.categoryName; // Obtener nombre de categoría
 
   try {
@@ -89,7 +89,7 @@ async function findProductsByCategory(req: Request, res: Response) {
 }
 
 async function findAll(req: Request, res: Response) {
-  const em = orm.em.fork();
+  const em = orm.em;
   try {
     const products = await em.find(
       Product,
@@ -106,7 +106,7 @@ async function findAll(req: Request, res: Response) {
 }
 
 async function findOne(req: Request, res: Response) {
-  const em = orm.em.fork();
+  const em = orm.em;
   try {
     const id = Number.parseInt(req.params.id);
     const product = await em.findOneOrFail(Product, { id }, { populate: ['category', 'photos'], populateOrderBy: { photos: { order: 'ASC' } } });
@@ -117,7 +117,7 @@ async function findOne(req: Request, res: Response) {
 }
 
 async function update(req: Request, res: Response) {
-  const em = orm.em.fork();
+  const em = orm.em;
   try {
     const id = Number.parseInt(req.params.id);
     const product = await em.findOneOrFail(
@@ -136,7 +136,7 @@ async function update(req: Request, res: Response) {
 }
 
 async function remove(req: Request, res: Response) {
-  const em = orm.em.fork();
+  const em = orm.em;
   try {
     const id = Number.parseInt(req.params.id);
     const product = await em.findOneOrFail(Product, { id }, { populate: ['photos'] });

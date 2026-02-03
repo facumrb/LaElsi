@@ -7,7 +7,7 @@ import path from 'path';
 import fs from 'fs/promises';
 
 async function uploadProductPhotos(req: Request, res: Response) {
-  const em = orm.em.fork();
+  const em = orm.em;
   const files = req.files as Express.Multer.File[];
   const { orders } = req.body;
 
@@ -89,7 +89,7 @@ async function deleteProductUploadedFiles(files: Express.Multer.File[]) {
 }
 
 async function reorderProductPhotos(req: Request, res: Response) {
-  const em = orm.em.fork();
+  const em = orm.em;
   try {
     const { photosOrder } = req.body; // Esperamos un array: [{ id: 1, order: 0 }, { id: 5, order: 1 }]
 
@@ -116,7 +116,7 @@ async function reorderProductPhotos(req: Request, res: Response) {
 }
 
 async function deleteProductPhoto(req: Request, res: Response) {
-  const em = orm.em.fork();
+  const em = orm.em;
   try {
     const id = Number(req.params.photoId);
 

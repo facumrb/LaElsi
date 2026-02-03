@@ -2,8 +2,6 @@ import { Request, Response, NextFunction } from 'express';
 import { Category } from './category.entity.js';
 import { orm } from '../shared/db/orm.js';
 
-const em = orm.em;
-
 function sanitizeCategoryInput(req: Request, res: Response, next: NextFunction) {
   req.body.sanitizedInput = {
     name: req.body.name,
@@ -22,6 +20,7 @@ function sanitizeCategoryInput(req: Request, res: Response, next: NextFunction) 
 
 // Este metodo permite buscar categorías cuyo nombre o descripción contenga el texto proporcionado.
 async function searchCategoriesByText(req: Request, res: Response) {
+  const em = orm.em;
   const { query } = req.query;
 
   try {
@@ -39,6 +38,7 @@ async function searchCategoriesByText(req: Request, res: Response) {
 }
 
 async function add(req: Request, res: Response) {
+  const em = orm.em;
   try {
     const { name, description } = req.body.sanitizedInput;
 
@@ -63,6 +63,7 @@ async function add(req: Request, res: Response) {
 }
 
 async function findAll(req: Request, res: Response) {
+  const em = orm.em;
   try {
     const categories = await em.find(Category, {}, { populate: ['products'] });
     res.status(200).json({ message: 'Todas las Categorías fueron encontradas', data: categories });
@@ -72,6 +73,7 @@ async function findAll(req: Request, res: Response) {
 }
 
 async function findOne(req: Request, res: Response) {
+  const em = orm.em;
   try {
     const name = req.params.name;
     const category = await em.findOneOrFail(Category, { name }, { populate: ['products'] });
@@ -82,6 +84,7 @@ async function findOne(req: Request, res: Response) {
 }
 
 async function update(req: Request, res: Response) {
+  const em = orm.em;
   try {
     const nameParam = req.params.name;
     const category = await em.findOneOrFail(Category, { name: nameParam });
@@ -94,6 +97,7 @@ async function update(req: Request, res: Response) {
 }
 
 async function remove(req: Request, res: Response) {
+  const em = orm.em;
   try {
     const name = req.params.name;
     const category = await em.findOneOrFail(Category, { name }, { populate: ['products'] });
