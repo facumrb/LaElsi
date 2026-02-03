@@ -7,8 +7,8 @@ import { generateToken } from '../shared/auth.middleware.js';
 
 async function login(req: Request, res: Response) {
   const em = orm.em;
-  const { user, email, identifier, password } = req.body;
-  const loginValue = identifier || user || email;
+  const { username, email, identifier, password } = req.body;
+  const loginValue = identifier || username || email;
 
   if (!loginValue) {
     return res.status(400).json({ message: 'Usuario o Email requerido' });
@@ -20,12 +20,12 @@ async function login(req: Request, res: Response) {
     // Buscamos manualmente en ambos para asegurar.
 
     let user: User | null = await em.findOne(Admin, {
-      $or: [{ email: loginValue }, { user: loginValue }]
+      $or: [{ email: loginValue }, { username: loginValue }]
     });
 
     if (!user) {
       user = await em.findOne(Client, {
-        $or: [{ email: loginValue }, { user: loginValue }]
+        $or: [{ email: loginValue }, { username: loginValue }]
       });
     }
 
@@ -61,12 +61,12 @@ async function login(req: Request, res: Response) {
 
 async function register(req: Request, res: Response) {
   const em = orm.em;
-  const { name, last_name, phone, user, password, email, ...otherClientFields } = req.body;
+  const { name, last_name, phone, username, password, email, ...otherClientFields } = req.body;
 
   try {
-    // Verificar duplicados (email o user) en ambas tablas
-    const existingAdmin = await em.findOne(Admin, { $or: [{ email }, { user }] });
-    const existingClient = await em.findOne(Client, { $or: [{ email }, { user }] });
+    // Verificar duplicados (email o username) en ambas tablas
+    const existingAdmin = await em.findOne(Admin, { $or: [{ email }, { username }] });
+    const existingClient = await em.findOne(Client, { $or: [{ email }, { username }] });
 
     if (existingAdmin || existingClient) {
       return res.status(400).json({ message: 'El usuario o email ya existe' });
@@ -77,7 +77,7 @@ async function register(req: Request, res: Response) {
     newClient.name = name;
     newClient.last_name = last_name;
     newClient.phone = phone;
-    newClient.user = user;
+    newClient.username = username;
     newClient.email = email;
     newClient.role = UserRole.CLIENT;
 

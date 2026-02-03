@@ -7,13 +7,10 @@ import { UserRole } from '../user.entity.js';
 
 function sanitizeClientInput(req: Request, res: Response, next: NextFunction) {
   req.body.sanitizedInput = {
-    // foto: req.body.foto,
     name: req.body.name,
     last_name: req.body.last_name,
     phone: req.body.phone,
-    // address: req.body.address,
-    // registration_date: req.body.registration_date,
-    user: req.body.user,
+    username: req.body.username,
     password: req.body.password,
     email: req.body.email,
     street: req.body.street,
@@ -23,8 +20,10 @@ function sanitizeClientInput(req: Request, res: Response, next: NextFunction) {
     postalCode: req.body.postalCode,
     floor: req.body.floor,
     apartment: req.body.apartment
+    // foto: req.body.foto,
+    // address: req.body.address,
+    // registration_date: req.body.registration_date,
   };
-  //more checks here
 
   Object.keys(req.body.sanitizedInput).forEach((key) => {
     if (req.body.sanitizedInput[key] === undefined) {
@@ -47,7 +46,7 @@ async function getAccountInfo(req: Request, res: Response) {
       name: client.name,
       last_name: client.last_name,
       phone: client.phone,
-      user: client.user,
+      username: client.username,
       email: client.email
       // password: cliente.password, // Considera no enviar la contraseña en la respuesta
     };
@@ -73,11 +72,11 @@ async function findOne(req: Request, res: Response) {
 
 async function login(req: Request, res: Response) {
   const em = orm.em;
-  const { user, password } = req.body;
+  const { username, password } = req.body;
 
   // Validaciones para asegurarse de que el usuario y la contraseña fueron ingresados
-  /*if (!user) {
-    return res.status(400).json({ message: 'El usuario es requerido' });
+  /*if (!username) {
+    return res.status(400).json({ message: 'El nombre de usuario es requerido' });
   }
   if (!password) {
     return res.status(400).json({ message: 'La contraseña es requerida' });
@@ -85,7 +84,7 @@ async function login(req: Request, res: Response) {
 
   try {
     // Buscar el cliente por usuario y contraseña
-    const client = await em.findOneOrFail(Client, { user, password });
+    const client = await em.findOneOrFail(Client, { username, password });
 
     if (!client) {
       return res.status(401).json({ message: 'Usuario o contraseña incorrecta' });
@@ -107,7 +106,7 @@ async function login(req: Request, res: Response) {
       name: client.name,
       last_name: client.last_name,
       phone: client.phone,
-      user: client.user,
+      username: client.username,
       email: client.email
       // password: cliente.password, // Considera no enviar la contraseña en la respuesta
     };

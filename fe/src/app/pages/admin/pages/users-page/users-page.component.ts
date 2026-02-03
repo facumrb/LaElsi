@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { ApiAdminService } from '@services/api-admin.service';
-import { IApiAdmin } from '@models/admin.model';
+import { IApiAdmin } from '@models/user.model';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -29,7 +29,7 @@ export class UsersPageComponent implements OnInit {
 
   constructor(private formBuilder: FormBuilder) {
     this.formUser = this.formBuilder.group({
-      name: [
+      username: [
         '',
         [
           Validators.required,

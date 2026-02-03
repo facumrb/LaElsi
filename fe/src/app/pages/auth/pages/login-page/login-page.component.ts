@@ -8,7 +8,7 @@ import {
 } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '@services/auth.service';
-import { AdminDataService } from '@services/admin-data-service.service';
+import { AdminDataService } from '@services/admin-data.service';
 
 @Component({
   selector: 'app-login-page',
@@ -27,7 +27,7 @@ export class LoginPageComponent {
 
   constructor(private formBuilder: FormBuilder) {
     this.formLoginAdmin = this.formBuilder.group({
-      user: [
+      username: [
         '',
         [
           Validators.required,
@@ -53,10 +53,9 @@ export class LoginPageComponent {
     this.loading = true;
     this.errorMessage = ''; // Limpiamos cualquier mensaje de error anterior.
 
-    const { user, password } = this.formLoginAdmin.value;
-
+    const { username, password } = this.formLoginAdmin.value;
     // Llamamos al servicio de autenticación.
-    this._authService.login(user, password).subscribe({
+    this._authService.login(username, password).subscribe({
       next: (response) => {
         this.loading = false;
         this._adminDataService.setAdminId(response.user.id);

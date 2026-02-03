@@ -10,7 +10,7 @@ function sanitizeAdminInput(req: Request, res: Response, next: NextFunction) {
     name: req.body.name,
     last_name: req.body.last_name,
     phone: req.body.phone,
-    user: req.body.user,
+    username: req.body.username,
     password: req.body.password,
     email: req.body.email
     // address: req.body.address,
@@ -38,7 +38,7 @@ async function getAccountInfo(req: Request, res: Response) {
       name: admin.name,
       last_name: admin.last_name,
       phone: admin.phone,
-      user: admin.user,
+      username: admin.username,
       password: admin.password,
       email: admin.email
       // photo: admin.photo,
@@ -68,11 +68,11 @@ async function findOne(req: Request, res: Response) {
 
 async function login(req: Request, res: Response) {
   const em = orm.em;
-  const { user, password } = req.body;
+  const { username, password } = req.body;
 
   // Validaciones para asegurarse de que el usuario y la contraseña fueron ingresados
-  /*if (!user) {
-    return res.status(400).json({ message: 'El usuario es requerido' });
+  /*if (!username) {
+    return res.status(400).json({ message: 'El nombre de usuario es requerido' });
   }
   if (!password) {
     return res.status(400).json({ message: 'La contraseña es requerida' });
@@ -80,7 +80,7 @@ async function login(req: Request, res: Response) {
 
   try {
     // Buscar el administrador por usuario y contraseña
-    const admin = await em.findOneOrFail(Admin, { user, password });
+    const admin = await em.findOneOrFail(Admin, { username, password });
 
     if (!admin) {
       return res.status(401).json({ message: 'Usuario o contraseña incorrecta' });
@@ -101,7 +101,7 @@ async function login(req: Request, res: Response) {
       name: admin.name,
       last_name: admin.last_name,
       phone: admin.phone,
-      user: admin.user,
+      username: admin.username,
       email: admin.email
       // foto: admin.foto,
       // password: admin.password, // Considera no enviar la contraseña en la respuesta

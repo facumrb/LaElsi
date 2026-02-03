@@ -8,7 +8,7 @@ import {
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiAdminService } from '@services/api-admin.service';
 import { CommonModule } from '@angular/common';
-import { IApiAccountInfo } from '@models/accountInfo.model';
+import { IApiAdmin } from '@models/user.model';
 
 @Component({
   selector: 'app-edit-profile-page',
@@ -19,7 +19,7 @@ import { IApiAccountInfo } from '@models/accountInfo.model';
 export class EditProfilePageComponent implements OnInit {
   formEditProfile!: FormGroup;
   loading: boolean = true;
-  admin?: IApiAccountInfo;
+  admin?: IApiAdmin;
   errorMessage: string = '';
 
   private _route = inject(ActivatedRoute);
@@ -44,7 +44,7 @@ export class EditProfilePageComponent implements OnInit {
       ],
 
       phone: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
-      user: [
+      username: [
         '',
         [
           Validators.required,
@@ -64,15 +64,15 @@ export class EditProfilePageComponent implements OnInit {
 
   // Obtener los detalles del administrador desde la API
   private fetchAdmin(id: number): void {
-    this._apiService.getAdmin(id).subscribe({
-      next: (data: IApiAccountInfo) => {
+    this._apiService.getAdminById(id).subscribe({
+      next: (data: IApiAdmin) => {
         this.admin = data;
         this.loading = false;
         this.formEditProfile.patchValue({
           name: this.admin.name,
           last_name: this.admin.last_name,
           phone: this.admin.phone,
-          user: this.admin.user,
+          username: this.admin.username,
           email: this.admin.email,
         });
       },

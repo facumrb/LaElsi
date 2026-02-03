@@ -1,44 +1,44 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
-import { IApiAdmin } from '@models/user.model';
+import { IApiClient } from '@models/user.model';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
-export class ApiAdminService {
+export class ApiClientService {
   private _http = inject(HttpClient);
-  private readonly apiUrl = `${environment.apiUrl}/admins`;
+  private readonly apiUrl = `${environment.apiUrl}/clients`;
 
-  getAllAdmins(): Observable<IApiAdmin[]> {
+  getAllClients(): Observable<IApiClient[]> {
     return this._http
-      .get<{ message: string; data: IApiAdmin[] }>(this.apiUrl)
+      .get<{ message: string; data: IApiClient[] }>(this.apiUrl)
       .pipe(map((response) => response.data));
   }
 
-  getAdminById(id: number): Observable<IApiAdmin> {
+  getClientById(id: number): Observable<IApiClient> {
     return this._http
-      .get<{ message: string; data: IApiAdmin }>(`${this.apiUrl}/${id}`)
+      .get<{ message: string; data: IApiClient }>(`${this.apiUrl}/${id}`)
       .pipe(map((response) => response.data));
   }
 
-  addAdmin(admin: IApiAdmin): Observable<IApiAdmin> {
+  addClient(client: IApiClient): Observable<IApiClient> {
     return this._http
-      .post<{ message: string; data: IApiAdmin }>(this.apiUrl, admin)
+      .post<{ message: string; data: IApiClient }>(this.apiUrl, client)
       .pipe(map((response) => response.data));
   }
 
-  updateAdmin(id: number, admin: IApiAdmin): Observable<IApiAdmin> {
+  updateClient(id: number, client: IApiClient): Observable<IApiClient> {
     return this._http
       .patch<{
         message: string;
-        data: IApiAdmin;
-      }>(`${this.apiUrl}/${id}`, admin)
+        data: IApiClient;
+      }>(`${this.apiUrl}/${id}`, client)
       .pipe(map((response) => response.data));
   }
 
-  deleteAdmin(id: number): Observable<void> {
+  deleteClient(id: number): Observable<void> {
     return this._http
       .delete<{ message: string }>(`${this.apiUrl}/${id}`)
       .pipe(map(() => void 0));

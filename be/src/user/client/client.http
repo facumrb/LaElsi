@@ -10,7 +10,7 @@ Content-Type: application/json
   "name": "Jorge",
   "last_name": "Quinoa",
   "phone": "3415044454",
-  "user": "jorge_quinoa",
+  "username": "jorge_quinoa",
   "password": "papasfritas",
   "email": "jorgequinoa@gmail.com"
 }
