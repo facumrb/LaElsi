@@ -3,9 +3,13 @@ import { FormsModule } from '@angular/forms';
 
 export type StockFilter =
   | 'Todos'
-  | 'ConStock' // Productos con stock > 0
-  | 'SinStock' // Productos con stock === 0
-  | 'BajoStock'; // Productos con stock <= 10 (Tu regla de negocio)
+  | 'AltoStock' // Productos con stock > 10
+  | 'BajoStock' // Productos con stock <= 10
+  | 'SinStock' // Productos con stock = 0
+  | 'MasProductos' // Productos de Mayor a menor stock
+  | 'MenosProductos'; // Productos de Menor a mayor stock
+
+export type StatusFilter = 'Todos' | 'Activo' | 'Inactivo';
 
 @Component({
   selector: 'app-products-toolbar',
@@ -13,11 +17,11 @@ export type StockFilter =
   templateUrl: './products-toolbar.component.html',
 })
 export class ProductsToolbarComponent {
-  statusFilter = model.required<'Todos' | 'Activo' | 'Inactivo'>();
-  stockFilter = model.required<StockFilter>();
   searchQuery = model.required<string>();
+  statusFilter = model.required<StatusFilter>();
+  stockFilter = model.required<StockFilter>();
 
-  // Output para el botón de crear
+  // OUTPUT: Para avisar que hicieron clic en "Agregar"
   onAdd = output<void>();
 
   showMenu = false;

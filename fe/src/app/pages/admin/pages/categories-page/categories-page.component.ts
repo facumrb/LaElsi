@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { ApiCategoryService } from '@services/api-category.service';
 import { IApiCategory } from '@models/category.model';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -6,8 +6,11 @@ import { AlertService } from '@shared/alert.service';
 import { ApiErrorService } from '@shared/api-error.service';
 import { CategoriesModalComponent } from './categories-modal/categories-modal.component';
 import { CategoriesListComponent } from './categories-list/categories-list.component';
-import { CategoriesToolbarComponent } from './categories-toolbar/categories-toolbar.component';
-import { StockFilter } from './categories-toolbar/categories-toolbar.component';
+import {
+  CategoriesToolbarComponent,
+  StatusFilter,
+  StockFilter,
+} from './categories-toolbar/categories-toolbar.component';
 
 @Component({
   selector: 'app-categories-page',
@@ -19,47 +22,58 @@ import { StockFilter } from './categories-toolbar/categories-toolbar.component';
   ],
   templateUrl: './categories-page.component.html',
 })
-export class CategoriesPageComponent {
+export class CategoriesPageComponent implements OnInit {
   private _alertService = inject(AlertService);
   private _errorService = inject(ApiErrorService);
   private _apiService = inject(ApiCategoryService);
   private categoriesRaw = signal<IApiCategory[]>([]);
 
-  statusFilter = signal<'Todos' | 'Activo' | 'Inactivo'>('Todos');
+  statusFilter = signal<StatusFilter>('Todos');
   stockFilter = signal<StockFilter>('Todos');
   searchQuery = signal('');
 
-  categories = computed(() => {
-    const raw = this.categoriesRaw();
-    const state = this.statusFilter();
-    const inv = this.stockFilter();
+  filtersActive = computed(() => {
+    return (
+      this.searchQuery() !== '' ||
+      this.statusFilter() !== 'Todos' ||
+      this.stockFilter() !== 'Todos'
+    );
+  });
 
+  categoriesFiltered = computed(() => {
+    // Obtenemos los valores actuales de los signals
+    const currentCategories = this.categoriesRaw();
     const query = this.searchQuery().toLowerCase().trim();
+    const status = this.statusFilter();
+    const stockType = this.stockFilter();
 
-    let filtered = raw.filter((cat) => {
-      // Filtro de Estado
-      const cumpleEstado = state === 'Todos' || cat.state === state;
-
-      // Filtro de Inventario
-      const cant = cat.products?.length || 0;
-      let cumpleInv = true;
-      if (inv === 'ConProductos') cumpleInv = cant > 0;
-      if (inv === 'SinProductos') cumpleInv = cant === 0;
-
+    // Aplicamos filtros (Search, Status, Stock)
+    let filtered = currentCategories.filter((cat) => {
       // Filtro de Búsqueda
-      const cumpleBusqueda =
+      const matchesSearch =
         cat.name.toLowerCase().includes(query) ||
-        (cat.description && cat.description.toLowerCase().includes(query));
+        cat.description.toLowerCase().includes(query);
 
-      return cumpleEstado && cumpleInv && cumpleBusqueda;
+      // Filtro de Estado
+      const matchesStatus = status === 'Todos' || cat.state === status;
+
+      // Filtro de Cantidad de Productos asociados
+      const cant = cat.products?.length || 0;
+      let matchesStock = true;
+      if (stockType === 'ConProductos') matchesStock = cant > 0;
+      if (stockType === 'SinProductos') matchesStock = cant === 0;
+
+      return matchesSearch && matchesStatus && matchesStock;
     });
-    if (inv === 'MasProductos') {
-      // Ordenar de Mayor a Menor (Descendente)
+
+    // Ordenamiento
+    if (stockType === 'MasProductos') {
+      // Ordenar de Mayor a Menor
       filtered = filtered.sort(
         (a, b) => (b.products?.length || 0) - (a.products?.length || 0),
       );
-    } else if (inv === 'MenosProductos') {
-      // Ordenar de Menor a Mayor (Ascendente)
+    } else if (stockType === 'MenosProductos') {
+      // Ordenar de Menor a Mayor
       filtered = filtered.sort(
         (a, b) => (a.products?.length || 0) - (b.products?.length || 0),
       );
@@ -123,7 +137,7 @@ export class CategoriesPageComponent {
   }
 
   // --- Lógica para borrar la categoria ---
-  delete(category: IApiCategory) {
+  handleDelete(category: IApiCategory) {
     const cantidadProductos = category.products?.length || 0;
     if (cantidadProductos > 0) {
       this._alertService.error(

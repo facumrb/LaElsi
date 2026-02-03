@@ -12,6 +12,7 @@ export class ProductsListComponent {
   products = input.required<IApiProduct[]>();
   onEdit = output<IApiProduct>();
   onDelete = output<IApiProduct>();
+  isFilterActive = input<boolean>(false);
 
   private readonly imageBaseUrl = environment.imageBaseUrl;
 

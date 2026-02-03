@@ -8,17 +8,19 @@ export type StockFilter =
   | 'MasProductos'
   | 'MenosProductos';
 
+export type StatusFilter = 'Todos' | 'Activo' | 'Inactivo';
+
 @Component({
   selector: 'app-categories-toolbar',
   imports: [FormsModule],
   templateUrl: './categories-toolbar.component.html',
 })
 export class CategoriesToolbarComponent {
-  statusFilter = model.required<'Todos' | 'Activo' | 'Inactivo'>();
-  stockFilter = model.required<StockFilter>();
   searchQuery = model.required<string>();
+  statusFilter = model.required<StatusFilter>();
+  stockFilter = model.required<StockFilter>();
 
-  // 2. OUTPUT: Para avisar que hicieron clic en "Agregar"
+  // OUTPUT: Para avisar que hicieron clic en "Agregar"
   onAdd = output<void>();
 
   showMenu = false;
