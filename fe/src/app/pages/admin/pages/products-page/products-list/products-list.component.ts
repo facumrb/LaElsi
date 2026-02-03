@@ -20,4 +20,14 @@ export class ProductsListComponent {
   getImageUrl(fileName: string): string {
     return `${this.imageBaseUrl}${fileName}`;
   }
+
+  getProductPrice(product: IApiProduct): number {
+    const currentPrice = product.prices?.find((p) => p.isCurrent);
+    return currentPrice ? currentPrice.amount : 0;
+  }
+
+  getProductCurrency(product: IApiProduct): string {
+    const currentPrice = product.prices?.find((p) => p.isCurrent);
+    return currentPrice ? currentPrice.currency : 'ARS';
+  }
 }

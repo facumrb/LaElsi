@@ -1,11 +1,19 @@
 import { IApiCategory } from './category.model';
 import { IApiProductPhoto } from './photo.model';
 
+export interface IApiPrice {
+  id: number;
+  amount: number;
+  currency: string;
+  validFrom: string;
+  isCurrent: boolean;
+}
+
 export interface IApiProduct {
   id: number;
   name: string;
   description: string;
-  price: number;
+  prices: IApiPrice[];
   brand: string;
   total_sold: number;
   state: 'Activo' | 'Inactivo';
@@ -17,7 +25,8 @@ export interface IApiProduct {
 export interface ICreateProduct {
   name: string;
   description: string;
-  price: number;
+  price: number; // El formulario sigue enviando un número simple que el BE convierte
+  currency?: string;
   brand: string;
   total_sold: number;
   state: 'Activo' | 'Inactivo';

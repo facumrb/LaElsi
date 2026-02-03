@@ -18,4 +18,14 @@ export class ProductCardComponent {
   getImageUrl(fileName: string): string {
     return `${this.imageBaseUrl}${fileName}`;
   }
+
+  getProductPrice(): number {
+    const currentPrice = this.product().prices?.find((p) => p.isCurrent);
+    return currentPrice ? currentPrice.amount : 0;
+  }
+
+  getProductCurrency(): string {
+    const currentPrice = this.product().prices?.find((p) => p.isCurrent);
+    return currentPrice ? currentPrice.currency : 'ARS';
+  }
 }

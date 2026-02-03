@@ -101,7 +101,7 @@
               <span class="font-bold text-[#3d4494] md:hidden block mb-1"
                 >Precio:</span
               >
-              {{ product.price | currency: "ARS" : "symbol" : "1.0-0" }}
+              {{ getProductPrice(product) | currency: getProductCurrency(product) : "symbol" : "1.0-0" }}
             </td>
 
             <td

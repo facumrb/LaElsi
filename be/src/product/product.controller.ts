@@ -10,6 +10,7 @@ function sanitizeProductInput(req: Request, res: Response, next: NextFunction) {
     name: req.body.name,
     description: req.body.description,
     price: req.body.price,
+    currency: req.body.currency,
     brand: req.body.brand,
     total_sold: req.body.total_sold,
     state: req.body.state,
@@ -33,10 +34,12 @@ async function add(req: Request, res: Response) {
   const em = orm.em;
   try {
     const input = req.body.sanitizedInput;
+    const { price, currency, ...productData } = input;
+    productData.category = em.getReference(Category, productData.category);
 
-    input.category = em.getReference(Category, input.category);
+    const product = em.create(Product, productData);
+    product.updatePrice(price, currency);
 
-    const product = em.create(Product, input);
     await em.flush();
 
     res.status(201).json({ message: 'Producto creado', data: product });
@@ -58,7 +61,7 @@ async function searchProductsByText(req: Request, res: Response) {
         $or: [{ name: { $like: `%${query}%` } }, { description: { $like: `%${query}%` } }, { brand: { $like: `%${query}%` } }]
       },
       {
-        populate: ['category', 'photos']
+        populate: ['category', 'photos', 'prices']
       }
     );
     res.status(200).json({ message: 'Productos encontrados', data: products });
@@ -79,7 +82,7 @@ async function findProductsByCategory(req: Request, res: Response) {
         category: { name: categoryName }
       },
       {
-        populate: ['category', 'photos']
+        populate: ['category', 'photos', 'prices']
       }
     );
     res.status(200).json({ message: 'Productos encontrados en la categoría', data: products });
@@ -95,7 +98,7 @@ async function findAll(req: Request, res: Response) {
       Product,
       {},
       {
-        populate: ['category', 'photos'],
+        populate: ['category', 'photos', 'prices'],
         populateOrderBy: { photos: { order: 'ASC' } }
       }
     );
@@ -109,7 +112,7 @@ async function findOne(req: Request, res: Response) {
   const em = orm.em;
   try {
     const id = Number.parseInt(req.params.id);
-    const product = await em.findOneOrFail(Product, { id }, { populate: ['category', 'photos'], populateOrderBy: { photos: { order: 'ASC' } } });
+    const product = await em.findOneOrFail(Product, { id }, { populate: ['category', 'photos', 'prices'], populateOrderBy: { photos: { order: 'ASC' } } });
     res.status(200).json({ message: 'Producto encontrado', data: product });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
@@ -124,10 +127,18 @@ async function update(req: Request, res: Response) {
       Product,
       { id },
       {
-        populate: ['category', 'photos']
+        populate: ['category', 'photos', 'prices']
       }
     );
-    em.assign(product, req.body.sanitizedInput);
+    const { price, currency, ...updateData } = req.body.sanitizedInput;
+
+    // Si el precio cambio, usamos el metodo de la entidad para guardar el historico
+    const currentPrice = product.prices.getItems().find(p => p.isCurrent);
+    if (price !== undefined && price !== currentPrice?.amount) {
+      product.updatePrice(price, currency);
+    }
+
+    em.assign(product, updateData);
     await em.flush();
     res.status(200).json({ message: 'Producto actualizado', data: product });
   } catch (error: any) {
@@ -179,7 +190,7 @@ async function findPage(req: Request, res: Response) {
       Product,
       {},
       {
-        populate: ['category', 'photos'],
+        populate: ['category', 'photos', 'prices'],
         limit,
         offset,
         populateOrderBy: { photos: { order: 'ASC' } } // Ordena las fotos por orden creciente basado en "order"

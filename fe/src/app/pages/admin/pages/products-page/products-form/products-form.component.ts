@@ -85,10 +85,11 @@ export class ProductsFormComponent implements OnInit {
 
       this.productService.getProductById(+id).subscribe({
         next: (product) => {
+          const currentPrice = product.prices?.find(p => p.isCurrent);
           this.formProduct.patchValue({
             name: product.name,
             description: product.description,
-            price: product.price,
+            price: currentPrice ? currentPrice.amount : null,
             brand: product.brand,
             stock: product.stock,
             state: product.state,
