@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { uploadProductPhotos, reorderProductPhotos, deleteProductPhoto } from './productPhoto/productPhoto.controler.js';
-import { uploadUserPhoto, deleteUserPhoto } from './userPhoto/userPhoto.controler.js';
+import { uploadProductPhotos, reorderProductPhotos, deleteProductPhoto } from './productPhoto/productPhoto.controller.js';
+import { uploadUserPhoto, deleteUserPhoto } from './userPhoto/userPhoto.controller.js';
 import { upload } from '../shared/multer.config.js';
 import { verifyToken, verifyRole } from '../shared/auth.middleware.js';
 import { UserRole } from '../user/user.entity.js';

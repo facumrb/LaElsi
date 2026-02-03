@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { findAll, findOne, add, update, remove, searchCategoriesByText, sanitizeCategoryInput } from './category.controler.js';
+import { findAll, findOne, add, update, remove, searchCategoriesByText, sanitizeCategoryInput } from './category.controller.js';
 import { verifyToken, verifyRole } from '../shared/auth.middleware.js';
 import { UserRole } from '../user/user.entity.js';
 

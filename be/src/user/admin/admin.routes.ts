@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { sanitizeAdminInput, findAll, findOne, add, update, remove, getAccountInfo } from './admin.controler.js';
-import { login } from '../user.controler.js';
+import { sanitizeAdminInput, findAll, findOne, add, update, remove, getAccountInfo } from './admin.controller.js';
+import { login } from '../user.controller.js';
 import { verifyToken, verifyRole } from '../../shared/auth.middleware.js';
 import { UserRole } from '../user.entity.js';
 

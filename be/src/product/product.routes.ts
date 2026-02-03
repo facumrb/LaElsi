@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { sanitizeProductInput, findAll, findOne, add, update, remove, searchProductsByText, findProductsByCategory } from './product.controler.js';
+import { sanitizeProductInput, findAll, findOne, add, update, remove, searchProductsByText, findProductsByCategory } from './product.controller.js';
 import { verifyToken, verifyRole } from '../shared/auth.middleware.js';
 import { UserRole } from '../user/user.entity.js';
 
