@@ -189,7 +189,58 @@
           </tr>
         } @empty {
           <tr>
-            <td colspan="6" class="p-4 text-center">No hay productos</td>
+            <td
+              colspan="6"
+              class="py-12 text-center bg-white rounded-lg md:rounded-none"
+            >
+              <div
+                class="flex flex-col items-center justify-center text-gray-400"
+              >
+                @if (isFilterActive()) {
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="size-12 mb-3 text-gray-300"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+                    />
+                  </svg>
+                  <p class="text-lg font-medium text-gray-600">
+                    No se encontraron resultados
+                  </p>
+                  <p class="text-sm text-gray-500 mt-1">
+                    Intenta con otra palabra clave o ajusta los filtros.
+                  </p>
+                } @else {
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="size-12 mb-3 text-gray-300"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3.25h3m-3-3.75h3m-12-3h15.75c.828 0 1.5.672 1.5 1.5S19.828 6.75 19 6.75H5c-.828 0-1.5-.672-1.5-1.5S4.172 2.25 5 2.25z"
+                    />
+                  </svg>
+                  <p class="text-lg font-medium text-gray-600">
+                    No hay productos cargados
+                  </p>
+                  <p class="text-sm text-gray-500 mt-1">
+                    Comienza agregando tu primer producto.
+                  </p>
+                }
+              </div>
+            </td>
           </tr>
         }
       </tbody>

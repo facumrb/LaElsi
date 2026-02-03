@@ -11,6 +11,7 @@ export class CategoriesListComponent {
   categories = input.required<IApiCategory[]>();
   onEdit = output<IApiCategory>();
   onDelete = output<IApiCategory>();
+  isFilterActive = input<boolean>(false);
 
   viewProducts(category: IApiCategory) {
     if (!category.products || category.products.length === 0) return;

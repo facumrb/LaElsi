@@ -97,7 +97,7 @@
                 <h3
                   class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2"
                 >
-                  Por Estado
+                  Filtrar por Estado
                 </h3>
                 <div class="space-y-2">
                   <label
@@ -145,7 +145,7 @@
                 <h3
                   class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2"
                 >
-                  Por Inventario
+                  Filtrar por Stock
                 </h3>
                 <div class="space-y-2">
                   <label
@@ -166,24 +166,12 @@
                     <input
                       type="radio"
                       name="stock"
-                      [checked]="stockFilter() === 'ConStock'"
-                      (change)="stockFilter.set('ConStock')"
-                      class="text-[#3d4494] focus:ring-[#3d4494]"
-                    />
-                    <span class="text-sm text-gray-700">En existencia</span>
-                  </label>
-                  <label
-                    class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded"
-                  >
-                    <input
-                      type="radio"
-                      name="stock"
-                      [checked]="stockFilter() === 'SinStock'"
-                      (change)="stockFilter.set('SinStock')"
+                      [checked]="stockFilter() === 'AltoStock'"
+                      (change)="stockFilter.set('AltoStock')"
                       class="text-[#3d4494] focus:ring-[#3d4494]"
                     />
                     <span class="text-sm text-gray-700"
-                      >Sin stock (Agotados)</span
+                      >Stock alto (Mas de 10)</span
                     >
                   </label>
                   <label
@@ -196,7 +184,45 @@
                       (change)="stockFilter.set('BajoStock')"
                       class="text-[#3d4494] focus:ring-[#3d4494]"
                     />
-                    <span class="text-sm text-gray-700">Stock bajo (< 10)</span>
+                    <span class="text-sm text-gray-700"
+                      >Stock bajo (Menos de 10)</span
+                    >
+                  </label>
+                  <label
+                    class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded"
+                  >
+                    <input
+                      type="radio"
+                      name="stock"
+                      [checked]="stockFilter() === 'SinStock'"
+                      (change)="stockFilter.set('SinStock')"
+                      class="text-[#3d4494] focus:ring-[#3d4494]"
+                    />
+                    <span class="text-sm text-gray-700">Stock agotado</span>
+                  </label>
+                  <label
+                    class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded"
+                  >
+                    <input
+                      type="radio"
+                      name="inv"
+                      [checked]="stockFilter() === 'MasProductos'"
+                      (change)="stockFilter.set('MasProductos')"
+                      class="text-[#3d4494] focus:ring-[#3d4494]"
+                    />
+                    <span class="text-sm text-gray-700">Mayor a menor</span>
+                  </label>
+                  <label
+                    class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded"
+                  >
+                    <input
+                      type="radio"
+                      name="inv"
+                      [checked]="stockFilter() === 'MenosProductos'"
+                      (change)="stockFilter.set('MenosProductos')"
+                      class="text-[#3d4494] focus:ring-[#3d4494]"
+                    />
+                    <span class="text-sm text-gray-700">Menor a mayor</span>
                   </label>
                 </div>
               </div>
