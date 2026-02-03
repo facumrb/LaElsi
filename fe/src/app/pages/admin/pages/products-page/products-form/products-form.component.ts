@@ -8,9 +8,8 @@ import { FormUtils } from '@shared/form-utils';
 import { ApiProductService } from '@services/api-product.service';
 import { AlertService } from '@shared/alert.service';
 import { ICreateProduct } from '@models/product.model';
-import { environment } from 'src/environments/environment';
 import { PhotoManagerComponent } from './photo-manager/photo-manager.component';
-import { IApiPhoto } from '@models/photo.model';
+import { IApiProductPhoto } from '@models/photo.model';
 
 @Component({
   selector: 'app-products-form',
@@ -33,7 +32,7 @@ export class ProductsFormComponent implements OnInit {
   photoManager!: PhotoManagerComponent;
 
   // Fotos iniciales para pasar al hijo
-  initialPhotos = signal<IApiPhoto[]>([]);
+  initialPhotos = signal<IApiProductPhoto[]>([]);
 
   // Estados
   categories = signal<IApiCategory[]>([]);

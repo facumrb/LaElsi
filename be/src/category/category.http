@@ -8,11 +8,8 @@ Content-Type: application/json
   "password": "admin123"
 }
 
-### 2. CREAR CATEGORÍA (Usa el token del paso 1 automáticamente)
+### (Usa el token del paso 1 automáticamente)
 @authToken = {{loginRequest.response.body.token}}
-
-### GET ALL
-GET http://localhost:3000/api/categories HTTP/1.1
 
 
 ### POST (Crear Juguetería)
@@ -31,6 +28,8 @@ Authorization: Bearer {{authToken}}
 ### VARIABLE (Guardamos el nombre, que es la nueva PK)
 @categoryName = {{createCategory.response.body.data.name}}
 
+### GET ALL
+GET http://localhost:3000/api/categories HTTP/1.1
 
 ### GET ONE (Usando la variable)
 GET http://localhost:3000/api/categories/{{categoryName}} HTTP/1.1

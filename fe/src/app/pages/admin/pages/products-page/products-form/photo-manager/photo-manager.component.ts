@@ -1,5 +1,5 @@
 import { Component, effect, inject, input, signal } from '@angular/core';
-import { IApiPhoto } from '@models/photo.model';
+import { IApiProductPhoto } from '@models/photo.model';
 import { ApiPhotoService } from '@services/api-photo.service';
 import { environment } from 'src/environments/environment';
 import { forkJoin, Observable, of } from 'rxjs';
@@ -25,7 +25,7 @@ export class PhotoManagerComponent {
   readonly MAX_PHOTOS = 10;
 
   // Input: Recibimos las fotos cuando estamos en modo Edición
-  initialPhotos = input<IApiPhoto[]>([]);
+  initialPhotos = input<IApiProductPhoto[]>([]);
 
   // Estado interno
   gallery = signal<IUiPhoto[]>([]);
@@ -119,7 +119,7 @@ export class PhotoManagerComponent {
     if (this.photosToDeleteIds.length > 0) {
       // Creamos un array de observables de borrado
       const deleteTasks = this.photosToDeleteIds.map((id) =>
-        this.photoService.deletePhoto(id),
+        this.photoService.deleteProductPhoto(id),
       );
       // Los agregamos a la cola principal
       tasks.push(forkJoin(deleteTasks));
@@ -138,7 +138,7 @@ export class PhotoManagerComponent {
         fd.append('orders', visualIndex.toString());
       });
 
-      tasks.push(this.photoService.uploadPhotos(productId, fd));
+      tasks.push(this.photoService.uploadProductPhotos(productId, fd));
     }
 
     // 3. Reordenar Viejas
@@ -149,10 +149,10 @@ export class PhotoManagerComponent {
         }
         return null;
       })
-      .filter((item) => item !== null);
+      .filter((item): item is { id: number; order: number } => item !== null);
 
     if (orderPayload.length > 0) {
-      tasks.push(this.photoService.reorderPhotos(orderPayload));
+      tasks.push(this.photoService.reorderProductPhotos(orderPayload));
     }
 
     // Si no hay tareas, devolvemos un observable vacío inmediato

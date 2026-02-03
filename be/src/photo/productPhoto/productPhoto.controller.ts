@@ -1,13 +1,14 @@
 import { Request, Response } from 'express';
 import { orm } from '../../shared/db/orm.js';
 import { Product } from '../../product/product.entity.js';
-import { Photo } from '../photo.entity.js'; // Import base Photo for general operations if needed, or remove if unused/replaced completely
 import { ProductPhoto } from './productPhoto.entity.js';
 import path from 'path';
 import fs from 'fs/promises';
 
+const UPLOADS_PATH = path.join(process.cwd(), 'uploads');
+
 async function uploadProductPhotos(req: Request, res: Response) {
-  const em = orm.em;
+  const em = orm.em.fork();
   const files = req.files as Express.Multer.File[];
   const { orders } = req.body;
 
@@ -20,7 +21,6 @@ async function uploadProductPhotos(req: Request, res: Response) {
     }
 
     // Buscamos el producto al que le vamos a asignar las fotos
-    // Populate 'photos' matches the property name in Product entity
     const product = await em.findOne(Product, { id }, { populate: ['photos'] });
     if (!product) {
       await deleteProductUploadedFiles(files);
@@ -89,7 +89,7 @@ async function deleteProductUploadedFiles(files: Express.Multer.File[]) {
 }
 
 async function reorderProductPhotos(req: Request, res: Response) {
-  const em = orm.em;
+  const em = orm.em.fork();
   try {
     const { photosOrder } = req.body; // Esperamos un array: [{ id: 1, order: 0 }, { id: 5, order: 1 }]
 
@@ -116,7 +116,7 @@ async function reorderProductPhotos(req: Request, res: Response) {
 }
 
 async function deleteProductPhoto(req: Request, res: Response) {
-  const em = orm.em;
+  const em = orm.em.fork();
   try {
     const id = Number(req.params.photoId);
 
@@ -125,7 +125,7 @@ async function deleteProductPhoto(req: Request, res: Response) {
 
     // 2. Construimos la ruta absoluta al archivo debe coincidir con la carpeta donde Multer las guarda
     // Assuming uploads go to 'uploads' generally, or specific folder? keeping 'uploads' as per current state.
-    const filePath = path.join(process.cwd(), 'uploads', photo.fileName);
+    const filePath = path.join(UPLOADS_PATH, photo.fileName);
 
     // 3. Intentamos borrar el archivo físico
     try {
