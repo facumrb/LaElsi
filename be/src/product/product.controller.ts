@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { orm } from '../shared/db/orm.js';
 import { Product } from './product.entity.js';
 import { Category } from '../category/category.entity.js';
+import { ProductState, CategoryState } from '../shared/state.enum.js';
 import path from 'path';
 import fs from 'fs/promises';
 
@@ -211,4 +212,22 @@ async function findPage(req: Request, res: Response) {
   }
 }
 
-export { findPage, sanitizeProductInput, findAll, findOne, add, update, remove, searchProductsByText, findProductsByCategory };
+async function findAllActive(req: Request, res: Response) {
+  const em = orm.em;
+  try {
+    const products = await em.find(
+      Product,
+      { state: ProductState.ACTIVO, category: { state: CategoryState.ACTIVO } },
+      {
+        populate: ['category', 'photos', 'prices'],
+        populateWhere: { prices: { isCurrent: true } },
+        populateOrderBy: { photos: { order: 'ASC' } }
+      }
+    );
+    res.status(200).json({ message: 'Productos activos encontrados', data: products });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
+export { findPage, sanitizeProductInput, findAll, findAllActive, findOne, add, update, remove, searchProductsByText, findProductsByCategory };

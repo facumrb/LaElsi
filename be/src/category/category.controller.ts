@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { Category } from './category.entity.js';
 import { orm } from '../shared/db/orm.js';
-import { CategoryState } from '../shared/state.enum.js';
+import { CategoryState, ProductState } from '../shared/state.enum.js';
 
 function sanitizeCategoryInput(req: Request, res: Response, next: NextFunction) {
   req.body.sanitizedInput = {
@@ -120,4 +120,25 @@ async function remove(req: Request, res: Response) {
   }
 }
 
-export { sanitizeCategoryInput, findAll, findOne, add, update, remove, searchCategoriesByText };
+async function findAllActive(req: Request, res: Response) {
+  const em = orm.em;
+  try {
+    const categories = await em.find(
+      Category,
+      { state: CategoryState.ACTIVO },
+      {
+        populate: ['products.photos', 'products.prices'] as any,
+        populateWhere: {
+          products: { state: ProductState.ACTIVO },
+          'products.prices': { isCurrent: true }
+        } as any,
+        populateOrderBy: { 'products.photos': { order: 'ASC' } } as any
+      }
+    );
+    res.status(200).json({ message: 'Categorías activas encontradas', data: categories });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
+export { sanitizeCategoryInput, findAll, findAllActive, findOne, add, update, remove, searchCategoriesByText };
