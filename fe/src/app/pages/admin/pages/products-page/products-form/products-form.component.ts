@@ -151,7 +151,7 @@ export class ProductsFormComponent implements OnInit {
         price: Number(formValue.price),
         stock: Number(formValue.stock),
         state: formValue.state ?? 'Activo',
-        categoryName: formValue.category?.name ?? '',
+        categoryId: formValue.category?.id ?? 0,
       };
 
       // 1. GUARDAR/ACTUALIZAR PRODUCTO (PADRE)

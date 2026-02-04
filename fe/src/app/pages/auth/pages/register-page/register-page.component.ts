@@ -1,8 +1,57 @@
-import { Component } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
+import { AuthService } from '@services/auth.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-register-page',
-  imports: [],
+  imports: [ReactiveFormsModule, CommonModule, RouterLink],
   templateUrl: './register-page.component.html',
 })
-export class RegisterPageComponent {}
+export class RegisterPageComponent {
+  private fb = inject(FormBuilder);
+  private authService = inject(AuthService);
+  private router = inject(Router);
+
+  loading = signal(false);
+  errorMessage = signal('');
+
+  formRegister = this.fb.group({
+    name: ['', [Validators.required, Validators.minLength(2)]],
+    last_name: ['', [Validators.required, Validators.minLength(2)]],
+    dni: ['', [Validators.required, Validators.pattern('^[0-9]{7,8}$')]],
+    phone: ['', [Validators.required, Validators.pattern('^[0-9]{8,15}$')]],
+    username: ['', [Validators.required, Validators.minLength(4)]],
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', [Validators.required, Validators.minLength(6)]],
+  });
+
+  hasErrors(field: string, type: string) {
+    const control = this.formRegister.get(field);
+    return control?.hasError(type) && control?.touched;
+  }
+
+  onSubmit() {
+    if (this.formRegister.invalid) {
+      this.formRegister.markAllAsTouched();
+      return;
+    }
+
+    this.loading.set(true);
+    this.errorMessage.set('');
+
+    this.authService.register(this.formRegister.value).subscribe({
+      next: () => {
+        this.loading.set(false);
+        this.router.navigate(['/auth/login'], {
+          queryParams: { registered: 'true' },
+        });
+      },
+      error: (err) => {
+        this.loading.set(false);
+        this.errorMessage.set(err.error?.message || 'Error al registrarse');
+      },
+    });
+  }
+}

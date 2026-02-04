@@ -111,11 +111,11 @@ export class CategoriesPageComponent implements OnInit {
     const currentCat = this.selectedCategory();
     const esEdicion = !!currentCat;
 
-    // Al editar, pasamos currentCat.name para la URL (ID viejo)
+    // Al editar, pasamos currentCat.id para la URL (ID viejo)
     // y formData DIRECTO como body (datos nuevos).
 
     const request$ = esEdicion
-      ? this._apiService.updateCategory(currentCat.name, formData)
+      ? this._apiService.updateCategory(currentCat.id, formData)
       : this._apiService.addCategory(formData);
 
     request$.subscribe({
@@ -149,10 +149,10 @@ export class CategoriesPageComponent implements OnInit {
 
     this._alertService.confirmDelete().then((confirm) => {
       if (confirm) {
-        this._apiService.deleteCategory(category.name).subscribe({
+        this._apiService.deleteCategory(category.id).subscribe({
           next: () => {
             this.categoriesRaw.update((cats) =>
-              cats.filter((c) => c.name !== category.name),
+              cats.filter((c) => c.id !== category.id),
             );
             this._alertService.toast('Categoría eliminada', 'success');
           },
