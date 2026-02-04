@@ -1,5 +1,6 @@
-import { Property, Entity, PrimaryKey, Enum } from '@mikro-orm/core';
+import { Property, Entity, PrimaryKey, Enum, OneToOne, Rel } from '@mikro-orm/core';
 import bcrypt from 'bcrypt';
+import { UserPhoto } from '../photo/userPhoto/userPhoto.entity.js';
 
 export enum UserRole {
   ADMIN = 'Admin',
@@ -45,6 +46,9 @@ export abstract class User {
 
   @Property({ nullable: true })
   deletedAt?: Date;
+
+  @OneToOne(() => UserPhoto, (photo) => photo.user, { nullable: true })
+  photo?: Rel<UserPhoto>;
 
   async setPassword(password: string) {
     this.password = await bcrypt.hash(password, 10);

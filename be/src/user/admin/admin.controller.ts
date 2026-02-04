@@ -1,8 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { Admin } from './admin.entity.js';
 import { orm } from '../../shared/db/orm.js';
-// import bcrypt from 'bcryptjs';
-// Crear endpoint, verificar credencial y manejar respuesta.
 import { UserRole } from '../user.entity.js';
 
 function sanitizeAdminInput(req: Request, res: Response, next: NextFunction) {
@@ -14,9 +12,6 @@ function sanitizeAdminInput(req: Request, res: Response, next: NextFunction) {
     password: req.body.password,
     email: req.body.email,
     dni: req.body.dni
-    // address: req.body.address,
-    // registration_date: req.body.registration_date,
-    // photo: req.body.photo,
   };
 
   Object.keys(req.body.sanitizedInput).forEach((key) => {
@@ -32,7 +27,7 @@ async function getAccountInfo(req: Request, res: Response) {
   const em = orm.em;
   try {
     const id = Number.parseInt(req.params.id);
-    const admin = await em.findOneOrFail(Admin, id);
+    const admin = await em.findOneOrFail(Admin, id, { populate: ['photo'] as any });
     // Filtrar los datos que se enviarán al cliente
     const accountInfo = {
       id: admin.id,
@@ -40,12 +35,10 @@ async function getAccountInfo(req: Request, res: Response) {
       last_name: admin.last_name,
       phone: admin.phone,
       username: admin.username,
-      password: admin.password,
-      email: admin.email
-      // photo: admin.photo,
-      // address: admin.address,
-      // registration_date: admin.registration_date,
-      // password: admin.password, // Considera no enviar la contraseña en la respuesta
+      email: admin.email,
+      dni: admin.dni,
+      role: admin.role,
+      photo: admin.photo?.fileName || null
     };
 
     res.status(200).json({ message: 'Información de cuenta obtenida', data: accountInfo });
@@ -63,64 +56,6 @@ async function findOne(req: Request, res: Response) {
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
-}
-
-//Agregar Políticas de Contraseña y Autenticación y Tokens
-
-async function login(req: Request, res: Response) {
-  const em = orm.em;
-  const { username, password } = req.body;
-
-  // Validaciones para asegurarse de que el usuario y la contraseña fueron ingresados
-  /*if (!username) {
-    return res.status(400).json({ message: 'El nombre de usuario es requerido' });
-  }
-  if (!password) {
-    return res.status(400).json({ message: 'La contraseña es requerida' });
-  }*/
-
-  try {
-    // Buscar el administrador por usuario y contraseña
-    const admin = await em.findOneOrFail(Admin, { username, password });
-
-    if (!admin) {
-      return res.status(401).json({ message: 'Usuario o contraseña incorrecta' });
-    }
-    // Este enfoque es incorrecto porque no se deben almacenar contraseñas en texto plano en la base de datos. Las contraseñas deberían ser almacenadas en forma hasheada por razones de seguridad.
-    // En el futuro generar un token de autenticación
-
-    /* Comparar la contraseña proporcionada con la contraseña hasheada
-    const passwordValida = await bcrypt.compare(password, administrador.password);
-
-    if (!passwordValida) {
-      return res.status(401).json({ message: 'Usuario o contraseña incorrecta' });
-    }
-    */
-
-    const accountInfo = {
-      id: admin.id, // Obtengo el id de Admin porque luego es el que uso para acceder al administrador mediante otras funciones
-      name: admin.name,
-      last_name: admin.last_name,
-      phone: admin.phone,
-      username: admin.username,
-      email: admin.email,
-      dni: admin.dni
-      // foto: admin.foto,
-      // password: admin.password, // Considera no enviar la contraseña en la respuesta
-    };
-
-    // Si todo es correcto, puedes devolver algún tipo de token o mensaje
-    res.status(200).json({ message: 'Inicio de sesión exitoso', data: accountInfo });
-  } catch (error: any) {
-    console.error(error);
-    res.status(500).json({ message: error.message });
-  }
-  // Recomendaciones:
-  /*
-  Bloqueo después de varios intentos fallidos
-  Registro de auditoría para inicios de sesión: IP del usuario, fecha y hora, dispositivo utilizado
-  Implementar sistema de tokens para manejar autenticación
-  */
 }
 
 async function findAll(req: Request, res: Response) {
@@ -162,12 +97,6 @@ async function update(req: Request, res: Response) {
     const id = Number.parseInt(req.params.id);
     const adminToUpdate = await em.getReference(Admin, id);
     em.assign(adminToUpdate, req.body.sanitizedInput);
-
-    /* Si la contraseña se está actualizando, hashearla
-    if (req.body.sanitizedInput.password) {
-      adminToUpdate.password = await bcrypt.hash(req.body.sanitizedInput.password, 10);
-    }
-    */
 
     await em.flush();
     res.status(200).json({ message: 'Información de cuenta actualizada' });

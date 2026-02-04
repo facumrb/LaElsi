@@ -45,6 +45,13 @@ async function login(req: Request, res: Response) {
       email: user.email
     });
 
+    // Recomendaciones:
+    /*
+    Bloqueo después de varios intentos fallidos
+    Registro de auditoría para inicios de sesión: IP del usuario, fecha y hora, dispositivo utilizado
+    Implementar sistema de tokens para manejar autenticación
+    */
+
     return res.status(200).json({
       message: 'Login exitoso',
       token,
