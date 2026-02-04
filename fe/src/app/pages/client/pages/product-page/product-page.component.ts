@@ -1,31 +1,31 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ApiProductService } from '@services/api-product.service'; // Asegúrate de haber renombrado el servicio
+import { ApiProductService } from '@services/api-product.service';
 import { IApiProduct } from '@models/product.model';
-import { CommonModule, CurrencyPipe } from '@angular/common';
+import { CurrencyPipe } from '@angular/common';
 import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-product-page',
   standalone: true,
-  imports: [CommonModule, CurrencyPipe],
-  templateUrl: './product-page.component.html'
+  imports: [CurrencyPipe],
+  templateUrl: './product-page.component.html',
 })
 export class ProductPageComponent implements OnInit {
   // Cambia esto por la URL real de tu backend
   private readonly imageBaseUrl = environment.imageBaseUrl;
-  
+
   product?: IApiProduct;
   selectedPhotoUrl?: string; // Aquí guardaremos la URL completa de la foto visible
 
   constructor(
     private route: ActivatedRoute,
-    private productService: ApiProductService
+    private productService: ApiProductService,
   ) {}
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
-    
+
     this.productService.getProductById(id).subscribe({
       next: (data) => {
         this.product = data;
@@ -34,7 +34,7 @@ export class ProductPageComponent implements OnInit {
           this.selectedPhotoUrl = this.buildUrl(data.photos[0].fileName);
         }
       },
-      error: (err) => console.error('Error al cargar el producto', err)
+      error: (err) => console.error('Error al cargar el producto', err),
     });
   }
 

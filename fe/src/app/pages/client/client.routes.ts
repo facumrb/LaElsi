@@ -1,13 +1,13 @@
 import { Routes } from '@angular/router';
 import { MainPageComponent } from './pages/main-page/main-page.component';
-import { PerfilPageComponent } from './pages/perfil-page/perfil-page.component';
+import { ProfilePageComponent } from './pages/profile-page/perfile-page.component';
 import { CarritoPageComponent } from './pages/carrito-page/carrito-page.component';
 import { ImpresionesPageComponent } from './pages/impresiones-page/impresiones-page.component';
 import { SellosPageComponent } from './pages/sellos-page/sellos-page.component';
 import { DisenoGraficoPageComponent } from './pages/diseno-grafico-page/diseno-grafico-page.component';
 import { LayoutComponent } from './components/layout/layout.component';
-import { AboutUsPageComponent } from './pages/about-us-page/about-us-page.component';
-import { FaqPageComponent } from './pages/faq-page/faq-page.component';
+import { AboutUsPageComponent } from './pages/footer-pages/about-us-page/about-us-page.component';
+import { FaqPageComponent } from './pages/footer-pages/faq-page/faq-page.component';
 import { CategoryPageComponent } from './pages/category-page/category-page.component';
 import { ProductPageComponent } from './pages/product-page/product-page.component';
 
@@ -17,7 +17,7 @@ export const clienteRoutes: Routes = [
     component: LayoutComponent,
     children: [
       { path: '', component: MainPageComponent },
-      { path: 'perfil', component: PerfilPageComponent },
+      { path: 'profile', component: ProfilePageComponent },
       { path: 'carrito', component: CarritoPageComponent },
       { path: 'category/:name', component: CategoryPageComponent },
       { path: 'product/:id', component: ProductPageComponent },

@@ -4,13 +4,21 @@
 >
   <div class="relative">
     @if (product().photos && product().photos.length > 0) {
-    <img class="h-48 w-full object-cover" [src]="getImageUrl(product().photos[0].fileName)" [alt]="product().name" />
+      <img
+        class="h-full w-full object-cover"
+        [src]="getImageUrl(product().photos[0].fileName)"
+        [alt]="product().name"
+      />
     } @else {
-    <div class="h-48 w-full bg-gray-100 flex items-center justify-center text-gray-400">
-      Sin imagen
-    </div>
+      <div
+        class="h-full w-full bg-gray-100 flex items-center justify-center text-gray-400"
+      >
+        Sin imagen
+      </div>
     }
-    <div class="absolute top-2 right-2 bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded">
+    <div
+      class="absolute top-2 right-2 bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded"
+    >
       NUEVO
     </div>
   </div>
@@ -26,9 +34,12 @@
     <div class="flex items-center justify-between">
       <span class="text-xl font-bold text-gray-900">{{
         getProductPrice() | currency: getProductCurrency() : "symbol" : "1.0-0"
-        }}</span>
+      }}</span>
       <button
-        class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+        class="cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+      >
         ver más
       </button>
     </div>
+  </div></a
+>

@@ -7,7 +7,7 @@ import {
 
 export class FormUtils {
   //EXPRESIONES REGULARES
-  static namePattern = "^[a-zA-ZáéíóúÁÉÍÓÚñÑ'\\-\\s]+$";
+  static namePattern = "^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9'\\-\\s\\.&]+$";
   static emailPattern = '^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$';
   static descriptionPattern = '^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9.,;:?!()_\\-\'"\\s\\n]*$';
 
