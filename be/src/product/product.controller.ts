@@ -15,7 +15,7 @@ function sanitizeProductInput(req: Request, res: Response, next: NextFunction) {
     total_sold: req.body.total_sold,
     state: req.body.state,
     stock: req.body.stock,
-    category: req.body.categoryName
+    category: req.body.categoryId
     /* registration_date: req.body.registration_date,
     update_date: req.body.update_date,
     to_reserve: req.body.to_reserve,
@@ -73,13 +73,13 @@ async function searchProductsByText(req: Request, res: Response) {
 // Función para obtener productos por categoría
 async function findProductsByCategory(req: Request, res: Response) {
   const em = orm.em;
-  const categoryName = req.params.categoryName; // Obtener nombre de categoría
+  const categoryId = Number.parseInt(req.params.categoryId); // Obtener ID de categoría
 
   try {
     const products = await em.find(
       Product,
       {
-        category: { name: categoryName }
+        category: { id: categoryId }
       },
       {
         populate: ['category', 'photos', 'prices']
@@ -133,7 +133,7 @@ async function update(req: Request, res: Response) {
     const { price, currency, ...updateData } = req.body.sanitizedInput;
 
     // Si el precio cambio, usamos el metodo de la entidad para guardar el historico
-    const currentPrice = product.prices.getItems().find(p => p.isCurrent);
+    const currentPrice = product.prices.getItems().find((p) => p.isCurrent);
     if (price !== undefined && price !== currentPrice?.amount) {
       product.updatePrice(price, currency);
     }

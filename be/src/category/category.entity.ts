@@ -4,7 +4,10 @@ import { CategoryState } from '../shared/state.enum.js';
 
 @Entity()
 export class Category {
-  @PrimaryKey({ length: 50 })
+  @PrimaryKey()
+  id!: number;
+
+  @Property({ length: 50, unique: true })
   name!: string;
 
   @Property({ nullable: true, length: 1000 })

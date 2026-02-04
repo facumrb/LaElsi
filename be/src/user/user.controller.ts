@@ -61,7 +61,7 @@ async function login(req: Request, res: Response) {
 
 async function register(req: Request, res: Response) {
   const em = orm.em;
-  const { name, last_name, phone, username, password, email, ...otherClientFields } = req.body;
+  const { name, last_name, dni, phone, username, password, email, cuit, fiscalCondition, ...addressFields } = req.body;
 
   try {
     // Verificar duplicados (email o username) en ambas tablas
@@ -76,16 +76,24 @@ async function register(req: Request, res: Response) {
     const newClient = new Client();
     newClient.name = name;
     newClient.last_name = last_name;
+    newClient.dni = dni;
     newClient.phone = phone;
     newClient.username = username;
     newClient.email = email;
     newClient.role = UserRole.CLIENT;
 
-    // Asignar campos específicos de cliente si vienen
-    if (otherClientFields.street) newClient.street = otherClientFields.street;
-    if (otherClientFields.streetNumber) newClient.streetNumber = Number(otherClientFields.streetNumber);
-    if (otherClientFields.city) newClient.city = otherClientFields.city;
-    // ... mapear el resto si es necesario o usar Object.assign con cuidado
+    // Asignar campos de facturación si vienen
+    if (cuit) newClient.cuit = cuit;
+    if (fiscalCondition) newClient.fiscalCondition = fiscalCondition;
+
+    // Asignar campos de dirección si vienen
+    if (addressFields.street) newClient.street = addressFields.street;
+    if (addressFields.streetNumber) newClient.streetNumber = Number(addressFields.streetNumber);
+    if (addressFields.city) newClient.city = addressFields.city;
+    if (addressFields.province) newClient.province = addressFields.province;
+    if (addressFields.postalCode) newClient.postalCode = addressFields.postalCode;
+    if (addressFields.floor) newClient.floor = addressFields.floor;
+    if (addressFields.apartment) newClient.apartment = addressFields.apartment;
 
     await newClient.setPassword(password);
 

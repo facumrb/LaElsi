@@ -12,7 +12,8 @@ function sanitizeAdminInput(req: Request, res: Response, next: NextFunction) {
     phone: req.body.phone,
     username: req.body.username,
     password: req.body.password,
-    email: req.body.email
+    email: req.body.email,
+    dni: req.body.dni
     // address: req.body.address,
     // registration_date: req.body.registration_date,
     // photo: req.body.photo,
@@ -102,7 +103,8 @@ async function login(req: Request, res: Response) {
       last_name: admin.last_name,
       phone: admin.phone,
       username: admin.username,
-      email: admin.email
+      email: admin.email,
+      dni: admin.dni
       // foto: admin.foto,
       // password: admin.password, // Considera no enviar la contraseña en la respuesta
     };

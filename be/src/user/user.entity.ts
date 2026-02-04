@@ -19,7 +19,10 @@ export abstract class User {
   @Property({ nullable: false })
   last_name!: string;
 
-  @Property({ nullable: false }) // Capaz sí permite nulos
+  @Property({ nullable: false, unique: true, length: 8 })
+  dni!: string;
+
+  @Property({ nullable: false })
   phone!: string;
 
   @Property({ nullable: false, unique: true })

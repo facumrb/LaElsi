@@ -76,8 +76,8 @@ async function findAll(req: Request, res: Response) {
 async function findOne(req: Request, res: Response) {
   const em = orm.em;
   try {
-    const name = req.params.name;
-    const category = await em.findOneOrFail(Category, { name }, { populate: ['products'] });
+    const id = Number.parseInt(req.params.id);
+    const category = await em.findOneOrFail(Category, { id }, { populate: ['products'] });
     res.status(200).json({ message: 'Categoría encontrada', data: category });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
@@ -87,8 +87,8 @@ async function findOne(req: Request, res: Response) {
 async function update(req: Request, res: Response) {
   const em = orm.em;
   try {
-    const nameParam = req.params.name;
-    const category = await em.findOneOrFail(Category, { name: nameParam });
+    const id = Number.parseInt(req.params.id);
+    const category = await em.findOneOrFail(Category, { id });
     em.assign(category, req.body.sanitizedInput);
     await em.flush();
     res.status(200).json({ message: 'Categoría actualizada', data: category });
@@ -100,8 +100,8 @@ async function update(req: Request, res: Response) {
 async function remove(req: Request, res: Response) {
   const em = orm.em;
   try {
-    const name = req.params.name;
-    const category = await em.findOneOrFail(Category, { name }, { populate: ['products'] });
+    const id = Number.parseInt(req.params.id);
+    const category = await em.findOneOrFail(Category, { id }, { populate: ['products'] });
 
     if (category.products.length > 0) {
       return res.status(400).json({

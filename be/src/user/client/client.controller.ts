@@ -13,6 +13,9 @@ function sanitizeClientInput(req: Request, res: Response, next: NextFunction) {
     username: req.body.username,
     password: req.body.password,
     email: req.body.email,
+    dni: req.body.dni,
+    cuit: req.body.cuit,
+    fiscalCondition: req.body.fiscalCondition,
     street: req.body.street,
     streetNumber: req.body.streetNumber,
     city: req.body.city,
@@ -47,7 +50,17 @@ async function getAccountInfo(req: Request, res: Response) {
       last_name: client.last_name,
       phone: client.phone,
       username: client.username,
-      email: client.email
+      email: client.email,
+      dni: client.dni,
+      cuit: client.cuit,
+      fiscalCondition: client.fiscalCondition,
+      street: client.street,
+      streetNumber: client.streetNumber,
+      city: client.city,
+      province: client.province,
+      postalCode: client.postalCode,
+      floor: client.floor,
+      apartment: client.apartment,
       // password: cliente.password, // Considera no enviar la contraseña en la respuesta
     };
 
@@ -161,15 +174,14 @@ async function update(req: Request, res: Response) {
   const em = orm.em;
   try {
     const id = Number.parseInt(req.params.id);
+
+    // Seguridad: Si no es Admin, solo puede actualizarse a sí mismo
+    if (req.user?.role !== UserRole.ADMIN && req.user?.id !== id) {
+      return res.status(403).json({ message: 'No tienes permisos para actualizar este perfil' });
+    }
+
     const clientToUpdate = await em.getReference(Client, id);
     em.assign(clientToUpdate, req.body.sanitizedInput);
-
-    /* Si la contraseña se está actualizando, hashearla
-    if (req.body.sanitizedInput.password) {
-      clientToUpdate.password = await bcrypt.hash(req.body.sanitizedInput.password, 10);
-    }
-    */
-
     await em.flush();
     res.status(200).json({ message: 'Información de cuenta actualizada' });
   } catch (error: any) {

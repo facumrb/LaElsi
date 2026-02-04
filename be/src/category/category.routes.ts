@@ -8,9 +8,9 @@ export const categoryRouter = Router();
 // Rutas públicas (cualquier usuario puede ver categorías)
 categoryRouter.get('/search', searchCategoriesByText);
 categoryRouter.get('/', findAll);
-categoryRouter.get('/:name', findOne);
+categoryRouter.get('/:id', findOne);
 
 // Rutas protegidas (solo Admin puede crear/editar/eliminar)
 categoryRouter.post('/', verifyToken, verifyRole([UserRole.ADMIN]), sanitizeCategoryInput, add);
-categoryRouter.patch('/:name', verifyToken, verifyRole([UserRole.ADMIN]), sanitizeCategoryInput, update);
-categoryRouter.delete('/:name', verifyToken, verifyRole([UserRole.ADMIN]), remove);
+categoryRouter.patch('/:id', verifyToken, verifyRole([UserRole.ADMIN]), sanitizeCategoryInput, update);
+categoryRouter.delete('/:id', verifyToken, verifyRole([UserRole.ADMIN]), remove);

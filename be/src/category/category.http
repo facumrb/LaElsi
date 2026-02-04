@@ -25,19 +25,20 @@ Authorization: Bearer {{authToken}}
 }
 
 
-### VARIABLE (Guardamos el nombre, que es la nueva PK)
-@categoryName = {{createCategory.response.body.data.name}}
+### VARIABLE (Guardamos el ID, que es la nueva PK)
+@categoryId = {{createCategory.response.body.data.id}}
 
 ### GET ALL
 GET http://localhost:3000/api/categories HTTP/1.1
 
-### GET ONE (Usando la variable)
-GET http://localhost:3000/api/categories/{{categoryName}} HTTP/1.1
+### GET ONE (Usando la variable ID)
+GET http://localhost:3000/api/categories/{{categoryId}} HTTP/1.1
 
 
 ### PATCH (Modificar Juguetería)
-PATCH http://localhost:3000/api/categories/{{categoryName}} HTTP/1.1
+PATCH http://localhost:3000/api/categories/{{categoryId}} HTTP/1.1
 Content-Type: application/json
+Authorization: Bearer {{authToken}}
 
 {
   "state": "Activo"
@@ -47,6 +48,7 @@ Content-Type: application/json
 ### POST2 (Crear Librería)
 POST http://localhost:3000/api/categories HTTP/1.1
 Content-Type: application/json
+Authorization: Bearer {{authToken}}
 
 {
   "description": "Artículos de librería y papelería.",
@@ -58,6 +60,7 @@ Content-Type: application/json
 ### POST3 (Crear Computación)
 POST http://localhost:3000/api/categories HTTP/1.1
 Content-Type: application/json
+Authorization: Bearer {{authToken}}
 
 {
   "description": "Artículos de computación e insumos.",
@@ -70,6 +73,7 @@ Content-Type: application/json
 # @name createCategoryToDelete
 POST http://localhost:3000/api/categories HTTP/1.1
 Content-Type: application/json
+Authorization: Bearer {{authToken}}
 
 {
   "description": "Artículos festivos y decorativos.",
@@ -79,12 +83,9 @@ Content-Type: application/json
 
 
 ### DELETE (Borrar Cotillón automáticamente)
-@nameToDelete = {{createCategoryToDelete.response.body.data.name}}
-DELETE http://localhost:3000/api/categories/{{nameToDelete}} HTTP/1.1
-
-
-### DELETE
-DELETE http://localhost:3000/api/categories/Librería HTTP/1.1
+@idToDelete = {{createCategoryToDelete.response.body.data.id}}
+DELETE http://localhost:3000/api/categories/{{idToDelete}} HTTP/1.1
+Authorization: Bearer {{authToken}}
 
 
 ### SEARCH

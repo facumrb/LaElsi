@@ -14,7 +14,7 @@ clientRouter.get('/', verifyToken, verifyRole([UserRole.ADMIN]), findAll);
 clientRouter.get('/:id', verifyToken, verifyRole([UserRole.ADMIN]), findOne);
 clientRouter.post('/', verifyToken, verifyRole([UserRole.ADMIN]), sanitizeClientInput, add);
 clientRouter.delete('/:id', verifyToken, verifyRole([UserRole.ADMIN]), remove);
-clientRouter.patch('/:id', verifyToken, verifyRole([UserRole.ADMIN]), sanitizeClientInput, update);
+clientRouter.patch('/:id', verifyToken, verifyRole([UserRole.ADMIN, UserRole.CLIENT]), sanitizeClientInput, update);
 
 // Usuario logueado puede ver su propia cuenta
 clientRouter.get('/account/:id', verifyToken, getAccountInfo);

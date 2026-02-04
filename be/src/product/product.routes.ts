@@ -9,7 +9,7 @@ export const productRouter = Router();
 productRouter.get('/', findAll);
 productRouter.get('/page', findPage);
 productRouter.get('/search', searchProductsByText);
-productRouter.get('/category/:categoryName', findProductsByCategory);
+productRouter.get('/category/:categoryId', findProductsByCategory);
 productRouter.get('/:id', findOne);
 
 // Rutas protegidas (solo Admin puede crear/editar/eliminar)
