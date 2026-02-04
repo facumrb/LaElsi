@@ -9,6 +9,7 @@ import { LayoutComponent } from './components/layout/layout.component';
 import { AboutUsPageComponent } from './pages/about-us-page/about-us-page.component';
 import { FaqPageComponent } from './pages/faq-page/faq-page.component';
 import { CategoryPageComponent } from './pages/category-page/category-page.component';
+import { ProductPageComponent } from './pages/product-page/product-page.component';
 
 export const clienteRoutes: Routes = [
   {
@@ -19,6 +20,7 @@ export const clienteRoutes: Routes = [
       { path: 'perfil', component: PerfilPageComponent },
       { path: 'carrito', component: CarritoPageComponent },
       { path: 'category/:name', component: CategoryPageComponent },
+      { path: 'product/:id', component: ProductPageComponent },
       { path: 'impresiones', component: ImpresionesPageComponent },
       { path: 'sellos', component: SellosPageComponent },
       { path: 'disenio', component: DisenoGraficoPageComponent },

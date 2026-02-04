@@ -1,5 +1,7 @@
-<div
-  class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 border border-gray-100">
+<a
+  [routerLink]="['/product', product().id]"
+  class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 border border-gray-100 block"
+>
   <div class="relative">
     @if (product().photos && product().photos.length > 0) {
     <img class="h-48 w-full object-cover" [src]="getImageUrl(product().photos[0].fileName)" [alt]="product().name" />
@@ -18,7 +20,7 @@
       {{ product().name }}
     </h3>
     <p class="text-gray-500 text-sm mb-4 line-clamp-2">
-      Descripción breve del producto...
+      {{ product().brand }}
     </p>
 
     <div class="flex items-center justify-between">
@@ -27,8 +29,6 @@
         }}</span>
       <button
         class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-        Agregar
+        ver más
       </button>
     </div>
-  </div>
-</div>
