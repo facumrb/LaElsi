@@ -142,7 +142,7 @@ export class CategoriesPageComponent implements OnInit {
     if (cantidadProductos > 0) {
       this._alertService.error(
         'Acción Bloqueada',
-        `No puedes eliminar la categoría <b>"${category.name}"</b> porque tiene <b>${cantidadProductos}</b> productos asociados.<br><br>💡 Primero elimina o mueve esos productos.`,
+        `No puedes eliminar la categoría <b>"${category.name}"</b> porque tiene productos asociados.<br><br>💡 Primero elimine o cambie de categoría esos productos.`,
       );
       return;
     }
