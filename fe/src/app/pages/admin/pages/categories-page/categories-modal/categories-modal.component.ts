@@ -8,11 +8,12 @@ import {
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IApiCategory } from '@models/category.model';
+import { ClickOutsideDirective } from '@shared/click-outside.directive';
 import { FormUtils } from '@shared/form-utils';
 
 @Component({
   selector: 'app-categories-modal',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, ClickOutsideDirective],
   templateUrl: './categories-modal.component.html',
 })
 export class CategoriesModalComponent {
@@ -50,15 +51,25 @@ export class CategoriesModalComponent {
       }
     });
   }
-  showStateMenu = signal(false);
 
+  // Logica del acordeon para el estado
+  showStateMenu = signal(false);
   toggleStateMenu() {
     this.showStateMenu.set(!this.showStateMenu());
   }
-
   selectState(state: string) {
     this.formCategory.patchValue({ state: state as 'Activo' | 'Inactivo' });
     this.showStateMenu.set(false);
+  }
+
+  // Logica para cerrar el modal al hacer clic fuera del contenido
+  closeOnBackdrop(event: MouseEvent) {
+    if (event.target === event.currentTarget) {
+      this.close.emit(); // Solo se cierra si cliquea directamente en lo oscuro
+    }
+  }
+  onBackdropClick(event: MouseEvent) {
+    this.close.emit();
   }
 
   onSubmit() {

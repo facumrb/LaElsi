@@ -1,9 +1,10 @@
 <div
   class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+  (mousedown)="onBackdropClick($event)"
 >
   <div
     class="w-full max-w-3xl overflow-hidden rounded-lg bg-white shadow-2xl"
-    (click)="$event.stopPropagation()"
+    (mousedown)="$event.stopPropagation()"
   >
     <div class="bg-[#3d4494] px-6 py-4">
       <h2 class="text-xl font-bold text-white">
@@ -20,16 +21,16 @@
         <div>
           <label
             for="name"
-            class="mb-1 block text-sm font-medium text-gray-700"
+            class="block text-sm font-medium text-gray-700 mb-1"
           >
-            Nombre
+            Nombre de la categoría <span class="text-red-500">*</span>
           </label>
           <input
             type="text"
-            placeholder="Nombre de la categoría"
+            placeholder="Ej: Electrónica, Jugueteria, Libreria, Ropa"
             formControlName="name"
             maxlength="50"
-            class="block w-full rounded-md border p-2.5 text-gray-900 shadow-sm focus:outline-none focus:ring-2 sm:text-sm"
+            class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm focus:border-[#3d4494] focus:ring-[#3d4494] sm:text-sm"
           />
           <div class="flex justify-between items-start mt-1">
             <div class="text-xs text-red-500 min-h-5">
@@ -50,14 +51,14 @@
             for="description"
             class="mb-1 block text-sm font-medium text-gray-700"
           >
-            Descripción
+            Descripción <span class="text-red-500">*</span>
           </label>
           <textarea
             formControlName="description"
             rows="6"
             maxlength="1000"
             placeholder="Descripción de la categoría"
-            class="block w-full rounded-md border p-2.5 text-gray-900 shadow-sm focus:outline-none focus:ring-2 sm:text-sm"
+            class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm focus:border-[#3d4494] focus:ring-[#3d4494] sm:text-sm"
           ></textarea>
 
           <div class="mt-1 flex justify-between text-xs text-gray-500">
@@ -75,7 +76,7 @@
           </div>
         </div>
 
-        <div class="relative">
+        <div class="relative" (clickOutside)="showStateMenu.set(false)">
           <label class="block text-sm font-medium text-gray-700 mb-1">
             Estado <span class="text-red-500">*</span>
           </label>
@@ -118,11 +119,6 @@
           </button>
 
           @if (showStateMenu()) {
-            <div
-              (click)="showStateMenu.set(false)"
-              class="fixed inset-0 z-10"
-            ></div>
-
             <ul
               class="absolute z-20 mt-1 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
             >
@@ -160,7 +156,7 @@
         </div>
 
         <div
-          class="pt-6 flex items-center justify-end gap-x-4 border-t border-gray-100"
+          class="mt-11 pt-6 flex items-center justify-end gap-x-4 border-t border-gray-100"
         >
           <button
             type="button"

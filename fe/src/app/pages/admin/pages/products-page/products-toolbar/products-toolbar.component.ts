@@ -1,5 +1,6 @@
-import { Component, model, output } from '@angular/core';
+import { Component, model, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ClickOutsideDirective } from '@shared/click-outside.directive';
 
 export type StockFilter =
   | 'Todos'
@@ -13,7 +14,7 @@ export type StatusFilter = 'Todos' | 'Activo' | 'Inactivo';
 
 @Component({
   selector: 'app-products-toolbar',
-  imports: [FormsModule],
+  imports: [FormsModule, ClickOutsideDirective],
   templateUrl: './products-toolbar.component.html',
 })
 export class ProductsToolbarComponent {
@@ -24,10 +25,9 @@ export class ProductsToolbarComponent {
   // OUTPUT: Para avisar que hicieron clic en "Agregar"
   onAdd = output<void>();
 
-  showMenu = false;
-
+  showFilterMenu = signal(false);
   toggleMenu() {
-    this.showMenu = !this.showMenu;
+    this.showFilterMenu.set(!this.showFilterMenu());
   }
 
   hayFiltrosActivos() {
@@ -38,6 +38,6 @@ export class ProductsToolbarComponent {
     this.statusFilter.set('Todos');
     this.stockFilter.set('Todos');
     this.searchQuery.set('');
-    this.showMenu = false;
+    this.showFilterMenu.set(false);
   }
 }

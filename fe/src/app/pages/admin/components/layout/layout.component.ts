@@ -6,6 +6,7 @@ import {
   RouterOutlet,
 } from '@angular/router';
 import { AuthService } from '@services/auth.service';
+import { ClickOutsideDirective } from '@shared/click-outside.directive';
 
 interface menuItems {
   label: string;
@@ -15,7 +16,7 @@ interface menuItems {
 
 @Component({
   selector: 'app-layout',
-  imports: [RouterLink, RouterLinkActive, RouterOutlet],
+  imports: [RouterLink, RouterLinkActive, RouterOutlet, ClickOutsideDirective],
   templateUrl: './layout.component.html',
   styles: `
     .nowrap {

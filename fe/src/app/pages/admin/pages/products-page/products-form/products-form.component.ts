@@ -10,10 +10,17 @@ import { AlertService } from '@shared/alert.service';
 import { ICreateProduct } from '@models/product.model';
 import { PhotoManagerComponent } from './photo-manager/photo-manager.component';
 import { IApiProductPhoto } from '@models/photo.model';
+import { NumericInputDirective } from '@shared/numeric-input.directive';
+import { ClickOutsideDirective } from '@shared/click-outside.directive';
 
 @Component({
   selector: 'app-products-form',
-  imports: [ReactiveFormsModule, PhotoManagerComponent],
+  imports: [
+    ReactiveFormsModule,
+    NumericInputDirective,
+    ClickOutsideDirective,
+    PhotoManagerComponent,
+  ],
   templateUrl: './products-form.component.html',
 })
 export class ProductsFormComponent implements OnInit {
@@ -38,10 +45,6 @@ export class ProductsFormComponent implements OnInit {
   categories = signal<IApiCategory[]>([]);
   isEditMode = signal(false);
   productId = signal<number | null>(null);
-
-  // UI States
-  showCategoryMenu = signal(false);
-  showStateMenu = signal(false);
 
   // Formulario
   formProduct = this.fb.group({
@@ -85,7 +88,7 @@ export class ProductsFormComponent implements OnInit {
 
       this.productService.getProductById(+id).subscribe({
         next: (product) => {
-          const currentPrice = product.prices?.find(p => p.isCurrent);
+          const currentPrice = product.prices?.find((p) => p.isCurrent);
           this.formProduct.patchValue({
             name: product.name,
             description: product.description,
@@ -110,6 +113,10 @@ export class ProductsFormComponent implements OnInit {
     }
   }
 
+  // UI States
+  showCategoryMenu = signal(false);
+  showStateMenu = signal(false);
+
   // --- Lógica de Menús de acordeon ---
   toggleCategoryMenu() {
     this.showCategoryMenu.update((v) => !v);
@@ -126,13 +133,6 @@ export class ProductsFormComponent implements OnInit {
   selectState(state: string) {
     this.formProduct.patchValue({ state: state as 'Activo' | 'Inactivo' });
     this.showStateMenu.set(false);
-  }
-
-  // Función para bloquear teclas no deseadas en inputs numéricos (-) (+) ('e')
-  preventNegative(event: KeyboardEvent) {
-    if (['-', '+', 'e', 'E'].includes(event.key)) {
-      event.preventDefault();
-    }
   }
 
   goBack() {

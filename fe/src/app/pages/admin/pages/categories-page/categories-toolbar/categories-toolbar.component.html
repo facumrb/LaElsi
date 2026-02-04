@@ -48,7 +48,10 @@
     </div>
 
     <div class="flex flex-row gap-2 w-full md:w-auto">
-      <div class="relative flex-1 md:flex-none">
+      <div
+        class="relative flex-1 md:flex-none"
+        (clickOutside)="showFilterMenu.set(false)"
+      >
         <button
           (click)="toggleMenu()"
           class="cursor-pointer flex w-full md:w-auto justify-center items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-all"
@@ -88,7 +91,7 @@
           Filtros
         </button>
 
-        @if (showMenu) {
+        @if (showFilterMenu()) {
           <div
             class="absolute left-0 md:left-auto md:right-0 mt-2 w-72 max-w-[90vw] origin-top-left md:origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 z-50"
           >
@@ -221,10 +224,6 @@
               </button>
             </div>
           </div>
-          <div
-            (click)="showMenu = false"
-            class="fixed inset-0 z-40 cursor-default"
-          ></div>
         }
       </div>
 
