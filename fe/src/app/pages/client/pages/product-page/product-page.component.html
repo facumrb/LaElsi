@@ -1,0 +1,60 @@
+<div class="container mx-auto p-6" *ngIf="product">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+    
+    <div class="flex flex-col gap-4">
+      <div class="rounded-2xl overflow-hidden shadow-xl bg-gray-100 border border-gray-200">
+        <img [src]="selectedPhotoUrl" 
+             [alt]="product.name" 
+             class="w-full h-[500px] object-contain transition-all duration-300">
+      </div>
+
+      <div class="flex gap-3 overflow-x-auto pb-2">
+        @for (photo of product.photos; track photo.id) {
+          <div 
+            (click)="selectedPhotoUrl = buildUrl(photo.fileName)"
+            class="w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden cursor-pointer border-2 transition-all"
+            [class.border-[#f4abac]]="selectedPhotoUrl === buildUrl(photo.fileName)"
+            [class.border-transparent]="selectedPhotoUrl !== buildUrl(photo.fileName)">
+            <img [src]="buildUrl(photo.fileName)" class="w-full h-full object-cover">
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="flex flex-col py-4">
+      <nav class="text-sm text-gray-500 mb-2 uppercase tracking-widest">
+        {{ product.category.name }}
+      </nav>
+      
+      <h1 class="text-4xl font-black text-gray-900 mb-4">{{ product.name }}</h1>
+      
+      <div class="flex items-center gap-4 mb-6">
+        <span class="text-3xl font-bold text-gray-800">{{ getProductPrice() | currency : getProductCurrency() : 'symbol' : '1.0-0' }}</span>
+        <span class="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-semibold">
+          Marca: {{ product.brand }}
+        </span>
+      </div>
+
+      <p class="text-gray-600 leading-relaxed mb-8">
+        {{ product.description }}
+      </p>
+
+      <div class="mt-auto border-t pt-8">
+        <div class="flex items-center justify-between mb-6">
+          <span class="text-sm font-medium" [ngClass]="product.stock > 0 ? 'text-green-600' : 'text-red-600'">
+            {{ product.stock > 0 ? 'Stock disponible: ' + product.stock : 'Sin stock' }}
+          </span>
+          <span class="text-xs text-gray-400">Ventas: {{ product.total_sold }}</span>
+        </div>
+
+        <button 
+          (click)="addToCart()"
+          [disabled]="product.stock <= 0"
+          class="w-full py-4 rounded-full font-bold text-white transition-all transform active:scale-95 disabled:bg-gray-300 bg-gray-900 hover:bg-[#f4abac]">
+          {{ product.stock > 0 ? 'AÑADIR AL CARRITO' : 'AGOTADO' }}
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>

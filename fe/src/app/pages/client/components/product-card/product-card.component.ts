@@ -1,11 +1,12 @@
 import { CurrencyPipe } from '@angular/common';
 import { Component, input } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { IApiProduct } from '@models/product.model';
 import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-product-card',
-  imports: [CurrencyPipe],
+  imports: [CurrencyPipe, RouterLink],
   templateUrl: './product-card.component.html',
 })
 export class ProductCardComponent {
