@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { MainPageComponent } from './pages/main-page/main-page.component';
-import { ProfilePageComponent } from './pages/profile-page/perfile-page.component';
+import { ProfilePageComponent } from './pages/profile-page/profile-page.component';
 import { CarritoPageComponent } from './pages/carrito-page/carrito-page.component';
 import { ImpresionesPageComponent } from './pages/impresiones-page/impresiones-page.component';
 import { SellosPageComponent } from './pages/sellos-page/sellos-page.component';
