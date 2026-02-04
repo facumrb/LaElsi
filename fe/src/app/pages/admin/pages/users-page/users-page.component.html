@@ -48,6 +48,12 @@
               scope="col"
               class="px-6 py-4 font-semibold uppercase tracking-wider"
             >
+              DNI
+            </th>
+            <th
+              scope="col"
+              class="px-6 py-4 font-semibold uppercase tracking-wider"
+            >
               Teléfono
             </th>
             <th
@@ -83,6 +89,7 @@
                 {{ user.name }}
               </td>
               <td class="px-6 py-4 text-gray-900">{{ user.last_name }}</td>
+              <td class="px-6 py-4">{{ user.dni }}</td>
               <td class="px-6 py-4">{{ user.phone }}</td>
               <td class="px-6 py-4 font-medium text-gray-700">
                 {{ user.username }}
@@ -250,6 +257,46 @@
                 }
                 @if (hasErrors("last_name", "pattern")) {
                   <span>Formato inválido.</span>
+                }
+              </div>
+            </div>
+
+            <div>
+              <label
+                for="dni"
+                class="mb-1 block text-sm font-medium text-gray-700"
+                >DNI</label
+              >
+              <input
+                type="text"
+                id="dni"
+                formControlName="dni"
+                class="block w-full rounded-md border p-2.5 text-gray-900 shadow-sm focus:outline-none focus:ring-1 sm:text-sm"
+                [class.border-red-500]="
+                  hasErrors('dni', 'required') || hasErrors('dni', 'pattern')
+                "
+                [class.focus:border-red-500]="
+                  hasErrors('dni', 'required') || hasErrors('dni', 'pattern')
+                "
+                [class.focus:ring-red-500]="
+                  hasErrors('dni', 'required') || hasErrors('dni', 'pattern')
+                "
+                [class.border-gray-300]="
+                  !hasErrors('dni', 'required') && !hasErrors('dni', 'pattern')
+                "
+                [class.focus:border-[#049A8F]]="
+                  !hasErrors('dni', 'required') && !hasErrors('dni', 'pattern')
+                "
+                [class.focus:ring-[#049A8F]]="
+                  !hasErrors('dni', 'required') && !hasErrors('dni', 'pattern')
+                "
+              />
+              <div class="mt-1 min-h-4 text-xs text-red-600">
+                @if (hasErrors("dni", "required")) {
+                  <span>El DNI es obligatorio.</span>
+                }
+                @if (hasErrors("dni", "pattern")) {
+                  <span>Formato inválido (7-8 números).</span>
                 }
               </div>
             </div>

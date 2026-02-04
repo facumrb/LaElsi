@@ -37,12 +37,12 @@ export class ApiProductService {
   }
 
   // Obtener productos segun una categoría
-  getProductsByCategory(categoryName: string): Observable<IApiProduct[]> {
+  getProductsByCategory(categoryId: number): Observable<IApiProduct[]> {
     return this._http
       .get<{
         message: string;
         data: IApiProduct[];
-      }>(`${this.apiUrl}/category/${categoryName}`)
+      }>(`${this.apiUrl}/category/${categoryId}`)
       .pipe(map((response) => response.data));
   }
 

@@ -43,6 +43,7 @@ export class UsersPageComponent implements OnInit {
           Validators.pattern('^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9.,;:?!()_\'"-\\s]*$'),
         ],
       ],
+      dni: ['', [Validators.required, Validators.pattern('^[0-9]{7,8}$')]],
       phone: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
       user: [
         '',

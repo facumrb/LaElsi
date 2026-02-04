@@ -9,6 +9,7 @@ import { OrdersPageComponent } from './pages/orders-page/orders-page.component';
 import { ViewProfilePageComponent } from './pages/profile-page/view-profile-page/view-profile-page.component';
 import { EditProfilePageComponent } from './pages/profile-page/edit-profile-page/edit-profile-page.component';
 import { ProductsFormComponent } from './pages/products-page/products-form/products-form.component';
+import { ClientsPageComponent } from './pages/client-page/client-page.component';
 
 export const adminRoutes: Routes = [
   {
@@ -18,6 +19,7 @@ export const adminRoutes: Routes = [
     children: [
       { path: 'dashboard', component: DashboardPageComponent },
       { path: 'users', component: UsersPageComponent },
+      { path: 'clients', component: ClientsPageComponent },
       { path: 'categories', component: CategoriesPageComponent },
       { path: 'products', component: ProductsPageComponent },
       { path: 'products/create', component: ProductsFormComponent },

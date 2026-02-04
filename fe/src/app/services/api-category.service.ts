@@ -18,10 +18,10 @@ export class ApiCategoryService {
       .pipe(map((response) => response.data));
   }
 
-  // Obtener una categoría por nombre
-  getCategoryByName(name: string): Observable<IApiCategory> {
+  // Obtener una categoría por ID
+  getCategoryById(id: number): Observable<IApiCategory> {
     return this._http
-      .get<{ message: string; data: IApiCategory }>(`${this.apiUrl}/${name}`)
+      .get<{ message: string; data: IApiCategory }>(`${this.apiUrl}/${id}`)
       .pipe(map((response) => response.data));
   }
 
@@ -47,22 +47,19 @@ export class ApiCategoryService {
   }
 
   // Actualiza una categoría
-  updateCategory(
-    name: string,
-    category: IApiCategory,
-  ): Observable<IApiCategory> {
+  updateCategory(id: number, category: IApiCategory): Observable<IApiCategory> {
     return this._http
       .patch<{
         message: string;
         data: IApiCategory;
-      }>(`${this.apiUrl}/${name}`, category)
+      }>(`${this.apiUrl}/${id}`, category)
       .pipe(map((response) => response.data));
   }
 
   // Elimina una categoría
-  deleteCategory(name: string): Observable<void> {
+  deleteCategory(id: number): Observable<void> {
     return this._http
-      .delete<{ message: string }>(`${this.apiUrl}/${name}`)
+      .delete<{ message: string }>(`${this.apiUrl}/${id}`)
       .pipe(map(() => void 0));
   }
 }

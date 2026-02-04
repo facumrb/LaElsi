@@ -31,5 +31,5 @@ export interface ICreateProduct {
   total_sold: number;
   state: 'Activo' | 'Inactivo';
   stock: number;
-  categoryName: string; // Enviamos el name PK de la categoria que tenga
+  categoryId: number; // Enviamos el ID de la categoria que tenga
 }

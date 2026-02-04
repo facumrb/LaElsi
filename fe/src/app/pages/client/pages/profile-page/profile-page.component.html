@@ -1,1 +1,276 @@
-<p>profile-page works!</p>
+<div class="container mx-auto p-6 max-w-4xl min-h-screen">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-[#3d4494] uppercase tracking-wide">
+      Mi Perfil
+    </h1>
+    <p class="text-gray-500">
+      Gestiona tus datos personales, de facturación y envío.
+    </p>
+  </div>
+
+  @if (loading()) {
+    <div class="flex justify-center py-12">
+      <div
+        class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#3d4494]"
+      ></div>
+    </div>
+  } @else {
+    <form [formGroup]="formPerfil" (ngSubmit)="onSubmit()" class="space-y-8">
+      <!-- Sección: Datos Personales (Solo lectura para seguridad parcial) -->
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <h2
+          class="text-xl font-semibold mb-4 flex items-center gap-2 text-gray-800"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="w-6 h-6 text-[#037971]"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
+            />
+          </svg>
+          Datos Personales
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div>
+            <label class="block text-xs font-bold text-gray-400 uppercase mb-1"
+              >DNI (No editable)</label
+            >
+            <div
+              class="p-2.5 bg-gray-50 border border-gray-200 rounded text-gray-600 font-medium"
+            >
+              {{ userData()?.dni }}
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-400 uppercase mb-1"
+              >Nombre</label
+            >
+            <div
+              class="p-2.5 bg-gray-50 border border-gray-200 rounded text-gray-600 font-medium"
+            >
+              {{ userData()?.name }} {{ userData()?.last_name }}
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-400 uppercase mb-1"
+              >Email</label
+            >
+            <div
+              class="p-2.5 bg-gray-50 border border-gray-200 rounded text-gray-600 font-medium"
+            >
+              {{ userData()?.email }}
+            </div>
+          </div>
+          <div class="md:col-span-1">
+            <label
+              for="phone"
+              class="block text-xs font-bold text-gray-500 uppercase mb-1"
+              >Teléfono de contacto</label
+            >
+            <input
+              type="text"
+              id="phone"
+              formControlName="phone"
+              class="w-full p-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-[#049A8F] focus:outline-none transition-all"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Sección: Facturación -->
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <h2
+          class="text-xl font-semibold mb-4 flex items-center gap-2 text-gray-800"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="w-6 h-6 text-[#037971]"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"
+            />
+          </svg>
+          Información Fiscal (Para Factura A)
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label
+              for="cuit"
+              class="block text-xs font-bold text-gray-500 uppercase mb-1"
+              >CUIT / CUIL (11 números)</label
+            >
+            <input
+              type="text"
+              id="cuit"
+              formControlName="cuit"
+              placeholder="Ej: 20123456789"
+              class="w-full p-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-[#049A8F] focus:outline-none transition-all"
+            />
+          </div>
+          <div>
+            <label
+              for="fiscalCondition"
+              class="block text-xs font-bold text-gray-500 uppercase mb-1"
+              >Condición Fiscal</label
+            >
+            <select
+              id="fiscalCondition"
+              formControlName="fiscalCondition"
+              class="w-full p-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-[#049A8F] focus:outline-none transition-all bg-white"
+            >
+              @for (condition of fiscalConditions; track condition) {
+                <option [value]="condition">{{ condition }}</option>
+              }
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sección: Dirección de Envío -->
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <h2
+          class="text-xl font-semibold mb-4 flex items-center gap-2 text-gray-800"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="w-6 h-6 text-[#037971]"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12"
+            />
+          </svg>
+          Mi Dirección de Entrega
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div class="md:col-span-3">
+            <label
+              for="street"
+              class="block text-xs font-bold text-gray-500 uppercase mb-1"
+              >Calle / Avenida</label
+            >
+            <input
+              type="text"
+              id="street"
+              formControlName="street"
+              class="w-full p-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-[#049A8F] focus:outline-none transition-all"
+            />
+          </div>
+          <div>
+            <label
+              for="streetNumber"
+              class="block text-xs font-bold text-gray-500 uppercase mb-1"
+              >Altura</label
+            >
+            <input
+              type="number"
+              id="streetNumber"
+              formControlName="streetNumber"
+              class="w-full p-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-[#049A8F] focus:outline-none transition-all"
+            />
+          </div>
+          <div>
+            <label
+              for="floor"
+              class="block text-xs font-bold text-gray-500 uppercase mb-1"
+              >Piso</label
+            >
+            <input
+              type="text"
+              id="floor"
+              formControlName="floor"
+              class="w-full p-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-[#049A8F] focus:outline-none transition-all placeholder:text-gray-300"
+              placeholder="Opcional"
+            />
+          </div>
+          <div>
+            <label
+              for="apartment"
+              class="block text-xs font-bold text-gray-500 uppercase mb-1"
+              >Depto</label
+            >
+            <input
+              type="text"
+              id="apartment"
+              formControlName="apartment"
+              class="w-full p-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-[#049A8F] focus:outline-none transition-all placeholder:text-gray-300"
+              placeholder="Opcional"
+            />
+          </div>
+          <div class="md:col-span-2">
+            <label
+              for="city"
+              class="block text-xs font-bold text-gray-500 uppercase mb-1"
+              >Localidad / Ciudad</label
+            >
+            <input
+              type="text"
+              id="city"
+              formControlName="city"
+              class="w-full p-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-[#049A8F] focus:outline-none transition-all"
+            />
+          </div>
+          <div>
+            <label
+              for="province"
+              class="block text-xs font-bold text-gray-500 uppercase mb-1"
+              >Provincia</label
+            >
+            <input
+              type="text"
+              id="province"
+              formControlName="province"
+              class="w-full p-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-[#049A8F] focus:outline-none transition-all"
+            />
+          </div>
+          <div>
+            <label
+              for="postalCode"
+              class="block text-xs font-bold text-gray-500 uppercase mb-1"
+              >Cód. Postal</label
+            >
+            <input
+              type="text"
+              id="postalCode"
+              formControlName="postalCode"
+              class="w-full p-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-[#049A8F] focus:outline-none transition-all"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end pt-4">
+        <button
+          type="submit"
+          [disabled]="saving() || formPerfil.invalid"
+          class="cursor-pointer bg-[#3d4494] text-white px-8 py-3 rounded-lg font-bold shadow-md hover:bg-[#2d336b] transition-all disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
+        >
+          @if (saving()) {
+            <span
+              class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"
+            ></span>
+          }
+          Guardar Cambios
+        </button>
+      </div>
+    </form>
+  }
+</div>

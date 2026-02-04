@@ -19,7 +19,7 @@ export const clienteRoutes: Routes = [
       { path: '', component: MainPageComponent },
       { path: 'profile', component: ProfilePageComponent },
       { path: 'carrito', component: CarritoPageComponent },
-      { path: 'category/:name', component: CategoryPageComponent },
+      { path: 'category/:id', component: CategoryPageComponent },
       { path: 'product/:id', component: ProductPageComponent },
       { path: 'impresiones', component: ImpresionesPageComponent },
       { path: 'sellos', component: SellosPageComponent },
