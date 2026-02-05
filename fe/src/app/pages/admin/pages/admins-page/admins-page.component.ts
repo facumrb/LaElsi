@@ -11,11 +11,11 @@ import {
 } from '@angular/forms';
 
 @Component({
-  selector: 'app-users-page',
+  selector: 'app-admins-page',
   imports: [CommonModule, ReactiveFormsModule, FormsModule],
-  templateUrl: './users-page.component.html',
+  templateUrl: './admins-page.component.html',
 })
-export class UsersPageComponent implements OnInit {
+export class AdminsPageComponent implements OnInit {
   formUser!: FormGroup;
   loading: boolean = true;
   errorMessage: string = '';

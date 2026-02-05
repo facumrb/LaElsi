@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { LayoutComponent } from '@admin/components/layout/layout.component';
 import { adminGuard } from '@services/admin.guard';
 import { DashboardPageComponent } from './pages/dashboard-page/dashboard-page.component';
-import { UsersPageComponent } from './pages/users-page/users-page.component';
+import { AdminsPageComponent } from './pages/admins-page/admins-page.component';
 import { CategoriesPageComponent } from './pages/categories-page/categories-page.component';
 import { ProductsPageComponent } from './pages/products-page/products-page.component';
 import { OrdersPageComponent } from './pages/orders-page/orders-page.component';
@@ -18,7 +18,7 @@ export const adminRoutes: Routes = [
     component: LayoutComponent,
     children: [
       { path: 'dashboard', component: DashboardPageComponent },
-      { path: 'users', component: UsersPageComponent },
+      { path: 'admins', component: AdminsPageComponent },
       { path: 'clients', component: ClientsPageComponent },
       { path: 'categories', component: CategoriesPageComponent },
       { path: 'products', component: ProductsPageComponent },
