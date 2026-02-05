@@ -32,6 +32,9 @@ export class FormUtils {
         case 'min':
           return `El valor mínimo es ${errors['min'].min}.`;
 
+        case 'onlyWhitespace':
+          return `El campo no puede contener solo espacios en blanco.`;
+
         case 'emailTaken':
           return `El correo electronico ya esta siendo usado por otro usuario.`;
 
@@ -94,5 +97,16 @@ export class FormUtils {
 
       return field1Value === field2Value ? null : { passwordsNotEqual: true };
     };
+  }
+
+  static notOnlyWhiteSpace(control: AbstractControl): ValidationErrors | null {
+    // Si no hay valor, dejamos que el validador 'required' se encargue
+    if (!control.value) {
+      return null;
+    }
+    const isWhitespace = (control.value || '').toString().trim().length === 0;
+    // Si después de quitar espacios el largo es 0, es inválido
+    const isValid = !isWhitespace;
+    return isValid ? null : { onlyWhitespace: true };
   }
 }

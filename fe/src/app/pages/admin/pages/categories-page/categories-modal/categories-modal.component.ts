@@ -37,9 +37,17 @@ export class CategoriesModalComponent {
         Validators.minLength(3),
         Validators.maxLength(50),
         Validators.pattern(FormUtils.namePattern),
+        FormUtils.notOnlyWhiteSpace,
       ],
     ],
-    description: ['', [Validators.required, Validators.maxLength(1000)]],
+    description: [
+      '',
+      [
+        Validators.required,
+        Validators.maxLength(1000),
+        FormUtils.notOnlyWhiteSpace,
+      ],
+    ],
     state: ['Activo' as 'Activo' | 'Inactivo', [Validators.required]],
   });
 
