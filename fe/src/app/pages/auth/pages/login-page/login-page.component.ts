@@ -9,10 +9,23 @@ import {
 import { Router } from '@angular/router';
 import { AuthService } from '@services/auth.service';
 import { AdminDataService } from '@services/admin-data.service';
+import { NgIconComponent, provideIcons } from '@ng-icons/core';
+import {
+  bootstrapEye,
+  bootstrapEyeSlash,
+  bootstrapArrowClockwise,
+} from '@ng-icons/bootstrap-icons';
 
 @Component({
   selector: 'app-login-page',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, NgIconComponent],
+  viewProviders: [
+    provideIcons({
+      bootstrapEye,
+      bootstrapEyeSlash,
+      bootstrapArrowClockwise,
+    }),
+  ],
   templateUrl: './login-page.component.html',
 })
 export class LoginPageComponent {

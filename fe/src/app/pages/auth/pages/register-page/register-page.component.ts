@@ -3,10 +3,17 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '@services/auth.service';
 import { CommonModule } from '@angular/common';
+import { NgIconComponent, provideIcons } from '@ng-icons/core';
+import { bootstrapArrowClockwise } from '@ng-icons/bootstrap-icons';
 
 @Component({
   selector: 'app-register-page',
-  imports: [ReactiveFormsModule, CommonModule, RouterLink],
+  imports: [ReactiveFormsModule, CommonModule, RouterLink, NgIconComponent],
+  viewProviders: [
+    provideIcons({
+      bootstrapArrowClockwise,
+    }),
+  ],
   templateUrl: './register-page.component.html',
 })
 export class RegisterPageComponent {

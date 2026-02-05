@@ -1,14 +1,27 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '@services/auth.service';
 import { ApiClientService } from '@services/api-client.service';
 import { IApiClient } from '@models/user.model';
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
+import { NgIconComponent, provideIcons } from '@ng-icons/core';
+import {
+  bootstrapPerson,
+  bootstrapReceipt,
+  bootstrapGeoAlt,
+} from '@ng-icons/bootstrap-icons';
 
 @Component({
   selector: 'app-profile-page',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, NgIconComponent],
+  viewProviders: [
+    provideIcons({
+      bootstrapPerson,
+      bootstrapReceipt,
+      bootstrapGeoAlt,
+    }),
+  ],
   templateUrl: './profile-page.component.html',
 })
 export class ProfilePageComponent {

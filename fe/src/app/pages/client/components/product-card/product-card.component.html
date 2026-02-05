@@ -2,7 +2,7 @@
   [routerLink]="['/product', product().id]"
   class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 border border-gray-100 flex flex-col h-full"
 >
-  <div class="relative w-full aspect-[4/3] bg-gray-50 overflow-hidden">
+  <div class="relative w-full aspect-4/3 bg-gray-50 overflow-hidden">
     @if (product().photos && product().photos.length > 0) {
       <img
         class="h-full w-full object-contain"
