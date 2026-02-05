@@ -1,6 +1,14 @@
 import { Component, output, model, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ClickOutsideDirective } from '@shared/click-outside.directive';
+import { NgIconComponent, provideIcons } from '@ng-icons/core';
+import {
+  bootstrapSearch,
+  bootstrapX,
+  bootstrapFunnel,
+  bootstrapFunnelFill,
+  bootstrapPlusLg,
+} from '@ng-icons/bootstrap-icons';
 
 export type StockFilter =
   | 'Todos'
@@ -13,7 +21,14 @@ export type StatusFilter = 'Todos' | 'Activo' | 'Inactivo';
 
 @Component({
   selector: 'app-categories-toolbar',
-  imports: [FormsModule, ClickOutsideDirective],
+  imports: [FormsModule, ClickOutsideDirective, NgIconComponent],
+  viewProviders: provideIcons({
+    bootstrapSearch,
+    bootstrapX,
+    bootstrapFunnel,
+    bootstrapFunnelFill,
+    bootstrapPlusLg,
+  }),
   templateUrl: './categories-toolbar.component.html',
 })
 export class CategoriesToolbarComponent {

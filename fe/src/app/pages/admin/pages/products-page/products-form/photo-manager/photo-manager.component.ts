@@ -4,6 +4,13 @@ import { ApiPhotoService } from '@services/api-photo.service';
 import { environment } from 'src/environments/environment';
 import { forkJoin, Observable, of } from 'rxjs';
 import { AlertService } from '@shared/alert.service';
+import { NgIconComponent, provideIcons } from '@ng-icons/core';
+import {
+  bootstrapCloudUpload,
+  bootstrapTrash,
+  bootstrapChevronLeft,
+  bootstrapChevronRight,
+} from '@ng-icons/bootstrap-icons';
 
 interface IUiPhoto {
   uiId: string;
@@ -15,7 +22,15 @@ interface IUiPhoto {
 
 @Component({
   selector: 'app-photo-manager',
-  imports: [],
+  imports: [NgIconComponent],
+  viewProviders: [
+    provideIcons({
+      bootstrapCloudUpload,
+      bootstrapTrash,
+      bootstrapChevronLeft,
+      bootstrapChevronRight,
+    }),
+  ],
   templateUrl: './photo-manager.component.html',
 })
 export class PhotoManagerComponent {

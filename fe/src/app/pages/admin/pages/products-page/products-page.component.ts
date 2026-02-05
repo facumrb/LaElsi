@@ -77,6 +77,8 @@ export class ProductsPageComponent implements OnInit {
     } else if (stockType === 'MenosProductos') {
       // Ordenar de Menor a Mayor stock
       filtered.sort((a, b) => a.stock - b.stock);
+    } else {
+      filtered.sort((a, b) => a.id - b.id);
     }
 
     return filtered;

@@ -10,10 +10,13 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IApiCategory } from '@models/category.model';
 import { ClickOutsideDirective } from '@shared/click-outside.directive';
 import { FormUtils } from '@shared/form-utils';
+import { NgIconComponent, provideIcons } from '@ng-icons/core';
+import { bootstrapChevronDown } from '@ng-icons/bootstrap-icons';
 
 @Component({
   selector: 'app-categories-modal',
-  imports: [ReactiveFormsModule, ClickOutsideDirective],
+  imports: [ReactiveFormsModule, ClickOutsideDirective, NgIconComponent],
+  viewProviders: provideIcons({ bootstrapChevronDown }),
   templateUrl: './categories-modal.component.html',
 })
 export class CategoriesModalComponent {

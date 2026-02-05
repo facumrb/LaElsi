@@ -1,0 +1,19 @@
+<span class="font-bold text-[#3d4494] md:hidden block mb-2"> Acciones: </span>
+
+<div class="flex justify-start md:justify-center gap-3">
+  <button
+    (click)="onEdit.emit(item())"
+    class="cursor-pointer text-blue-600 hover:text-blue-900 transition-colors"
+    title="Editar"
+  >
+    <ng-icon name="bootstrapPencilSquare" class="text-xl"></ng-icon>
+  </button>
+
+  <button
+    (click)="onDelete.emit(item())"
+    class="cursor-pointer text-red-600 hover:text-red-900 transition-colors"
+    title="Eliminar"
+  >
+    <ng-icon name="bootstrapTrash" class="text-xl"></ng-icon>
+  </button>
+</div>

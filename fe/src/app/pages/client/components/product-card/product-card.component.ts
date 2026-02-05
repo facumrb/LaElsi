@@ -29,7 +29,7 @@ export class ProductCardComponent {
 
   // Función para traer la imagen
   getImageUrl(fileName: string | undefined): string {
-    if (!fileName) return 'assets/no-image.png'; // Manejo de seguridad
+    if (!fileName) return 'assets/no-image.jpg'; // Manejo de seguridad
     return `${this.imageBaseUrl}${fileName}`;
   }
 

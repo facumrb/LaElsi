@@ -12,6 +12,12 @@ import { PhotoManagerComponent } from './photo-manager/photo-manager.component';
 import { IApiProductPhoto } from '@models/photo.model';
 import { NumericInputDirective } from '@shared/numeric-input.directive';
 import { ClickOutsideDirective } from '@shared/click-outside.directive';
+import { NgIconComponent, provideIcons } from '@ng-icons/core';
+import {
+  bootstrapArrowLeft,
+  bootstrapChevronDown,
+  bootstrapCheck,
+} from '@ng-icons/bootstrap-icons';
 
 @Component({
   selector: 'app-products-form',
@@ -20,6 +26,14 @@ import { ClickOutsideDirective } from '@shared/click-outside.directive';
     NumericInputDirective,
     ClickOutsideDirective,
     PhotoManagerComponent,
+    NgIconComponent,
+  ],
+  viewProviders: [
+    provideIcons({
+      bootstrapArrowLeft,
+      bootstrapChevronDown,
+      bootstrapCheck,
+    }),
   ],
   templateUrl: './products-form.component.html',
 })

@@ -10,20 +10,7 @@
       (click)="goBack()"
       class="cursor-pointer inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition-colors"
     >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke-width="1.5"
-        stroke="currentColor"
-        class="size-4"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
-        />
-      </svg>
+      <ng-icon name="bootstrapArrowLeft" class="text-lg"></ng-icon>
       Volver
     </button>
   </div>
@@ -122,18 +109,11 @@
             <span
               class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2"
             >
-              <svg
-                class="h-5 w-5 text-gray-400 transition-transform duration-200"
+              <ng-icon
+                name="bootstrapChevronDown"
+                class="text-sm text-gray-400 transition-transform duration-200"
                 [class.rotate-180]="showCategoryMenu()"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                  clip-rule="evenodd"
-                />
-              </svg>
+              ></ng-icon>
             </span>
           </button>
 
@@ -158,17 +138,7 @@
                     <span
                       class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-900"
                     >
-                      <svg
-                        class="h-5 w-5"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path
-                          fill-rule="evenodd"
-                          d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
-                          clip-rule="evenodd"
-                        />
-                      </svg>
+                      <ng-icon name="bootstrapCheck" class="text-xl"></ng-icon>
                     </span>
                   }
                 </div>
@@ -216,17 +186,11 @@
             <span
               class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2"
             >
-              <svg
-                class="h-5 w-5 text-gray-400"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                  clip-rule="evenodd"
-                />
-              </svg>
+              <ng-icon
+                name="bootstrapChevronDown"
+                class="text-sm text-gray-400 transition-transform duration-200"
+                [class.rotate-180]="showStateMenu()"
+              ></ng-icon>
             </span>
           </button>
 
@@ -336,6 +300,7 @@
           <app-photo-manager [initialPhotos]="initialPhotos()" />
         </div>
       </div>
+
       <div
         class="mt-10 pt-6 flex items-center justify-end gap-x-4 border-t border-gray-100"
       >

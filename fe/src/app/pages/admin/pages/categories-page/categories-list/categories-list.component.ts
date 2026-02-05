@@ -1,10 +1,14 @@
+import { TableActionsComponent } from '@admin/components/table-actions/table-actions.component';
 import { Component, input, output } from '@angular/core';
 import { IApiCategory } from '@models/category.model';
 import Swal from 'sweetalert2';
+import { NgIconComponent, provideIcons } from '@ng-icons/core';
+import { bootstrapSearch, bootstrapInbox } from '@ng-icons/bootstrap-icons';
 
 @Component({
   selector: 'app-categories-list',
-  imports: [],
+  imports: [TableActionsComponent, NgIconComponent],
+  viewProviders: provideIcons({ bootstrapSearch, bootstrapInbox }),
   templateUrl: './categories-list.component.html',
 })
 export class CategoriesListComponent {
