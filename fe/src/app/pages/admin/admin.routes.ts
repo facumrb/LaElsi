@@ -9,7 +9,7 @@ import { OrdersPageComponent } from './pages/orders-page/orders-page.component';
 import { ViewProfilePageComponent } from './pages/profile-page/view-profile-page/view-profile-page.component';
 import { EditProfilePageComponent } from './pages/profile-page/edit-profile-page/edit-profile-page.component';
 import { ProductsFormComponent } from './pages/products-page/products-form/products-form.component';
-import { ClientsPageComponent } from './pages/client-page/client-page.component';
+import { ClientsPageComponent } from './pages/clients-page/clients-page.component';
 
 export const adminRoutes: Routes = [
   {
