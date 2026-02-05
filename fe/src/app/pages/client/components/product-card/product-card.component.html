@@ -1,20 +1,14 @@
 <a
   [routerLink]="['/product', product().id]"
-  class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 border border-gray-100 block"
+  class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 border border-gray-100 flex flex-col h-full"
 >
-  <div class="relative">
+  <div class="relative w-full aspect-[4/3] bg-gray-50 overflow-hidden">
     @if (product().photos && product().photos.length > 0) {
       <img
-        class="h-full w-full object-cover"
-        [src]="getImageUrl(product().photos[0].fileName)"
+        class="h-full w-full object-contain"
+        [src]="getImageUrl(mainPhoto()?.fileName)"
         [alt]="product().name"
       />
-    } @else {
-      <div
-        class="h-full w-full bg-gray-100 flex items-center justify-center text-gray-400"
-      >
-        Sin imagen
-      </div>
     }
     <div
       class="absolute top-2 right-2 bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded"
@@ -23,7 +17,7 @@
     </div>
   </div>
 
-  <div class="p-4">
+  <div class="p-4 flex flex-col grow">
     <h3 class="text-lg font-semibold text-gray-800 truncate">
       {{ product().name }}
     </h3>

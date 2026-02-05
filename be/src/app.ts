@@ -41,7 +41,7 @@ async function startServer() {
     // Sincronizamos base de datos antes de abrir el puerto
     await syncSchema();
     console.log('Base de datos sincronizada');
-    await seedDatabase(orm.em);
+    await seedDatabase();
     app.listen(3000, () => {
       console.log('Server running on http://localhost:3000/');
     });

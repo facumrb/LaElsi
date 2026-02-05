@@ -1,5 +1,5 @@
 import { CurrencyPipe } from '@angular/common';
-import { Component, input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { IApiProduct } from '@models/product.model';
 import { environment } from 'src/environments/environment';
@@ -15,8 +15,21 @@ export class ProductCardComponent {
 
   private readonly imageBaseUrl = environment.imageBaseUrl;
 
+  mainPhoto = computed(() => {
+    const photos = this.product().photos;
+
+    if (!photos || photos.length === 0) {
+      return null; // O una imagen por defecto
+    }
+
+    const photoOrderZero = photos.find((p) => p.order === 0);
+
+    return photoOrderZero;
+  });
+
   // Función para traer la imagen
-  getImageUrl(fileName: string): string {
+  getImageUrl(fileName: string | undefined): string {
+    if (!fileName) return 'assets/no-image.png'; // Manejo de seguridad
     return `${this.imageBaseUrl}${fileName}`;
   }
 
