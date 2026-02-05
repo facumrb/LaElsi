@@ -15,7 +15,7 @@ import Swal from 'sweetalert2';
   selector: 'app-clients-page',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, FormsModule],
-  templateUrl: './clients-page.component.html',
+  templateUrl: './client-page.component.html',
 })
 export class ClientsPageComponent implements OnInit {
   private _apiService = inject(ApiClientService);
