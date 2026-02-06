@@ -1,17 +1,17 @@
 <div class="flex h-screen bg-gray-50 font-sans overflow-hidden">
   <div
-    class="fixed inset-0 z-20 bg-black/50 transition-opacity duration-300 md:hidden"
+    class="fixed inset-0 z-20 bg-black/50 backdrop-blur-sm transition-opacity duration-300 md:hidden"
     [class.opacity-0]="!mobileMenuOpen()"
     [class.pointer-events-none]="!mobileMenuOpen()"
     (click)="toggleMobileMenu()"
   ></div>
 
   <aside
-    class="fixed inset-y-0 left-0 z-30 w-64 bg-slate-900 text-white transform transition-transform duration-300 ease-in-out md:hidden"
+    class="fixed inset-y-0 left-0 z-30 w-64 max-w-[85vw] bg-slate-900 text-white transform transition-transform duration-300 ease-in-out"
     [class.-translate-x-full]="!mobileMenuOpen()"
   >
     <div
-      class="h-16 flex items-center px-6 bg-slate-950 font-bold tracking-widest border-b border-slate-800"
+      class="text-xl h-16 flex items-center justify-center bg-slate-950 font-bold tracking-widest border-b border-slate-800"
     >
       LAELSI
     </div>
@@ -21,7 +21,7 @@
         <a
           [routerLink]="item.route"
           (click)="toggleMobileMenu()"
-          routerLinkActive="bg-slate-800 text-white border-l-4 border-indigo-500"
+          routerLinkActive="bg-indigo-600 text-white shadow-md"
           class="flex items-center p-3 rounded-lg hover:bg-slate-800 transition-colors text-slate-300"
         >
           <ng-icon [name]="item.icon" class="text-xl mr-3"></ng-icon>
@@ -137,7 +137,7 @@
       </div>
     </header>
 
-    <div class="flex-1 overflow-auto p-6">
+    <div class="flex-1 overflow-auto p-4 md:p-6 lg:p-8">
       <router-outlet />
     </div>
   </main>

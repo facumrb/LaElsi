@@ -1,161 +1,186 @@
 <div
-  class="md:overflow-hidden md:rounded-lg md:border md:border-gray-200 md:shadow-md md:bg-white"
+  class="w-full bg-gray-50 lg:bg-white lg:rounded-lg lg:shadow-md lg:border lg:border-gray-200"
 >
-  <div class="overflow-x-auto">
-    <table class="w-full border-collapse text-left text-sm text-gray-500">
-      <thead class="hidden bg-[#3d4494] text-white md:table-header-group">
+  <div class="w-full">
+    <table
+      class="w-full text-left text-sm text-gray-500 border-separate border-spacing-0"
+    >
+      <thead class="hidden lg:table-header-group bg-[#3d4494] text-white">
         <tr>
-          <th class="px-6 py-4 font-semibold uppercase tracking-wider w-50">
+          <th
+            class="px-6 py-4 font-semibold uppercase tracking-wider w-1/4 rounded-tl-lg"
+          >
             Nombre
           </th>
-
-          <th class="px-6 py-4 font-semibold uppercase tracking-wider">
+          <th class="px-6 py-4 font-semibold uppercase tracking-wider w-auto">
             Descripción
           </th>
-
           <th
-            class="px-6 py-4 text-center font-semibold uppercase tracking-wider w-30 whitespace-nowrap"
+            class="px-6 py-4 text-center font-semibold uppercase tracking-wider whitespace-nowrap w-[1%]"
           >
             Productos
           </th>
           <th
-            class="px-6 py-4 font-semibold uppercase tracking-wider w-30 whitespace-nowrap"
+            class="px-6 py-4 text-center font-semibold uppercase tracking-wider whitespace-nowrap w-[1%]"
           >
             Estado
           </th>
           <th
-            class="px-6 py-4 text-center font-semibold uppercase tracking-wider w-30 whitespace-nowrap"
+            class="px-6 py-4 text-center font-semibold uppercase tracking-wider whitespace-nowrap w-[1%] rounded-tr-lg"
           >
             Acciones
           </th>
         </tr>
       </thead>
 
-      <tbody
-        class="md:divide-y md:divide-gray-100 md:border-t md:border-gray-100"
-      >
-        @for (category of categories(); track category.id) {
+      <tbody class="block lg:table-row-group">
+        @for (category of categories(); track category.id; let isLast = $last) {
           <tr
-            class="block mb-4 bg-white rounded-lg border border-gray-200 shadow-sm md:table-row md:mb-0 md:bg-transparent md:rounded-none md:shadow-none md:border-0 hover:bg-gray-50 transition-colors"
+            class="flex flex-col relative lg:static bg-white rounded-xl shadow border border-gray-200 mb-4 mx-4 mt-4 lg:mx-0 lg:mt-0 lg:mb-0 lg:table-row lg:shadow-none lg:border-0 lg:rounded-none"
           >
             <td
-              class="block px-6 py-4 font-medium text-gray-900 md:table-cell align-top"
+              class="px-5 pt-6 pb-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-top"
+              [class.lg:rounded-bl-lg]="isLast"
+              [class.lg:border-b-0]="isLast"
             >
-              <span class="font-bold text-[#3d4494] md:hidden block mb-1"
+              <span
+                class="absolute top-3 right-3 lg:hidden inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border"
+                [class]="
+                  category.state === 'Activo'
+                    ? 'bg-green-50 text-green-700 border-green-200'
+                    : 'bg-red-50 text-red-700 border-red-200'
+                "
+              >
+                <span
+                  class="w-1.5 h-1.5 rounded-full mr-1.5"
+                  [class]="
+                    category.state === 'Activo' ? 'bg-green-500' : 'bg-red-500'
+                  "
+                ></span>
+                {{ category.state }}
+              </span>
+
+              <span
+                class="text-xs font-bold uppercase text-gray-400 mr-2 lg:hidden"
                 >Nombre:</span
               >
-              <div
+              <span
                 (click)="onEdit.emit(category)"
-                class="cursor-pointer w-full whitespace-normal wrap-break-word md:truncate md:w-50 hover:underline"
+                class="font-semibold text-gray-900 text-base lg:text-sm cursor-pointer hover:underline"
                 title="{{ category.name }}"
               >
                 {{ category.name }}
-              </div>
+              </span>
             </td>
 
-            <td class="block px-6 py-4 text-gray-600 md:table-cell align-top">
-              <span class="font-bold text-[#3d4494] md:hidden block mb-1"
+            <td
+              class="px-5 py-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-top"
+              [class.lg:border-b-0]="isLast"
+            >
+              <span
+                class="text-xs font-bold uppercase text-gray-400 block mb-1 lg:hidden"
                 >Descripción:</span
               >
               <div
-                class="line-clamp-2 md:line-clamp-3 whitespace-normal wrap-break-words"
+                class="text-gray-600 line-clamp-2 text-sm"
                 title="{{ category.description }}"
               >
-                {{ category.description }}
+                {{ category.description || "Sin descripción" }}
               </div>
             </td>
 
             <td
-              class="block px-6 py-4 md:table-cell text-left md:text-center align-middle"
+              class="px-5 py-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle"
+              [class.lg:border-b-0]="isLast"
             >
-              <span class="font-bold text-[#3d4494] md:hidden inline-block mr-2"
-                >Productos:</span
+              <div
+                class="flex items-center justify-start lg:justify-center gap-2"
               >
-
-              <button
-                (click)="
-                  (category.products?.length || 0) > 0
-                    ? viewProducts(category)
-                    : null
-                "
-                [disabled]="(category.products?.length || 0) === 0"
-                class="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium transition-all duration-200"
-                [class.bg-indigo-100]="(category.products?.length || 0) > 0"
-                [class.text-indigo-700]="(category.products?.length || 0) > 0"
-                [class.hover:bg-indigo-200]="
-                  (category.products?.length || 0) > 0
-                "
-                [class.cursor-pointer]="(category.products?.length || 0) > 0"
-                [class.bg-gray-100]="(category.products?.length || 0) === 0"
-                [class.text-gray-400]="(category.products?.length || 0) === 0"
-                [class.cursor-default]="(category.products?.length || 0) === 0"
-                title="Ver lista de productos"
-              >
-                <span class="font-bold">{{
-                  category.products?.length || 0
-                }}</span>
-                @if ((category.products?.length || 0) > 0) {
-                  <span>Ver</span>
-                }
-              </button>
+                <span
+                  class="text-xs font-bold uppercase text-gray-400 lg:hidden whitespace-nowrap"
+                  >Productos:</span
+                >
+                @let count = category.products?.length || 0;
+                <button
+                  (click)="count > 0 ? viewProducts(category) : null"
+                  [disabled]="count === 0"
+                  class="w-32 justify-center whitespace-nowrap shrink-0 flex items-center gap-1.5 py-1 rounded text-xs font-medium border transition-colors duration-200"
+                  [class]="
+                    count > 0
+                      ? 'bg-indigo-50 text-indigo-700 border-indigo-100 hover:bg-indigo-100 cursor-pointer'
+                      : 'bg-gray-50 text-gray-400 border-gray-100 cursor-default'
+                  "
+                >
+                  <ng-icon name="bootstrapBoxSeam" class="text-sm"></ng-icon>
+                  <span
+                    >{{ count }}
+                    {{ count === 1 ? "Producto" : "Productos" }}</span
+                  >
+                </button>
+              </div>
             </td>
 
-            <td class="block px-6 py-4 md:table-cell align-middle">
-              <span class="font-bold text-[#3d4494] md:hidden inline-block mr-2"
-                >Estado:</span
-              >
+            <td
+              class="hidden lg:table-cell px-6 py-4 border-b border-gray-100 align-middle text-center"
+              [class.lg:border-b-0]="isLast"
+            >
               <span
-                class="inline-flex rounded-full px-2 text-xs font-semibold leading-5"
-                [class.bg-green-100]="category.state === 'Activo'"
-                [class.text-green-800]="category.state === 'Activo'"
-                [class.bg-red-100]="category.state === 'Inactivo'"
-                [class.text-red-800]="category.state === 'Inactivo'"
+                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border"
+                [class]="
+                  category.state === 'Activo'
+                    ? 'bg-green-50 text-green-700 border-green-200'
+                    : 'bg-red-50 text-red-700 border-red-200'
+                "
               >
+                <span
+                  class="w-1.5 h-1.5 rounded-full mr-1.5"
+                  [class]="
+                    category.state === 'Activo' ? 'bg-green-500' : 'bg-red-500'
+                  "
+                ></span>
                 {{ category.state }}
               </span>
             </td>
 
-            <td class="block px-6 py-4 md:table-cell align-middle">
-              <app-table-actions
-                [item]="category"
-                (onEdit)="onEdit.emit($event)"
-                (onDelete)="onDelete.emit($event)"
-              />
+            <td
+              class="px-5 pt-2 pb-5 lg:px-6 lg:py-4 lg:table-cell lg:align-middle lg:border-b lg:border-gray-100"
+              [class.lg:rounded-br-lg]="isLast"
+              [class.lg:border-b-0]="isLast"
+            >
+              <div
+                class="flex items-center justify-start lg:justify-center gap-2"
+              >
+                <span
+                  class="text-xs font-bold uppercase text-gray-400 lg:hidden"
+                  >Acciones:</span
+                >
+                <app-table-actions
+                  [item]="category"
+                  (onEdit)="onEdit.emit($event)"
+                  (onDelete)="onDelete.emit($event)"
+                />
+              </div>
             </td>
           </tr>
         } @empty {
           <tr>
             <td
-              colspan="6"
-              class="py-12 text-center bg-white rounded-lg md:rounded-none"
+              colspan="5"
+              class="px-6 py-12 text-center bg-white lg:rounded-b-lg"
             >
-              <div
-                class="flex flex-col items-center justify-center text-gray-400"
-              >
+              <div class="flex flex-col items-center justify-center">
                 @if (isFilterActive()) {
                   <ng-icon
                     name="bootstrapSearch"
-                    class="text-5xl mb-3 text-gray-300"
+                    class="text-3xl text-gray-400 mb-2"
                   ></ng-icon>
-
-                  <p class="text-lg font-medium text-gray-600">
-                    No se encontraron resultados
-                  </p>
-                  <p class="text-sm text-gray-500 mt-1">
-                    Intenta con otra palabra clave o ajusta los filtros.
-                  </p>
+                  <p class="text-gray-500">No se encontraron resultados</p>
                 } @else {
                   <ng-icon
                     name="bootstrapInbox"
-                    class="text-5xl mb-3 text-gray-300"
+                    class="text-3xl text-gray-300 mb-2"
                   ></ng-icon>
-
-                  <p class="text-lg font-medium text-gray-600">
-                    No hay categorías cargadas
-                  </p>
-                  <p class="text-sm text-gray-500 mt-1">
-                    Comienza agregando tu primer categoría.
-                  </p>
+                  <p class="text-gray-500">Sin categorías cargadas</p>
                 }
               </div>
             </td>

@@ -77,6 +77,8 @@ export class CategoriesPageComponent implements OnInit {
       filtered = filtered.sort(
         (a, b) => (a.products?.length || 0) - (b.products?.length || 0),
       );
+    } else {
+      filtered.sort((a, b) => a.id - b.id);
     }
 
     return filtered;

@@ -1,10 +1,10 @@
 <div
-  class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6"
+  class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6 mx-4 lg:mx-0"
 >
   <h2 class="text-2xl font-bold text-[#3d4494]">Gestión de Productos</h2>
 
-  <div class="flex flex-col md:flex-row gap-3 w-full md:w-auto">
-    <div class="relative w-full md:w-60">
+  <div class="flex flex-col lg:flex-row gap-3 w-full lg:w-auto">
+    <div class="relative w-full lg:w-60">
       <div
         class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
       >
@@ -15,7 +15,7 @@
         [ngModel]="searchQuery()"
         (ngModelChange)="searchQuery.set($event)"
         placeholder="Buscar producto..."
-        class="block w-full rounded-lg border-0 py-2 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#3d4494] sm:text-sm sm:leading-6"
+        class="block w-full rounded-lg border-0 py-2 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#3d4494] text-sm leading-6"
       />
       @if (searchQuery()) {
         <button
@@ -27,14 +27,14 @@
       }
     </div>
 
-    <div class="flex flex-row gap-2 w-full md:w-auto">
+    <div class="flex flex-row gap-2 w-full lg:w-auto">
       <div
-        class="relative flex-1 md:flex-none"
+        class="relative flex-1 lg:flex-none"
         (clickOutside)="showFilterMenu.set(false)"
       >
         <button
           (click)="toggleMenu()"
-          class="cursor-pointer flex w-full md:w-auto justify-center items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-all"
+          class="cursor-pointer flex w-full lg:w-auto justify-center items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-all"
           [class.ring-2]="hayFiltrosActivos()"
           [class.ring-[#3d4494]]="hayFiltrosActivos()"
           [class.bg-indigo-50]="hayFiltrosActivos()"
@@ -47,12 +47,12 @@
           } @else {
             <ng-icon name="bootstrapFunnel" class="text-xl"></ng-icon>
           }
-          Filtros
+          <span>Filtros</span>
         </button>
 
         @if (showFilterMenu()) {
           <div
-            class="absolute left-0 md:left-auto md:right-0 mt-2 w-72 max-w-[90vw] origin-top-left md:origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 z-50"
+            class="absolute left-0 lg:left-auto lg:right-0 mt-2 w-72 max-w-[90vw] origin-top-left lg:origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 z-50"
           >
             <div class="p-4 space-y-4">
               <div>
@@ -132,9 +132,7 @@
                       (change)="stockFilter.set('AltoStock')"
                       class="text-[#3d4494] focus:ring-[#3d4494]"
                     />
-                    <span class="text-sm text-gray-700"
-                      >Stock alto (Mas de 10)</span
-                    >
+                    <span class="text-sm text-gray-700">Stock alto (+10)</span>
                   </label>
                   <label
                     class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded"
@@ -146,9 +144,7 @@
                       (change)="stockFilter.set('BajoStock')"
                       class="text-[#3d4494] focus:ring-[#3d4494]"
                     />
-                    <span class="text-sm text-gray-700"
-                      >Stock bajo (Menos de 10)</span
-                    >
+                    <span class="text-sm text-gray-700">Stock bajo (-10)</span>
                   </label>
                   <label
                     class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded"
@@ -162,6 +158,8 @@
                     />
                     <span class="text-sm text-gray-700">Stock agotado</span>
                   </label>
+
+                  <div class="pt-2 mt-2 border-t border-gray-100"></div>
 
                   <label
                     class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded"
@@ -203,12 +201,11 @@
 
       <button
         (click)="onAdd.emit()"
-        class="cursor-pointer flex-1 md:w-50 bg-[#3d4494] text-white px-4 py-2 rounded-lg hover:bg-[#2a2f63] transition-colors flex justify-center items-center gap-2 shadow-sm whitespace-nowrap"
+        class="cursor-pointer flex-1 lg:flex-none bg-[#3d4494] text-white px-4 py-2 rounded-lg hover:bg-[#2a2f63] transition-colors flex justify-center items-center gap-2 shadow-sm whitespace-nowrap"
       >
         <ng-icon name="bootstrapPlusLg" class="text-xl"></ng-icon>
-
-        Agregar
-        <span class="hidden sm:inline">Producto</span>
+        <span>Agregar</span>
+        <span class="hidden lg:inline">Producto</span>
       </button>
     </div>
   </div>
