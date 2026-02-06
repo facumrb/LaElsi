@@ -14,9 +14,10 @@ import { ClientsPageComponent } from './pages/clients-page/clients-page.componen
 export const adminRoutes: Routes = [
   {
     path: '',
-    //canActivate: [adminGuard],
+    canActivate: [adminGuard],
     component: LayoutComponent,
     children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: DashboardPageComponent },
       { path: 'admins', component: AdminsPageComponent },
       { path: 'clients', component: ClientsPageComponent },
@@ -27,7 +28,7 @@ export const adminRoutes: Routes = [
       { path: 'orders', component: OrdersPageComponent },
       { path: 'view-profile/:id', component: ViewProfilePageComponent },
       { path: 'edit-profile/:id', component: EditProfilePageComponent },
-      { path: '**', redirectTo: '' },
+      { path: '**', redirectTo: 'dashboard' },
     ],
   },
 ];

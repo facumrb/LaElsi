@@ -2,6 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { Router } from '@angular/router';
 
 export interface LoginResponse {
   message: string;
@@ -9,7 +10,7 @@ export interface LoginResponse {
   user: {
     id: number;
     name: string;
-    role: string;
+    role: string; //'admin', 'client'
   };
 }
 
@@ -18,6 +19,7 @@ export interface LoginResponse {
 })
 export class AuthService {
   private _http = inject(HttpClient);
+  private _router = inject(Router);
   private readonly apiUrl = `${environment.apiUrl}/users`; // Cambiado a /users/login
   private readonly TOKEN_KEY = 'auth_token';
   private readonly USER_KEY = 'auth_user';
@@ -40,6 +42,7 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.USER_KEY);
+    this._router.navigate(['/']);
   }
 
   getToken(): string | null {
@@ -48,6 +51,12 @@ export class AuthService {
 
   isLoggedIn(): boolean {
     return !!this.getToken();
+  }
+
+  // Verificación de si el usuario tiene rol de admin
+  isAdmin(): boolean {
+    const user = this.getUser();
+    return user?.role === 'Admin';
   }
 
   getUser(): LoginResponse['user'] | null {

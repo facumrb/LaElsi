@@ -1,14 +1,23 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-import { AdminDataService } from './admin-data.service';
+import { AuthService } from './auth.service';
 
 export const adminGuard: CanActivateFn = (route, state) => {
-  const _adminDataService = inject(AdminDataService);
-  const _router = inject(Router);
+  const authService = inject(AuthService);
+  const router = inject(Router);
 
-  if (_adminDataService.getAdminId() !== undefined) {
-    return true;
+  // Verificar si está logueado
+  if (!authService.isLoggedIn()) {
+    router.navigate(['/auth/login']);
+    return false;
   }
-  _router.navigate(['/']);
+
+  // Verificar si es Administrador
+  if (authService.isAdmin()) {
+    return true; // Acceso concedido
+  }
+
+  // Si está logueado pero NO es admin (es Cliente)
+  router.navigate(['/']); // Lo mandamos al eccomerce
   return false;
 };

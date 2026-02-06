@@ -6,55 +6,71 @@ import { AlertService } from './alert.service'; // Tu servicio de alertas
   providedIn: 'root',
 })
 export class ApiErrorService {
-  // Inyectamos tu AlertService para mostrar los carteles
   private _alertService = inject(AlertService);
 
   handle(err: HttpErrorResponse, accion: string = 'procesar la solicitud') {
     let titulo = 'Error';
     let mensaje = `Ocurrió un problema al intentar ${accion}.`;
+    let esCritico = false; // Flag para decidir si usar Modal o Toast
 
-    // 1. Si el Backend nos mandó un mensaje específico (ej: "Ya existe..."), lo usamos.
-    if (err.error && err.error.message) {
-      mensaje = err.error.message;
+    // Con esto obtenermos el mensaje que haya enviado el backend, si es que hay uno.
+    const backendMessage = err.error?.message;
+    if (backendMessage) {
+      mensaje = backendMessage;
     }
 
-    // 2. Personalización según Código de Estado HTTP
     switch (err.status) {
       case 400:
         titulo = 'Datos Inválidos';
-        // Si no vino mensaje del back, ponemos uno genérico
-        if (!err.error?.message) mensaje = 'Revisa los datos del formulario.';
+        if (!backendMessage) mensaje = 'Revisa los datos del formulario.';
         break;
 
       case 401:
-        titulo = 'Sesión Expirada';
-        mensaje = 'Tu sesión ha caducado. Por favor, inicia sesión nuevamente.';
-        // Aquí podrías incluso redirigir al login automáticamente
+        if (backendMessage) {
+          // Login fallido (Credenciales incorrectas) -> Toast
+          titulo = 'Acceso No Autorizado';
+        } else {
+          // Token vencido -> Modal
+          titulo = 'Sesión Expirada';
+          mensaje =
+            'Tu sesión ha caducado. Por favor, inicia sesión nuevamente.';
+          esCritico = true;
+        }
         break;
 
       case 403:
         titulo = 'Acceso Denegado';
-        mensaje = 'No tienes permisos para realizar esta acción.';
+        if (!backendMessage)
+          mensaje = 'No tienes permisos para realizar esta acción.';
         break;
 
       case 404:
         titulo = 'No Encontrado';
-        mensaje = 'El recurso que buscas ya no existe.';
+        if (!backendMessage) mensaje = 'El recurso que buscas ya no existe.';
         break;
 
       case 409:
         titulo = 'Conflicto';
-        // Ideal para duplicados (Unique Key)
-        if (!err.error?.message)
-          mensaje = 'Ya existe un registro con esos datos.';
+        if (!backendMessage) mensaje = 'Ya existe un registro con esos datos.';
         break;
 
       case 500:
         titulo = 'Error del Servidor';
         mensaje = 'Hubo un fallo interno en el servidor. Intenta más tarde.';
         break;
+
+      case 0:
+        // Sin internet o servidor caído -> Modal
+        titulo = 'Error de Conexión';
+        mensaje = 'No se pudo conectar con el servidor. Verifica tu internet.';
+        esCritico = true;
+        break;
     }
 
-    this._alertService.error(titulo, mensaje);
+    if (esCritico) {
+      this._alertService.modal(titulo, mensaje, 'warning');
+    } else {
+      this._alertService.error(titulo, mensaje);
+    }
   }
 }
