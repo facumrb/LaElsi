@@ -1,82 +1,94 @@
-<header>
-  <nav
-    class="flex items-center justify-between bg-[#3d4494] px-5 py-3 text-black"
-  >
-    <a routerLink="/">
-      <img src="assets/Logo.png" alt="La Elsi logo" class="w-30" />
-    </a>
-
-    <div class="flex items-center justify-center gap-3">
-      <input
-        type="text"
-        class="h-10 w-100 rounded-md bg-white px-3 text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#049A8F]"
-        placeholder="Buscar articulo..."
-      />
-      <button
-        class="cursor-pointer flex h-10 w-12 items-center justify-center rounded-md bg-[#037971] text-white transition-colors hover:bg-[#049A8F]"
-        type="submit"
-      >
-        <ng-icon name="bootstrapSearch" class="text-xl font-bold"></ng-icon>
+<header class="sticky top-0 z-[110] shadow-md">
+  <nav class="flex items-center justify-between bg-[#3d4494] px-4 md:px-6 py-3">
+    
+    <div class="flex items-center gap-3">
+      <button class="md:hidden text-white p-1 cursor-pointer" (click)="toggleMobileMenu()">
+        <ng-icon name="bootstrapList" class="text-3xl"></ng-icon>
       </button>
+      <a routerLink="/" class="shrink-0">
+        <img src="assets/Logo.png" alt="La Elsi logo" class="w-24 md:w-32" />
+      </a>
     </div>
 
-    <div class="ml-6 flex items-center gap-3">
-      <a routerLink="/auth/login">
-        <button
-          class="cursor-pointer flex items-center gap-2 rounded-md bg-[#037971] px-4 py-2 font-medium text-white transition-colors hover:bg-[#049A8F]"
-        >
+    <div class="hidden md:flex flex-1 items-center justify-center max-w-xl mx-8 gap-0">
+      <app-search-bar />
+    </div>
+
+    <div class="flex items-center gap-2 md:gap-4">
+      <a routerLink="/auth/login" class="flex items-center">
+        <button class="cursor-pointer flex items-center gap-2 rounded-lg bg-[#037971] p-2 md:px-4 md:py-2 font-medium text-white transition-colors hover:bg-[#049A8F]">
           <ng-icon name="bootstrapPersonCircle" class="text-2xl"></ng-icon>
-          {{ userSignal() }}
+          <span class="hidden md:inline">{{ userSignal() }}</span>
         </button>
       </a>
 
-      <a routerLink="/carrito">
-        <button
-          class="cursor-pointer flex items-center gap-2 rounded-md bg-[#037971] px-4 py-2 font-medium text-white transition-colors hover:bg-[#049A8F]"
-        >
+      <a routerLink="/carrito" class="flex items-center">
+        <button class="cursor-pointer flex items-center gap-2 rounded-lg bg-[#037971] p-2 md:px-4 md:py-2 font-medium text-white transition-colors hover:bg-[#049A8F]">
           <ng-icon name="bootstrapCart3" class="text-2xl"></ng-icon>
-          {{ carritoSignal() }}
+          <span class="bg-white text-[#037971] px-2 py-0.5 rounded-full text-xs font-bold">
+            {{ carritoSignal() }}
+          </span>
         </button>
       </a>
     </div>
   </nav>
 
-  <nav class="flex justify-around bg-[#9574a4] p-2.5 text-[#f4abac]">
+  <div class="md:hidden bg-[#3d4494] px-4 pb-4">
+    <app-search-bar />
+  </div>
+
+  <nav class="hidden md:flex justify-around bg-[#9574a4] p-2.5 shadow-inner">
     @for (cat of categories; track cat.id) {
       <a
         [routerLink]="['/category', cat.id]"
         routerLinkActive="text-[#f4abac] underline decoration-2 underline-offset-4"
         [routerLinkActiveOptions]="{ exact: true }"
-        class="text-white no-underline transition-colors hover:text-[#f4abac]"
+        class="text-sm font-bold text-white transition-colors hover:text-[#f4abac]"
       >
         {{ cat.name }}
       </a>
     }
-    <a
-      routerLink="/impresiones"
-      routerLinkActive="text-[#f4abac] underline decoration-2 underline-offset-4"
-      [routerLinkActiveOptions]="{ exact: true }"
-      class="text-white no-underline transition-colors hover:text-[#f4abac]"
-    >
-      Impresiones
-    </a>
-
-    <a
-      routerLink="/disenio"
-      routerLinkActive="text-[#f4abac] underline decoration-2 underline-offset-4"
-      [routerLinkActiveOptions]="{ exact: true }"
-      class="text-white no-underline transition-colors hover:text-[#f4abac]"
-    >
-      Diseño Gráfico
-    </a>
-
-    <a
-      routerLink="/sellos"
-      routerLinkActive="text-[#f4abac] underline decoration-2 underline-offset-4"
-      [routerLinkActiveOptions]="{ exact: true }"
-      class="text-white no-underline transition-colors hover:text-[#f4abac]"
-    >
-      Sellos
-    </a>
+    <a routerLink="/impresiones" routerLinkActive="text-[#f4abac] underline..." class="text-sm font-bold text-white hover:text-[#f4abac]">Impresiones</a>
+    <a routerLink="/disenio" routerLinkActive="text-[#f4abac] underline..." class="text-sm font-bold text-white hover:text-[#f4abac]">Diseño Gráfico</a>
+    <a routerLink="/sellos" routerLinkActive="text-[#f4abac] underline..." class="text-sm font-bold text-white hover:text-[#f4abac]">Sellos</a>
+   
   </nav>
+  @if (showSideMenu()) {
+      <div class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[150] md:hidden" 
+          (click)="toggleMobileMenu()">
+      </div>
+
+      <div class="fixed inset-y-0 left-0 w-[280px] bg-white z-[160] shadow-2xl md:hidden flex flex-col transition-all duration-300">
+        
+        <div class="flex items-center justify-between p-5 bg-[#3d4494] text-white">
+          <span class="font-black tracking-tighter text-xl">LA ELSI</span>
+          <button (click)="toggleMobileMenu()" class="p-1 cursor-pointer">
+            <ng-icon name="bootstrapX" class="text-3xl"></ng-icon>
+          </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto py-4">
+          @for (cat of categories; track cat.id) {
+            <a [routerLink]="['/category', cat.id]" 
+              (click)="toggleMobileMenu()"
+              class="flex items-center justify-between px-6 py-4 text-gray-700 font-semibold border-b border-gray-50 active:bg-gray-100">
+              {{ cat.name }}
+              <ng-icon name="bootstrapChevronRight" class="text-gray-300"></ng-icon>
+            </a>
+          }
+          
+          <div class="mt-4 border-t border-gray-100">
+            <a routerLink="/impresiones" (click)="toggleMobileMenu()" class="flex items-center gap-3 px-6 py-4 text-[#3d4494] font-bold">
+              <ng-icon name="bootstrapPrinter" class="text-xl"></ng-icon> Impresiones
+            </a>
+            <a routerLink="/disenio" (click)="toggleMobileMenu()" class="flex items-center gap-3 px-6 py-4 text-[#3d4494] font-bold">
+              <ng-icon name="bootstrapPalette" class="text-xl"></ng-icon> Diseño Gráfico
+            </a>
+            <a routerLink="/sellos" (click)="toggleMobileMenu()" class="flex items-center gap-3 px-6 py-4 text-[#3d4494] font-bold">
+              <ng-icon name="bootstrapPostageFill" class="text-xl"></ng-icon> Sellos
+            </a>
+          </div>
+        </div>
+      </div>
+    }
 </header>

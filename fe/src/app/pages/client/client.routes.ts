@@ -10,6 +10,7 @@ import { AboutUsPageComponent } from './pages/footer-pages/about-us-page/about-u
 import { FaqPageComponent } from './pages/footer-pages/faq-page/faq-page.component';
 import { CategoryPageComponent } from './pages/category-page/category-page.component';
 import { ProductPageComponent } from './pages/product-page/product-page.component';
+import { SearchResultComponent } from './pages/search-result/search-result.component';
 
 export const clienteRoutes: Routes = [
   {
@@ -26,6 +27,10 @@ export const clienteRoutes: Routes = [
       { path: 'disenio', component: DisenoGraficoPageComponent },
       { path: 'about-us', component: AboutUsPageComponent },
       { path: 'faq', component: FaqPageComponent },
+      {
+        path: 'search', component: SearchResultComponent,
+        title: 'Resultados de búsqueda | La Elsi'
+      },
       { path: '**', redirectTo: '' },
     ],
   },

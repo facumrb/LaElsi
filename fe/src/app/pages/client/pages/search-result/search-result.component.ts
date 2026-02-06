@@ -1,25 +1,45 @@
 import { Component, inject, OnInit, signal, computed, effect } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ApiProductService } from '@services/api-product.service';
-import { ApiCategoryService } from '@services/api-category.service';
 import { ProductCardComponent } from '@cliente/components/product-card/product-card.component';
 import {
   ProductsFilterComponent,
   PriceOrder,
   PopularityOrder,
 } from '@cliente/components/products-filter/products-filter.component';
-import { IApiCategory } from '@models/category.model';
 import { IApiProduct } from '@models/product.model';
 
+
 @Component({
-  selector: 'app-category-page',
+  selector: 'app-search-result',
   imports: [ProductCardComponent, ProductsFilterComponent],
-  templateUrl: './category-page.component.html',
+  templateUrl: './search-result.component.html',
 })
-export class CategoryPageComponent implements OnInit {
-  public category = signal<IApiCategory | null>(null);
+export class SearchResultComponent implements OnInit {
+
+  private route = inject(ActivatedRoute);
+  private productService = inject(ApiProductService);
   private productsRaw = signal<IApiProduct[]>([]);
   public availableBrands = signal<string[]>([]);
+  searchTerm = signal<string>('');
+
+  constructor() {
+    // Sincronizar el query param 'q' de la URL con nuestra Signal
+    this.route.queryParams.subscribe(params => {
+      this.searchTerm.set(params['q'] || '');
+      this.loadProducts();
+    });
+  }
+
+  ngOnInit(): void {
+  }
+
+  loadProducts() {
+    this.productService.searchProducts(this.searchTerm()).subscribe(prods => {
+      this.productsRaw.set(prods);
+    });
+  }
+
 
   // Filtros
   public priceOrder = signal<PriceOrder>('Defecto');
@@ -73,10 +93,6 @@ export class CategoryPageComponent implements OnInit {
     return filtered;
   });
 
-  private ApiCategoryService = inject(ApiCategoryService);
-  private ApiProductService = inject(ApiProductService);
-  private route = inject(ActivatedRoute);
-
   // Effect para extraer las marcas disponibles de los productos
   private brandExtractor = effect(
     () => {
@@ -86,24 +102,4 @@ export class CategoryPageComponent implements OnInit {
     },
   );
 
-  ngOnInit(): void {
-    this.route.params.subscribe((params) => {
-      const id = Number(params['id']);
-      this.cargarDatosDePagina(id);
-    });
-  }
-
-  cargarDatosDePagina(id: number) {
-    // 1. Obtener el nombre de la categoría
-    this.ApiCategoryService.getCategoryById(id).subscribe({
-      next: (data) => this.category.set(data),
-      error: (err) => console.error('Error al obtener categoría', err),
-    });
-
-    // 2. Obtener los productos de la categoría
-    this.ApiProductService.getProductsByCategory(id).subscribe({
-      next: (data) => this.productsRaw.set(data),
-      error: (err) => console.error('Error al obtener productos', err),
-    });
-  }
 }
