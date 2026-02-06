@@ -38,12 +38,12 @@
                  class="w-full h-100 md:h-125 object-contain transition-all duration-500" />
             
             <button (click)="prevPhoto()" 
-                    class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 p-2 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-[#f4abac] hover:text-white">
+                    class="cursor-pointer absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 p-2 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-[#f4abac] hover:text-white">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
             </button>
             
             <button (click)="nextPhoto()" 
-                    class="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 p-2 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-[#f4abac] hover:text-white">
+                    class="cursor-pointer absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 p-2 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-[#f4abac] hover:text-white">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
             </button>
           </div>
@@ -81,7 +81,7 @@
 
         <button (click)="addToCart()"
                 [disabled]="product.stock <= 0"
-                class="w-full py-5 rounded-xl font-black text-lg text-white transition-all transform active:scale-95 disabled:bg-gray-300 bg-gray-900 hover:bg-[#f4abac] shadow-lg">
+                class="w-full py-5 rounded-xl font-black text-lg text-white transition-all transform active:scale-95 disabled:bg-gray-300 bg-gray-900 hover:bg-[#f4abac] shadow-lg cursor-pointer">
           {{ product.stock > 0 ? "AÑADIR AL CARRITO" : "SIN STOCK" }}
         </button>
 
