@@ -6,6 +6,7 @@ import {
   bootstrapWhatsapp,
   bootstrapGeoAlt,
   bootstrapClock,
+  bootstrapEnvelope,
 } from '@ng-icons/bootstrap-icons';
 
 @Component({
@@ -17,11 +18,13 @@ import {
       bootstrapWhatsapp,
       bootstrapGeoAlt,
       bootstrapClock,
+      bootstrapEnvelope,
     }),
   ],
   templateUrl: './footer.component.html',
 })
 export class FooterComponent {
-  horario1Signal = signal('Lunes a Viernes: 8 hs a 17 hs');
-  horario2Signal = signal('Sábados: 9 hs a 13 hs');
+  horario1Signal = signal('Lunes a Viernes: 8:00 a 17:00');
+  horario2Signal = signal('Sábados: 9:00 a 13:00');
+  currentYear = signal(new Date().getFullYear());
 }
