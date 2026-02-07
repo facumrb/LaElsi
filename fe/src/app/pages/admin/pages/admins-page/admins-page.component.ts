@@ -1,118 +1,70 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { ApiAdminService } from '@services/api-admin.service';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { IApiAdmin } from '@models/user.model';
-import { CommonModule } from '@angular/common';
-import {
-  FormBuilder,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { ApiAdminService } from '@services/api-admin.service';
+import { AlertService } from '@shared/alert.service';
+import { ApiErrorService } from '@shared/api-error.service';
+import { AdminsListComponent } from './admins-list/admins-list.component';
+import { AdminsToolbarComponent } from './admins-toolbar/admins-toolbar.component';
 
 @Component({
   selector: 'app-admins-page',
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  standalone: true,
+  imports: [AdminsListComponent, AdminsToolbarComponent],
   templateUrl: './admins-page.component.html',
 })
 export class AdminsPageComponent implements OnInit {
-  formUser!: FormGroup;
-  loading: boolean = true;
-  errorMessage: string = '';
+  private _alertService = inject(AlertService);
+  private _errorService = inject(ApiErrorService);
   private _apiService = inject(ApiAdminService);
-  users: IApiAdmin[] = [];
-  isModalOpen = false;
-  adminSelected?: IApiAdmin;
-  modalMode: 'add' | 'edit' = 'add';
-  searchQuery: string = '';
-  filterState: string = '';
+  private _router = inject(Router);
 
-  constructor(private formBuilder: FormBuilder) {
-    this.formUser = this.formBuilder.group({
-      username: [
-        '',
-        [
-          Validators.required,
-          Validators.pattern('^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9.,;:?!()_\'"-\\s]*$'),
-        ],
-      ],
-      last_name: [
-        '',
-        [
-          Validators.required,
-          Validators.pattern('^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9.,;:?!()_\'"-\\s]*$'),
-        ],
-      ],
-      dni: ['', [Validators.required, Validators.pattern('^[0-9]{7,8}$')]],
-      phone: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
-      user: [
-        '',
-        [
-          Validators.required,
-          Validators.pattern('^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9.,;:?!()_\'"-\\s]*$'),
-        ],
-      ],
-      password: ['', [Validators.required]],
-      email: ['', [Validators.required, Validators.email]],
+  private adminsRaw = signal<IApiAdmin[]>([]);
+
+  // Por ahora solo devuelve la lista ordenada por ID, pero aquí podríamos agregar filtros, paginación, etc.
+  adminsFiltered = computed(() => {
+    const admins = this.adminsRaw();
+    return admins.sort((a, b) => a.id - b.id);
+  });
+
+  ngOnInit() {
+    this.loadAdmins();
+  }
+
+  loadAdmins() {
+    this._apiService.getAllAdmins().subscribe({
+      next: (data) => {
+        this.adminsRaw.set(data);
+      },
+      error: (err) => {
+        this._errorService.handle(err, 'cargar los administradores');
+      },
     });
   }
 
-  ngOnInit(): void {
-    this.loadUsers();
+  handleNavigateToCreate() {
+    this._router.navigate(['/admin/admins/create']);
   }
 
-  loadUsers(): void {
-    this._apiService.getAllAdmins().subscribe((data) => {
-      this.users = data;
+  handleNavigateToEdit(admin: IApiAdmin) {
+    this._router.navigate(['/admin/admins/edit', admin.id]);
+  }
+
+  handleDelete(admin: IApiAdmin) {
+    this._alertService.confirmDelete().then((confirm) => {
+      if (confirm) {
+        this._apiService.deleteAdmin(admin.id).subscribe({
+          next: () => {
+            this._alertService.toast('Administrador eliminado', 'success');
+            this.adminsRaw.update((current) =>
+              current.filter((a) => a.id !== admin.id),
+            );
+          },
+          error: (err) => {
+            this._errorService.handle(err, 'eliminar el administrador');
+          },
+        });
+      }
     });
-  }
-
-  openModal(mode: 'add' | 'edit', admin?: IApiAdmin): void {
-    this.modalMode = mode;
-    this.isModalOpen = true;
-    if (mode === 'edit' && admin) {
-      this.adminSelected = admin;
-      this.formUser.patchValue(admin);
-    } else {
-      this.formUser.reset();
-    }
-  }
-
-  closeModal(): void {
-    this.isModalOpen = false;
-    document.body.style.overflow = '';
-  }
-
-  onSubmit(): void {
-    if (this.formUser.valid) {
-      const userData = {
-        ...this.adminSelected,
-        ...this.formUser.value,
-      };
-      const request =
-        this.modalMode === 'add'
-          ? this._apiService.addAdmin(userData)
-          : this._apiService.updateAdmin(userData.id, userData);
-
-      request.subscribe(() => {
-        this.loadUsers();
-        this.closeModal();
-      });
-    }
-  }
-
-  deleteUser(id: number): void {
-    if (confirm('¿Seguro que deseas eliminar este user?')) {
-      this._apiService.deleteAdmin(id).subscribe(() => {
-        this.users = this.users.filter((user) => user.id !== id);
-      });
-    }
-  }
-
-  hasErrors(field: string, typeError: string) {
-    return (
-      this.formUser.get(field)?.hasError(typeError) &&
-      this.formUser.get(field)?.touched
-    );
   }
 }

@@ -1,0 +1,16 @@
+<div
+  class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6 mx-4 lg:mx-0"
+>
+  <h2 class="text-2xl font-bold text-[#3d4494]">Gestión de Administradores</h2>
+
+  <div class="flex flex-col lg:flex-row gap-3 w-full lg:w-auto">
+    <button
+      (click)="onAdd.emit()"
+      class="cursor-pointer flex-1 lg:flex-none bg-[#3d4494] text-white px-4 py-2 rounded-lg hover:bg-[#2a2f63] transition-colors flex justify-center items-center gap-2 shadow-sm whitespace-nowrap"
+    >
+      <ng-icon name="bootstrapPlusLg" class="text-xl"></ng-icon>
+      <span>Agregar</span>
+      <span class="hidden lg:inline">Administrador</span>
+    </button>
+  </div>
+</div>

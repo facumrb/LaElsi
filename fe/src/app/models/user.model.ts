@@ -26,6 +26,12 @@ export interface IApiAdmin extends IApiUser {
   // Si en el futuro agregas propiedades exclusivas de Admin, van aquí.
 }
 
+export type ICreateAdmin = Omit<
+  IApiAdmin,
+  'id' | 'createdAt' | 'updatedAt' | 'deletedAt'
+>;
+export type IUpdateAdmin = Partial<ICreateAdmin>;
+
 // Interfaz Client (Hereda de User + Dirección + Facturación)
 export interface IApiClient extends IApiUser {
   cuit?: string;

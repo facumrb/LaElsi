@@ -90,13 +90,20 @@ async function add(req: Request, res: Response) {
   }
 }
 
-// Actualizar información de cuenta del administrador
+// Actualizar información de la cuenta del administrador
 async function update(req: Request, res: Response) {
   const em = orm.em;
   try {
     const id = Number.parseInt(req.params.id);
-    const adminToUpdate = await em.getReference(Admin, id);
-    em.assign(adminToUpdate, req.body.sanitizedInput);
+    const adminToUpdate = await em.findOneOrFail(Admin, id);
+
+    const { password, ...rest } = req.body.sanitizedInput;
+
+    em.assign(adminToUpdate, rest);
+
+    if (password) {
+      await adminToUpdate.setPassword(password);
+    }
 
     await em.flush();
     res.status(200).json({ message: 'Información de cuenta actualizada' });

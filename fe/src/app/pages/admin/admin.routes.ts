@@ -10,6 +10,7 @@ import { ViewProfilePageComponent } from './pages/profile-page/view-profile-page
 import { EditProfilePageComponent } from './pages/profile-page/edit-profile-page/edit-profile-page.component';
 import { ProductsFormComponent } from './pages/products-page/products-form/products-form.component';
 import { ClientsPageComponent } from './pages/clients-page/clients-page.component';
+import { AdminsFormComponent } from './pages/admins-page/admins-form/admins-form.component';
 
 export const adminRoutes: Routes = [
   {
@@ -20,6 +21,8 @@ export const adminRoutes: Routes = [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: DashboardPageComponent },
       { path: 'admins', component: AdminsPageComponent },
+      { path: 'admins/create', component: AdminsFormComponent },
+      { path: 'admins/edit/:id', component: AdminsFormComponent },
       { path: 'clients', component: ClientsPageComponent },
       { path: 'categories', component: CategoriesPageComponent },
       { path: 'products', component: ProductsPageComponent },

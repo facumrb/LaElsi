@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
-import { IApiAdmin } from '@models/user.model';
+import { IApiAdmin, ICreateAdmin, IUpdateAdmin } from '@models/user.model';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -23,13 +23,13 @@ export class ApiAdminService {
       .pipe(map((response) => response.data));
   }
 
-  addAdmin(admin: IApiAdmin): Observable<IApiAdmin> {
+  addAdmin(admin: ICreateAdmin): Observable<IApiAdmin> {
     return this._http
       .post<{ message: string; data: IApiAdmin }>(this.apiUrl, admin)
       .pipe(map((response) => response.data));
   }
 
-  updateAdmin(id: number, admin: IApiAdmin): Observable<IApiAdmin> {
+  updateAdmin(id: number, admin: IUpdateAdmin): Observable<IApiAdmin> {
     return this._http
       .patch<{
         message: string;
