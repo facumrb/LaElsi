@@ -10,28 +10,28 @@ import { environment } from 'src/environments/environment';
   templateUrl: './product-card.component.html',
 })
 export class ProductCardComponent {
-  // Recibimos el item desde el @for del padre
   product = input.required<IApiProduct>();
-
   private readonly imageBaseUrl = environment.imageBaseUrl;
+  private readonly defaultImage = 'assets/no-image.jpg';
 
-  mainPhoto = computed(() => {
-    const photos = this.product().photos;
+  displayImageUrl = computed(() => {
+    const currentProduct = this.product();
+    const photos = currentProduct.photos;
 
+    // Si no hay fotos, devolvemos imagen por defecto
     if (!photos || photos.length === 0) {
-      return null; // O una imagen por defecto
+      return this.defaultImage;
     }
 
-    const photoOrderZero = photos.find((p) => p.order === 0);
+    // Buscamos la foto con order 0
+    const mainPhoto = photos.find((p) => p.order === 0);
 
-    return photoOrderZero;
+    // Si existe la 0, usamos esa. Si no, usamos la primera del array como respaldo.
+    const photoToUse = mainPhoto || photos[0];
+
+    // Retorno de la URL de la imagen
+    return `${this.imageBaseUrl}${photoToUse.fileName}`;
   });
-
-  // Función para traer la imagen
-  getImageUrl(fileName: string | undefined): string {
-    if (!fileName) return 'assets/no-image.jpg'; // Manejo de seguridad
-    return `${this.imageBaseUrl}${fileName}`;
-  }
 
   getProductPrice(): number {
     const currentPrice = this.product().prices?.find((p) => p.isCurrent);
