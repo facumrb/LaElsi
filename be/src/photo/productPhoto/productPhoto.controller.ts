@@ -5,7 +5,7 @@ import { ProductPhoto } from './productPhoto.entity.js';
 import path from 'path';
 import fs from 'fs/promises';
 
-const UPLOADS_PATH = path.join(process.cwd(), 'uploads');
+const UPLOADS_PATH = path.join(process.cwd(), 'uploads', 'products');
 
 async function uploadProductPhotos(req: Request, res: Response) {
   const em = orm.em.fork();
@@ -36,7 +36,7 @@ async function uploadProductPhotos(req: Request, res: Response) {
       });
     }
 
-    // Lógica de orden de las fotos
+    // Lógica de ordenamiento de las fotos
     let ordersArray: number[] = [];
     if (Array.isArray(orders)) {
       ordersArray = orders.map((o) => Number(o));
@@ -45,10 +45,8 @@ async function uploadProductPhotos(req: Request, res: Response) {
     }
     const useExplicitOrder = ordersArray.length === files.length;
 
-    // Calculate next order. product.photos is Collection<ProductPhoto>, so accessing .order is valid.
     let nextFallbackOrder = (product.photos.length > 0 ? Math.max(...product.photos.getItems().map((p) => p.order)) : -1) + 1;
 
-    // Recorremos los archivos y creamos entidades ProductPhoto
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       const photo = new ProductPhoto();
@@ -61,10 +59,9 @@ async function uploadProductPhotos(req: Request, res: Response) {
       } else {
         photo.order = nextFallbackOrder++; // Si falla, lo mandamos al final
       }
-      em.persist(photo); // Preparamos para guardar
+      em.persist(photo);
     }
 
-    // 4. Guardamos todo en la base de datos
     await em.flush();
 
     return res.status(201).json({
@@ -91,16 +88,15 @@ async function deleteProductUploadedFiles(files: Express.Multer.File[]) {
 async function reorderProductPhotos(req: Request, res: Response) {
   const em = orm.em.fork();
   try {
-    const { photosOrder } = req.body; // Esperamos un array: [{ id: 1, order: 0 }, { id: 5, order: 1 }]
+    const { photosOrder } = req.body;
 
     if (!photosOrder || !Array.isArray(photosOrder)) {
       return res.status(400).json({ message: 'Formato inválido' });
     }
 
     for (const item of photosOrder) {
-      // Solo actualizamos fotos existentes (tienen ID numérico)
+      // Solo actualizamos fotos existentes, si el ID no existe lo ignoramos (podría ser una foto nueva que aún no tiene ID)
       if (item.id) {
-        // Use ProductPhoto to access 'order'
         const photo = await em.findOne(ProductPhoto, { id: item.id });
         if (photo) {
           photo.order = item.order;
@@ -120,14 +116,13 @@ async function deleteProductPhoto(req: Request, res: Response) {
   try {
     const id = Number(req.params.photoId);
 
-    // 1. Buscamos la foto en la BD para saber su nombre. Can use ProductPhoto for specificity.
+    // Buscamos la foto en la BD para saber su nombre.
     const photo = await em.findOneOrFail(ProductPhoto, { id });
 
-    // 2. Construimos la ruta absoluta al archivo debe coincidir con la carpeta donde Multer las guarda
-    // Assuming uploads go to 'uploads' generally, or specific folder? keeping 'uploads' as per current state.
+    // Construimos la ruta absoluta al archivo debe coincidir con la carpeta donde Multer las guarda
     const filePath = path.join(UPLOADS_PATH, photo.fileName);
 
-    // 3. Intentamos borrar el archivo físico
+    // Intentamos borrar el archivo físico
     try {
       await fs.unlink(filePath);
       console.log(`Archivo borrado: ${filePath}`);
@@ -136,7 +131,7 @@ async function deleteProductPhoto(req: Request, res: Response) {
       console.warn(`No se pudo borrar el archivo físico (quizás no existía): ${err}`);
     }
 
-    // 4. Borramos el registro de la Base de Datos
+    // Borramos el registro de la Base de Datos
     em.remove(photo);
     await em.flush();
 

@@ -10,7 +10,7 @@ export class ApiPhotoService {
   private _http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiUrl}/photos`;
 
-  // Carga de imagenes
+  // Cargar las fotos de un producto
   uploadProductPhotos(
     productId: number,
     photosData: FormData,
@@ -21,15 +21,28 @@ export class ApiPhotoService {
     );
   }
 
-  // Reordenar imagenes
+  // Reordenar las fotos de un producto
   reorderProductPhotos(
     photosOrder: { id: number; order: number }[],
   ): Observable<any> {
     return this._http.post(`${this.apiUrl}/reorder`, { photosOrder });
   }
 
-  // Borrar una foto específica
+  // Borrar una foto específica de un producto
   deleteProductPhoto(photoId: number): Observable<any> {
     return this._http.delete(`${this.apiUrl}/productPhotos/${photoId}`);
+  }
+
+  // Cargar o reemplazar la foto de perfil de un usuario
+  uploadUserPhoto(userId: number, photoData: FormData): Observable<any> {
+    return this._http.post(
+      `${this.apiUrl}/upload/userPhoto/${userId}`,
+      photoData,
+    );
+  }
+
+  // Borrar la foto de perfil de un usuario
+  deleteUserPhoto(photoId: number): Observable<any> {
+    return this._http.delete(`${this.apiUrl}/userPhoto/${photoId}`);
   }
 }

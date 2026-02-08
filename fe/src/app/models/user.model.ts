@@ -1,3 +1,5 @@
+import { IApiUserPhoto } from './photo.model';
+
 export enum UserRole {
   ADMIN = 'Admin',
   CLIENT = 'Client',
@@ -14,24 +16,28 @@ export interface IApiUser {
   password: string;
   email: string;
   role: UserRole;
+  photo: IApiUserPhoto | null; // Puede ser null si el usuario no cargo una foto de perfil
 
   // Las fechas vienen como string ISO desde la API
   createdAt: string;
   updatedAt: string;
-  deletedAt?: string; // Puede ser undefined o null
+  deletedAt?: string | null;
 }
 
+// --------------- [ADMINISTRADOR] ---------------
+
 // Interfaz Admin
-export interface IApiAdmin extends IApiUser {
-  // Si en el futuro agregas propiedades exclusivas de Admin, van aquí.
-}
+export interface IApiAdmin extends IApiUser {}
 
 export type ICreateAdmin = Omit<
   IApiAdmin,
-  'id' | 'createdAt' | 'updatedAt' | 'deletedAt'
->;
+  'id' | 'photo' | 'createdAt' | 'updatedAt' | 'deletedAt'
+> & {
+  password: string;
+};
 export type IUpdateAdmin = Partial<ICreateAdmin>;
 
+// --------------- [CLIENTE] ---------------
 // Interfaz Client (Hereda de User + Dirección + Facturación)
 export interface IApiClient extends IApiUser {
   cuit?: string;
@@ -44,3 +50,12 @@ export interface IApiClient extends IApiUser {
   floor?: string;
   apartment?: string;
 }
+
+export type ICreateClient = Omit<
+  IApiClient,
+  'id' | 'photo' | 'createdAt' | 'updatedAt' | 'deletedAt'
+> & {
+  password: string;
+};
+
+export type IUpdateClient = Partial<ICreateClient>;

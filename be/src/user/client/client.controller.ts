@@ -39,7 +39,6 @@ async function getAccountInfo(req: Request, res: Response) {
     const client = await em.findOneOrFail(Client, id, { populate: ['photo'] as any });
     // Filtrar los datos que se enviarán al cliente
     const accountInfo = {
-      // foto: cliente.foto,
       id: client.id,
       name: client.name,
       last_name: client.last_name,
@@ -57,7 +56,12 @@ async function getAccountInfo(req: Request, res: Response) {
       floor: client.floor,
       apartment: client.apartment,
       role: client.role,
-      photo: client.photo?.fileName || null
+      photo: client.photo
+        ? {
+            id: client.photo.id,
+            fileName: client.photo.fileName
+          }
+        : null
     };
 
     res.status(200).json({ message: 'Información de cuenta obtenida', data: accountInfo });

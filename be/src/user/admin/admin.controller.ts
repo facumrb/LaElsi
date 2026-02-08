@@ -22,6 +22,7 @@ function sanitizeAdminInput(req: Request, res: Response, next: NextFunction) {
   next();
 }
 
+/*
 // Obtener información de cuenta del administrador
 async function getAccountInfo(req: Request, res: Response) {
   const em = orm.em;
@@ -38,7 +39,12 @@ async function getAccountInfo(req: Request, res: Response) {
       email: admin.email,
       dni: admin.dni,
       role: admin.role,
-      photo: admin.photo?.fileName || null
+      photo: admin.photo
+        ? {
+            id: admin.photo.id,
+            fileName: admin.photo.fileName
+          }
+        : null
     };
 
     res.status(200).json({ message: 'Información de cuenta obtenida', data: accountInfo });
@@ -46,13 +52,27 @@ async function getAccountInfo(req: Request, res: Response) {
     res.status(500).json({ message: error.message });
   }
 }
+*/
 
 async function findOne(req: Request, res: Response) {
   const em = orm.em;
   try {
     const id = Number.parseInt(req.params.id);
-    const admin = await em.findOneOrFail(Admin, id);
-    res.status(200).json({ message: 'Administrador encontrado', data: admin });
+    const admin = await em.findOneOrFail(Admin, id, { populate: ['photo'] });
+    const accountInfo = {
+      id: admin.id,
+      name: admin.name,
+      last_name: admin.last_name,
+      phone: admin.phone,
+      username: admin.username,
+      email: admin.email,
+      dni: admin.dni,
+      role: admin.role,
+      photo: admin.photo ? { id: admin.photo.id, fileName: admin.photo.fileName } : null,
+      createdAt: admin.createdAt,
+      updatedAt: admin.updatedAt
+    };
+    res.status(200).json({ message: 'Administrador encontrado', data: accountInfo });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
@@ -116,7 +136,7 @@ async function remove(req: Request, res: Response) {
   const em = orm.em;
   try {
     const id = Number.parseInt(req.params.id);
-    const admin = em.findOneOrFail(Admin, { id });
+    const admin = await em.findOneOrFail(Admin, { id });
     em.remove(admin);
     await em.flush();
     res.status(200).send({ message: 'Administrador eliminado' });
@@ -128,4 +148,4 @@ async function remove(req: Request, res: Response) {
   }
 }
 
-export { sanitizeAdminInput, findAll, findOne, add, update, remove, getAccountInfo };
+export { sanitizeAdminInput, findAll, findOne, add, update, remove };
