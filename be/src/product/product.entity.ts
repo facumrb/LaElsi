@@ -1,9 +1,9 @@
 import { PrimaryKey, Entity, Property, ManyToOne, Rel, OneToMany, Collection, Enum, Cascade } from '@mikro-orm/core';
 import { Category } from '../category/category.entity.js';
 import { ProductPhoto } from '../photo/productPhoto/productPhoto.entity.js';
-import { ProductState } from '../shared/state.enum.js';
+import { ProductState } from '../shared/enums/state.enum.js';
 import { Price } from './price/price.entity.js';
-import { Currency } from '../shared/currency.enum.js';
+import { Currency } from '../shared/enums/currency.enum.js';
 
 @Entity()
 export class Product {
