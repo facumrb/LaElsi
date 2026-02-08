@@ -1,19 +1,41 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, ɵEmptyOutletComponent } from '@angular/router';
 import { ApiProductService } from '@services/api-product.service';
 import { IApiProduct } from '@models/product.model';
 import { CurrencyPipe, DecimalPipe } from '@angular/common';
 import { environment } from 'src/environments/environment';
+import { NgIconComponent, provideIcons } from '@ng-icons/core';
+import { 
+  bootstrapCheckLg,
+  bootstrapShieldCheck,
+  bootstrapChevronLeft,
+  bootstrapChevronRight,
+  bootstrapChevronDown,
+  bootstrapChevronUp
+} from '@ng-icons/bootstrap-icons';
+
+
 
 @Component({
   selector: 'app-product-page',
   standalone: true,
-  imports: [CurrencyPipe, DecimalPipe],
+  imports: [CurrencyPipe, DecimalPipe, NgIconComponent],
+  viewProviders: [
+    provideIcons({
+      bootstrapCheckLg,
+      bootstrapShieldCheck,
+      bootstrapChevronLeft,
+      bootstrapChevronRight,
+      bootstrapChevronUp,
+      bootstrapChevronDown,
+    })
+  ],
   templateUrl: './product-page.component.html',
 })
 export class ProductPageComponent implements OnInit {
   // Cambia esto por la URL real de tu backend
   private readonly imageBaseUrl = environment.productImagesUrl;
+  private readonly defaultImage = 'assets/no-image.jpg';
 
   product?: IApiProduct;
   selectedPhotoUrl?: string; // Aquí guardaremos la URL completa de la foto visible
@@ -32,6 +54,9 @@ export class ProductPageComponent implements OnInit {
         // Al cargar, seteamos la primera foto si existe
         if (data.photos && data.photos.length > 0) {
           this.selectedPhotoUrl = this.buildUrl(data.photos[0].fileName);
+        }
+        if (!data.photos || data.photos.length === 0) {
+          this.selectedPhotoUrl = this.defaultImage;
         }
       },
       error: (err) => console.error('Error al cargar el producto', err),

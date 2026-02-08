@@ -47,7 +47,7 @@ export class SearchResultComponent implements OnInit {
   public popularityOrder = signal<PopularityOrder>('Defecto');
 
   // Computed para productos filtrados
-  public productsFiltered = computed(() => {
+    public productsFiltered = computed(() => {
     const currentProducts = this.productsRaw();
     const priceOrder = this.priceOrder();
     const brandSelected = this.brandFilter();
