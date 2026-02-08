@@ -1,6 +1,6 @@
 import { PrimaryKey, Entity, OneToMany, Property, Collection, Enum } from '@mikro-orm/core';
 import { Product } from '../product/product.entity.js';
-import { CategoryState } from '../shared/state.enum.js';
+import { CategoryState } from '../shared/enums/state.enum.js';
 
 @Entity()
 export class Category {

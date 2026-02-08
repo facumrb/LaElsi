@@ -18,7 +18,7 @@ export class ProductsListComponent {
   onDelete = output<IApiProduct>();
   isFilterActive = input<boolean>(false);
 
-  private readonly imageBaseUrl = environment.imageBaseUrl;
+  private readonly imageBaseUrl = environment.productImagesUrl;
 
   private getImageUrl(fileName: string | undefined): string {
     return `${this.imageBaseUrl}${fileName}`;

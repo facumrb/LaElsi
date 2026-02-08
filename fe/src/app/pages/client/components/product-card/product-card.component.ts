@@ -11,7 +11,7 @@ import { environment } from 'src/environments/environment';
 })
 export class ProductCardComponent {
   product = input.required<IApiProduct>();
-  private readonly imageBaseUrl = environment.imageBaseUrl;
+  private readonly imageBaseUrl = environment.productImagesUrl;
   private readonly defaultImage = 'assets/no-image.jpg';
 
   displayImageUrl = computed(() => {

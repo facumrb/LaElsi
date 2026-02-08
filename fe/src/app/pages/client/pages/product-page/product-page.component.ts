@@ -34,7 +34,7 @@ import {
 })
 export class ProductPageComponent implements OnInit {
   // Cambia esto por la URL real de tu backend
-  private readonly imageBaseUrl = environment.imageBaseUrl;
+  private readonly imageBaseUrl = environment.productImagesUrl;
   private readonly defaultImage = 'assets/no-image.jpg';
 
   product?: IApiProduct;
@@ -86,7 +86,9 @@ export class ProductPageComponent implements OnInit {
   nextPhoto() {
     if (!this.product?.photos?.length) return;
     const photos = this.product.photos;
-    const currentIndex = photos.findIndex(p => this.buildUrl(p.fileName) === this.selectedPhotoUrl);
+    const currentIndex = photos.findIndex(
+      (p) => this.buildUrl(p.fileName) === this.selectedPhotoUrl,
+    );
     const nextIndex = (currentIndex + 1) % photos.length;
     this.selectedPhotoUrl = this.buildUrl(photos[nextIndex].fileName);
   }
@@ -94,15 +96,23 @@ export class ProductPageComponent implements OnInit {
   prevPhoto() {
     if (!this.product?.photos?.length) return;
     const photos = this.product.photos;
-    const currentIndex = photos.findIndex(p => this.buildUrl(p.fileName) === this.selectedPhotoUrl);
-    const prevIndex = currentIndex === -1 ? photos.length - 1 : (currentIndex - 1 + photos.length) % photos.length;
+    const currentIndex = photos.findIndex(
+      (p) => this.buildUrl(p.fileName) === this.selectedPhotoUrl,
+    );
+    const prevIndex =
+      currentIndex === -1
+        ? photos.length - 1
+        : (currentIndex - 1 + photos.length) % photos.length;
     this.selectedPhotoUrl = this.buildUrl(photos[prevIndex].fileName);
   }
 
   thumbnailIndex = 0; // Controla el inicio de la ventana de 5 fotos
 
   nextThumbnails() {
-    if (this.product?.photos && this.thumbnailIndex + 5 < this.product.photos.length) {
+    if (
+      this.product?.photos &&
+      this.thumbnailIndex + 5 < this.product.photos.length
+    ) {
       this.thumbnailIndex += 5;
     }
   }
@@ -112,5 +122,4 @@ export class ProductPageComponent implements OnInit {
       this.thumbnailIndex -= 5;
     }
   }
-
 }

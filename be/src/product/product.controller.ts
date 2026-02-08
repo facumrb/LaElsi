@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { orm } from '../shared/db/orm.js';
 import { Product } from './product.entity.js';
 import { Category } from '../category/category.entity.js';
-import { ProductState, CategoryState } from '../shared/state.enum.js';
+import { ProductState, CategoryState } from '../shared/enums/state.enum.js';
 import path from 'path';
 import fs from 'fs/promises';
 

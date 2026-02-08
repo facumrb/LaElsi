@@ -1,13 +1,9 @@
 import { Router } from 'express';
 import { sanitizeClientInput, findAll, findOne, add, update, remove, getAccountInfo } from './client.controller.js';
-import { login } from '../user.controller.js';
 import { verifyToken, verifyRole } from '../../shared/auth.middleware.js';
 import { UserRole } from '../user.entity.js';
 
 export const clientRouter = Router();
-
-// Ruta pública
-clientRouter.post('/login', login);
 
 // Rutas protegidas (Admin puede gestionar clientes)
 clientRouter.get('/', verifyToken, verifyRole([UserRole.ADMIN]), findAll);

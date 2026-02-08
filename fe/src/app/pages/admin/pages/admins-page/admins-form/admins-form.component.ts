@@ -58,10 +58,10 @@ export class AdminsFormComponent implements OnInit {
       [
         Validators.required,
         Validators.minLength(7),
-        Validators.pattern('^[0-9]*$'),
+        Validators.pattern(FormUtils.numberPattern),
       ],
     ], // Solo números
-    phone: ['', [Validators.pattern('^[0-9]*$')]], // Opcional, solo números
+    phone: ['', [Validators.pattern(FormUtils.numberPattern)]],
     username: [
       '',
       [
@@ -142,10 +142,9 @@ export class AdminsFormComponent implements OnInit {
         username: formValue.username!,
         email: formValue.email!,
         password: formValue.password || '',
-        role: UserRole.ADMIN, // Typescript lo pide, pero el backend lo ignora/fuerza.
+        role: UserRole.ADMIN, // Typescript lo pide, pero el backend lo fuerza.
       };
 
-      // LÓGICA DE LIMPIEZA PARA UPDATE
       // Si estamos editando y el password está vacío, LO QUITAMOS del objeto para evitar que el backend intente procesar un string vacío.
       if (this.isEditMode() && !adminData.password) {
         delete (adminData as any).password;

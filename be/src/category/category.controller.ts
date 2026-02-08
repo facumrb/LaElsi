@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { Category } from './category.entity.js';
 import { orm } from '../shared/db/orm.js';
-import { CategoryState, ProductState } from '../shared/state.enum.js';
+import { CategoryState, ProductState } from '../shared/enums/state.enum.js';
 
 function sanitizeCategoryInput(req: Request, res: Response, next: NextFunction) {
   req.body.sanitizedInput = {

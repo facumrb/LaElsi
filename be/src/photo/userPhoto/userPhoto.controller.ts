@@ -5,6 +5,8 @@ import { UserPhoto } from './userPhoto.entity.js';
 import path from 'path';
 import fs from 'fs/promises';
 
+const USERS_PATH = path.join(process.cwd(), 'uploads', 'users');
+
 async function uploadUserPhoto(req: Request, res: Response) {
   const em = orm.em.fork();
   const file = req.file;
@@ -14,7 +16,7 @@ async function uploadUserPhoto(req: Request, res: Response) {
 
     if (!id) return res.status(400).json({ message: 'ID de Usuario inválido' });
 
-    // Validar que el usuario solo pueda modificar su propia foto
+    // Validación de que el usuario solo pueda modificar su propia foto
     if (req.user?.id !== id) {
       if (file) await deleteUserUploadedFile(file);
       return res.status(403).json({ message: 'No puedes modificar la foto de otro usuario' });
@@ -24,38 +26,37 @@ async function uploadUserPhoto(req: Request, res: Response) {
       return res.status(400).json({ message: 'No se envió ninguna imagen' });
     }
 
-    const maxFileSize = 5 * 1024 * 1024; // 5MB
+    const maxFileSize = 2 * 1024 * 1024; // 2MB
     if (file.size > maxFileSize) {
       await deleteUserUploadedFile(file);
-      return res.status(400).json({ message: 'La imagen excede el límite de 5MB' });
+      return res.status(400).json({ message: 'La imagen excede el límite de 2MB' });
     }
 
     // Buscamos el usuario
     const user = await em.findOne(User, { id });
     if (!user) {
       await deleteUserUploadedFile(file);
-      return res.status(404).json({ message: 'Usuario no existe' });
+      return res.status(404).json({ message: 'El usuario no existe' });
     }
 
-    // Check if user already has a photo
+    // Buscamos si ya tiene foto de perfil
     let userPhoto = await em.findOne(UserPhoto, { user });
 
-    // If exists, delete old physical file and update record
+    // Si existe, borramos el archivo anterior y actualizamos la entidad. Si no, creamos una nueva.
     if (userPhoto) {
-      // Delete old file
-      const oldFilePath = path.join(process.cwd(), 'uploads', userPhoto.fileName);
+      const oldFilePath = path.join(USERS_PATH, userPhoto.fileName);
       try {
         await fs.unlink(oldFilePath);
       } catch (e) {
         console.warn('No se pudo borrar foto anterior:', userPhoto.fileName);
       }
 
-      // Update entity properties
+      // Actualizamos entidad
       userPhoto.fileName = file.filename;
       userPhoto.originalName = file.originalname;
       userPhoto.mimeType = file.mimetype;
     } else {
-      // Create new
+      // Crear nueva entidad
       userPhoto = new UserPhoto();
       userPhoto.fileName = file.filename;
       userPhoto.originalName = file.originalname;
@@ -91,7 +92,7 @@ async function deleteUserPhoto(req: Request, res: Response) {
       return res.status(403).json({ message: 'No puedes eliminar la foto de otro usuario' });
     }
 
-    const filePath = path.join(process.cwd(), 'uploads', photo.fileName);
+    const filePath = path.join(USERS_PATH, photo.fileName);
 
     try {
       await fs.unlink(filePath);

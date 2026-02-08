@@ -4,7 +4,7 @@ import { Category } from '../../category/category.entity.js';
 import { Product } from '../../product/product.entity.js';
 import { Price } from '../../product/price/price.entity.js';
 import { ProductPhoto } from '../../photo/productPhoto/productPhoto.entity.js';
-import { Currency } from '../currency.enum.js';
+import { Currency } from '../enums/currency.enum.js';
 import { orm } from './orm.js';
 
 export async function seedDatabase() {

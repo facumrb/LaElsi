@@ -36,7 +36,7 @@ interface IUiPhoto {
 export class PhotoManagerComponent {
   private photoService = inject(ApiPhotoService);
   private alertService = inject(AlertService);
-  private readonly imageBaseUrl = environment.imageBaseUrl;
+  private readonly imageBaseUrl = environment.productImagesUrl;
   readonly MAX_PHOTOS = 10;
 
   // Input: Recibimos las fotos cuando estamos en modo Edición
