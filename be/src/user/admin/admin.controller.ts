@@ -22,7 +22,6 @@ function sanitizeAdminInput(req: Request, res: Response, next: NextFunction) {
   next();
 }
 
-/*
 // Obtener información de cuenta del administrador
 async function getAccountInfo(req: Request, res: Response) {
   const em = orm.em;
@@ -52,27 +51,13 @@ async function getAccountInfo(req: Request, res: Response) {
     res.status(500).json({ message: error.message });
   }
 }
-*/
 
 async function findOne(req: Request, res: Response) {
   const em = orm.em;
   try {
     const id = Number.parseInt(req.params.id);
-    const admin = await em.findOneOrFail(Admin, id, { populate: ['photo'] });
-    const accountInfo = {
-      id: admin.id,
-      name: admin.name,
-      last_name: admin.last_name,
-      phone: admin.phone,
-      username: admin.username,
-      email: admin.email,
-      dni: admin.dni,
-      role: admin.role,
-      photo: admin.photo ? { id: admin.photo.id, fileName: admin.photo.fileName } : null,
-      createdAt: admin.createdAt,
-      updatedAt: admin.updatedAt
-    };
-    res.status(200).json({ message: 'Administrador encontrado', data: accountInfo });
+    const admin = await em.findOneOrFail(Admin, id, { populate: ['photo'] as any });
+    res.status(200).json({ message: 'Administrador encontrado', data: admin });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
@@ -148,4 +133,4 @@ async function remove(req: Request, res: Response) {
   }
 }
 
-export { sanitizeAdminInput, findAll, findOne, add, update, remove };
+export { sanitizeAdminInput, findAll, findOne, add, update, remove, getAccountInfo };
