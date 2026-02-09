@@ -5,7 +5,11 @@ export enum UserRole {
   CLIENT = 'Client',
 }
 
-// Interfaz Base de Usuario
+// ==========================================================
+// MODELOS DE LECTURA (READ / GET)
+// ==========================================================
+
+// Interfaz Base de Usuario (sin password)
 export interface IApiUser {
   id: number;
   name: string;
@@ -13,7 +17,6 @@ export interface IApiUser {
   dni: string;
   phone: string;
   username: string;
-  password: string;
   email: string;
   role: UserRole;
   photo: IApiUserPhoto | null; // Puede ser null si el usuario no cargo una foto de perfil
@@ -24,20 +27,9 @@ export interface IApiUser {
   deletedAt?: string | null;
 }
 
-// --------------- [ADMINISTRADOR] ---------------
-
 // Interfaz Admin
 export interface IApiAdmin extends IApiUser {}
 
-export type ICreateAdmin = Omit<
-  IApiAdmin,
-  'id' | 'photo' | 'createdAt' | 'updatedAt' | 'deletedAt'
-> & {
-  password: string;
-};
-export type IUpdateAdmin = Partial<ICreateAdmin>;
-
-// --------------- [CLIENTE] ---------------
 // Interfaz Client (Hereda de User + Dirección + Facturación)
 export interface IApiClient extends IApiUser {
   cuit?: string;
@@ -51,11 +43,31 @@ export interface IApiClient extends IApiUser {
   apartment?: string;
 }
 
-export type ICreateClient = Omit<
-  IApiClient,
-  'id' | 'photo' | 'createdAt' | 'updatedAt' | 'deletedAt'
-> & {
+// ==========================================================
+// MODELOS DE CREACIÓN (CREATE / POST)
+// ==========================================================
+
+// Helper para excluir campos automáticos
+type OmitAutoFields = 'id' | 'photo' | 'createdAt' | 'updatedAt' | 'deletedAt';
+
+// Para crear Admin
+export type ICreateAdmin = Omit<IApiAdmin, OmitAutoFields> & {
   password: string;
 };
 
-export type IUpdateClient = Partial<ICreateClient>;
+// Para crear Cliente
+export type ICreateClient = Omit<IApiClient, OmitAutoFields> & {
+  password: string;
+};
+
+// ==========================================================
+// MODELOS DE ACTUALIZACIÓN (UPDATE / PUT / PATCH)
+// ==========================================================
+
+export type IUpdateClient = Partial<Omit<IApiClient, OmitAutoFields>> & {
+  password?: string;
+};
+
+export type IUpdateAdmin = Partial<Omit<IApiAdmin, OmitAutoFields>> & {
+  password?: string;
+};

@@ -1,8 +1,7 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '@services/auth.service';
 import { ApiClientService } from '@services/api-client.service';
-import { IApiClient } from '@models/user.model';
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
@@ -11,6 +10,7 @@ import {
   bootstrapReceipt,
   bootstrapGeoAlt,
 } from '@ng-icons/bootstrap-icons';
+import { IApiClient, IUpdateClient } from '@models/user.model';
 
 @Component({
   selector: 'app-profile-page',
@@ -24,14 +24,18 @@ import {
   ],
   templateUrl: './profile-page.component.html',
 })
-export class ProfilePageComponent {
+export class ProfilePageComponent implements OnInit {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private apiClientService = inject(ApiClientService);
 
   loading = signal(true);
   saving = signal(false);
-  userData = signal<IApiClient | null>(null);
+
+  // Señal del usuario actual
+  currentUserSignal = this.authService.currentUser;
+
+  fullProfile = signal<IApiClient | null>(null);
 
   fiscalConditions = [
     'Consumidor Final',
@@ -40,8 +44,8 @@ export class ProfilePageComponent {
     'Exento',
   ];
 
-  formPerfil = this.fb.group({
-    // Datos personales (Readonly o fijos por ahora)
+  formPerfil = this.fb.nonNullable.group({
+    // Datos personales (Readonly por ahora)
     name: [{ value: '', disabled: true }],
     last_name: [{ value: '', disabled: true }],
     dni: [{ value: '', disabled: true }],
@@ -54,7 +58,7 @@ export class ProfilePageComponent {
 
     // Dirección
     street: [''],
-    streetNumber: [null as number | null],
+    streetNumber: [0],
     city: [''],
     province: [''],
     postalCode: [''],
@@ -63,47 +67,102 @@ export class ProfilePageComponent {
   });
 
   ngOnInit(): void {
-    const userSummary = this.authService.getUser();
+    const userSummary = this.currentUserSignal();
+
     if (userSummary) {
-      this.apiClientService.getClientById(userSummary.id).subscribe({
-        next: (fullUser) => {
-          this.userData.set(fullUser);
-          this.formPerfil.patchValue(fullUser as any);
-          this.loading.set(false);
-        },
-        error: () => {
-          this.loading.set(false);
-          Swal.fire(
-            'Error',
-            'No se pudo cargar la información del perfil',
-            'error',
-          );
-        },
-      });
+      // Usamos el ID para buscar la info COMPLETA en la base de datos
+      this.loadFullProfile(userSummary.id);
+    } else {
+      this.loading.set(false);
     }
   }
 
+  private loadFullProfile(id: number) {
+    this.apiClientService.getClientById(id).subscribe({
+      next: (fullUser) => {
+        this.fullProfile.set(fullUser);
+        this.formPerfil.patchValue({
+          name: fullUser.name,
+          last_name: fullUser.last_name,
+          dni: fullUser.dni,
+          email: fullUser.email,
+          phone: fullUser.phone,
+
+          // Manejo de opcionales: Si es null/undefined, ponemos string vacío
+          cuit: fullUser.cuit || '',
+          fiscalCondition: fullUser.fiscalCondition || 'Consumidor Final',
+          street: fullUser.street || '',
+          streetNumber: fullUser.streetNumber || 0, // Si es null, ponemos 0
+          city: fullUser.city || '',
+          province: fullUser.province || '',
+          postalCode: fullUser.postalCode || '',
+          floor: fullUser.floor || '',
+          apartment: fullUser.apartment || '',
+        });
+
+        this.loading.set(false);
+      },
+      error: (err) => {
+        this.loading.set(false);
+        console.error(err);
+        Swal.fire(
+          'Error',
+          'No se pudo cargar la información del perfil',
+          'error',
+        );
+      },
+    });
+  }
+
   onSubmit() {
-    if (this.formPerfil.invalid || !this.userData()) return;
+    if (this.formPerfil.invalid) {
+      this.formPerfil.markAllAsTouched();
+      return;
+    }
+
+    // Verificación de ID antes de activar el loading
+    const userId = this.currentUserSignal()?.id;
+    if (!userId) {
+      Swal.fire('Error', 'No se pudo identificar al usuario', 'error');
+      return;
+    }
 
     this.saving.set(true);
-    const updatedData = { ...this.formPerfil.value } as any;
 
-    this.apiClientService
-      .updateClient(this.userData()!.id, updatedData)
-      .subscribe({
-        next: () => {
-          this.saving.set(false);
-          Swal.fire('¡Éxito!', 'Perfil actualizado correctamente', 'success');
-        },
-        error: (err) => {
-          this.saving.set(false);
-          Swal.fire(
-            'Error',
-            err.error?.message || 'Error al actualizar',
-            'error',
-          );
-        },
-      });
+    const rawValue = this.formPerfil.getRawValue();
+
+    // Construimos un objeto limpio solo con los datos que queremos actualizar.
+    const clientData: IUpdateClient = {
+      phone: rawValue.phone,
+      cuit: rawValue.cuit,
+      fiscalCondition: rawValue.fiscalCondition,
+      street: rawValue.street,
+
+      // Aseguramos que sea number o undefined
+      streetNumber: rawValue.streetNumber
+        ? Number(rawValue.streetNumber)
+        : undefined,
+
+      city: rawValue.city,
+      province: rawValue.province,
+      postalCode: rawValue.postalCode,
+      floor: rawValue.floor,
+      apartment: rawValue.apartment,
+    };
+
+    this.apiClientService.updateClient(userId, clientData).subscribe({
+      next: () => {
+        this.saving.set(false);
+        Swal.fire('¡Éxito!', 'Perfil actualizado correctamente', 'success');
+      },
+      error: (err) => {
+        this.saving.set(false);
+        Swal.fire(
+          'Error',
+          err.error?.message || 'Error al actualizar',
+          'error',
+        );
+      },
+    });
   }
 }

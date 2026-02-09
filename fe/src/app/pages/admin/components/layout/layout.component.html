@@ -98,42 +98,58 @@
         </button>
       </div>
 
-      <div class="relative" (clickOutside)="showUserMenu.set(false)">
-        <button
-          (click)="toggleUserMenu()"
-          class="cursor-pointer flex items-center space-x-2 focus:outline-none"
+      <div class="flex items-center gap-4">
+        <a
+          routerLink="/"
+          class="flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-indigo-600 px-3 py-1.5 rounded-md border border-gray-200 hover:bg-gray-50 transition-colors mr-2"
+          title="Ir a la tienda pública"
         >
-          <div
-            class="w-9 h-9 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold border border-indigo-200"
-          >
-            {{ currentUser()?.name?.charAt(0) }}
-          </div>
-          <span class="hidden md:block text-sm font-medium text-gray-700">
-            {{ currentUser()?.name }}
-          </span>
-        </button>
+          <ng-icon name="bootstrapShop" class="text-lg"></ng-icon>
+          <span>Ver Tienda</span>
+        </a>
 
-        @if (showUserMenu()) {
-          <div
-            class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 border border-gray-100 animate-in fade-in slide-in-from-top-1 duration-200 z-20"
+        <div class="relative" (clickOutside)="showUserMenu.set(false)">
+          <button
+            (click)="toggleUserMenu()"
+            class="cursor-pointer flex items-center space-x-2 focus:outline-none"
           >
-            @if (currentUser(); as user) {
-              <a
-                [routerLink]="['/admin/view-profile', user.id]"
-                (click)="showUserMenu.set(false)"
-                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer"
-              >
-                Ver Perfil
-              </a>
-            }
-            <button
-              (click)="handleLogout()"
-              class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-50 cursor-pointer"
+            <div
+              class="w-9 h-9 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold border border-indigo-200"
             >
-              Cerrar Sesión
-            </button>
-          </div>
-        }
+              {{ currentUser()?.name?.charAt(0) }}
+            </div>
+            <span class="hidden md:block text-sm font-medium text-gray-700">
+              {{ currentUser()?.name }}
+            </span>
+          </button>
+
+          @if (showUserMenu()) {
+            <div
+              class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 border border-gray-100 animate-in fade-in slide-in-from-top-1 duration-200 z-20"
+            >
+              @if (currentUser(); as user) {
+                <a
+                  [routerLink]="['/admin/view-profile', user.id]"
+                  (click)="showUserMenu.set(false)"
+                  class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#3d4494]"
+                >
+                  <ng-icon name="bootstrapPerson" class="text-lg"></ng-icon> Mi
+                  Perfil
+                </a>
+              }
+              <button
+                (click)="handleLogout()"
+                class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-50 cursor-pointer flex items-center gap-2"
+              >
+                <ng-icon
+                  name="bootstrapBoxArrowRight"
+                  class="text-lg"
+                ></ng-icon>
+                Cerrar Sesión
+              </button>
+            </div>
+          }
+        </div>
       </div>
     </header>
 

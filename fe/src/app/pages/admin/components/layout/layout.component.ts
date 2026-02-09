@@ -1,21 +1,19 @@
 import { Component, inject, signal } from '@angular/core';
-import {
-  Router,
-  RouterLink,
-  RouterLinkActive,
-  RouterOutlet,
-} from '@angular/router';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '@services/auth.service';
 import { ClickOutsideDirective } from '@shared/click-outside.directive';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
-  bootstrapSpeedometer2, // Dashboard
-  bootstrapPersonGear, // Usuarios admins
-  bootstrapPeople, // Clientes
-  bootstrapBoxSeam, // Productos
-  bootstrapTags, // Categorías
-  bootstrapReceipt, // Pedidos
-  bootstrapList, // Menú hamburguesa
+  bootstrapSpeedometer2, // Icono de Dashboard
+  bootstrapPersonGear, // Icono de Administradores
+  bootstrapPeople, // Icono de Clientes
+  bootstrapBoxSeam, // Icono de Productos
+  bootstrapTags, // Icono de Categorías
+  bootstrapReceipt, // Icono de Pedidos
+  bootstrapList, // Icono de Menú hamburguesa
+  bootstrapBoxArrowRight, // Icono de logout
+  bootstrapPerson, // Icono de perfil
+  bootstrapShop, // Icono para ir al eccomerce
 } from '@ng-icons/bootstrap-icons';
 
 interface menuItems {
@@ -42,6 +40,9 @@ interface menuItems {
       bootstrapTags,
       bootstrapReceipt,
       bootstrapList,
+      bootstrapBoxArrowRight,
+      bootstrapPerson,
+      bootstrapShop,
     }),
   ],
   templateUrl: './layout.component.html',
@@ -53,13 +54,12 @@ interface menuItems {
 })
 export class LayoutComponent {
   private _authService = inject(AuthService);
-  private _router = inject(Router);
 
   sidebarOpen = signal(true);
   mobileMenuOpen = signal(false);
   showUserMenu = signal(false);
 
-  currentUser = signal<{ id: number; name: string; role: string } | null>(null);
+  currentUser = this._authService.currentUser;
 
   menuItems: menuItems[] = [
     {
@@ -94,17 +94,6 @@ export class LayoutComponent {
     },
   ];
 
-  ngOnInit() {
-    // Recuperar usuario del LocalStorage
-    const user = this._authService.getUser();
-    if (user) {
-      this.currentUser.set(user);
-    } else {
-      // Si no hay usuario, forzamos salida
-      this._router.navigate(['/']);
-    }
-  }
-
   toggleSidebar() {
     this.sidebarOpen.update((v) => !v);
   }
@@ -119,8 +108,7 @@ export class LayoutComponent {
 
   // Metodo para Cerrar Sesión
   handleLogout() {
-    this._authService.logout();
     this.showUserMenu.set(false);
-    this._router.navigate(['/']);
+    this._authService.logout();
   }
 }

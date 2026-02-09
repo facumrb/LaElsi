@@ -24,7 +24,7 @@ export class RegisterPageComponent {
   loading = signal(false);
   errorMessage = signal('');
 
-  formRegister = this.fb.group({
+  formRegister = this.fb.nonNullable.group({
     name: ['', [Validators.required, Validators.minLength(2)]],
     last_name: ['', [Validators.required, Validators.minLength(2)]],
     dni: ['', [Validators.required, Validators.pattern('^[0-9]{7,8}$')]],
@@ -48,7 +48,9 @@ export class RegisterPageComponent {
     this.loading.set(true);
     this.errorMessage.set('');
 
-    this.authService.register(this.formRegister.value).subscribe({
+    const registerData = this.formRegister.getRawValue();
+
+    this.authService.register(registerData).subscribe({
       next: () => {
         this.loading.set(false);
         this.router.navigate(['/auth/login'], {

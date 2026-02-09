@@ -35,7 +35,7 @@
             <div
               class="p-2.5 bg-gray-50 border border-gray-200 rounded text-gray-600 font-medium"
             >
-              {{ userData()?.dni }}
+              {{ fullProfile()?.dni }}
             </div>
           </div>
           <div>
@@ -45,7 +45,8 @@
             <div
               class="p-2.5 bg-gray-50 border border-gray-200 rounded text-gray-600 font-medium"
             >
-              {{ userData()?.name }} {{ userData()?.last_name }}
+              {{ fullProfile()?.name }}
+              {{ fullProfile()?.last_name }}
             </div>
           </div>
           <div>
@@ -55,7 +56,7 @@
             <div
               class="p-2.5 bg-gray-50 border border-gray-200 rounded text-gray-600 font-medium"
             >
-              {{ userData()?.email }}
+              {{ fullProfile()?.email }}
             </div>
           </div>
           <div class="md:col-span-1">

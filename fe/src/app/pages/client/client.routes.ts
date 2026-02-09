@@ -11,15 +11,14 @@ import { FaqPageComponent } from './pages/footer-pages/faq-page/faq-page.compone
 import { CategoryPageComponent } from './pages/category-page/category-page.component';
 import { ProductPageComponent } from './pages/product-page/product-page.component';
 import { SearchResultComponent } from './pages/search-result/search-result.component';
+import { authGuard } from '@guards/auth.guard';
 
-export const clienteRoutes: Routes = [
+export const clientRoutes: Routes = [
   {
     path: '',
     component: LayoutComponent,
     children: [
       { path: '', component: MainPageComponent },
-      { path: 'profile', component: ProfilePageComponent },
-      { path: 'carrito', component: CarritoPageComponent },
       { path: 'category/:id', component: CategoryPageComponent },
       { path: 'product/:id', component: ProductPageComponent },
       { path: 'impresiones', component: ImpresionesPageComponent },
@@ -28,12 +27,20 @@ export const clienteRoutes: Routes = [
       { path: 'about-us', component: AboutUsPageComponent },
       { path: 'faq', component: FaqPageComponent },
       {
-        path: 'search', component: SearchResultComponent,
-        title: 'Resultados de búsqueda | La Elsi'
+        path: 'search',
+        component: SearchResultComponent,
+        title: 'Resultados de búsqueda | La Elsi',
+      },
+      { path: 'carrito', component: CarritoPageComponent },
+      // Ruta Protegidas
+      {
+        path: 'profile',
+        component: ProfilePageComponent,
+        canActivate: [authGuard],
       },
       { path: '**', redirectTo: '' },
     ],
   },
 ];
 
-export default clienteRoutes;
+export default clientRoutes;

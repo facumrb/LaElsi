@@ -11,7 +11,8 @@
       "@cliente/*": ["./src/app/pages/client/*"],
       "@services/*": ["./src/app/services/*"],
       "@models/*": ["./src/app/models/*"],
-      "@shared/*": ["./src/app/shared/*"]
+      "@shared/*": ["./src/app/shared/*"],
+      "@guards/*": ["./src/app/guards/*"]
     },
 
     "outDir": "./dist/out-tsc",

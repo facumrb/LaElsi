@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '@services/auth.service';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
@@ -30,6 +30,7 @@ export class LoginPageComponent {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
+  private activatedroute = inject(ActivatedRoute);
   private alertService = inject(AlertService);
   private apiErrorService = inject(ApiErrorService);
 
@@ -40,7 +41,7 @@ export class LoginPageComponent {
   passwordVisible = signal(false);
   showEyeIcon = signal(false);
 
-  formLoginAdmin = this.fb.group({
+  formLogin = this.fb.group({
     username: [
       '',
       [
@@ -54,7 +55,7 @@ export class LoginPageComponent {
 
   // Lógica UI para el input de contraseña
   onPasswordInput(): void {
-    const passwordValue = this.formLoginAdmin.get('password')?.value || '';
+    const passwordValue = this.formLogin.get('password')?.value || '';
     this.showEyeIcon.set(passwordValue.length > 0);
   }
   togglePasswordVisibility(): void {
@@ -66,20 +67,32 @@ export class LoginPageComponent {
   }
 
   onSubmit() {
-    if (this.formLoginAdmin.invalid) {
-      this.formLoginAdmin.markAllAsTouched();
+    if (this.formLogin.invalid) {
+      this.formLogin.markAllAsTouched();
       return;
     }
 
     this.loading.set(true);
-
-    const { username, password } = this.formLoginAdmin.getRawValue();
+    const { username, password } = this.formLogin.getRawValue();
 
     this.authService.login(username!, password!).subscribe({
       next: () => {
         this.loading.set(false);
         this.alertService.toast('¡Bienvenido de nuevo!', 'success');
-        this.router.navigate(['/admin']);
+
+        // Logica de redireccionamiento post-login
+        const returnUrl = this.activatedroute.snapshot.queryParams['returnUrl'];
+        if (returnUrl) {
+          // Si existe, vamos directo ahí (ej: /checkout)
+          this.router.navigateByUrl(returnUrl);
+        } else {
+          // Si no existe, decidimos según el rol
+          if (this.authService.isAdmin()) {
+            this.router.navigate(['/admin']); // Dashboard Admin
+          } else {
+            this.router.navigate(['/']); // Home Cliente
+          }
+        }
       },
       error: (error) => {
         this.loading.set(false);

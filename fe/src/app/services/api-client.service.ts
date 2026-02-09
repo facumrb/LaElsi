@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
-import { IApiClient } from '@models/user.model';
+import { IApiClient, ICreateClient, IUpdateClient } from '@models/user.model';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -23,13 +23,13 @@ export class ApiClientService {
       .pipe(map((response) => response.data));
   }
 
-  addClient(client: IApiClient): Observable<IApiClient> {
+  addClient(client: ICreateClient): Observable<IApiClient> {
     return this._http
       .post<{ message: string; data: IApiClient }>(this.apiUrl, client)
       .pipe(map((response) => response.data));
   }
 
-  updateClient(id: number, client: IApiClient): Observable<IApiClient> {
+  updateClient(id: number, client: IUpdateClient): Observable<IApiClient> {
     return this._http
       .patch<{
         message: string;

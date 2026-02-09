@@ -22,7 +22,7 @@
       </p>
 
       <form
-        [formGroup]="formLoginAdmin"
+        [formGroup]="formLogin"
         novalidate
         (ngSubmit)="onSubmit()"
         class="space-y-5"
@@ -40,10 +40,8 @@
             class="block w-full rounded-lg border-gray-300 border p-3 text-gray-900 shadow-sm focus:border-[#3d4494] focus:ring-1 focus:ring-[#3d4494] outline-none transition-all sm:text-sm"
           />
           <div class="mt-1 min-h-5 text-xs text-red-600 font-medium">
-            @if (formUtils.isValidField(formLoginAdmin, "username")) {
-              <span>{{
-                formUtils.getFieldError(formLoginAdmin, "username")
-              }}</span>
+            @if (formUtils.isValidField(formLogin, "username")) {
+              <span>{{ formUtils.getFieldError(formLogin, "username") }}</span>
             }
           </div>
         </div>
@@ -82,9 +80,9 @@
 
           <div class="mt-1 flex justify-between items-start">
             <div class="min-h-5 text-xs text-red-600 font-medium flex-1">
-              @if (formUtils.isValidField(formLoginAdmin, "password")) {
+              @if (formUtils.isValidField(formLogin, "password")) {
                 <span>{{
-                  formUtils.getFieldError(formLoginAdmin, "password")
+                  formUtils.getFieldError(formLogin, "password")
                 }}</span>
               }
             </div>

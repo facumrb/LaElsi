@@ -1,18 +1,10 @@
-import { inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Router } from '@angular/router';
-
-export interface LoginResponse {
-  message: string;
-  token: string;
-  user: {
-    id: number;
-    name: string;
-    role: string; //'admin', 'client'
-  };
-}
+import { LoginResponse, RegisterData, UserSession } from '@models/auth.model';
+import { UserRole } from '@models/user.model';
 
 @Injectable({
   providedIn: 'root',
@@ -20,55 +12,63 @@ export interface LoginResponse {
 export class AuthService {
   private _http = inject(HttpClient);
   private _router = inject(Router);
-  private readonly apiUrl = `${environment.apiUrl}/users`; // Cambiado a /users/login
+  private readonly apiUrl = `${environment.apiUrl}/users`;
   private readonly TOKEN_KEY = 'auth_token';
   private readonly USER_KEY = 'auth_user';
+
+  currentUser = signal<UserSession | null>(null);
+  isLoggedIn = computed(() => !!this.currentUser());
+  isAdmin = computed(() => this.currentUser()?.role === UserRole.ADMIN);
+
+  constructor() {
+    // Al iniciar la app, recuperamos la sesión si existe
+    this.loadSession();
+  }
 
   login(username: string, password: string): Observable<LoginResponse> {
     return this._http
       .post<LoginResponse>(`${this.apiUrl}/login`, { username, password })
       .pipe(
         tap((response) => {
-          this.setToken(response.token);
-          this.setUser(response.user);
+          this.saveSession(response.token, response.user);
         }),
       );
   }
 
-  register(userData: any): Observable<any> {
+  register(userData: RegisterData): Observable<any> {
     return this._http.post(`${this.apiUrl}/register`, userData);
   }
 
   logout(): void {
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.USER_KEY);
+    this.currentUser.set(null);
     this._router.navigate(['/']);
   }
 
+  // Método auxiliar para obtener el token (usado por el interceptor)
   getToken(): string | null {
     return localStorage.getItem(this.TOKEN_KEY);
   }
 
-  isLoggedIn(): boolean {
-    return !!this.getToken();
-  }
-
-  // Verificación de si el usuario tiene rol de admin
-  isAdmin(): boolean {
-    const user = this.getUser();
-    return user?.role === 'Admin';
-  }
-
-  getUser(): LoginResponse['user'] | null {
-    const user = localStorage.getItem(this.USER_KEY);
-    return user ? JSON.parse(user) : null;
-  }
-
-  private setToken(token: string): void {
+  private saveSession(token: string, user: UserSession): void {
     localStorage.setItem(this.TOKEN_KEY, token);
+    localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+    this.currentUser.set(user);
   }
 
-  private setUser(user: LoginResponse['user']): void {
-    localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+  private loadSession(): void {
+    const storedUser = localStorage.getItem(this.USER_KEY);
+    const token = localStorage.getItem(this.TOKEN_KEY);
+
+    if (storedUser && token) {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        this.currentUser.set(parsedUser);
+      } catch (e) {
+        // Si el JSON está corrupto, limpiamos todo
+        this.logout();
+      }
+    }
   }
 }
