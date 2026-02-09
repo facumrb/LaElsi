@@ -9,10 +9,17 @@ import { bootstrapSearch } from '@ng-icons/bootstrap-icons';
 import { FormsModule } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, Subject, switchMap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ClickOutsideDirective } from '@shared/click-outside.directive';
 
 @Component({
   selector: 'app-search-bar',
-  imports: [CurrencyPipe, UpperCasePipe, NgIconComponent, FormsModule],
+  imports: [
+    CurrencyPipe,
+    UpperCasePipe,
+    NgIconComponent,
+    FormsModule,
+    ClickOutsideDirective,
+  ],
   viewProviders: provideIcons({
     bootstrapSearch,
   }),
