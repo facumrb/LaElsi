@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { IApiCategory } from '@models/category.model';
 import { ApiCategoryService } from '@services/api-category.service';
 import { AuthService } from '@services/auth.service';
@@ -23,7 +23,13 @@ import { SearchBarComponent } from './search-bar/search-bar.component';
 
 @Component({
   selector: 'app-navbar',
-  imports: [RouterLink, RouterLinkActive, NgIconComponent, SearchBarComponent],
+  imports: [
+    RouterLink,
+    RouterLinkActive,
+    NgIconComponent,
+    SearchBarComponent,
+    ClickOutsideDirective,
+  ],
   viewProviders: [
     provideIcons({
       bootstrapSearch,
@@ -45,7 +51,6 @@ import { SearchBarComponent } from './search-bar/search-bar.component';
 export class NavbarComponent implements OnInit {
   authService = inject(AuthService);
   private apiCategoryService = inject(ApiCategoryService);
-  private router = inject(Router);
 
   carritoSignal = signal(0); // Esto debe estar conectado al servicio del carrito
   showSideMenu = signal(false);
