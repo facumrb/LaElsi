@@ -71,4 +71,22 @@ export class AuthService {
       }
     }
   }
+
+  updateCurrentUser(updates: Partial<UserSession>): void {
+    const currentUser = this.currentUser();
+
+    if (currentUser) {
+      // 1. Creamos el nuevo objeto mezclando lo actual con los cambios
+      const updatedUser: UserSession = {
+        ...currentUser,
+        ...updates,
+      };
+
+      // 2. Actualizamos el Signal (Reactividad en la UI)
+      this.currentUser.set(updatedUser);
+
+      // 3. Actualizamos el LocalStorage (Persistencia al recargar página)
+      localStorage.setItem(this.USER_KEY, JSON.stringify(updatedUser));
+    }
+  }
 }

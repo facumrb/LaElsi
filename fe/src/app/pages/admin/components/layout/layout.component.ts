@@ -15,6 +15,7 @@ import {
   bootstrapPerson, // Icono de perfil
   bootstrapShop, // Icono para ir al eccomerce
 } from '@ng-icons/bootstrap-icons';
+import { environment } from 'src/environments/environment';
 
 interface menuItems {
   label: string;
@@ -60,6 +61,17 @@ export class LayoutComponent {
   showUserMenu = signal(false);
 
   currentUser = this._authService.currentUser;
+
+  readonly imageBaseUrl = environment.userImagesUrl;
+
+  // Lógica para obtener iniciales del usuario actual
+  getUserInitials(): string {
+    const user = this.currentUser();
+    if (!user) return '';
+    const first = user.name?.charAt(0) || '';
+    const last = user.last_name?.charAt(0) || '';
+    return (first + last).toUpperCase();
+  }
 
   menuItems: menuItems[] = [
     {

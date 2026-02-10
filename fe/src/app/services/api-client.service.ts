@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { IApiClient, ICreateClient, IUpdateClient } from '@models/user.model';
@@ -20,6 +20,17 @@ export class ApiClientService {
   getClientById(id: number): Observable<IApiClient> {
     return this._http
       .get<{ message: string; data: IApiClient }>(`${this.apiUrl}/${id}`)
+      .pipe(map((response) => response.data));
+  }
+
+  // Buscar clientes por nombre, apellido, nombre de usuario o dni
+  searchClients(query: string): Observable<IApiClient[]> {
+    const params = new HttpParams().set('query', query);
+    return this._http
+      .get<{
+        message: string;
+        data: IApiClient[];
+      }>(`${this.apiUrl}/search`, { params })
       .pipe(map((response) => response.data));
   }
 

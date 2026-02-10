@@ -16,10 +16,13 @@ async function uploadUserPhoto(req: Request, res: Response) {
 
     if (!id) return res.status(400).json({ message: 'ID de Usuario inválido' });
 
-    // Validación de que el usuario solo pueda modificar su propia foto
-    if (req.user?.id !== id) {
+    // Validación de que el usuario solo pueda modificar su propia foto (a menos que sea un admin)
+    const isOwner = req.user?.id === id;
+    const isAdmin = req.user?.role === 'Admin';
+
+    if (!isOwner && !isAdmin) {
       if (file) await deleteUserUploadedFile(file);
-      return res.status(403).json({ message: 'No puedes modificar la foto de otro usuario' });
+      return res.status(403).json({ message: 'No tienes permisos para modificar esta foto' });
     }
 
     if (!file) {
@@ -85,11 +88,14 @@ async function deleteUserPhoto(req: Request, res: Response) {
   try {
     const photoId = Number(req.params.photoId);
 
-    const photo = await em.findOneOrFail(UserPhoto, { id: photoId }, { populate: ['user'] });
+    const photo = await em.findOneOrFail(UserPhoto, { id: photoId });
 
-    // Validar que el usuario solo pueda eliminar su propia foto
-    if (req.user?.id !== photo.user.id) {
-      return res.status(403).json({ message: 'No puedes eliminar la foto de otro usuario' });
+    // Validar que el usuario solo pueda eliminar su propia foto (a menos que sea un admin)
+    const isOwner = req.user?.id === photo.user.id;
+    const isAdmin = req.user?.role === 'Admin';
+
+    if (!isOwner && !isAdmin) {
+      return res.status(403).json({ message: 'No tienes permisos para eliminar esta foto' });
     }
 
     const filePath = path.join(USERS_PATH, photo.fileName);

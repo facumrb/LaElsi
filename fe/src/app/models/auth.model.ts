@@ -4,8 +4,8 @@ import { UserRole } from './user.model';
 export interface UserSession {
   id: number;
   name: string;
+  last_name: string;
   role: UserRole;
-  email?: string;
   photo?: IApiUserPhoto | null;
 }
 

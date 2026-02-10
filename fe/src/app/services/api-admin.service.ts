@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { IApiAdmin, ICreateAdmin, IUpdateAdmin } from '@models/user.model';
@@ -20,6 +20,17 @@ export class ApiAdminService {
   getAdminById(id: number): Observable<IApiAdmin> {
     return this._http
       .get<{ message: string; data: IApiAdmin }>(`${this.apiUrl}/${id}`)
+      .pipe(map((response) => response.data));
+  }
+
+  // Buscar administradores por nombre, apellido, nombre de usuario o dni
+  searchAdmins(query: string): Observable<IApiAdmin[]> {
+    const params = new HttpParams().set('query', query);
+    return this._http
+      .get<{
+        message: string;
+        data: IApiAdmin[];
+      }>(`${this.apiUrl}/search`, { params })
       .pipe(map((response) => response.data));
   }
 

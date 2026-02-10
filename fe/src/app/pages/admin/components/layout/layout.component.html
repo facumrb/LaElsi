@@ -113,11 +113,20 @@
             (click)="toggleUserMenu()"
             class="cursor-pointer flex items-center space-x-2 focus:outline-none"
           >
-            <div
-              class="w-9 h-9 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold border border-indigo-200"
-            >
-              {{ currentUser()?.name?.charAt(0) }}
-            </div>
+            @if (currentUser()?.photo) {
+              <img
+                [src]="imageBaseUrl + currentUser()!.photo!.fileName"
+                alt="Foto de perfil"
+                class="w-9 h-9 rounded-full object-cover border border-gray-200"
+              />
+            } @else {
+              <div
+                class="w-9 h-9 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold border border-indigo-200 text-sm"
+              >
+                {{ getUserInitials() }}
+              </div>
+            }
+
             <span class="hidden md:block text-sm font-medium text-gray-700">
               {{ currentUser()?.name }}
             </span>

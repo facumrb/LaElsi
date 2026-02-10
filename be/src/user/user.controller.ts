@@ -19,15 +19,15 @@ async function login(req: Request, res: Response) {
     // Al ser clases abstractas/mapped superclass, consultar 'User' puede no funcionar si no es STI.
     // Buscamos manualmente en ambos para asegurar.
 
-    let user: User | null = await em.findOne(Admin, {
-      $or: [{ email: loginValue }, { username: loginValue }]
-    });
-
-    if (!user) {
-      user = await em.findOne(Client, {
+    const user = await em.findOne(
+      User,
+      {
         $or: [{ email: loginValue }, { username: loginValue }]
-      });
-    }
+      },
+      {
+        populate: ['photo']
+      }
+    );
 
     if (!user) {
       return res.status(401).json({ message: 'Credenciales inválidas' });
@@ -58,7 +58,14 @@ async function login(req: Request, res: Response) {
       user: {
         id: user.id,
         name: user.name,
-        role: user.role
+        last_name: user.last_name,
+        role: user.role,
+        photo: user.photo
+          ? {
+              id: user.photo.id,
+              fileName: user.photo.fileName
+            }
+          : null
       }
     });
   } catch (error: any) {

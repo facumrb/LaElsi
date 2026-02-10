@@ -1,6 +1,7 @@
 import { Component, input, output } from '@angular/core';
 import { TableActionsComponent } from '@admin/components/table-actions/table-actions.component';
 import { IApiAdmin } from '@models/user.model';
+import { environment } from 'src/environments/environment';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
   bootstrapSearch,
@@ -27,6 +28,8 @@ export class AdminsListComponent {
 
   // Como no hay filtros aún en el toolbar, esto podría venir siempre false, pero lo dejamos listo para el futuro.
   isFilterActive = input<boolean>(false);
+
+  readonly imageBaseUrl = environment.userImagesUrl;
 
   getInitials(admin: IApiAdmin): string {
     const first = admin.name?.charAt(0) || '';

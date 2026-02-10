@@ -8,21 +8,25 @@
       <thead class="hidden lg:table-header-group bg-[#3d4494] text-white">
         <tr>
           <th
-            class="px-6 py-4 font-semibold uppercase tracking-wider w-auto rounded-tl-lg"
+            class="px-6 py-4 font-semibold uppercase tracking-wider w-[25%] rounded-tl-lg"
           >
             Usuario
           </th>
-          <th class="px-6 py-4 font-semibold uppercase tracking-wider w-1/4">
+
+          <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[25%]">
             Nombre Completo
           </th>
+
           <th
-            class="px-6 py-4 font-semibold uppercase tracking-wider w-40 whitespace-nowrap text-center"
+            class="px-6 py-4 font-semibold uppercase tracking-wider w-[20%] whitespace-nowrap text-center"
           >
             DNI
           </th>
-          <th class="px-6 py-4 font-semibold uppercase tracking-wider w-1/4">
+
+          <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[30%]">
             Contacto
           </th>
+
           <th
             class="px-6 py-4 text-center font-semibold uppercase tracking-wider whitespace-nowrap w-[1%] rounded-tr-lg"
           >
@@ -45,17 +49,24 @@
                 class="text-xs font-bold uppercase text-gray-400 mb-2 block lg:hidden"
                 >Usuario:</span
               >
-
               <div class="flex items-center gap-3">
-                <div
-                  class="h-10 w-10 shrink-0 rounded-full bg-indigo-100 flex items-center justify-center text-[#3d4494] font-bold border border-indigo-200 text-sm"
-                >
-                  {{ getInitials(admin) }}
-                </div>
-
+                @if (admin.photo) {
+                  <img
+                    [src]="imageBaseUrl + admin.photo.fileName"
+                    alt="{{ admin.username }}"
+                    class="h-10 w-10 shrink-0 rounded-full object-cover border border-gray-200"
+                  />
+                } @else {
+                  <div
+                    class="h-10 w-10 shrink-0 rounded-full bg-indigo-100 flex items-center justify-center text-[#3d4494] font-bold border border-indigo-200 text-xs"
+                  >
+                    {{ getInitials(admin) }}
+                  </div>
+                }
                 <div
                   (click)="onEdit.emit(admin)"
-                  class="font-semibold text-gray-900 cursor-pointer hover:text-[#3d4494] transition-colors"
+                  class="font-semibold text-gray-900 text-base lg:text-sm cursor-pointer hover:underline"
+                  title="{{ admin.username }}"
                 >
                   {{ admin.username }}
                 </div>
@@ -108,7 +119,11 @@
                     name="bootstrapEnvelope"
                     class="text-gray-400"
                   ></ng-icon>
-                  <span>{{ admin.email }}</span>
+                  <span
+                    class="truncate max-w-50 xl:max-w-xs"
+                    title="{{ admin.email }}"
+                    >{{ admin.email }}</span
+                  >
                 </div>
                 <div class="flex items-center gap-1.5 text-gray-500 text-xs">
                   <ng-icon

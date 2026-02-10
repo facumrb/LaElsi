@@ -2,6 +2,10 @@ import { Request, Response, NextFunction } from 'express';
 import { Admin } from './admin.entity.js';
 import { orm } from '../../shared/db/orm.js';
 import { UserRole } from '../user.entity.js';
+import fs from 'fs/promises';
+import path from 'path';
+
+const USERS_PATH = path.join(process.cwd(), 'uploads', 'users');
 
 function sanitizeAdminInput(req: Request, res: Response, next: NextFunction) {
   req.body.sanitizedInput = {
@@ -27,7 +31,7 @@ async function getAccountInfo(req: Request, res: Response) {
   const em = orm.em;
   try {
     const id = Number.parseInt(req.params.id);
-    const admin = await em.findOneOrFail(Admin, id, { populate: ['photo'] as any });
+    const admin = await em.findOneOrFail(Admin, id, { populate: ['photo'] });
     // Filtrar los datos que se enviarán al cliente
     const accountInfo = {
       id: admin.id,
@@ -56,7 +60,7 @@ async function findOne(req: Request, res: Response) {
   const em = orm.em;
   try {
     const id = Number.parseInt(req.params.id);
-    const admin = await em.findOneOrFail(Admin, id, { populate: ['photo'] as any });
+    const admin = await em.findOneOrFail(Admin, id, { populate: ['photo'] });
     res.status(200).json({ message: 'Administrador encontrado', data: admin });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
@@ -66,8 +70,26 @@ async function findOne(req: Request, res: Response) {
 async function findAll(req: Request, res: Response) {
   const em = orm.em;
   try {
-    const admins = await em.find(Admin, {});
+    const admins = await em.find(Admin, {}, { populate: ['photo'] });
     res.status(200).json({ message: 'Todos los Administradores fueron encontrados', data: admins });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
+async function searchAdminByText(req: Request, res: Response) {
+  const em = orm.em;
+  const { query } = req.query;
+
+  try {
+    const admins = await em.find(
+      Admin,
+      {
+        $or: [{ name: { $like: `%${query}%` } }, { last_name: { $like: `%${query}%` } }, { username: { $like: `%${query}%` } }, { dni: { $like: `%${query}%` } }]
+      },
+      { populate: ['photo'] }
+    );
+    res.status(200).json({ message: 'Administradores encontrados', data: admins });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
@@ -121,7 +143,19 @@ async function remove(req: Request, res: Response) {
   const em = orm.em;
   try {
     const id = Number.parseInt(req.params.id);
-    const admin = await em.findOneOrFail(Admin, { id });
+    const admin = await em.findOneOrFail(Admin, { id }, { populate: ['photo'] });
+
+    // Si tiene foto, intentamos borrar el archivo físico
+    if (admin.photo) {
+      const filePath = path.join(USERS_PATH, admin.photo.fileName);
+      try {
+        await fs.unlink(filePath);
+      } catch (err) {
+        // Solo advertimos, no detenemos el proceso si el archivo ya no existe
+        console.warn(`No se pudo borrar el archivo físico: ${err}`);
+      }
+    }
+
     em.remove(admin);
     await em.flush();
     res.status(200).send({ message: 'Administrador eliminado' });
@@ -133,4 +167,4 @@ async function remove(req: Request, res: Response) {
   }
 }
 
-export { sanitizeAdminInput, findAll, findOne, add, update, remove, getAccountInfo };
+export { sanitizeAdminInput, findOne, findAll, searchAdminByText, add, update, remove, getAccountInfo };

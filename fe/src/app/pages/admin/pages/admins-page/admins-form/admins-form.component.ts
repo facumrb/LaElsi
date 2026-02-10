@@ -1,7 +1,7 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Location } from '@angular/common';
+import { DatePipe, Location } from '@angular/common';
 import { ApiAdminService } from '@services/api-admin.service';
 import { AlertService } from '@shared/alert.service';
 import { FormUtils } from '@shared/form-utils';
@@ -9,16 +9,25 @@ import { ICreateAdmin, UserRole } from '@models/user.model';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { bootstrapArrowLeft } from '@ng-icons/bootstrap-icons';
 import { NumericInputDirective } from '@shared/numeric-input.directive';
+import { IApiUserPhoto } from '@models/photo.model';
+import { PhotoManagerComponent } from '@shared/photo-manager/photo-manager.component';
+import { switchMap } from 'rxjs';
+import { AuthService } from '@services/auth.service';
 
 @Component({
   selector: 'app-admins-form',
-  standalone: true,
-  imports: [ReactiveFormsModule, NgIconComponent, NumericInputDirective],
+  imports: [
+    ReactiveFormsModule,
+    NgIconComponent,
+    NumericInputDirective,
+    PhotoManagerComponent,
+  ],
   viewProviders: [
     provideIcons({
       bootstrapArrowLeft,
     }),
   ],
+  providers: [DatePipe],
   templateUrl: './admins-form.component.html',
 })
 export class AdminsFormComponent implements OnInit {
@@ -27,15 +36,18 @@ export class AdminsFormComponent implements OnInit {
   private routeActive = inject(ActivatedRoute);
   private location = inject(Location);
   private adminService = inject(ApiAdminService);
+  private authService = inject(AuthService);
   private alertService = inject(AlertService);
+  private datePipe = inject(DatePipe);
 
   formUtils = FormUtils;
 
-  // Estados
+  @ViewChild(PhotoManagerComponent) photoManager!: PhotoManagerComponent;
+
   isEditMode = signal(false);
   adminId = signal<number | null>(null);
+  currentPhoto = signal<IApiUserPhoto | null>(null);
 
-  // Formulario
   formAdmin = this.fb.group({
     name: [
       '',
@@ -58,10 +70,19 @@ export class AdminsFormComponent implements OnInit {
       [
         Validators.required,
         Validators.minLength(7),
+        Validators.maxLength(15),
         Validators.pattern(FormUtils.numberPattern),
       ],
-    ], // Solo números
-    phone: ['', [Validators.pattern(FormUtils.numberPattern)]],
+    ],
+    phone: [
+      '',
+      [
+        Validators.required,
+        Validators.minLength(7),
+        Validators.maxLength(15),
+        Validators.pattern(FormUtils.numberPattern),
+      ],
+    ],
     username: [
       '',
       [
@@ -86,44 +107,55 @@ export class AdminsFormComponent implements OnInit {
 
   ngOnInit() {
     this.checkEditMode();
-
-    // Validación condicional de contraseña
     if (!this.isEditMode()) {
       this.formAdmin.get('password')?.addValidators(Validators.required);
     }
   }
 
-  // Verificar si venimos a Editar
   checkEditMode() {
     const id = this.routeActive.snapshot.paramMap.get('id');
     if (id) {
-      this.adminId.set(+id);
-      this.isEditMode.set(true);
-
-      this.adminService.getAdminById(+id).subscribe({
-        next: (admin) => {
-          this.formAdmin.patchValue({
-            name: admin.name,
-            last_name: admin.last_name,
-            dni: admin.dni,
-            phone: admin.phone,
-            username: admin.username,
-            email: admin.email,
-            // Fechas (Formateadas o directas ISO)
-            createdAt: admin.createdAt,
-            updatedAt: admin.updatedAt,
-            deletedAt: admin.deletedAt || 'N/A',
-          });
-          // Al editar, quitamos el required del password si no lo tiene
-          this.formAdmin.get('password')?.removeValidators(Validators.required);
-          this.formAdmin.get('password')?.updateValueAndValidity();
-        },
-        error: () => {
-          this.alertService.toast('Error al cargar administrador', 'error');
-          this.goBack();
-        },
-      });
+      this.loadAdminData(+id);
     }
+  }
+
+  loadAdminData(id: number) {
+    this.adminId.set(id);
+    this.isEditMode.set(true);
+
+    this.adminService.getAdminById(id).subscribe({
+      next: (admin) => {
+        this.currentPhoto.set(admin.photo);
+        const dateFormat = 'dd/MM/yyyy HH:mm';
+
+        this.formAdmin.patchValue({
+          name: admin.name,
+          last_name: admin.last_name,
+          dni: admin.dni,
+          phone: admin.phone,
+          username: admin.username,
+          email: admin.email,
+          createdAt: this.datePipe.transform(admin.createdAt, dateFormat),
+          updatedAt: this.datePipe.transform(admin.updatedAt, dateFormat),
+          deletedAt: admin.deletedAt
+            ? this.datePipe.transform(admin.deletedAt, dateFormat)
+            : 'No eliminado',
+        });
+
+        this.formAdmin.get('password')?.removeValidators(Validators.required);
+        this.formAdmin.get('password')?.updateValueAndValidity();
+      },
+      error: () => {
+        this.alertService.toast('Error al cargar administrador', 'error');
+        this.goBack();
+      },
+    });
+  }
+
+  get fullName(): string {
+    const name = this.formAdmin.get('name')?.value || '';
+    const lastName = this.formAdmin.get('last_name')?.value || '';
+    return `${name} ${lastName}`;
   }
 
   goBack() {
@@ -131,44 +163,84 @@ export class AdminsFormComponent implements OnInit {
   }
 
   onSubmit() {
-    if (this.formAdmin.valid) {
-      const formValue = this.formAdmin.getRawValue();
+    if (this.formAdmin.invalid) {
+      this.formAdmin.markAllAsTouched();
+      return;
+    }
 
-      const adminData: ICreateAdmin = {
-        name: formValue.name!,
-        last_name: formValue.last_name!,
-        dni: formValue.dni!,
-        phone: formValue.phone || '',
-        username: formValue.username!,
-        email: formValue.email!,
-        password: formValue.password || '',
-        role: UserRole.ADMIN, // Typescript lo pide, pero el backend lo fuerza.
-      };
+    const formValue = this.formAdmin.getRawValue();
 
-      // Si estamos editando y el password está vacío, LO QUITAMOS del objeto para evitar que el backend intente procesar un string vacío.
-      if (this.isEditMode() && !adminData.password) {
-        delete (adminData as any).password;
-      }
+    const adminData: ICreateAdmin = {
+      name: formValue.name!,
+      last_name: formValue.last_name!,
+      dni: formValue.dni!,
+      phone: formValue.phone!,
+      username: formValue.username!,
+      email: formValue.email!,
+      password: formValue.password || '',
+      role: UserRole.ADMIN,
+    };
 
-      let request$;
-      if (this.isEditMode() && this.adminId()) {
-        request$ = this.adminService.updateAdmin(this.adminId()!, adminData);
-      } else {
-        request$ = this.adminService.addAdmin(adminData);
-      }
+    if (this.isEditMode() && !adminData.password) {
+      delete (adminData as any).password;
+    }
 
-      request$.subscribe({
-        next: () => {
+    // Guardar datos del Usuario
+    let userRequest$;
+    if (this.isEditMode() && this.adminId()) {
+      userRequest$ = this.adminService.updateAdmin(this.adminId()!, adminData);
+    } else {
+      userRequest$ = this.adminService.addAdmin(adminData);
+    }
+
+    // Una vez guardado el usuario, procesamos la foto
+    userRequest$
+      .pipe(
+        switchMap((res: any) => {
+          const userId = this.isEditMode()
+            ? this.adminId()!
+            : res.id || res.data?.id;
+
+          if (!userId) {
+            console.error(
+              'No se pudo obtener el ID del usuario para subir la foto',
+            );
+            return [];
+          }
+
+          // Llamamos al método público del hijo
+          return this.photoManager.saveChanges(userId);
+        }),
+      )
+      .subscribe({
+        next: (photoResponse: any) => {
           this.alertService.toast('Guardado exitosamente', 'success');
+          // --- Logica para actualizar el token en caso de que sea un edit del mismo usuario que esta logeado
+          const currentUserId = this.authService.currentUser()?.id;
+          const editedId = this.adminId();
+
+          // Si estoy editando MI PROPIO perfil
+          if (editedId && editedId === currentUserId) {
+            // Preparamos los cambios de texto
+            const sessionUpdates: any = {
+              name: formValue.name,
+              last_name: formValue.last_name,
+            };
+
+            if (photoResponse && photoResponse.photo) {
+              sessionUpdates.photo = photoResponse.photo;
+            } else if (this.photoManager.deletePending) {
+              sessionUpdates.photo = null;
+            }
+            // Actualizamos el AuthService (y por ende el Navbar)
+            this.authService.updateCurrentUser(sessionUpdates);
+          }
           this.router.navigate(['/admin/admins']);
         },
         error: (err) => {
           console.error(err);
-          this.alertService.toast('Error al guardar', 'error');
+          this.alertService.toast('Error al guardar (revise la foto)', 'error');
         },
       });
-    } else {
-      this.formAdmin.markAllAsTouched();
-    }
   }
 }

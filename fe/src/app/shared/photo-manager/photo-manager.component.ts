@@ -1,0 +1,138 @@
+import {
+  Component,
+  computed,
+  effect,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
+import { ApiPhotoService } from '@services/api-photo.service';
+import { AlertService } from '@shared/alert.service';
+import { IApiUserPhoto } from '@models/photo.model';
+import { NgIconComponent, provideIcons } from '@ng-icons/core';
+import {
+  bootstrapCamera,
+  bootstrapTrash,
+  bootstrapPerson,
+} from '@ng-icons/bootstrap-icons';
+import { environment } from 'src/environments/environment';
+import { Observable, of } from 'rxjs';
+
+@Component({
+  selector: 'app-photo-manager',
+  imports: [NgIconComponent],
+  viewProviders: [
+    provideIcons({ bootstrapCamera, bootstrapTrash, bootstrapPerson }),
+  ],
+  templateUrl: './photo-manager.component.html',
+})
+export class PhotoManagerComponent {
+  private photoService = inject(ApiPhotoService);
+  private alertService = inject(AlertService);
+  private readonly imageBaseUrl = environment.userImagesUrl;
+
+  currentPhoto = input<IApiUserPhoto | null>(null); // Recibimos la foto actual (o null) desde el padre
+
+  // Nombre para mostrar iniciales si no hay foto
+  userFullName = input<string>('');
+
+  userInitials = computed(() => {
+    const fullName = this.userFullName()?.trim();
+    if (!fullName) return '';
+
+    const parts = fullName.split(' ').filter((part) => part.length > 0);
+
+    if (parts.length === 0) return '';
+
+    const firstInitial = parts[0].charAt(0);
+    // Si hay más de una parte (apellido), tomamos la inicial de la segunda parte
+    const secondInitial = parts.length > 1 ? parts[1].charAt(0) : '';
+
+    return (firstInitial + secondInitial).toUpperCase();
+  });
+
+  // Signal para mostrar la imagen en pantalla
+  previewUrl = signal<string | null>(null);
+
+  // Guardamos el archivo aquí hasta que el padre llame a saveChanges()
+  private pendingFile: File | null = null;
+  // Bandera para saber si el usuario pidió borrar la foto
+  public deletePending = false;
+
+  constructor() {
+    effect(() => {
+      const photo = this.currentPhoto();
+      if (!this.pendingFile && !this.deletePending) {
+        if (photo) {
+          this.previewUrl.set(`${this.imageBaseUrl}${photo.fileName}`);
+        } else {
+          this.previewUrl.set(null);
+        }
+      }
+    });
+  }
+
+  // SELECCIÓN DE ARCHIVO (Solo visual y memoria)
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+
+    const file = input.files[0];
+
+    if (!file.type.startsWith('image/')) {
+      this.alertService.toast('Solo imágenes permitidas', 'warning');
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      this.alertService.toast('Máximo 2MB', 'warning');
+      return;
+    }
+
+    // Guardamos en memoria para subir después
+    this.pendingFile = file;
+    this.deletePending = false; // Si subimos una nueva, anulamos el borrado
+
+    // Generamos preview local (FileReader) para que el usuario vea la foto
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      this.previewUrl.set(e.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // BORRADO VISUAL (Marcar para borrar)
+  async markForDeletion() {
+    const isConfirmed = await this.alertService.confirmDelete(
+      'La foto se quitará de la vista previa. Para confirmar el borrado definitivo, debes hacer clic en "Guardar Cambios" al final del formulario.',
+    );
+
+    if (isConfirmed) {
+      this.deletePending = true;
+      this.pendingFile = null;
+      this.previewUrl.set(null);
+    }
+  }
+
+  // MÉTODO PÚBLICO (El Padre llamará a esto al final)
+  saveChanges(userId: number): Observable<any> {
+    // CASO A: Hay un archivo nuevo pendiente
+    if (this.pendingFile) {
+      const formData = new FormData();
+      formData.append('file', this.pendingFile);
+      return this.photoService.uploadUserPhoto(userId, formData);
+    }
+
+    // CASO B: Se marcó para borrar y existe una foto previa
+    if (this.deletePending) {
+      const photo = this.currentPhoto();
+      if (photo) {
+        return this.photoService.deleteUserPhoto(photo.id);
+      } else {
+        console.warn('DEBUG: Se pidió borrar pero no hay currentPhoto!');
+      }
+    }
+
+    // CASO C: No se tocó nada
+    return of(null);
+  }
+}

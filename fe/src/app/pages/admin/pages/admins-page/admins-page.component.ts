@@ -9,7 +9,6 @@ import { AdminsToolbarComponent } from './admins-toolbar/admins-toolbar.componen
 
 @Component({
   selector: 'app-admins-page',
-  standalone: true,
   imports: [AdminsListComponent, AdminsToolbarComponent],
   templateUrl: './admins-page.component.html',
 })
@@ -21,10 +20,27 @@ export class AdminsPageComponent implements OnInit {
 
   private adminsRaw = signal<IApiAdmin[]>([]);
 
-  // Por ahora solo devuelve la lista ordenada por ID, pero aquí podríamos agregar filtros, paginación, etc.
+  searchQuery = signal<string>('');
+
   adminsFiltered = computed(() => {
+    const query = this.searchQuery().toLowerCase().trim();
     const admins = this.adminsRaw();
-    return admins.sort((a, b) => a.id - b.id);
+
+    // Filtrado de la barra de busqueda
+    const filtered = admins.filter((admin) => {
+      // Si no hay búsqueda, devolvemos todo
+      if (!query) return true;
+
+      // Buscamos por nombre, apellido, username o dni
+      return (
+        admin.name.toLowerCase().includes(query) ||
+        admin.last_name.toLowerCase().includes(query) ||
+        admin.username.toLowerCase().includes(query) ||
+        admin.dni.includes(query)
+      );
+    });
+
+    return filtered.sort((a, b) => a.id - b.id);
   });
 
   ngOnInit() {
