@@ -67,6 +67,15 @@ export class AdminsPageComponent implements OnInit {
   }
 
   handleDelete(admin: IApiAdmin) {
+    // Si la cantidad de admins es 1 o menos, no permitimos borrar.
+    if (this.adminsRaw().length <= 1) {
+      this._alertService.toast(
+        'No puedes eliminar al único administrador del sistema',
+        'error',
+      );
+      return;
+    }
+
     this._alertService.confirmDelete().then((confirm) => {
       if (confirm) {
         this._apiService.deleteAdmin(admin.id).subscribe({
