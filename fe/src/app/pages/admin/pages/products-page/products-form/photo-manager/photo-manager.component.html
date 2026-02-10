@@ -1,10 +1,13 @@
 <div>
-  <label class="block text-sm font-medium text-gray-700 mb-2">
+  <label
+    for="productImages"
+    class="block text-sm font-medium text-gray-700 mb-2"
+  >
     Fotos del Producto
   </label>
 
-  <div
-    (click)="fileInput.click()"
+  <label
+    for="productImages"
     class="group flex justify-center rounded-lg border-2 border-dashed border-gray-300 px-6 py-8 hover:bg-gray-50 hover:border-[#3d4494] transition-all cursor-pointer relative"
   >
     <div class="text-center">
@@ -19,15 +22,18 @@
       </div>
       <p class="text-xs text-gray-500 mt-1">PNG, JPG hasta 5MB</p>
     </div>
+
     <input
       #fileInput
+      id="productImages"
+      name="images"
       type="file"
-      class="hidden"
+      class="sr-only"
       multiple
       accept="image/*"
       (change)="onFileSelected($event)"
     />
-  </div>
+  </label>
 
   @if (gallery().length > 0) {
     <div class="mt-6">

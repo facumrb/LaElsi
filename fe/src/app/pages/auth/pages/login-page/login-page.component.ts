@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '@services/auth.service';
@@ -12,6 +12,7 @@ import {
 import { FormUtils } from '@shared/form-utils';
 import { AlertService } from '@shared/alert.service';
 import { ApiErrorService } from '@shared/api-error.service';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-login-page',
@@ -39,7 +40,6 @@ export class LoginPageComponent {
   // Signals para el estado de la UI
   loading = signal(false);
   passwordVisible = signal(false);
-  showEyeIcon = signal(false);
 
   formLogin = this.fb.group({
     username: [
@@ -54,10 +54,16 @@ export class LoginPageComponent {
   });
 
   // Lógica UI para el input de contraseña
-  onPasswordInput(): void {
-    const passwordValue = this.formLogin.get('password')?.value || '';
-    this.showEyeIcon.set(passwordValue.length > 0);
-  }
+  private passwordValue = toSignal(
+    this.formLogin.get('password')!.valueChanges,
+    { initialValue: '' },
+  );
+
+  showEyeIcon = computed(() => {
+    const val = this.passwordValue();
+    return val ? val.length > 0 : false;
+  });
+
   togglePasswordVisibility(): void {
     this.passwordVisible.update((current) => !current);
   }
