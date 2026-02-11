@@ -1,41 +1,93 @@
 import { Routes } from '@angular/router';
-import { MainPageComponent } from './pages/main-page/main-page.component';
-import { ProfilePageComponent } from './pages/profile-page/profile-page.component';
-import { CarritoPageComponent } from './pages/carrito-page/carrito-page.component';
-import { ImpresionesPageComponent } from './pages/impresiones-page/impresiones-page.component';
-import { SellosPageComponent } from './pages/sellos-page/sellos-page.component';
-import { DisenoGraficoPageComponent } from './pages/diseno-grafico-page/diseno-grafico-page.component';
-import { LayoutComponent } from './components/layout/layout.component';
-import { AboutUsPageComponent } from './pages/footer-pages/about-us-page/about-us-page.component';
-import { FaqPageComponent } from './pages/footer-pages/faq-page/faq-page.component';
-import { CategoryPageComponent } from './pages/category-page/category-page.component';
-import { ProductPageComponent } from './pages/product-page/product-page.component';
-import { SearchResultComponent } from './pages/search-result/search-result.component';
 import { authGuard } from '@guards/auth.guard';
 
 export const clientRoutes: Routes = [
   {
     path: '',
-    component: LayoutComponent,
+    // Cargamos el Layout base del cliente
+    loadComponent: () =>
+      import('./components/layout/layout.component').then(
+        (m) => m.LayoutComponent,
+      ),
     children: [
-      { path: '', component: MainPageComponent },
-      { path: 'category/:id', component: CategoryPageComponent },
-      { path: 'product/:id', component: ProductPageComponent },
-      { path: 'impresiones', component: ImpresionesPageComponent },
-      { path: 'sellos', component: SellosPageComponent },
-      { path: 'disenio', component: DisenoGraficoPageComponent },
-      { path: 'about-us', component: AboutUsPageComponent },
-      { path: 'faq', component: FaqPageComponent },
+      {
+        path: '',
+        loadComponent: () =>
+          import('./pages/main-page/main-page.component').then(
+            (m) => m.MainPageComponent,
+          ),
+      },
+      {
+        path: 'category/:id',
+        loadComponent: () =>
+          import('./pages/category-page/category-page.component').then(
+            (m) => m.CategoryPageComponent,
+          ),
+      },
+      {
+        path: 'product/:id',
+        loadComponent: () =>
+          import('./pages/product-page/product-page.component').then(
+            (m) => m.ProductPageComponent,
+          ),
+      },
+      {
+        path: 'impresiones',
+        loadComponent: () =>
+          import('./pages/impresiones-page/impresiones-page.component').then(
+            (m) => m.ImpresionesPageComponent,
+          ),
+      },
+      {
+        path: 'sellos',
+        loadComponent: () =>
+          import('./pages/sellos-page/sellos-page.component').then(
+            (m) => m.SellosPageComponent,
+          ),
+      },
+      {
+        path: 'disenio',
+        loadComponent: () =>
+          import('./pages/diseno-grafico-page/diseno-grafico-page.component').then(
+            (m) => m.DisenoGraficoPageComponent,
+          ),
+      },
+      {
+        path: 'about-us',
+        loadComponent: () =>
+          import('./pages/footer-pages/about-us-page/about-us-page.component').then(
+            (m) => m.AboutUsPageComponent,
+          ),
+      },
+      {
+        path: 'faq',
+        loadComponent: () =>
+          import('./pages/footer-pages/faq-page/faq-page.component').then(
+            (m) => m.FaqPageComponent,
+          ),
+      },
       {
         path: 'search',
-        component: SearchResultComponent,
+        loadComponent: () =>
+          import('./pages/search-result/search-result.component').then(
+            (m) => m.SearchResultComponent,
+          ),
         title: 'Resultados de búsqueda | La Elsi',
       },
-      { path: 'carrito', component: CarritoPageComponent },
-      // Ruta Protegidas
+      {
+        path: 'carrito',
+        loadComponent: () =>
+          import('./pages/carrito-page/carrito-page.component').then(
+            (m) => m.CarritoPageComponent,
+          ),
+      },
+      // Ruta Protegida
       {
         path: 'profile',
-        component: ProfilePageComponent,
+        loadComponent: () =>
+          import('./pages/profile-page/profile-page.component').then(
+            (m) => m.ProfilePageComponent,
+          ),
         canActivate: [authGuard],
       },
       { path: '**', redirectTo: '' },

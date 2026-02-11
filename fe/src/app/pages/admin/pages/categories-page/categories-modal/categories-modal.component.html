@@ -42,7 +42,7 @@
                 </span>
               }
             </div>
-            <div class="text-xs text-gray-400">
+            <div class="text-xs text-gray-600">
               {{ formCategory.get("name")?.value?.length || 0 }} / 50
             </div>
           </div>
@@ -65,7 +65,7 @@
             class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm focus:border-[#3d4494] focus:ring-[#3d4494] sm:text-sm"
           ></textarea>
 
-          <div class="mt-1 flex justify-between text-xs text-gray-500">
+          <div class="mt-1 flex justify-between text-xs text-gray-600">
             <div class="text-red-600">
               @if (formUtils.isValidField(formCategory, "description")) {
                 <span>{{
@@ -73,7 +73,6 @@
                 }}</span>
               }
             </div>
-
             <span>
               {{ formCategory.get("description")?.value?.length || 0 }} / 1000
             </span>

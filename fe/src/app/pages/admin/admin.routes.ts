@@ -1,34 +1,101 @@
 import { Routes } from '@angular/router';
-import { LayoutComponent } from '@admin/components/layout/layout.component';
-import { DashboardPageComponent } from './pages/dashboard-page/dashboard-page.component';
-import { AdminsPageComponent } from './pages/admins-page/admins-page.component';
-import { CategoriesPageComponent } from './pages/categories-page/categories-page.component';
-import { ProductsPageComponent } from './pages/products-page/products-page.component';
-import { OrdersPageComponent } from './pages/orders-page/orders-page.component';
-import { ViewProfilePageComponent } from './pages/profile-page/view-profile-page/view-profile-page.component';
-import { EditProfilePageComponent } from './pages/profile-page/edit-profile-page/edit-profile-page.component';
-import { ProductsFormComponent } from './pages/products-page/products-form/products-form.component';
-import { ClientsPageComponent } from './pages/clients-page/clients-page.component';
-import { AdminsFormComponent } from './pages/admins-page/admins-form/admins-form.component';
 
 export const adminRoutes: Routes = [
   {
     path: '',
-    component: LayoutComponent,
+    // Al Layout también lo podemos cargar con Lazy Loading
+    loadComponent: () =>
+      import('@admin/components/layout/layout.component').then(
+        (m) => m.LayoutComponent,
+      ),
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-      { path: 'dashboard', component: DashboardPageComponent },
-      { path: 'admins', component: AdminsPageComponent },
-      { path: 'admins/create', component: AdminsFormComponent },
-      { path: 'admins/edit/:id', component: AdminsFormComponent },
-      { path: 'clients', component: ClientsPageComponent },
-      { path: 'categories', component: CategoriesPageComponent },
-      { path: 'products', component: ProductsPageComponent },
-      { path: 'products/create', component: ProductsFormComponent },
-      { path: 'products/edit/:id', component: ProductsFormComponent },
-      { path: 'orders', component: OrdersPageComponent },
-      { path: 'view-profile/:id', component: ViewProfilePageComponent },
-      { path: 'edit-profile/:id', component: EditProfilePageComponent },
+
+      {
+        path: 'dashboard',
+        loadComponent: () =>
+          import('./pages/dashboard-page/dashboard-page.component').then(
+            (m) => m.DashboardPageComponent,
+          ),
+      },
+      {
+        path: 'admins',
+        loadComponent: () =>
+          import('./pages/admins-page/admins-page.component').then(
+            (m) => m.AdminsPageComponent,
+          ),
+      },
+      {
+        path: 'admins/create',
+        loadComponent: () =>
+          import('./pages/admins-page/admins-form/admins-form.component').then(
+            (m) => m.AdminsFormComponent,
+          ),
+      },
+      {
+        path: 'admins/edit/:id',
+        loadComponent: () =>
+          import('./pages/admins-page/admins-form/admins-form.component').then(
+            (m) => m.AdminsFormComponent,
+          ),
+      },
+      {
+        path: 'clients',
+        loadComponent: () =>
+          import('./pages/clients-page/clients-page.component').then(
+            (m) => m.ClientsPageComponent,
+          ),
+      },
+      {
+        path: 'categories',
+        loadComponent: () =>
+          import('./pages/categories-page/categories-page.component').then(
+            (m) => m.CategoriesPageComponent,
+          ),
+      },
+      {
+        path: 'products',
+        loadComponent: () =>
+          import('./pages/products-page/products-page.component').then(
+            (m) => m.ProductsPageComponent,
+          ),
+      },
+      {
+        path: 'products/create',
+        loadComponent: () =>
+          import('./pages/products-page/products-form/products-form.component').then(
+            (m) => m.ProductsFormComponent,
+          ),
+      },
+      {
+        path: 'products/edit/:id',
+        loadComponent: () =>
+          import('./pages/products-page/products-form/products-form.component').then(
+            (m) => m.ProductsFormComponent,
+          ),
+      },
+      {
+        path: 'orders',
+        loadComponent: () =>
+          import('./pages/orders-page/orders-page.component').then(
+            (m) => m.OrdersPageComponent,
+          ),
+      },
+      {
+        path: 'view-profile/:id',
+        loadComponent: () =>
+          import('./pages/profile-page/view-profile-page/view-profile-page.component').then(
+            (m) => m.ViewProfilePageComponent,
+          ),
+      },
+      {
+        path: 'edit-profile/:id',
+        loadComponent: () =>
+          import('./pages/profile-page/edit-profile-page/edit-profile-page.component').then(
+            (m) => m.EditProfilePageComponent,
+          ),
+      },
+
       { path: '**', redirectTo: 'dashboard' },
     ],
   },

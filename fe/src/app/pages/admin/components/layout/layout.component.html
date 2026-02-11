@@ -7,6 +7,7 @@
   ></div>
 
   <aside
+    id="mobile-menu"
     class="fixed inset-y-0 left-0 z-30 w-64 max-w-[85vw] bg-slate-900 text-white transform transition-transform duration-300 ease-in-out"
     [class.-translate-x-full]="!mobileMenuOpen()"
   >
@@ -32,6 +33,7 @@
   </aside>
 
   <aside
+    id="desktop-sidebar"
     class="hidden md:flex flex-col bg-slate-900 text-slate-300 transition-all duration-300 ease-in-out shadow-xl z-10"
     [class.w-64]="sidebarOpen()"
     [class.w-20]="!sidebarOpen()"
@@ -85,16 +87,30 @@
       <div class="flex items-center gap-2">
         <button
           (click)="toggleMobileMenu()"
-          class="md:hidden p-2 rounded hover:bg-gray-100 flex items-center justify-center text-gray-600"
+          aria-controls="mobile-menu"
+          [attr.aria-expanded]="mobileMenuOpen()"
+          aria-label="Alternar menú de navegación móvil"
+          class="md:hidden p-2 rounded hover:bg-gray-100 flex items-center justify-center text-gray-600 focus:outline-none focus:ring-2 focus:ring-[#3d4494]"
         >
-          <ng-icon name="bootstrapList" class="text-2xl"></ng-icon>
+          <ng-icon
+            name="bootstrapList"
+            class="text-2xl"
+            aria-hidden="true"
+          ></ng-icon>
         </button>
 
         <button
           (click)="toggleSidebar()"
-          class="cursor-pointer hidden md:flex p-2 rounded hover:bg-gray-100 text-gray-600 items-center justify-center"
+          aria-controls="desktop-sidebar"
+          [attr.aria-expanded]="sidebarOpen()"
+          aria-label="Alternar barra lateral"
+          class="cursor-pointer hidden md:flex p-2 rounded hover:bg-gray-100 text-gray-600 items-center justify-center focus:outline-none focus:ring-2 focus:ring-[#3d4494]"
         >
-          <ng-icon name="bootstrapList" class="text-2xl"></ng-icon>
+          <ng-icon
+            name="bootstrapList"
+            class="text-2xl"
+            aria-hidden="true"
+          ></ng-icon>
         </button>
       </div>
 
@@ -110,49 +126,71 @@
 
         <div class="relative" (clickOutside)="showUserMenu.set(false)">
           <button
+            id="user-menu-button"
             (click)="toggleUserMenu()"
-            class="cursor-pointer flex items-center space-x-2 focus:outline-none"
+            aria-haspopup="true"
+            aria-controls="user-menu-dropdown"
+            [attr.aria-expanded]="showUserMenu()"
+            [attr.aria-label]="
+              'Abrir menú de usuario de ' + (currentUser()?.name || 'tu cuenta')
+            "
+            class="cursor-pointer flex items-center space-x-2 focus:outline-none focus:ring-2 focus:ring-[#3d4494] rounded-full md:rounded-md pr-2"
           >
             @if (currentUser()?.photo) {
               <img
                 [src]="imageBaseUrl + currentUser()!.photo!.fileName"
-                alt="Foto de perfil"
+                alt=""
+                aria-hidden="true"
                 class="w-9 h-9 rounded-full object-cover border border-gray-200"
               />
             } @else {
               <div
+                aria-hidden="true"
                 class="w-9 h-9 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold border border-indigo-200 text-sm"
               >
                 {{ getUserInitials() }}
               </div>
             }
 
-            <span class="hidden md:block text-sm font-medium text-gray-700">
+            <span
+              class="hidden md:block text-sm font-medium text-gray-700"
+              aria-hidden="true"
+            >
               {{ currentUser()?.name }}
             </span>
           </button>
 
           @if (showUserMenu()) {
             <div
+              id="user-menu-dropdown"
+              role="menu"
+              aria-labelledby="user-menu-button"
               class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 border border-gray-100 animate-in fade-in slide-in-from-top-1 duration-200 z-20"
             >
               @if (currentUser(); as user) {
                 <a
                   [routerLink]="['/admin/view-profile', user.id]"
                   (click)="showUserMenu.set(false)"
+                  role="menuitem"
                   class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#3d4494]"
                 >
-                  <ng-icon name="bootstrapPerson" class="text-lg"></ng-icon> Mi
-                  Perfil
+                  <ng-icon
+                    name="bootstrapPerson"
+                    class="text-lg"
+                    aria-hidden="true"
+                  ></ng-icon>
+                  Mi Perfil
                 </a>
               }
               <button
                 (click)="handleLogout()"
+                role="menuitem"
                 class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-50 cursor-pointer flex items-center gap-2"
               >
                 <ng-icon
                   name="bootstrapBoxArrowRight"
                   class="text-lg"
+                  aria-hidden="true"
                 ></ng-icon>
                 Cerrar Sesión
               </button>
