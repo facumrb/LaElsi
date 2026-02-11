@@ -1,7 +1,8 @@
-<div class="flex justify-start md:justify-center gap-3">
+<div class="flex items-center justify-start lg:justify-center gap-3">
   <button
     (click)="onEdit.emit(item())"
-    class="cursor-pointer text-blue-600 hover:text-blue-900 transition-colors"
+    aria-label="Editar"
+    class="cursor-pointer text-blue-600 hover:text-blue-900 transition-colors flex items-center justify-center"
     title="Editar"
   >
     <ng-icon name="bootstrapPencilSquare" class="text-xl"></ng-icon>
@@ -9,7 +10,8 @@
 
   <button
     (click)="onDelete.emit(item())"
-    class="cursor-pointer text-red-600 hover:text-red-900 transition-colors"
+    aria-label="Eliminar"
+    class="cursor-pointer text-red-600 hover:text-red-900 transition-colors flex items-center justify-center"
     title="Eliminar"
   >
     <ng-icon name="bootstrapTrash" class="text-xl"></ng-icon>

@@ -15,7 +15,7 @@
         [ngModel]="searchQuery()"
         (ngModelChange)="searchQuery.set($event)"
         placeholder="Buscar categoría..."
-        class="block w-full rounded-lg border-0 py-2 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#3d4494] text-sm leading-6"
+        class="block w-full rounded-lg border-0 py-2 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#3d4494] leading-6"
       />
       @if (searchQuery()) {
         <button

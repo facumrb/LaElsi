@@ -8,6 +8,7 @@
 
   <aside
     id="mobile-menu"
+    aria-label="Menú lateral móvil"
     class="fixed inset-y-0 left-0 z-30 w-64 max-w-[85vw] bg-slate-900 text-white transform transition-transform duration-300 ease-in-out"
     [class.-translate-x-full]="!mobileMenuOpen()"
   >
@@ -17,7 +18,7 @@
       LAELSI
     </div>
 
-    <nav class="p-4 space-y-2">
+    <nav aria-label="Navegación móvil" class="p-4 space-y-2">
       @for (item of menuItems; track item.label) {
         <a
           [routerLink]="item.route"
@@ -34,6 +35,7 @@
 
   <aside
     id="desktop-sidebar"
+    aria-label="Menú lateral principal"
     class="hidden md:flex flex-col bg-slate-900 text-slate-300 transition-all duration-300 ease-in-out shadow-xl z-10"
     [class.w-64]="sidebarOpen()"
     [class.w-20]="!sidebarOpen()"
@@ -46,7 +48,10 @@
       }
     </div>
 
-    <nav class="flex-1 py-6 flex flex-col gap-1 px-3">
+    <nav
+      aria-label="Navegación principal"
+      class="flex-1 py-6 flex flex-col gap-1 px-3"
+    >
       @for (item of menuItems; track item.label) {
         <a
           [routerLink]="item.route"

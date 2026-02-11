@@ -1,5 +1,5 @@
 <div
-  class="w-full bg-gray-50 lg:bg-white lg:rounded-lg lg:shadow-md lg:border lg:border-gray-200"
+  class="animate-fadeIn w-full bg-gray-50 lg:bg-white lg:rounded-lg lg:shadow-md lg:border lg:border-gray-200"
 >
   <div class="w-full">
     <table
@@ -60,17 +60,15 @@
                 {{ category.state }}
               </span>
 
-              <span
-                class="text-xs font-bold uppercase text-gray-400 mr-2 lg:hidden"
+              <span class="font-bold uppercase text-gray-500 mr-2 lg:hidden"
                 >Nombre:</span
               >
               <span
                 (click)="onEdit.emit(category)"
                 class="font-semibold text-gray-900 text-base lg:text-sm cursor-pointer hover:underline"
                 title="{{ category.name }}"
+                >{{ category.name }}</span
               >
-                {{ category.name }}
-              </span>
             </td>
 
             <td
@@ -78,7 +76,7 @@
               [class.lg:border-b-0]="isLast"
             >
               <span
-                class="text-xs font-bold uppercase text-gray-400 block mb-1 lg:hidden"
+                class="font-bold uppercase text-gray-500 block mb-1 lg:hidden"
                 >Descripción:</span
               >
               <div
@@ -97,7 +95,7 @@
                 class="flex items-center justify-start lg:justify-center gap-2"
               >
                 <span
-                  class="text-xs font-bold uppercase text-gray-400 lg:hidden whitespace-nowrap"
+                  class="font-bold uppercase text-gray-500 lg:hidden whitespace-nowrap"
                   >Productos:</span
                 >
                 @let count = category.products?.length || 0;
@@ -150,10 +148,9 @@
               <div
                 class="flex items-center justify-start lg:justify-center gap-2"
               >
-                <span
-                  class="text-xs font-bold uppercase text-gray-400 lg:hidden"
-                  >Acciones:</span
-                >
+                <span class="font-bold uppercase text-gray-500 lg:hidden">
+                  Acciones:
+                </span>
                 <app-table-actions
                   [item]="category"
                   (onEdit)="onEdit.emit($event)"

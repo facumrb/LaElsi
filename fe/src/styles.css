@@ -1,1 +1,16 @@
 @import "tailwindcss";
+
+@theme {
+  /* 1. Defines la variable de la animación */
+  --animate-fadeIn: fadeIn 0.2s ease-in-out;
+}
+
+/* 2. Los keyframes van FUERA del bloque @theme */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

@@ -1,5 +1,5 @@
 <div
-  class="w-full bg-gray-50 lg:bg-white lg:rounded-lg lg:shadow-md lg:border lg:border-gray-200"
+  class="animate-fadeIn w-full bg-gray-50 lg:bg-white lg:rounded-lg lg:shadow-md lg:border lg:border-gray-200"
 >
   <div class="w-full">
     <table
@@ -46,7 +46,7 @@
               [class.lg:border-b-0]="isLast"
             >
               <span
-                class="text-xs font-bold uppercase text-gray-400 mb-2 block lg:hidden"
+                class="font-bold uppercase text-gray-500 mb-2 block lg:hidden"
                 >Usuario:</span
               >
               <div class="flex items-center gap-3">
@@ -78,8 +78,8 @@
               [class.lg:border-b-0]="isLast"
             >
               <span
-                class="text-xs font-bold uppercase text-gray-400 block mb-1 lg:hidden"
-                >Nombre:</span
+                class="font-bold uppercase text-gray-500 block mb-1 lg:hidden"
+                >Nombre Completo:</span
               >
               <div class="text-gray-900 font-medium">
                 {{ admin.name }} {{ admin.last_name }}
@@ -93,8 +93,7 @@
               <div
                 class="flex items-center justify-start lg:justify-center gap-2"
               >
-                <span
-                  class="text-xs font-bold uppercase text-gray-400 lg:hidden"
+                <span class="font-bold uppercase text-gray-500 lg:hidden"
                   >DNI:</span
                 >
                 <span
@@ -110,7 +109,7 @@
               [class.lg:border-b-0]="isLast"
             >
               <span
-                class="text-xs font-bold uppercase text-gray-400 block mb-1 lg:hidden"
+                class="font-bold uppercase text-gray-500 block mb-1 lg:hidden"
                 >Contacto:</span
               >
               <div class="flex flex-col text-sm">
@@ -125,12 +124,12 @@
                     >{{ admin.email }}</span
                   >
                 </div>
-                <div class="flex items-center gap-1.5 text-gray-500 text-xs">
+                <div class="flex items-center gap-1.5 text-gray-900 text-xs">
                   <ng-icon
                     name="bootstrapTelephone"
                     class="text-gray-400"
                   ></ng-icon>
-                  <span>{{ admin.phone || "Sin teléfono" }}</span>
+                  <span>{{ admin.phone }}</span>
                 </div>
               </div>
             </td>
@@ -143,10 +142,10 @@
               <div
                 class="flex items-center justify-start lg:justify-center gap-2"
               >
-                <span
-                  class="text-xs font-bold uppercase text-gray-400 lg:hidden"
-                  >Acciones:</span
-                >
+                <span class="font-bold uppercase text-gray-500 lg:hidden">
+                  Acciones:
+                </span>
+
                 <app-table-actions
                   [item]="admin"
                   (onEdit)="onEdit.emit($event)"
