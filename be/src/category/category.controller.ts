@@ -43,8 +43,8 @@ async function add(req: Request, res: Response) {
   try {
     const { name, description } = req.body.sanitizedInput;
 
-    if (!name || !description) {
-      return res.status(400).json({ message: 'Nombre y descripción son requeridos' });
+    if (!name) {
+      return res.status(400).json({ message: 'El Nombre de la categoría es requerido' });
     }
 
     const categoryData = {

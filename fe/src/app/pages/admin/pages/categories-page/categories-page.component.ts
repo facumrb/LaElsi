@@ -52,7 +52,7 @@ export class CategoriesPageComponent implements OnInit {
       // Filtro de Búsqueda
       const matchesSearch =
         cat.name.toLowerCase().includes(query) ||
-        cat.description.toLowerCase().includes(query);
+        (cat.description || '').toLowerCase().includes(query);
 
       // Filtro de Estado
       const matchesStatus = status === 'Todos' || cat.state === status;

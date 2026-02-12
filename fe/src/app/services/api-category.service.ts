@@ -1,7 +1,11 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
-import { IApiCategory } from '@models/category.model';
+import {
+  IApiCategory,
+  ICreateCategory,
+  IUpdateCategory,
+} from '@models/category.model';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -37,7 +41,7 @@ export class ApiCategoryService {
   }
 
   // Crea una nueva categoría
-  addCategory(category: IApiCategory): Observable<IApiCategory> {
+  addCategory(category: ICreateCategory): Observable<IApiCategory> {
     return this._http
       .post<{
         message: string;
@@ -47,7 +51,10 @@ export class ApiCategoryService {
   }
 
   // Actualiza una categoría
-  updateCategory(id: number, category: IApiCategory): Observable<IApiCategory> {
+  updateCategory(
+    id: number,
+    category: IUpdateCategory,
+  ): Observable<IApiCategory> {
     return this._http
       .patch<{
         message: string;

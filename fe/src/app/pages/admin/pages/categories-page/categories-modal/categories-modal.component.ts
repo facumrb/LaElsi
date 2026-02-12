@@ -54,7 +54,11 @@ export class CategoriesModalComponent {
       if (data) {
         this.formCategory.patchValue(data);
       } else {
-        this.formCategory.reset({ state: 'Activo' });
+        this.formCategory.reset({
+          name: '',
+          description: '',
+          state: 'Activo',
+        });
       }
     });
   }
