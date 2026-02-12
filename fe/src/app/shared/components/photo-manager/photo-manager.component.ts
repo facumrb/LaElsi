@@ -107,7 +107,7 @@ export class PhotoManagerComponent {
   // BORRADO VISUAL (Marcar para borrar)
   async markForDeletion() {
     const isConfirmed = await this.alertService.confirmDelete(
-      'La foto se quitará de la vista previa...',
+      'La foto solo se quitará de la vista previa. Se eliminara cuando haga click en Guardar Cambios',
     );
 
     if (isConfirmed) {

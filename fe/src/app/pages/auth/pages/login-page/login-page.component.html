@@ -100,12 +100,13 @@
               }
             </div>
 
-            <a
-              routerLink="/auth/forgot-password"
-              class="cursor-pointer text-xs font-semibold text-[#3d4494] hover:text-[#2a2f63] hover:underline transition-colors ml-2"
+            <button
+              type="button"
+              (click)="forgotPassword()"
+              class="cursor-pointer text-sm font-medium text-[#3d4494] hover:text-[#2a2f63]"
             >
               ¿Olvidaste tu contraseña?
-            </a>
+            </button>
           </div>
         </div>
 

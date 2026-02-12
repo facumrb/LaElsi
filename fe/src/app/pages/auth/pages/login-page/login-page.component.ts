@@ -74,6 +74,10 @@ export class LoginPageComponent {
     this.router.navigate(['/']); // Navega al E-commerce
   }
 
+  forgotPassword() {
+    this.alertService.recoverPassword();
+  }
+
   onSubmit() {
     if (this.formLogin.invalid) {
       this.formLogin.markAllAsTouched();
