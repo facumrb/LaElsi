@@ -6,6 +6,8 @@ import { ProductState, CategoryState } from '../shared/enums/state.enum.js';
 import path from 'path';
 import fs from 'fs/promises';
 
+const PRODUCT_PATH = path.join(process.cwd(), 'uploads', 'products');
+
 function sanitizeProductInput(req: Request, res: Response, next: NextFunction) {
   req.body.sanitizedInput = {
     name: req.body.name,
@@ -153,14 +155,11 @@ async function remove(req: Request, res: Response) {
     const id = Number.parseInt(req.params.id);
     const product = await em.findOneOrFail(Product, { id }, { populate: ['photos'] });
     for (const photo of product.photos) {
-      const filePath = path.join(process.cwd(), 'uploads', photo.fileName);
-
+      const filePath = path.join(PRODUCT_PATH, photo.fileName);
       try {
         await fs.unlink(filePath);
-        console.log(`Foto eliminada del disco: ${photo.fileName}`);
       } catch (err) {
-        // Si falla (ej: el archivo ya no existía manualmente), solo avisamos en consola
-        // pero NO detenemos el proceso, para que se termine de borrar el producto de la BD.
+        // Solo advertimos, no detenemos el proceso si el archivo ya no existe
         console.warn(`No se pudo borrar el archivo físico (quizás no existía): ${photo.fileName}`);
       }
     }
