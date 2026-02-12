@@ -1,0 +1,41 @@
+<div
+  class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6 mx-4 lg:mx-0"
+>
+  <h1 class="text-2xl font-bold text-[#3d4494]">Gestión de Clientes</h1>
+
+  <div class="flex flex-col lg:flex-row gap-3 w-full lg:w-auto">
+    <div class="relative w-full lg:w-60">
+      <div
+        class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
+      >
+        <ng-icon name="bootstrapSearch" class="text-xl text-gray-400"></ng-icon>
+      </div>
+
+      <input
+        type="text"
+        [ngModel]="searchQuery()"
+        (ngModelChange)="searchQuery.set($event)"
+        placeholder="Buscar cliente..."
+        class="block w-full rounded-lg border-0 py-2 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#3d4494] leading-6"
+      />
+
+      @if (searchQuery()) {
+        <button
+          (click)="searchQuery.set('')"
+          class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 cursor-pointer"
+        >
+          <ng-icon name="bootstrapX" class="text-xl"></ng-icon>
+        </button>
+      }
+    </div>
+
+    <button
+      (click)="onAdd.emit()"
+      class="cursor-pointer flex-1 lg:flex-none bg-[#3d4494] text-white px-4 py-2 rounded-lg hover:bg-[#2a2f63] transition-colors flex justify-center items-center gap-2 shadow-sm whitespace-nowrap"
+    >
+      <ng-icon name="bootstrapPlusLg" class="text-xl"></ng-icon>
+      <span>Agregar</span>
+      <span class="hidden lg:inline">Cliente</span>
+    </button>
+  </div>
+</div>

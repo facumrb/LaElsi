@@ -10,7 +10,7 @@ import {
   bootstrapReceipt,
   bootstrapGeoAlt,
 } from '@ng-icons/bootstrap-icons';
-import { IApiClient, IUpdateClient } from '@models/user.model';
+import { IApiClient, IUpdateClient, FiscalCondition } from '@models/user.model';
 
 @Component({
   selector: 'app-profile-page',
@@ -37,12 +37,7 @@ export class ProfilePageComponent implements OnInit {
 
   fullProfile = signal<IApiClient | null>(null);
 
-  fiscalConditions = [
-    'Consumidor Final',
-    'Responsable Inscripto',
-    'Monotributista',
-    'Exento',
-  ];
+  fiscalConditions = Object.values(FiscalCondition);
 
   formPerfil = this.fb.nonNullable.group({
     // Datos personales (Readonly por ahora)
@@ -54,7 +49,7 @@ export class ProfilePageComponent implements OnInit {
 
     // Datos de facturación
     cuit: ['', [Validators.pattern('^[0-9]{11}$')]],
-    fiscalCondition: ['Consumidor Final'],
+    fiscalCondition: [FiscalCondition.ConsumidorFinal],
 
     // Dirección
     street: [''],
@@ -90,7 +85,8 @@ export class ProfilePageComponent implements OnInit {
 
           // Manejo de opcionales: Si es null/undefined, ponemos string vacío
           cuit: fullUser.cuit || '',
-          fiscalCondition: fullUser.fiscalCondition || 'Consumidor Final',
+          fiscalCondition:
+            fullUser.fiscalCondition || FiscalCondition.ConsumidorFinal,
           street: fullUser.street || '',
           streetNumber: fullUser.streetNumber || 0, // Si es null, ponemos 0
           city: fullUser.city || '',
@@ -135,7 +131,7 @@ export class ProfilePageComponent implements OnInit {
     const clientData: IUpdateClient = {
       phone: rawValue.phone,
       cuit: rawValue.cuit,
-      fiscalCondition: rawValue.fiscalCondition,
+      fiscalCondition: rawValue.fiscalCondition as FiscalCondition,
       street: rawValue.street,
 
       // Aseguramos que sea number o undefined

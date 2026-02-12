@@ -1,8 +1,15 @@
 import { IApiUserPhoto } from './photo.model';
 
 export enum UserRole {
-  ADMIN = 'Admin',
-  CLIENT = 'Client',
+  Admin = 'Admin',
+  Client = 'Client',
+}
+
+export enum FiscalCondition {
+  ConsumidorFinal = 'Consumidor Final',
+  ResponsableInscripto = 'Responsable Inscripto',
+  Monotributista = 'Monotributista',
+  Exento = 'Exento',
 }
 
 // ==========================================================
@@ -33,7 +40,7 @@ export interface IApiAdmin extends IApiUser {}
 // Interfaz Client (Hereda de User + Dirección + Facturación)
 export interface IApiClient extends IApiUser {
   cuit?: string;
-  fiscalCondition?: string;
+  fiscalCondition?: FiscalCondition;
   street?: string;
   streetNumber?: number;
   city?: string;

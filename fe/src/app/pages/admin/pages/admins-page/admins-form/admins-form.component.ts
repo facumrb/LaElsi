@@ -178,7 +178,7 @@ export class AdminsFormComponent implements OnInit {
       username: formValue.username!,
       email: formValue.email!,
       password: formValue.password || '',
-      role: UserRole.ADMIN,
+      role: UserRole.Admin,
     };
 
     if (this.isEditMode() && !adminData.password) {

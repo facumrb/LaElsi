@@ -33,7 +33,7 @@
             name="name"
             formControlName="name"
             maxlength="50"
-            class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm focus:border-[#3d4494] focus:ring-[#3d4494] sm:text-sm"
+            class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm sm:text-sm"
             placeholder="Ej: Auriculares Bluetooth Sony..."
           />
           <div class="flex justify-between items-start mt-1">
@@ -61,7 +61,7 @@
             formControlName="description"
             rows="5"
             maxlength="1000"
-            class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm focus:border-[#3d4494] focus:ring-[#3d4494] sm:text-sm"
+            class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm sm:text-sm"
             placeholder="Describe las características principales..."
           ></textarea>
           <div class="mt-1 flex justify-between text-xs text-gray-600">
@@ -105,12 +105,16 @@
           class="md:col-span-2 relative"
           (clickOutside)="showCategoryMenu.set(false)"
         >
-          <label class="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            for="category"
+            class="block text-sm font-medium text-gray-700 mb-1"
+          >
             Categoría <span class="text-red-500">*</span>
           </label>
 
           <button
             type="button"
+            id="category"
             (click)="toggleCategoryMenu()"
             class="relative w-full cursor-pointer bg-white rounded-lg border border-gray-300 py-2.5 pl-3 pr-10 text-left shadow-sm focus:outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 sm:text-sm"
           >
@@ -177,11 +181,15 @@
           class="md:col-span-2 relative"
           (clickOutside)="showStateMenu.set(false)"
         >
-          <label class="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            for="state"
+            class="block text-sm font-medium text-gray-700 mb-1"
+          >
             Estado <span class="text-red-500">*</span>
           </label>
           <button
             type="button"
+            id="state"
             (click)="toggleStateMenu()"
             class="relative w-full cursor-pointer bg-white rounded-lg border border-gray-300 py-2.5 pl-3 pr-10 text-left shadow-sm focus:outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 sm:text-sm"
           >
@@ -266,7 +274,7 @@
               placeholder="0"
               min="0"
               appNumericInput
-              class="block w-full rounded-lg border-gray-300 border pl-7 p-2.5 text-gray-900 shadow-sm focus:border-[#3d4494] focus:ring-[#3d4494] sm:text-sm"
+              class="block w-full rounded-lg border-gray-300 border pl-7 p-2.5 text-gray-900 shadow-sm sm:text-sm"
             />
           </div>
           <div class="mt-1 min-h-5 text-xs text-red-600">
@@ -291,7 +299,7 @@
             placeholder="0"
             min="0"
             appNumericInput
-            class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm focus:border-[#3d4494] focus:ring-[#3d4494] sm:text-sm"
+            class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm sm:text-sm"
           />
           <div class="mt-1 min-h-5 text-xs text-red-600">
             @if (formUtils.isValidField(formProduct, "stock")) {
@@ -315,7 +323,7 @@
             placeholder="0"
             min="0"
             appNumericInput
-            class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm focus:border-[#3d4494] focus:ring-[#3d4494] sm:text-sm"
+            class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm sm:text-sm"
           />
           <div class="mt-1 min-h-5 text-xs text-red-600">
             @if (formUtils.isValidField(formProduct, "total_sold")) {

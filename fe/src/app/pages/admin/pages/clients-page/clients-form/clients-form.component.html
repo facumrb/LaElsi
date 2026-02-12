@@ -1,0 +1,515 @@
+<div class="max-w-4xl mx-auto">
+  <div class="mb-5 flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-[#3d4494]">
+        {{ isEditMode() ? "Editar Cliente" : "Nuevo Cliente" }}
+      </h1>
+    </div>
+
+    <button
+      (click)="goBack()"
+      class="cursor-pointer inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition-colors"
+    >
+      <ng-icon name="bootstrapArrowLeft" class="text-lg"></ng-icon>
+      Volver
+    </button>
+  </div>
+
+  <div
+    class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden"
+  >
+    <form [formGroup]="formClient" (ngSubmit)="onSubmit()" class="p-6 md:p-8">
+      <div class="mb-2">
+        <h2 class="text-lg font-semibold text-gray-800 mb-3 border-b pb-2">
+          Datos Personales
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
+          <div>
+            <label
+              for="name"
+              class="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Nombre <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              formControlName="name"
+              class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm text-sm"
+              placeholder="Ej: Juan"
+            />
+            <div class="mt-1 min-h-5 text-xs text-red-600">
+              @if (formUtils.isValidField(formClient, "name")) {
+                <span>{{ formUtils.getFieldError(formClient, "name") }}</span>
+              }
+            </div>
+          </div>
+
+          <div>
+            <label
+              for="last_name"
+              class="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Apellido <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              id="last_name"
+              name="last_name"
+              formControlName="last_name"
+              class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm text-sm"
+              placeholder="Ej: Perez"
+            />
+            <div class="mt-1 min-h-5 text-xs text-red-600">
+              @if (formUtils.isValidField(formClient, "last_name")) {
+                <span>{{
+                  formUtils.getFieldError(formClient, "last_name")
+                }}</span>
+              }
+            </div>
+          </div>
+
+          <div>
+            <label
+              for="dni"
+              class="block text-sm font-medium text-gray-700 mb-1"
+            >
+              DNI <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              id="dni"
+              name="dni"
+              formControlName="dni"
+              minlength="7"
+              maxlength="15"
+              inputmode="numeric"
+              appNumericInput
+              class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm text-sm"
+              placeholder="Ej: 12345678"
+            />
+            <div class="mt-1 min-h-5 text-xs text-red-600">
+              @if (formUtils.isValidField(formClient, "dni")) {
+                <span>{{ formUtils.getFieldError(formClient, "dni") }}</span>
+              }
+            </div>
+          </div>
+
+          <div>
+            <label
+              for="phone"
+              class="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Teléfono <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              id="phone"
+              name="phone"
+              formControlName="phone"
+              minlength="7"
+              maxlength="15"
+              inputmode="numeric"
+              appNumericInput
+              class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm text-sm"
+              placeholder="Ej: 3415555555"
+            />
+            <div class="mt-1 min-h-5 text-xs text-red-600">
+              @if (formUtils.isValidField(formClient, "phone")) {
+                <span>{{ formUtils.getFieldError(formClient, "phone") }}</span>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-6">
+        <h2 class="text-lg font-semibold text-gray-800 mb-3 border-b pb-2">
+          Cuenta de Usuario
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
+          <div>
+            <label
+              for="username"
+              class="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Nombre de Usuario <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              formControlName="username"
+              class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm text-sm"
+              placeholder="Ej: jperez"
+            />
+            <div class="mt-1 min-h-5 text-xs text-red-600">
+              @if (formUtils.isValidField(formClient, "username")) {
+                <span>{{
+                  formUtils.getFieldError(formClient, "username")
+                }}</span>
+              }
+            </div>
+          </div>
+
+          <div>
+            <label
+              for="email"
+              class="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Email <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              formControlName="email"
+              class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm text-sm"
+              placeholder="Ej: juan@ejemplo.com"
+            />
+            <div class="mt-1 min-h-5 text-xs text-red-600">
+              @if (formUtils.isValidField(formClient, "email")) {
+                <span>{{ formUtils.getFieldError(formClient, "email") }}</span>
+              }
+            </div>
+          </div>
+
+          <div class="flex justify-center md:justify-start pt-2">
+            <div class="w-full">
+              <app-photo-manager
+                [currentPhoto]="currentPhoto()"
+                [userFullName]="fullName"
+              ></app-photo-manager>
+            </div>
+          </div>
+
+          <div>
+            <label
+              for="password"
+              class="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Contraseña
+              @if (!isEditMode()) {
+                <span class="text-red-500">*</span>
+              }
+            </label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              formControlName="password"
+              class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm text-sm"
+              placeholder="{{
+                isEditMode()
+                  ? 'Dejar vacío para mantener la actual'
+                  : 'Mínimo 8 caracteres, 1 letra, 1 número.'
+              }}"
+            />
+            <div class="mt-1 min-h-5 text-xs text-red-600">
+              @if (formUtils.isValidField(formClient, "password")) {
+                <span>{{
+                  formUtils.getFieldError(formClient, "password")
+                }}</span>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <h2 class="text-lg font-semibold text-gray-800 mb-3 border-b pb-2">
+          Datos de Facturación
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
+          <div class="relative" (clickOutside)="isFiscalMenuOpen.set(false)">
+            <label
+              for="fiscalConditionBtn"
+              class="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Condición Fiscal
+            </label>
+
+            <button
+              type="button"
+              id="fiscalConditionBtn"
+              (click)="toggleFiscalMenu()"
+              class="relative w-full cursor-pointer bg-white rounded-2xl border border-gray-300 py-2.5 pl-4 pr-10 text-left shadow-sm transition-all duration-200 sm:text-sm hover:bg-gray-50 focus:outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900"
+            >
+              <span class="block truncate text-gray-900 font-medium">
+                {{
+                  formClient.get("fiscalCondition")?.value ||
+                    "Seleccione una condición"
+                }}
+              </span>
+
+              <span
+                class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3"
+              >
+                <ng-icon
+                  name="bootstrapChevronDown"
+                  class="text-gray-400 text-sm transition-transform duration-200"
+                  [class.rotate-180]="isFiscalMenuOpen()"
+                ></ng-icon>
+              </span>
+            </button>
+
+            @if (isFiscalMenuOpen()) {
+              <ul
+                class="absolute z-20 mt-2 max-h-60 w-full overflow-auto rounded-2xl bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm animate-in fade-in zoom-in-95 duration-100"
+              >
+                @for (condition of fiscalConditions; track condition) {
+                  <li
+                    (click)="selectFiscalCondition(condition)"
+                    class="relative cursor-pointer select-none py-2.5 pl-4 pr-9 hover:bg-gray-100 text-gray-900 transition-colors"
+                  >
+                    <div class="flex items-center">
+                      <span
+                        class="h-2 w-2 shrink-0 rounded-full mr-3"
+                        [class]="
+                          condition === 'Consumidor Final'
+                            ? 'bg-gray-400'
+                            : condition === 'Responsable Inscripto'
+                              ? 'bg-blue-500'
+                              : condition === 'Monotributista'
+                                ? 'bg-orange-500'
+                                : 'bg-green-500'
+                        "
+                      ></span>
+
+                      <span
+                        class="block truncate"
+                        [class.font-semibold]="
+                          formClient.get('fiscalCondition')?.value === condition
+                        "
+                      >
+                        {{ condition }}
+                      </span>
+                    </div>
+
+                    @if (
+                      formClient.get("fiscalCondition")?.value === condition
+                    ) {
+                      <span
+                        class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-900"
+                      >
+                        <ng-icon
+                          name="bootstrapCheckLg"
+                          class="text-xl"
+                        ></ng-icon>
+                      </span>
+                    }
+                  </li>
+                }
+              </ul>
+            }
+          </div>
+
+          <div>
+            <label
+              for="cuit"
+              class="block text-sm font-medium text-gray-700 mb-1"
+            >
+              CUIT / CUIL (11 números)
+            </label>
+            <input
+              type="text"
+              id="cuit"
+              name="cuit"
+              formControlName="cuit"
+              maxlength="11"
+              inputmode="numeric"
+              appNumericInput
+              class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm text-sm"
+              placeholder="Ej: 20123456789"
+            />
+            <div class="mt-1 min-h-5 text-xs text-red-600">
+              @if (formUtils.isValidField(formClient, "cuit")) {
+                <span>{{ formUtils.getFieldError(formClient, "cuit") }}</span>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-6">
+        <h2 class="text-lg font-semibold text-gray-800 mb-3 border-b pb-2">
+          Dirección
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-3">
+          <div class="md:col-span-2">
+            <label
+              for="street"
+              class="block text-sm font-medium text-gray-700 mb-1"
+              >Calle</label
+            >
+            <input
+              type="text"
+              id="street"
+              name="street"
+              formControlName="street"
+              class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm text-sm"
+              placeholder="Ej: Av. San Martín"
+            />
+          </div>
+
+          <div>
+            <label
+              for="streetNumber"
+              class="block text-sm font-medium text-gray-700 mb-1"
+              >Altura</label
+            >
+            <input
+              type="text"
+              id="streetNumber"
+              name="streetNumber"
+              formControlName="streetNumber"
+              appNumericInput
+              class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm text-sm"
+              placeholder="Ej: 1234"
+            />
+          </div>
+
+          <div>
+            <label
+              for="city"
+              class="block text-sm font-medium text-gray-700 mb-1"
+              >Ciudad</label
+            >
+            <input
+              type="text"
+              id="city"
+              name="city"
+              formControlName="city"
+              class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm text-sm"
+              placeholder="Ej: Rosario"
+            />
+          </div>
+
+          <div>
+            <label
+              for="province"
+              class="block text-sm font-medium text-gray-700 mb-1"
+              >Provincia</label
+            >
+            <input
+              type="text"
+              id="province"
+              name="province"
+              formControlName="province"
+              class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm text-sm"
+              placeholder="Ej: Santa Fe"
+            />
+          </div>
+
+          <div>
+            <label
+              for="postalCode"
+              class="block text-sm font-medium text-gray-700 mb-1"
+              >Código Postal</label
+            >
+            <input
+              type="text"
+              id="postalCode"
+              name="postalCode"
+              formControlName="postalCode"
+              class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm text-sm"
+              placeholder="Ej: 2000"
+            />
+          </div>
+
+          <div>
+            <label
+              for="floor"
+              class="block text-sm font-medium text-gray-700 mb-1"
+              >Piso</label
+            >
+            <input
+              type="text"
+              id="floor"
+              name="floor"
+              formControlName="floor"
+              class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm text-sm"
+              placeholder="Ej: 1"
+            />
+          </div>
+
+          <div>
+            <label
+              for="apartment"
+              class="block text-sm font-medium text-gray-700 mb-1"
+              >Departamento</label
+            >
+            <input
+              type="text"
+              id="apartment"
+              name="apartment"
+              formControlName="apartment"
+              class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm text-sm"
+              placeholder="Ej: B"
+            />
+          </div>
+        </div>
+      </div>
+
+      @if (isEditMode()) {
+        <div class="mb-6">
+          <h2 class="text-lg font-semibold text-gray-800 mb-3 border-b pb-2">
+            Auditoría
+          </h2>
+          <div
+            class="grid grid-cols-1 md:grid-cols-3 gap-6 bg-gray-50 p-4 rounded-lg border border-gray-100"
+          >
+            <div>
+              <label class="block text-xs font-bold text-gray-500 uppercase"
+                >Creado el</label
+              >
+              <p class="mt-1 block w-full text-gray-600 text-sm">
+                {{ formClient.get("createdAt")?.value }}
+              </p>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-gray-500 uppercase"
+                >Actualizado el</label
+              >
+              <p class="mt-1 block w-full text-gray-600 text-sm">
+                {{ formClient.get("updatedAt")?.value }}
+              </p>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-gray-500 uppercase"
+                >Eliminado el</label
+              >
+              <p class="mt-1 block w-full text-gray-600 text-sm">
+                {{ formClient.get("deletedAt")?.value }}
+              </p>
+            </div>
+          </div>
+        </div>
+      }
+
+      <div
+        class="pt-6 flex items-center justify-end gap-x-4 border-t border-gray-100"
+      >
+        <button
+          type="button"
+          (click)="goBack()"
+          class="cursor-pointer rounded-md bg-white px-5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition-colors"
+        >
+          Cancelar
+        </button>
+
+        <button
+          type="submit"
+          [disabled]="formClient.invalid"
+          class="cursor-pointer rounded-md bg-[#3d4494] px-8 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#2a2f63] focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-[#3d4494] disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+        >
+          {{ isEditMode() ? "Guardar Cambios" : "Crear Cliente" }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

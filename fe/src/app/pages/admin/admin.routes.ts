@@ -3,7 +3,6 @@ import { Routes } from '@angular/router';
 export const adminRoutes: Routes = [
   {
     path: '',
-    // Al Layout también lo podemos cargar con Lazy Loading
     loadComponent: () =>
       import('@admin/components/layout/layout.component').then(
         (m) => m.LayoutComponent,
@@ -44,6 +43,20 @@ export const adminRoutes: Routes = [
         loadComponent: () =>
           import('./pages/clients-page/clients-page.component').then(
             (m) => m.ClientsPageComponent,
+          ),
+      },
+      {
+        path: 'clients/create',
+        loadComponent: () =>
+          import('./pages/clients-page/clients-form/clients-form.component').then(
+            (m) => m.ClientsFormComponent,
+          ),
+      },
+      {
+        path: 'clients/edit/:id',
+        loadComponent: () =>
+          import('./pages/clients-page/clients-form/clients-form.component').then(
+            (m) => m.ClientsFormComponent,
           ),
       },
       {

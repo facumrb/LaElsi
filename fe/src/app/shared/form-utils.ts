@@ -11,6 +11,7 @@ export class FormUtils {
   static emailPattern = '^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$';
   static descriptionPattern = '^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9.,;:?!()_\\-\'"\\s\\n]*$';
   static numberPattern = '^[0-9]*$';
+  static cuitPattern = '^[0-9]{11}$';
 
   // Mínimo 8 caracteres, 1 letra, 1 número.
   static passwordPattern = '^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d@$!%*#?&]{8,}$';

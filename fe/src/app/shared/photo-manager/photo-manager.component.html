@@ -23,7 +23,12 @@
       class="absolute bottom-1 right-1 bg-[#3d4494] text-white p-2 rounded-full cursor-pointer shadow-lg hover:bg-[#2d336b] transition-all hover:scale-110 flex items-center justify-center"
       title="Cambiar foto"
     >
-      <ng-icon name="bootstrapCamera" class="text-lg"></ng-icon>
+      <span class="sr-only">Subir nueva foto de perfil</span>
+      <ng-icon
+        name="bootstrapCamera"
+        aria-hidden="true"
+        class="text-lg"
+      ></ng-icon>
       <input
         #fileInput
         id="fileUploadInput"
@@ -37,7 +42,7 @@
     </label>
   </div>
 
-  <div class="text-center min-h-7.5">
+  <div class="text-center min-h-5">
     @if (previewUrl()) {
       <button
         (click)="markForDeletion()"

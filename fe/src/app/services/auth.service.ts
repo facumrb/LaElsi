@@ -18,7 +18,7 @@ export class AuthService {
 
   currentUser = signal<UserSession | null>(null);
   isLoggedIn = computed(() => !!this.currentUser());
-  isAdmin = computed(() => this.currentUser()?.role === UserRole.ADMIN);
+  isAdmin = computed(() => this.currentUser()?.role === UserRole.Admin);
 
   constructor() {
     // Al iniciar la app, recuperamos la sesión si existe

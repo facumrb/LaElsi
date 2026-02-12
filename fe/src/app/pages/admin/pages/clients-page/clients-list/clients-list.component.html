@@ -8,7 +8,7 @@
       <thead class="hidden lg:table-header-group bg-[#3d4494] text-white">
         <tr>
           <th
-            class="px-6 py-4 font-semibold uppercase tracking-wider w-[23%] rounded-tl-lg"
+            class="px-6 py-4 font-semibold uppercase tracking-wider w-[20%] rounded-tl-lg"
           >
             Usuario
           </th>
@@ -18,12 +18,16 @@
           </th>
 
           <th
-            class="px-6 py-4 font-semibold uppercase tracking-wider w-[27%] whitespace-nowrap text-center"
+            class="px-6 py-4 font-semibold uppercase tracking-wider w-[19%] whitespace-nowrap"
           >
-            DNI
+            DNI / CUIT
           </th>
 
-          <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[29%]">
+          <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[20%]">
+            Condición Fiscal
+          </th>
+
+          <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[20%]">
             Contacto
           </th>
 
@@ -36,9 +40,9 @@
       </thead>
 
       <tbody class="block lg:table-row-group">
-        @for (admin of admins(); track admin.id; let isLast = $last) {
+        @for (client of clients(); track client.id; let isLast = $last) {
           <tr
-            class="flex flex-col relative lg:static bg-white rounded-xl shadow border border-gray-200 mb-4 mx-4 mt-4 lg:mx-0 lg:mt-0 lg:mb-0 lg:table-row lg:shadow-none lg:border-0 lg:rounded-none"
+            class="flex flex-col relative lg:static bg-white rounded-xl shadow border border-gray-200 mb-4 mx-4 mt-4 lg:mx-0 lg:mt-0 lg:mb-0 lg:table-row lg:shadow-none lg:border-0 lg:rounded-none hover:bg-gray-50 transition-colors"
           >
             <td
               class="px-5 pt-6 pb-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle"
@@ -50,25 +54,26 @@
                 >Usuario:</span
               >
               <div class="flex items-center gap-3">
-                @if (admin.photo) {
+                @if (client.photo) {
                   <img
-                    [src]="imageBaseUrl + admin.photo.fileName"
-                    alt="{{ admin.username }}"
+                    [src]="imageBaseUrl + client.photo.fileName"
+                    alt=""
+                    role="presentation"
                     class="h-10 w-10 shrink-0 rounded-full object-cover border border-gray-200"
                   />
                 } @else {
                   <div
                     class="h-10 w-10 shrink-0 rounded-full bg-indigo-100 flex items-center justify-center text-[#3d4494] font-bold border border-indigo-200 text-xs"
                   >
-                    {{ getInitials(admin) }}
+                    {{ getInitials(client) }}
                   </div>
                 }
                 <div
-                  (click)="onEdit.emit(admin)"
+                  (click)="onEdit.emit(client)"
                   class="font-semibold text-gray-900 text-base lg:text-sm cursor-pointer hover:underline"
-                  title="{{ admin.username }}"
+                  title="{{ client.username }}"
                 >
-                  {{ admin.username }}
+                  {{ client.username }}
                 </div>
               </div>
             </td>
@@ -82,20 +87,42 @@
                 >Nombre Completo:</span
               >
               <div class="text-gray-900 font-medium">
-                {{ admin.name }} {{ admin.last_name }}
+                {{ client.name }} {{ client.last_name }}
               </div>
             </td>
 
             <td
-              class="px-5 py-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle lg:text-center"
+              class="px-5 py-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle"
+              [class.lg:border-b-0]="isLast"
+            >
+              <div class="flex flex-col items-start justify-center">
+                <span class="font-bold uppercase text-gray-500 lg:hidden mb-1"
+                  >DNI / CUIT:</span
+                >
+                <div class="text-gray-900 font-medium">
+                  DNI: {{ client.dni }}
+                </div>
+                @if (client.cuit) {
+                  <div class="text-indigo-600 font-medium mt-0.5">
+                    CUIT: {{ client.cuit }}
+                  </div>
+                }
+              </div>
+            </td>
+
+            <td
+              class="px-5 py-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle"
               [class.lg:border-b-0]="isLast"
             >
               <span
-                class="font-bold uppercase text-gray-500 block mb-1 lg:hidden"
-                >DNI:</span
+                class="font-bold uppercase text-gray-500 block mb-2 lg:hidden"
+                >Condición Fiscal:</span
               >
-              <span class="text-gray-900 font-medium">
-                {{ admin.dni }}
+              <span
+                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border"
+                [class]="getFiscalConditionClass(client.fiscalCondition)"
+              >
+                {{ client.fiscalCondition || "Consumidor Final" }}
               </span>
             </td>
 
@@ -115,8 +142,8 @@
                   ></ng-icon>
                   <span
                     class="truncate max-w-50 xl:max-w-xs"
-                    title="{{ admin.email }}"
-                    >{{ admin.email }}</span
+                    title="{{ client.email }}"
+                    >{{ client.email }}</span
                   >
                 </div>
                 <div class="flex items-center gap-1.5 text-gray-900 text-xs">
@@ -124,7 +151,7 @@
                     name="bootstrapTelephone"
                     class="text-gray-400"
                   ></ng-icon>
-                  <span>{{ admin.phone }}</span>
+                  <span>{{ client.phone }}</span>
                 </div>
               </div>
             </td>
@@ -142,7 +169,7 @@
                 </span>
 
                 <app-table-actions
-                  [item]="admin"
+                  [item]="client"
                   (onEdit)="onEdit.emit($event)"
                   (onDelete)="onDelete.emit($event)"
                 />
@@ -152,7 +179,7 @@
         } @empty {
           <tr>
             <td
-              colspan="5"
+              colspan="6"
               class="px-6 py-12 text-center bg-white lg:rounded-b-lg"
             >
               <div class="flex flex-col items-center justify-center">
@@ -167,7 +194,7 @@
                     name="bootstrapInbox"
                     class="text-3xl text-gray-300 mb-2"
                   ></ng-icon>
-                  <p class="text-gray-500">Sin administradores cargados</p>
+                  <p class="text-gray-500">Sin clientes cargados</p>
                 }
               </div>
             </td>
