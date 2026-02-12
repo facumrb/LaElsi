@@ -10,14 +10,14 @@ export class Product {
   @PrimaryKey()
   id!: number;
 
-  @Property({ nullable: false, unique: true })
+  @Property({ nullable: false, unique: true, length: 50 })
   name!: string;
 
-  @Property({ type: 'text', nullable: false })
+  @Property({ nullable: false, type: 'text', length: 1000 })
   description!: string;
 
   @Property({ nullable: false })
-  brand!: string; // Marca
+  brand!: string;
 
   @Property({ nullable: false })
   total_sold!: number;

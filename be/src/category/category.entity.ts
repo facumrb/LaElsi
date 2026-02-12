@@ -7,7 +7,7 @@ export class Category {
   @PrimaryKey()
   id!: number;
 
-  @Property({ length: 50, unique: true })
+  @Property({ nullable: false, unique: true, length: 50 })
   name!: string;
 
   @Property({ nullable: true, length: 1000 })

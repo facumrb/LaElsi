@@ -13,11 +13,13 @@ import {
   bootstrapChevronDown,
   bootstrapCheckLg,
 } from '@ng-icons/bootstrap-icons';
-import { PhotoManagerComponent } from '@shared/photo-manager/photo-manager.component';
+import { PhotoManagerComponent } from '@shared/components/photo-manager/photo-manager.component';
 import { AlertService } from '@shared/alert.service';
 import { FormUtils } from '@shared/form-utils';
-import { NumericInputDirective } from '@shared/numeric-input.directive';
-import { ClickOutsideDirective } from '@shared/click-outside.directive';
+import { NumericInputDirective } from '@shared/directives/numeric-input.directive';
+import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
+import { AuditInfoComponent } from '@shared/components/audit-info/audit-info.component';
+import { PhoneInputDirective } from '@shared/directives/phone-input.directive';
 
 @Component({
   selector: 'app-clients-form',
@@ -25,8 +27,10 @@ import { ClickOutsideDirective } from '@shared/click-outside.directive';
     ReactiveFormsModule,
     NgIconComponent,
     NumericInputDirective,
+    PhoneInputDirective,
     PhotoManagerComponent,
     ClickOutsideDirective,
+    AuditInfoComponent,
   ],
   viewProviders: [
     provideIcons({
@@ -77,6 +81,7 @@ export class ClientsFormComponent implements OnInit {
       [
         Validators.required,
         Validators.minLength(2),
+        Validators.maxLength(100),
         FormUtils.notOnlyWhiteSpace,
       ],
     ],
@@ -85,6 +90,7 @@ export class ClientsFormComponent implements OnInit {
       [
         Validators.required,
         Validators.minLength(2),
+        Validators.maxLength(100),
         FormUtils.notOnlyWhiteSpace,
       ],
     ],
@@ -102,8 +108,8 @@ export class ClientsFormComponent implements OnInit {
       [
         Validators.required,
         Validators.minLength(7),
-        Validators.maxLength(15),
-        Validators.pattern(FormUtils.numberPattern),
+        Validators.maxLength(20),
+        Validators.pattern(FormUtils.phonePattern),
       ],
     ],
 
@@ -113,28 +119,46 @@ export class ClientsFormComponent implements OnInit {
       [
         Validators.required,
         Validators.minLength(4),
+        Validators.maxLength(30),
         Validators.pattern(FormUtils.namePattern),
         FormUtils.notOnlyWhiteSpace,
       ],
     ],
     email: [
       '',
-      [Validators.required, Validators.pattern(FormUtils.emailPattern)],
+      [
+        Validators.required,
+        Validators.maxLength(255),
+        Validators.pattern(FormUtils.emailPattern),
+      ],
     ],
-    password: ['', [Validators.pattern(FormUtils.passwordPattern)]],
+    password: [
+      '',
+      [
+        Validators.maxLength(100),
+        Validators.pattern(FormUtils.passwordPattern),
+      ],
+    ],
 
     // --- DATOS DE FACTURACIÓN ---
-    cuit: ['', [Validators.pattern(FormUtils.cuitPattern)]],
     fiscalCondition: [FiscalCondition.ConsumidorFinal],
+    cuit: [
+      '',
+      [
+        Validators.minLength(11),
+        Validators.maxLength(11),
+        Validators.pattern(FormUtils.cuitPattern),
+      ],
+    ],
 
     // --- DIRECCIÓN ---
-    street: [''],
-    streetNumber: [''],
-    city: [''],
-    province: [''],
-    postalCode: [''],
-    floor: [''],
-    apartment: [''],
+    street: ['', Validators.maxLength(100)],
+    streetNumber: ['', Validators.maxLength(10)],
+    city: ['', Validators.maxLength(100)],
+    province: ['', Validators.maxLength(100)],
+    postalCode: ['', Validators.maxLength(10)],
+    floor: ['', Validators.maxLength(5)],
+    apartment: ['', Validators.maxLength(5)],
 
     // --- AUDITORÍA ---
     createdAt: [{ value: '', disabled: true }],
@@ -214,6 +238,22 @@ export class ClientsFormComponent implements OnInit {
     this.location.back();
   }
 
+  get hasUnsavedChanges(): boolean {
+    // Si estamos CREANDO, siempre hay "cambios"
+    if (!this.isEditMode()) return true;
+
+    // Si estamos EDITANDO:
+    // ¿El usuario tocó algún input de texto?
+    const textChanges = this.formClient.dirty;
+
+    // ¿El usuario tocó la foto?
+    const photoChanges = this.photoManager
+      ? this.photoManager.hasChanges()
+      : false;
+
+    return textChanges || photoChanges;
+  }
+
   onSubmit() {
     if (this.formClient.invalid) {
       this.formClient.markAllAsTouched();
@@ -279,14 +319,11 @@ export class ClientsFormComponent implements OnInit {
       .subscribe({
         next: (photoResponse: any) => {
           this.alertService.toast('Guardado exitosamente', 'success');
-
-          // Lógica de actualización de sesión si me edito a mí mismo (poco probable en panel admin pero buena práctica)
           const currentUserId = this.authService.currentUser()?.id;
           if (this.clientId() === currentUserId) {
-            // ... lógica de actualización de sesión similar al admin ...
           }
 
-          this.router.navigate(['/admin/clients']); // Redirigir a listado de clientes
+          this.router.navigate(['/admin/clients']); // Redirección al listado de clientes
         },
         error: (err) => {
           console.error(err);

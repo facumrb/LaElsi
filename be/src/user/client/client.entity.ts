@@ -10,24 +10,24 @@ export class Client extends User {
   @Enum({ items: () => FiscalCondition, default: FiscalCondition.CONSUMIDOR_FINAL })
   fiscalCondition: FiscalCondition = FiscalCondition.CONSUMIDOR_FINAL;
 
-  @Property({ nullable: true })
+  @Property({ nullable: true, length: 100 })
   street?: string;
 
-  @Property({ nullable: true })
+  @Property({ nullable: true, length: 10 })
   streetNumber?: number;
 
-  @Property({ nullable: true })
+  @Property({ nullable: true, length: 100 })
   city?: string;
 
-  @Property({ nullable: true })
+  @Property({ nullable: true, length: 100 })
   province?: string;
 
-  @Property({ nullable: true })
+  @Property({ nullable: true, length: 10 })
   postalCode?: string;
 
-  @Property({ nullable: true })
+  @Property({ nullable: true, length: 5 })
   floor?: string;
 
-  @Property({ nullable: true })
+  @Property({ nullable: true, length: 5 })
   apartment?: string;
 }

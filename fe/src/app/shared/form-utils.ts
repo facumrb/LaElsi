@@ -12,6 +12,7 @@ export class FormUtils {
   static descriptionPattern = '^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9.,;:?!()_\\-\'"\\s\\n]*$';
   static numberPattern = '^[0-9]*$';
   static cuitPattern = '^[0-9]{11}$';
+  static phonePattern = '^[+]?[0-9\\-\\s]*$';
 
   // Mínimo 8 caracteres, 1 letra, 1 número.
   static passwordPattern = '^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d@$!%*#?&]{8,}$';

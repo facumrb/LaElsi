@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IApiCategory } from '@models/category.model';
-import { ClickOutsideDirective } from '@shared/click-outside.directive';
+import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
 import { FormUtils } from '@shared/form-utils';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { bootstrapChevronDown } from '@ng-icons/bootstrap-icons';
@@ -42,11 +42,7 @@ export class CategoriesModalComponent {
     ],
     description: [
       '',
-      [
-        Validators.required,
-        Validators.maxLength(1000),
-        FormUtils.notOnlyWhiteSpace,
-      ],
+      [Validators.maxLength(1000), FormUtils.notOnlyWhiteSpace],
     ],
     state: ['Activo' as 'Activo' | 'Inactivo', [Validators.required]],
   });

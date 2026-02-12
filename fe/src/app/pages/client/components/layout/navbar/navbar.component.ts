@@ -3,7 +3,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 import { IApiCategory } from '@models/category.model';
 import { ApiCategoryService } from '@services/api-category.service';
 import { AuthService } from '@services/auth.service';
-import { ClickOutsideDirective } from '@shared/click-outside.directive';
+import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
   bootstrapSearch,

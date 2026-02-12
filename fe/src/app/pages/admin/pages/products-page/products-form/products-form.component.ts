@@ -10,8 +10,8 @@ import { AlertService } from '@shared/alert.service';
 import { ICreateProduct } from '@models/product.model';
 import { PhotoManagerComponent } from './photo-manager/photo-manager.component';
 import { IApiProductPhoto } from '@models/photo.model';
-import { NumericInputDirective } from '@shared/numeric-input.directive';
-import { ClickOutsideDirective } from '@shared/click-outside.directive';
+import { NumericInputDirective } from '@shared/directives/numeric-input.directive';
+import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
   bootstrapArrowLeft,
@@ -82,7 +82,7 @@ export class ProductsFormComponent implements OnInit {
     ],
     price: [null as number | null, [Validators.required, Validators.min(0)]],
     brand: ['', [Validators.required, FormUtils.notOnlyWhiteSpace]],
-    total_sold: [0],
+    total_sold: [0, [Validators.required, Validators.min(0)]],
     stock: [null as number | null, [Validators.required, Validators.min(0)]],
     state: ['Activo' as 'Activo' | 'Inactivo', [Validators.required]],
     category: [null as IApiCategory | null, [Validators.required]],

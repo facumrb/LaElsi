@@ -9,7 +9,7 @@ import { bootstrapSearch } from '@ng-icons/bootstrap-icons';
 import { FormsModule } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, Subject, switchMap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ClickOutsideDirective } from '@shared/click-outside.directive';
+import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
 
 @Component({
   selector: 'app-search-bar',

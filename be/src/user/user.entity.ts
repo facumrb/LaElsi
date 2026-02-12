@@ -14,22 +14,22 @@ export abstract class User {
   @PrimaryKey()
   id!: number;
 
-  @Property({ nullable: false })
+  @Property({ nullable: false, length: 100 })
   name!: string;
 
-  @Property({ nullable: false })
+  @Property({ nullable: false, length: 100 })
   last_name!: string;
 
-  @Property({ nullable: false, unique: true, length: 8 })
+  @Property({ nullable: false, unique: true, length: 15 })
   dni!: string;
 
-  @Property({ nullable: false })
+  @Property({ nullable: false, length: 20 })
   phone!: string;
 
-  @Property({ nullable: false, unique: true })
+  @Property({ nullable: false, unique: true, length: 30 })
   username!: string;
 
-  @Property({ hidden: true, type: 'string', nullable: false })
+  @Property({ nullable: false, hidden: true, length: 100 })
   password!: string;
 
   @Property({ nullable: false, unique: true })

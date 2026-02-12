@@ -1,6 +1,6 @@
 import { Component, model, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ClickOutsideDirective } from '@shared/click-outside.directive';
+import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
   bootstrapSearch,

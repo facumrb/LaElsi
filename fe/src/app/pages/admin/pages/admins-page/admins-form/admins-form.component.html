@@ -37,6 +37,8 @@
               id="name"
               name="name"
               formControlName="name"
+              minlength="2"
+              maxlength="100"
               class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm text-sm"
               placeholder="Ej: Juan"
             />
@@ -59,6 +61,8 @@
               id="last_name"
               name="last_name"
               formControlName="last_name"
+              minlength="2"
+              maxlength="100"
               class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm text-sm"
               placeholder="Ej: Perez"
             />
@@ -110,9 +114,9 @@
               name="phone"
               formControlName="phone"
               minlength="7"
-              maxlength="15"
+              maxlength="20"
               inputmode="numeric"
-              appNumericInput
+              appPhoneInput
               class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm text-sm"
               placeholder="Ej: 3415555555"
             />
@@ -143,6 +147,8 @@
               id="username"
               name="username"
               formControlName="username"
+              minlength="4"
+              maxlength="30"
               class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm text-sm"
               placeholder="Ej: jperez"
             />
@@ -167,6 +173,7 @@
               id="email"
               name="email"
               formControlName="email"
+              maxlength="255"
               class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm text-sm"
               placeholder="Ej: juan@ejemplo.com"
             />
@@ -201,6 +208,7 @@
               id="password"
               name="password"
               formControlName="password"
+              maxlength="100"
               class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm text-sm"
               placeholder="{{
                 isEditMode()
@@ -220,39 +228,11 @@
       </div>
 
       @if (isEditMode()) {
-        <div class="mb-6">
-          <h2 class="text-lg font-semibold text-gray-800 mb-3 border-b pb-2">
-            Auditoría
-          </h2>
-          <div
-            class="grid grid-cols-1 md:grid-cols-3 gap-6 bg-gray-50 p-4 rounded-lg border border-gray-100"
-          >
-            <div>
-              <label class="block text-xs font-bold text-gray-500 uppercase"
-                >Creado el</label
-              >
-              <p class="mt-1 block w-full text-gray-600 text-sm">
-                {{ formAdmin.get("createdAt")?.value }}
-              </p>
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-gray-500 uppercase"
-                >Actualizado el</label
-              >
-              <p class="mt-1 block w-full text-gray-600 text-sm">
-                {{ formAdmin.get("updatedAt")?.value }}
-              </p>
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-gray-500 uppercase"
-                >Eliminado el</label
-              >
-              <p class="mt-1 block w-full text-gray-600 text-sm">
-                {{ formAdmin.get("deletedAt")?.value }}
-              </p>
-            </div>
-          </div>
-        </div>
+        <app-audit-info
+          [createdAt]="formAdmin.get('createdAt')?.value"
+          [updatedAt]="formAdmin.get('updatedAt')?.value"
+          [deletedAt]="formAdmin.get('deletedAt')?.value"
+        />
       }
 
       <div
@@ -268,7 +248,7 @@
 
         <button
           type="submit"
-          [disabled]="formAdmin.invalid"
+          [disabled]="formAdmin.invalid || !hasUnsavedChanges"
           class="cursor-pointer rounded-md bg-[#3d4494] px-8 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#2a2f63] focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-[#3d4494] disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
         >
           {{ isEditMode() ? "Guardar Cambios" : "Crear Administrador" }}

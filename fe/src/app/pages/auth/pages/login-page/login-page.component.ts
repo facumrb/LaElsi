@@ -46,11 +46,13 @@ export class LoginPageComponent {
       '',
       [
         Validators.required,
+        Validators.minLength(4),
+        Validators.maxLength(30),
         Validators.pattern(FormUtils.namePattern),
         FormUtils.notOnlyWhiteSpace,
       ],
     ],
-    password: ['', [Validators.required]],
+    password: ['', [Validators.maxLength(100), Validators.required]],
   });
 
   // Lógica UI para el input de contraseña

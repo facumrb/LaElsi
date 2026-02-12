@@ -68,6 +68,7 @@ async function uploadUserPhoto(req: Request, res: Response) {
       em.persist(userPhoto);
     }
 
+    user.updatedAt = new Date();
     await em.flush();
 
     return res.status(201).json({
@@ -90,8 +91,10 @@ async function deleteUserPhoto(req: Request, res: Response) {
 
     const photo = await em.findOneOrFail(UserPhoto, { id: photoId });
 
+    const userId = photo.user.id;
+
     // Validar que el usuario solo pueda eliminar su propia foto (a menos que sea un admin)
-    const isOwner = req.user?.id === photo.user.id;
+    const isOwner = req.user?.id === userId;
     const isAdmin = req.user?.role === 'Admin';
 
     if (!isOwner && !isAdmin) {
@@ -106,6 +109,7 @@ async function deleteUserPhoto(req: Request, res: Response) {
       console.warn(`No se pudo borrar el archivo físico: ${err}`);
     }
 
+    await em.nativeUpdate(User, { id: userId }, { updatedAt: new Date() });
     em.remove(photo);
     await em.flush();
 

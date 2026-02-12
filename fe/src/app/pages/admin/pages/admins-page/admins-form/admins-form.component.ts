@@ -2,17 +2,19 @@ import { Component, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DatePipe, Location } from '@angular/common';
-import { ApiAdminService } from '@services/api-admin.service';
-import { AlertService } from '@shared/alert.service';
-import { FormUtils } from '@shared/form-utils';
-import { ICreateAdmin, UserRole } from '@models/user.model';
+import { switchMap } from 'rxjs';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { bootstrapArrowLeft } from '@ng-icons/bootstrap-icons';
-import { NumericInputDirective } from '@shared/numeric-input.directive';
-import { IApiUserPhoto } from '@models/photo.model';
-import { PhotoManagerComponent } from '@shared/photo-manager/photo-manager.component';
-import { switchMap } from 'rxjs';
+import { ApiAdminService } from '@services/api-admin.service';
 import { AuthService } from '@services/auth.service';
+import { ICreateAdmin, UserRole } from '@models/user.model';
+import { IApiUserPhoto } from '@models/photo.model';
+import { AlertService } from '@shared/alert.service';
+import { FormUtils } from '@shared/form-utils';
+import { NumericInputDirective } from '@shared/directives/numeric-input.directive';
+import { PhotoManagerComponent } from '@shared/components/photo-manager/photo-manager.component';
+import { AuditInfoComponent } from '@shared/components/audit-info/audit-info.component';
+import { PhoneInputDirective } from '@shared/directives/phone-input.directive';
 
 @Component({
   selector: 'app-admins-form',
@@ -20,7 +22,9 @@ import { AuthService } from '@services/auth.service';
     ReactiveFormsModule,
     NgIconComponent,
     NumericInputDirective,
+    PhoneInputDirective,
     PhotoManagerComponent,
+    AuditInfoComponent,
   ],
   viewProviders: [
     provideIcons({
@@ -54,6 +58,7 @@ export class AdminsFormComponent implements OnInit {
       [
         Validators.required,
         Validators.minLength(2),
+        Validators.maxLength(100),
         FormUtils.notOnlyWhiteSpace,
       ],
     ],
@@ -62,6 +67,7 @@ export class AdminsFormComponent implements OnInit {
       [
         Validators.required,
         Validators.minLength(2),
+        Validators.maxLength(100),
         FormUtils.notOnlyWhiteSpace,
       ],
     ],
@@ -79,25 +85,38 @@ export class AdminsFormComponent implements OnInit {
       [
         Validators.required,
         Validators.minLength(7),
-        Validators.maxLength(15),
-        Validators.pattern(FormUtils.numberPattern),
+        Validators.maxLength(20),
+        Validators.pattern(FormUtils.phonePattern),
       ],
     ],
+
+    // --- CUENTA DE USUARIO ---
     username: [
       '',
       [
         Validators.required,
         Validators.minLength(4),
+        Validators.maxLength(30),
         Validators.pattern(FormUtils.namePattern),
         FormUtils.notOnlyWhiteSpace,
       ],
     ],
     email: [
       '',
-      [Validators.required, Validators.pattern(FormUtils.emailPattern)],
+      [
+        Validators.required,
+        Validators.maxLength(255),
+        Validators.pattern(FormUtils.emailPattern),
+      ],
     ],
     // Password: Obligatorio al crear, opcional al editar
-    password: ['', [Validators.pattern(FormUtils.passwordPattern)]],
+    password: [
+      '',
+      [
+        Validators.maxLength(100),
+        Validators.pattern(FormUtils.passwordPattern),
+      ],
+    ],
 
     // Campos de Auditoría (Bloqueados)
     createdAt: [{ value: '', disabled: true }],
@@ -160,6 +179,22 @@ export class AdminsFormComponent implements OnInit {
 
   goBack() {
     this.location.back();
+  }
+
+  get hasUnsavedChanges(): boolean {
+    // Si estamos CREANDO, siempre hay "cambios"
+    if (!this.isEditMode()) return true;
+
+    // Si estamos EDITANDO:
+    // ¿El usuario tocó algún input de texto?
+    const textChanges = this.formAdmin.dirty;
+
+    // ¿El usuario tocó la foto?
+    const photoChanges = this.photoManager
+      ? this.photoManager.hasChanges()
+      : false;
+
+    return textChanges || photoChanges;
   }
 
   onSubmit() {
@@ -229,7 +264,7 @@ export class AdminsFormComponent implements OnInit {
 
             if (photoResponse && photoResponse.photo) {
               sessionUpdates.photo = photoResponse.photo;
-            } else if (this.photoManager.deletePending) {
+            } else if (this.photoManager.deletePending()) {
               sessionUpdates.photo = null;
             }
             // Actualizamos el AuthService (y por ende el Navbar)

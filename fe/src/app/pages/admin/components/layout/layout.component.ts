@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '@services/auth.service';
-import { ClickOutsideDirective } from '@shared/click-outside.directive';
+import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
   bootstrapSpeedometer2, // Icono de Dashboard

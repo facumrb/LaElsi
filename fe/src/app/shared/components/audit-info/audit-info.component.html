@@ -1,0 +1,35 @@
+<div class="mb-6">
+  <h2 class="text-lg font-semibold text-gray-800 mb-3 border-b pb-2">
+    Auditoría
+  </h2>
+  <div
+    class="flex items-center justify-between bg-gray-50 p-4 rounded-lg border border-gray-100"
+  >
+    <div class="text-left">
+      <label class="block text-xs font-bold text-gray-500 uppercase"
+        >Creado el</label
+      >
+      <p class="mt-1 block text-gray-600 text-sm font-medium">
+        {{ createdAt() || "-" }}
+      </p>
+    </div>
+
+    <div class="text-center">
+      <label class="block text-xs font-bold text-gray-500 uppercase"
+        >Actualizado el</label
+      >
+      <p class="mt-1 block text-gray-600 text-sm font-medium">
+        {{ updatedAt() || "-" }}
+      </p>
+    </div>
+
+    <div class="text-right">
+      <label class="block text-xs font-bold text-gray-500 uppercase"
+        >Eliminado el</label
+      >
+      <p class="mt-1 block text-gray-600 text-sm font-medium">
+        {{ deletedAt() || "No eliminado" }}
+      </p>
+    </div>
+  </div>
+</div>
