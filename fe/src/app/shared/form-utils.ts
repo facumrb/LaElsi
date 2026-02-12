@@ -8,14 +8,13 @@ import {
 export class FormUtils {
   //EXPRESIONES REGULARES
   static namePattern = "^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9'\\-\\s\\.&]+$";
-  static emailPattern = '^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$';
-  static descriptionPattern = '^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9.,;:?!()_\\-\'"\\s\\n]*$';
+  static emailPattern = '^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,}$';
   static numberPattern = '^[0-9]*$';
   static cuitPattern = '^[0-9]{11}$';
   static phonePattern = '^[+]?[0-9\\-\\s]*$';
-
-  // Mínimo 8 caracteres, 1 letra, 1 número.
-  static passwordPattern = '^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d@$!%*#?&]{8,}$';
+  static usernamePattern = '^[a-zA-Z0-9._-]+$';
+  // Mínimo 8 caracteres y debe tener al menos 1 letra, y 1 número.
+  static passwordPattern = '^(?=.*[A-Za-z])(?=.*\\d).{8,}$';
 
   static getTextError(
     errors: ValidationErrors,
@@ -45,14 +44,39 @@ export class FormUtils {
           return `Las contraseñas no coinciden.`;
 
         case 'pattern':
+          // 1. Email
           if (errors['pattern'].requiredPattern === this.emailPattern) {
-            return 'Formato de correo no válido.';
+            return 'Formato de correo no válido (ej: usuario@dominio.com).';
           }
+
+          // Nombre (Name)
           if (errors['pattern'].requiredPattern === this.namePattern) {
             return 'El nombre contiene caracteres no permitidos.';
           }
+
+          // Contraseña (Password)
           if (errors['pattern'].requiredPattern === this.passwordPattern) {
-            return 'La contraseña debe tener al menos 8 caracteres, una letra y un número.';
+            return 'La contraseña debe tener al menos 8 caracteres, con al menos una letra y un número.';
+          }
+
+          // Nombre de Usuario (Username)
+          if (errors['pattern'].requiredPattern === this.usernamePattern) {
+            return 'Solo se permiten letras, números, puntos (.) y guiones bajos (_) y guiones medios (-).';
+          }
+
+          // 5. CUIT
+          if (errors['pattern'].requiredPattern === this.cuitPattern) {
+            return 'El CUIT debe contener exactamente 11 números (sin guiones).';
+          }
+
+          // 6. Teléfono (Phone)
+          if (errors['pattern'].requiredPattern === this.phonePattern) {
+            return 'Solo se permiten números, espacios, guiones (-) y el signo más (+).';
+          }
+
+          // 7. Solo Números (Number)
+          if (errors['pattern'].requiredPattern === this.numberPattern) {
+            return 'Este campo solo acepta números.';
           }
           return `El formato del ${fieldName} no es válido.`;
         default:

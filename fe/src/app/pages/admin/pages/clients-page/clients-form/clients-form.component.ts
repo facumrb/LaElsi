@@ -120,7 +120,7 @@ export class ClientsFormComponent implements OnInit {
         Validators.required,
         Validators.minLength(4),
         Validators.maxLength(30),
-        Validators.pattern(FormUtils.namePattern),
+        Validators.pattern(FormUtils.usernamePattern),
         FormUtils.notOnlyWhiteSpace,
       ],
     ],

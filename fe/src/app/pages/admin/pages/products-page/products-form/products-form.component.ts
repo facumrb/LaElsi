@@ -80,10 +80,31 @@ export class ProductsFormComponent implements OnInit {
         FormUtils.notOnlyWhiteSpace,
       ],
     ],
-    price: [null as number | null, [Validators.required, Validators.min(0)]],
+    price: [
+      null as number | null,
+      [
+        Validators.required,
+        Validators.min(0),
+        Validators.pattern(FormUtils.numberPattern),
+      ],
+    ],
     brand: ['', [Validators.required, FormUtils.notOnlyWhiteSpace]],
-    total_sold: [0, [Validators.required, Validators.min(0)]],
-    stock: [null as number | null, [Validators.required, Validators.min(0)]],
+    total_sold: [
+      0,
+      [
+        Validators.required,
+        Validators.min(0),
+        Validators.pattern(FormUtils.numberPattern),
+      ],
+    ],
+    stock: [
+      null as number | null,
+      [
+        Validators.required,
+        Validators.min(0),
+        Validators.pattern(FormUtils.numberPattern),
+      ],
+    ],
     state: ['Activo' as 'Activo' | 'Inactivo', [Validators.required]],
     category: [null as IApiCategory | null, [Validators.required]],
     photos: [[]], // array vacío por defecto por si no se cargan fotos
