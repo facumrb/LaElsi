@@ -4,7 +4,6 @@ import { authGuard } from '@guards/auth.guard';
 export const clientRoutes: Routes = [
   {
     path: '',
-    // Cargamos el Layout base del cliente
     loadComponent: () =>
       import('./components/layout/layout.component').then(
         (m) => m.LayoutComponent,
@@ -72,7 +71,6 @@ export const clientRoutes: Routes = [
           import('./pages/search-result/search-result.component').then(
             (m) => m.SearchResultComponent,
           ),
-        title: 'Resultados de búsqueda | La Elsi',
       },
       {
         path: 'carrito',
