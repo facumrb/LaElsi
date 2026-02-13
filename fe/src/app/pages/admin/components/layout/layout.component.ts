@@ -14,6 +14,7 @@ import {
   bootstrapBoxArrowRight, // Icono de logout
   bootstrapPerson, // Icono de perfil
   bootstrapShop, // Icono para ir al eccomerce
+  bootstrapChevronDown,
 } from '@ng-icons/bootstrap-icons';
 import { environment } from 'src/environments/environment';
 
@@ -44,6 +45,7 @@ interface menuItems {
       bootstrapBoxArrowRight,
       bootstrapPerson,
       bootstrapShop,
+      bootstrapChevronDown,
     }),
   ],
   templateUrl: './layout.component.html',

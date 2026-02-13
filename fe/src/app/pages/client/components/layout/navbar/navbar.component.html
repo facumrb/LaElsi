@@ -193,7 +193,7 @@
         <img
           src="assets/Webp/Logo.webp"
           alt="La Elsi"
-          class="h-8 w-auto object-contain"
+          class="h-12 w-auto object-contain"
         />
       </div>
 
@@ -203,13 +203,9 @@
             <a
               [routerLink]="['/category', cat.id]"
               (click)="toggleMobileMenu()"
-              class="flex items-center justify-between px-6 py-3 text-gray-700 font-medium hover:bg-gray-50 active:bg-gray-100 border-b border-gray-50"
+              class="flex items-center justify-between px-6 py-3 text-gray-700 font-medium hover:bg-gray-50"
             >
               {{ cat.name }}
-              <ng-icon
-                name="bootstrapChevronRight"
-                class="text-gray-300 text-xs"
-              ></ng-icon>
             </a>
           }
           <a

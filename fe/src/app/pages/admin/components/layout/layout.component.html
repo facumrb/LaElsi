@@ -95,7 +95,7 @@
       <div class="flex items-center gap-2">
         <button
           (click)="toggleMobileMenu()"
-          class="md:hidden h-10 w-10 rounded-lg hover:bg-gray-100 text-gray-600 flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-[#3d4494]"
+          class="cursor-pointer md:hidden h-10 w-10 rounded-lg hover:bg-gray-100 text-gray-600 flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-[#3d4494]"
           aria-label="Abrir menú"
         >
           <ng-icon name="bootstrapList" class="text-2xl"></ng-icon>
@@ -113,35 +113,49 @@
       <div class="flex items-center gap-4">
         <a
           routerLink="/"
-          class="flex items-center gap-2 text-xs sm:text-sm font-semibold text-gray-600 hover:text-indigo-600 px-2 sm:px-3 py-1.5 rounded-md border border-gray-200 hover:bg-gray-50 transition-colors"
-          title="Ir a al E-commerce"
+          class="group cursor-pointer flex items-center gap-3 pl-1 pr-4 py-1 rounded-full border border-gray-200 bg-white/5 hover:bg-gray-50 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          title="Ir a la tienda pública"
         >
-          <ng-icon name="bootstrapShop" class="text-lg"></ng-icon>
-          <span>Ver Tienda</span>
+          <div
+            class="h-8 w-8 rounded-full bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 group-hover:bg-indigo-100 transition-colors"
+          >
+            <ng-icon name="bootstrapShop" class="text-lg"></ng-icon>
+          </div>
+
+          <span class="text-sm font-medium text-gray-600"> Ver Tienda </span>
         </a>
 
         <div class="relative" (clickOutside)="showUserMenu.set(false)">
           <button
             (click)="toggleUserMenu()"
-            class="cursor-pointer flex items-center space-x-2 rounded-full md:rounded-lg p-1 hover:bg-gray-50 transition-colors"
+            class="group cursor-pointer flex items-center gap-3 pl-1 pr-4 py-1 rounded-full border border-gray-200 bg-white/5 hover:bg-gray-50 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
             <div
-              class="h-9 w-9 rounded-full overflow-hidden bg-indigo-100 border border-indigo-200 flex items-center justify-center text-indigo-700 font-bold text-sm"
+              class="h-8 w-8 rounded-full overflow-hidden bg-[#5a2a8a] flex items-center justify-center border border-white/30 text-white shadow-sm"
             >
               @if (currentUser()?.photo) {
                 <img
                   [src]="imageBaseUrl + currentUser()!.photo!.fileName"
+                  alt="Avatar"
                   class="h-full w-full object-cover"
                 />
               } @else {
-                {{ getUserInitials() }}
+                <span class="text-xs font-bold tracking-widest">
+                  {{ getUserInitials() }}
+                </span>
               }
             </div>
-            <span
-              class="hidden md:block text-sm font-medium text-gray-700 max-w-37 truncate"
-            >
-              {{ currentUser()?.name }}
-            </span>
+
+            <div class="flex items-center gap-2">
+              <span class="text-sm font-medium max-w-25 text-gray-600 truncate">
+                {{ currentUser()?.name }}
+              </span>
+              <ng-icon
+                name="bootstrapChevronDown"
+                class="text-xs text-gray-400 transition-transform duration-200 group-hover:text-gray-600"
+                [class.rotate-180]="showUserMenu()"
+              ></ng-icon>
+            </div>
           </button>
 
           @if (showUserMenu()) {
@@ -149,7 +163,7 @@
               class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-1 origin-top-right border border-gray-100"
             >
               <a
-                routerLink="/profile"
+                [routerLink]="['/admin/view-profile', currentUser()?.id]"
                 (click)="showUserMenu.set(false)"
                 class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                 ><ng-icon name="bootstrapPerson" class="text-lg"></ng-icon> Mi
