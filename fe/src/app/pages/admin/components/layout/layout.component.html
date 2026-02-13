@@ -1,63 +1,65 @@
 <div class="flex h-screen bg-gray-50 font-sans overflow-hidden">
-  <div
-    class="fixed inset-0 z-20 bg-black/50 backdrop-blur-sm transition-opacity duration-300 md:hidden"
-    [class.opacity-0]="!mobileMenuOpen()"
-    [class.pointer-events-none]="!mobileMenuOpen()"
-    (click)="toggleMobileMenu()"
-  ></div>
-
-  <aside
-    id="mobile-menu"
-    aria-label="Menú lateral móvil"
-    class="fixed inset-y-0 left-0 z-30 w-64 max-w-[85vw] bg-slate-900 text-white transform transition-transform duration-300 ease-in-out"
-    [class.-translate-x-full]="!mobileMenuOpen()"
-  >
+  @if (mobileMenuOpen()) {
     <div
-      class="text-xl h-16 flex items-center justify-center bg-slate-950 font-bold tracking-widest border-b border-slate-800"
-    >
-      LAELSI
-    </div>
+      class="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm transition-opacity md:hidden"
+      (click)="toggleMobileMenu()"
+      aria-hidden="true"
+    ></div>
 
-    <nav aria-label="Navegación móvil" class="p-4 space-y-2">
-      @for (item of menuItems; track item.label) {
-        <a
-          [routerLink]="item.route"
-          (click)="toggleMobileMenu()"
-          routerLinkActive="bg-indigo-600 text-white shadow-md"
-          class="flex items-center p-3 rounded-lg hover:bg-slate-800 transition-colors text-slate-300"
-        >
-          <ng-icon [name]="item.icon" class="text-xl mr-3"></ng-icon>
-          <span class="font-medium">{{ item.label }}</span>
-        </a>
-      }
-    </nav>
-  </aside>
+    <aside
+      id="mobile-menu"
+      class="fixed inset-y-0 left-0 z-50 w-64 max-w-[85vw] bg-slate-900 text-white shadow-2xl transition-transform duration-300 md:hidden flex flex-col"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Menú de navegación móvil"
+    >
+      <div
+        class="h-16 flex items-center justify-center px-4 bg-slate-950 border-b border-slate-800 shrink-0"
+      >
+        <span class="text-xl font-bold tracking-widest text-white">LAELSI</span>
+      </div>
+
+      <nav class="flex-1 overflow-y-auto p-4 space-y-2">
+        @for (item of menuItems; track item.label) {
+          <a
+            [routerLink]="item.route"
+            (click)="toggleMobileMenu()"
+            routerLinkActive="bg-indigo-600 text-white shadow-md"
+            class="flex items-center p-3 rounded-lg hover:bg-slate-800 transition-colors text-slate-300"
+          >
+            <ng-icon [name]="item.icon" class="text-xl mr-3"></ng-icon>
+            <span class="font-medium">{{ item.label }}</span>
+          </a>
+        }
+      </nav>
+    </aside>
+  }
 
   <aside
     id="desktop-sidebar"
-    aria-label="Menú lateral principal"
-    class="hidden md:flex flex-col bg-slate-900 text-slate-300 transition-all duration-300 ease-in-out shadow-xl z-10"
+    class="hidden md:flex flex-col bg-slate-900 text-slate-300 transition-all duration-300 ease-in-out shadow-xl z-10 shrink-0"
     [class.w-64]="sidebarOpen()"
     [class.w-20]="!sidebarOpen()"
   >
     <div
-      class="h-16 flex items-center justify-center bg-slate-950 text-white overflow-hidden whitespace-nowrap border-b border-slate-800"
+      class="h-16 flex items-center justify-center bg-slate-950 text-white overflow-hidden whitespace-nowrap border-b border-slate-800 shrink-0 transition-all"
     >
       @if (sidebarOpen()) {
-        <span class="font-bold text-xl tracking-wider">LAELSI</span>
+        <span
+          class="font-bold text-xl tracking-wider animate-in fade-in duration-300"
+          >LAELSI</span
+        >
       }
     </div>
 
-    <nav
-      aria-label="Navegación principal"
-      class="flex-1 py-6 flex flex-col gap-1 px-3"
-    >
+    <nav class="flex-1 overflow-y-auto py-6 flex flex-col gap-1 px-3">
       @for (item of menuItems; track item.label) {
         <a
           [routerLink]="item.route"
-          routerLinkActive="bg-indigo-600 text-white"
-          class="flex items-center p-3 rounded-md hover:bg-slate-800 hover:text-white transition-colors group relative"
+          routerLinkActive="bg-indigo-600 text-white shadow-md"
+          class="flex items-center p-3 rounded-md hover:bg-slate-800 hover:text-white transition-all group relative overflow-hidden"
           [class.justify-center]="!sidebarOpen()"
+          [title]="!sidebarOpen() ? item.label : ''"
         >
           <ng-icon
             [name]="item.icon"
@@ -66,16 +68,17 @@
           ></ng-icon>
 
           <span
-            class="font-medium whitespace-nowrap overflow-hidden transition-all duration-300"
+            class="font-medium whitespace-nowrap transition-all duration-300 origin-left"
             [class.opacity-0]="!sidebarOpen()"
             [class.w-0]="!sidebarOpen()"
+            [class.hidden]="!sidebarOpen()"
           >
             {{ item.label }}
           </span>
 
           @if (!sidebarOpen()) {
             <div
-              class="absolute left-14 bg-slate-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity z-50 pointer-events-none whitespace-nowrap shadow-lg"
+              class="absolute left-16 bg-slate-900 text-white text-xs px-2 py-1.5 rounded opacity-0 group-hover:opacity-100 transition-opacity z-50 pointer-events-none whitespace-nowrap shadow-xl border border-slate-700"
             >
               {{ item.label }}
             </div>
@@ -85,45 +88,33 @@
     </nav>
   </aside>
 
-  <main class="flex-1 flex flex-col h-full overflow-hidden">
+  <main class="flex-1 flex flex-col h-full overflow-hidden relative w-full">
     <header
-      class="h-16 bg-white shadow-sm border-b flex items-center justify-between px-4 z-10"
+      class="h-16 bg-white shadow-sm border-b flex items-center justify-between px-4 z-20 shrink-0"
     >
       <div class="flex items-center gap-2">
         <button
           (click)="toggleMobileMenu()"
-          aria-controls="mobile-menu"
-          [attr.aria-expanded]="mobileMenuOpen()"
-          aria-label="Alternar menú de navegación móvil"
-          class="md:hidden p-2 rounded hover:bg-gray-100 flex items-center justify-center text-gray-600 focus:outline-none focus:ring-2 focus:ring-[#3d4494]"
+          class="md:hidden h-10 w-10 rounded-lg hover:bg-gray-100 text-gray-600 flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-[#3d4494]"
+          aria-label="Abrir menú"
         >
-          <ng-icon
-            name="bootstrapList"
-            class="text-2xl"
-            aria-hidden="true"
-          ></ng-icon>
+          <ng-icon name="bootstrapList" class="text-2xl"></ng-icon>
         </button>
 
         <button
           (click)="toggleSidebar()"
-          aria-controls="desktop-sidebar"
-          [attr.aria-expanded]="sidebarOpen()"
-          aria-label="Alternar barra lateral"
-          class="cursor-pointer hidden md:flex p-2 rounded hover:bg-gray-100 text-gray-600 items-center justify-center focus:outline-none focus:ring-2 focus:ring-[#3d4494]"
+          class="hidden md:flex h-10 w-10 cursor-pointer rounded-lg hover:bg-gray-100 text-gray-600 items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-[#3d4494]"
+          aria-label="Colapsar menú lateral"
         >
-          <ng-icon
-            name="bootstrapList"
-            class="text-2xl"
-            aria-hidden="true"
-          ></ng-icon>
+          <ng-icon name="bootstrapList" class="text-2xl"></ng-icon>
         </button>
       </div>
 
       <div class="flex items-center gap-4">
         <a
           routerLink="/"
-          class="flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-indigo-600 px-3 py-1.5 rounded-md border border-gray-200 hover:bg-gray-50 transition-colors mr-2"
-          title="Ir a la tienda pública"
+          class="flex items-center gap-2 text-xs sm:text-sm font-semibold text-gray-600 hover:text-indigo-600 px-2 sm:px-3 py-1.5 rounded-md border border-gray-200 hover:bg-gray-50 transition-colors"
+          title="Ir a al E-commerce"
         >
           <ng-icon name="bootstrapShop" class="text-lg"></ng-icon>
           <span>Ver Tienda</span>
@@ -131,35 +122,23 @@
 
         <div class="relative" (clickOutside)="showUserMenu.set(false)">
           <button
-            id="user-menu-button"
             (click)="toggleUserMenu()"
-            aria-haspopup="true"
-            aria-controls="user-menu-dropdown"
-            [attr.aria-expanded]="showUserMenu()"
-            [attr.aria-label]="
-              'Abrir menú de usuario de ' + (currentUser()?.name || 'tu cuenta')
-            "
-            class="cursor-pointer flex items-center space-x-2 rounded-full md:rounded-md pr-2"
+            class="cursor-pointer flex items-center space-x-2 rounded-full md:rounded-lg p-1 hover:bg-gray-50 transition-colors"
           >
-            @if (currentUser()?.photo) {
-              <img
-                [src]="imageBaseUrl + currentUser()!.photo!.fileName"
-                alt=""
-                aria-hidden="true"
-                class="w-9 h-9 rounded-full object-cover border border-gray-200"
-              />
-            } @else {
-              <div
-                aria-hidden="true"
-                class="w-9 h-9 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold border border-indigo-200 text-sm"
-              >
+            <div
+              class="h-9 w-9 rounded-full overflow-hidden bg-indigo-100 border border-indigo-200 flex items-center justify-center text-indigo-700 font-bold text-sm"
+            >
+              @if (currentUser()?.photo) {
+                <img
+                  [src]="imageBaseUrl + currentUser()!.photo!.fileName"
+                  class="h-full w-full object-cover"
+                />
+              } @else {
                 {{ getUserInitials() }}
-              </div>
-            }
-
+              }
+            </div>
             <span
-              class="hidden md:block text-sm font-medium text-gray-700"
-              aria-hidden="true"
+              class="hidden md:block text-sm font-medium text-gray-700 max-w-37 truncate"
             >
               {{ currentUser()?.name }}
             </span>
@@ -167,35 +146,23 @@
 
           @if (showUserMenu()) {
             <div
-              id="user-menu-dropdown"
-              role="menu"
-              aria-labelledby="user-menu-button"
-              class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 border border-gray-100 animate-in fade-in slide-in-from-top-1 duration-200 z-20"
+              class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-1 origin-top-right border border-gray-100"
             >
-              @if (currentUser(); as user) {
-                <a
-                  [routerLink]="['/admin/view-profile', user.id]"
-                  (click)="showUserMenu.set(false)"
-                  role="menuitem"
-                  class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#3d4494]"
-                >
-                  <ng-icon
-                    name="bootstrapPerson"
-                    class="text-lg"
-                    aria-hidden="true"
-                  ></ng-icon>
-                  Mi Perfil
-                </a>
-              }
+              <a
+                routerLink="/profile"
+                (click)="showUserMenu.set(false)"
+                class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                ><ng-icon name="bootstrapPerson" class="text-lg"></ng-icon> Mi
+                Perfil</a
+              >
+              <div class="border-t border-gray-100 my-1 hidden md:block"></div>
               <button
                 (click)="handleLogout()"
-                role="menuitem"
-                class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-50 cursor-pointer flex items-center gap-2"
+                class="cursor-pointer w-full text-left flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-gray-50 transition-colors"
               >
                 <ng-icon
                   name="bootstrapBoxArrowRight"
                   class="text-lg"
-                  aria-hidden="true"
                 ></ng-icon>
                 Cerrar Sesión
               </button>
@@ -205,7 +172,9 @@
       </div>
     </header>
 
-    <div class="flex-1 overflow-auto p-4 md:p-6 lg:p-8">
+    <div
+      class="flex-1 overflow-auto p-4 md:p-6 lg:p-8 bg-gray-50 relative w-full"
+    >
       <router-outlet />
     </div>
   </main>

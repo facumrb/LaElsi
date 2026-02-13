@@ -1,90 +1,102 @@
-<header class="sticky top-0 z-110 shadow-md">
-  <nav class="flex items-center justify-between bg-[#3d4494] px-4 md:px-6 py-3">
-    <div class="flex items-center gap-3">
+<header class="sticky top-0 z-50 shadow-md">
+  <nav
+    class="grid grid-cols-[auto_1fr_auto] lg:grid-cols-3 items-center bg-[#3d4494] px-4 md:px-6 py-3 relative z-20"
+    aria-label="Navegación principal"
+  >
+    <div class="flex items-center gap-4 justify-self-start">
       <button
-        class="md:hidden text-white p-1 cursor-pointer"
+        type="button"
+        class="md:hidden h-10 w-10 flex items-center justify-center text-white cursor-pointer rounded-md hover:bg-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-white/50"
         (click)="toggleMobileMenu()"
+        aria-label="Abrir menú de navegación"
       >
         <ng-icon name="bootstrapList" class="text-3xl"></ng-icon>
       </button>
-      <a routerLink="/" class="shrink-0">
+
+      <a routerLink="/" class="shrink-0 block" aria-label="Ir al inicio">
         <img
           src="assets/Webp/Logo.webp"
           alt="La Elsi logo"
-          class="w-24 md:w-32 hover:opacity-90 transition-opacity"
+          width="128"
+          height="48"
+          class="w-24 md:w-32 h-auto hover:opacity-90 transition-opacity object-contain"
         />
       </a>
     </div>
 
-    <div
-      class="hidden md:flex flex-1 items-center justify-center max-w-xl mx-8 gap-0"
-    >
-      <app-search-bar />
+    <div class="hidden lg:flex w-full max-w-xl justify-self-center">
+      <app-search-bar class="w-full" />
     </div>
 
-    <div class="flex items-center gap-2 md:gap-4">
+    <div class="flex items-center gap-3 md:gap-4 justify-self-end">
       @if (authService.isAdmin()) {
         <a
           routerLink="/admin/dashboard"
-          class="hidden md:flex items-center gap-2 rounded-lg bg-[#5a2a8a] border border-[#f4abac] p-2 md:px-4 md:py-2 font-bold text-white transition-all hover:bg-[#f4abac] hover:text-[#3d4494] shadow-sm"
+          class="hidden sm:flex items-center gap-3 pl-1 pr-4 py-1 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 transition-all focus:outline-none focus:ring-2 focus:ring-white/50"
+          title="Ir al Panel de Administrador"
         >
-          <ng-icon name="bootstrapSpeedometer2" class="text-xl"></ng-icon>
-          <span class="hidden lg:inline">Panel Admin</span>
+          <div
+            class="h-8 w-8 rounded-full bg-white/10 flex items-center justify-center border border-white/10"
+          >
+            <ng-icon
+              name="bootstrapSpeedometer2"
+              class="text-lg text-white"
+            ></ng-icon>
+          </div>
+          <span class="text-sm font-bold text-white">Admin</span>
         </a>
       }
 
       @if (authService.isLoggedIn()) {
         <div class="relative" (clickOutside)="showUserMenu.set(false)">
           <button
+            type="button"
             (click)="toggleUserMenu()"
-            class="cursor-pointer flex items-center gap-2 rounded-lg bg-[#037971] p-2 md:px-4 md:py-2 font-medium text-white transition-colors hover:bg-[#049A8F]"
+            [attr.aria-expanded]="showUserMenu()"
+            class="flex items-center gap-3 pl-1 pr-4 py-1 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 transition-all focus:outline-none focus:ring-2 focus:ring-white/50"
           >
-            <ng-icon name="bootstrapPersonCircle" class="text-2xl"></ng-icon>
-            <span class="hidden md:inline max-w-25 truncate">
-              {{ authService.currentUser()?.name }}
-            </span>
-            <ng-icon
-              name="bootstrapChevronRight"
-              class="text-xs transition-transform duration-200"
-              [class.rotate-90]="showUserMenu()"
-            ></ng-icon>
+            <div
+              class="h-8 w-8 rounded-full overflow-hidden bg-[#5a2a8a] flex items-center justify-center border border-white/30"
+            >
+              @if (userPhotoUrl()) {
+                <img
+                  [src]="userPhotoUrl()"
+                  alt="Avatar"
+                  class="h-full w-full object-cover"
+                />
+              } @else {
+                <span class="text-xs font-bold text-white tracking-widest">{{
+                  userInitials()
+                }}</span>
+              }
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-sm font-medium text-white max-w-25 truncate">
+                {{ authService.currentUser()?.name }}
+              </span>
+              <ng-icon
+                name="bootstrapChevronDown"
+                class="text-xs text-white/70 transition-transform duration-200"
+                [class.rotate-180]="showUserMenu()"
+              ></ng-icon>
+            </div>
           </button>
 
           @if (showUserMenu()) {
             <div
-              class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-100 py-1 z-50 animate-in fade-in slide-in-from-top-2 duration-200"
+              class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-1 origin-top-right border border-gray-100"
             >
-              <div class="px-4 py-2 border-b border-gray-100 md:hidden">
-                <p class="text-sm font-bold text-gray-800">
-                  {{ authService.currentUser()?.name }}
-                </p>
-              </div>
-
               <a
                 routerLink="/profile"
                 (click)="showUserMenu.set(false)"
-                class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#3d4494]"
+                class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                ><ng-icon name="bootstrapPerson" class="text-lg"></ng-icon> Mi
+                Perfil</a
               >
-                <ng-icon name="bootstrapPerson" class="text-lg"></ng-icon> Mi
-                Perfil
-              </a>
-
-              @if (authService.isAdmin()) {
-                <a
-                  routerLink="/admin/dashboard"
-                  class="flex md:hidden items-center gap-2 px-4 py-2 text-sm text-purple-700 font-bold hover:bg-gray-50"
-                >
-                  <ng-icon
-                    name="bootstrapSpeedometer2"
-                    class="text-lg"
-                  ></ng-icon>
-                  Panel Admin
-                </a>
-              }
-
+              <div class="border-t border-gray-100 my-1 hidden md:block"></div>
               <button
                 (click)="handleLogout()"
-                class="cursor-pointer w-full text-left flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                class="cursor-pointer w-full text-left flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-gray-50 transition-colors"
               >
                 <ng-icon
                   name="bootstrapBoxArrowRight"
@@ -96,137 +108,136 @@
           }
         </div>
       } @else {
-        <a routerLink="/auth/login" class="flex items-center">
-          <button
-            class="cursor-pointer flex items-center gap-2 rounded-lg bg-[#3d4494] border border-white/30 p-2 md:px-4 md:py-2 font-medium text-white transition-colors hover:bg-white/10"
-          >
-            <ng-icon name="bootstrapPersonCircle" class="text-2xl"></ng-icon>
-            <span class="hidden md:inline">Ingresar</span>
-          </button>
+        <a
+          routerLink="/auth/login"
+          class="cursor-pointer flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-4 py-2 text-sm font-bold text-white hover:bg-white/10 transition-all focus:ring-2 focus:ring-white/50"
+        >
+          <ng-icon name="bootstrapPersonCircle" class="text-xl"></ng-icon>
+          <span class="hidden md:inline">Ingresar</span>
         </a>
       }
 
-      <a routerLink="/carrito" class="flex items-center">
-        <button
-          class="cursor-pointer flex items-center gap-2 rounded-lg bg-[#037971] p-2 md:px-4 md:py-2 font-medium text-white transition-colors hover:bg-[#049A8F] relative"
-        >
-          <ng-icon name="bootstrapCart3" class="text-2xl"></ng-icon>
-          @if (carritoSignal() > 0) {
-            <span
-              class="absolute -top-1.5 -right-1.5 bg-red-500 text-white px-1.5 py-0.5 rounded-full text-[10px] font-bold shadow-sm min-w-4.5 text-center border-2 border-[#3d4494]"
-            >
-              {{ carritoSignal() }}
-            </span>
-          }
-        </button>
+      <a
+        routerLink="/carrito"
+        class="relative flex items-center justify-center h-10 w-10 rounded-full bg-[#037971] text-white hover:bg-[#049A8F] hover:scale-105 transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-white/50 border border-white/10"
+        aria-label="Ver carrito de compras"
+      >
+        <ng-icon name="bootstrapCart3" class="text-xl"></ng-icon>
+        @if (carritoSignal() > 0) {
+          <span
+            class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#f4abac] text-[10px] font-bold text-[#3d4494] shadow-sm border-2 border-[#3d4494]"
+          >
+            {{ carritoSignal() }}
+          </span>
+        }
       </a>
     </div>
   </nav>
 
-  <div class="md:hidden bg-[#3d4494] px-4 pb-4 shadow-md">
+  <div class="lg:hidden bg-[#3d4494] px-4 pb-4 shadow-md relative z-10">
     <app-search-bar />
   </div>
 
-  <nav class="hidden md:flex justify-around bg-[#9574a4] p-2.5 shadow-inner">
+  <nav
+    class="hidden md:flex justify-around bg-[#805d8f] p-2.5 shadow-inner relative z-10"
+    aria-label="Categorías de productos"
+  >
     @for (cat of categories; track cat.id) {
       <a
         [routerLink]="['/category', cat.id]"
         routerLinkActive="text-[#f4abac] underline decoration-2 underline-offset-4"
         [routerLinkActiveOptions]="{ exact: true }"
-        class="text-sm font-bold text-white transition-colors hover:text-[#f4abac]"
+        class="text-sm font-bold text-white tracking-wide drop-shadow-sm transition-colors hover:text-[#f4abac] focus:outline-none focus:underline decoration-[#f4abac]"
       >
         {{ cat.name }}
       </a>
     }
+
     <a
       routerLink="/impresiones"
       routerLinkActive="text-[#f4abac] underline decoration-2 underline-offset-4"
-      class="text-sm font-bold text-white hover:text-[#f4abac]"
-      >Impresiones</a
+      class="text-sm font-bold text-white tracking-wide drop-shadow-sm transition-colors hover:text-[#f4abac] focus:outline-none focus:underline decoration-[#f4abac]"
     >
+      Impresiones
+    </a>
     <a
       routerLink="/disenio"
       routerLinkActive="text-[#f4abac] underline decoration-2 underline-offset-4"
-      class="text-sm font-bold text-white hover:text-[#f4abac]"
-      >Diseño Gráfico</a
+      class="text-sm font-bold text-white tracking-wide drop-shadow-sm transition-colors hover:text-[#f4abac] focus:outline-none focus:underline decoration-[#f4abac]"
     >
+      Diseño Gráfico
+    </a>
     <a
       routerLink="/sellos"
       routerLinkActive="text-[#f4abac] underline decoration-2 underline-offset-4"
-      class="text-sm font-bold text-white hover:text-[#f4abac]"
-      >Sellos</a
+      class="text-sm font-bold text-white tracking-wide drop-shadow-sm transition-colors hover:text-[#f4abac] focus:outline-none focus:underline decoration-[#f4abac]"
     >
+      Sellos
+    </a>
   </nav>
 
   @if (showSideMenu()) {
     <div
-      class="fixed inset-0 bg-black/60 backdrop-blur-sm z-150 md:hidden"
+      class="fixed inset-0 bg-black/60 backdrop-blur-sm z-60 md:hidden"
       (click)="toggleMobileMenu()"
+      aria-hidden="true"
     ></div>
 
     <div
-      class="fixed inset-y-0 left-0 w-70 bg-white z-160 shadow-2xl md:hidden flex flex-col transition-transform duration-300 animate-in slide-in-from-left"
+      class="fixed inset-y-0 left-0 w-72 bg-white z-70 shadow-2xl md:hidden flex flex-col transition-transform duration-300 animate-in slide-in-from-left"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Menú principal móvil"
     >
-      <div
-        class="flex items-center justify-between p-5 bg-[#3d4494] text-white"
-      >
-        <span class="font-black tracking-tighter text-xl">LA ELSI</span>
-        <button
-          (click)="toggleMobileMenu()"
-          class="p-1 cursor-pointer hover:bg-white/20 rounded-full transition"
-        >
-          <ng-icon name="bootstrapX" class="text-3xl"></ng-icon>
-        </button>
+      <div class="flex items-center justify-center p-4 bg-[#3d4494] shadow-sm">
+        <img
+          src="assets/Webp/Logo.webp"
+          alt="La Elsi"
+          class="h-8 w-auto object-contain"
+        />
       </div>
+
       <div class="flex-1 overflow-y-auto py-2">
-        @for (cat of categories; track cat.id) {
+        <nav class="flex flex-col" aria-label="Menú móvil de categorías">
+          @for (cat of categories; track cat.id) {
+            <a
+              [routerLink]="['/category', cat.id]"
+              (click)="toggleMobileMenu()"
+              class="flex items-center justify-between px-6 py-3 text-gray-700 font-medium hover:bg-gray-50 active:bg-gray-100 border-b border-gray-50"
+            >
+              {{ cat.name }}
+              <ng-icon
+                name="bootstrapChevronRight"
+                class="text-gray-300 text-xs"
+              ></ng-icon>
+            </a>
+          }
           <a
-            [routerLink]="['/category', cat.id]"
+            routerLink="/impresiones"
             (click)="toggleMobileMenu()"
-            class="flex items-center justify-between px-6 py-3 text-gray-700 font-medium hover:bg-gray-50 active:bg-gray-100"
+            class="flex items-center gap-3 px-6 py-3 text-gray-700 font-medium hover:bg-gray-50"
           >
-            {{ cat.name }}
-            <ng-icon
-              name="bootstrapChevronRight"
-              class="text-gray-300 text-xs"
-            ></ng-icon>
+            Impresiones
           </a>
-        }
-        <a
-          routerLink="/impresiones"
-          (click)="toggleMobileMenu()"
-          class="flex items-center gap-3 px-6 py-3 text-gray-700 font-medium hover:bg-gray-50"
-        >
-          <ng-icon name="bootstrapPrinter" class="text-[#3d4494]"></ng-icon>
-          Impresiones
-        </a>
-        <a
-          routerLink="/disenio"
-          (click)="toggleMobileMenu()"
-          class="flex items-center gap-3 px-6 py-3 text-gray-700 font-medium hover:bg-gray-50"
-        >
-          <ng-icon name="bootstrapPalette" class="text-[#3d4494]"></ng-icon>
-          Diseño Gráfico
-        </a>
-        <a
-          routerLink="/sellos"
-          (click)="toggleMobileMenu()"
-          class="flex items-center gap-3 px-6 py-3 text-gray-700 font-medium hover:bg-gray-50"
-        >
-          <ng-icon name="bootstrapPostageFill" class="text-[#3d4494]"></ng-icon>
-          Sellos
-        </a>
+          <a
+            routerLink="/disenio"
+            (click)="toggleMobileMenu()"
+            class="flex items-center gap-3 px-6 py-3 text-gray-700 font-medium hover:bg-gray-50"
+          >
+            Diseño Gráfico
+          </a>
+          <a
+            routerLink="/sellos"
+            (click)="toggleMobileMenu()"
+            class="flex items-center gap-3 px-6 py-3 text-gray-700 font-medium hover:bg-gray-50"
+          >
+            Sellos
+          </a>
+        </nav>
       </div>
 
       <div class="border-t border-gray-100 p-4 bg-gray-50">
         @if (authService.isLoggedIn()) {
-          <a
-            routerLink="/profile"
-            (click)="toggleMobileMenu()"
-            class="flex items-center gap-3 px-4 py-3 text-gray-700 font-bold hover:bg-white rounded-lg mb-1"
-          >
-            <ng-icon name="bootstrapPerson" class="text-xl"></ng-icon> Mi Perfil
-          </a>
           @if (authService.isAdmin()) {
             <a
               routerLink="/admin/dashboard"
@@ -234,12 +245,19 @@
               class="flex items-center gap-3 px-4 py-3 text-[#5a2a8a] font-bold hover:bg-white rounded-lg mb-1"
             >
               <ng-icon name="bootstrapSpeedometer2" class="text-xl"></ng-icon>
-              Panel Admin
+              Admin
             </a>
           }
+          <a
+            routerLink="/profile"
+            (click)="toggleMobileMenu()"
+            class="flex items-center gap-3 px-4 py-3 text-gray-700 font-bold hover:bg-white rounded-lg mb-1"
+          >
+            <ng-icon name="bootstrapPerson" class="text-xl"></ng-icon> Mi Perfil
+          </a>
           <button
             (click)="handleLogout()"
-            class="cursor-pointer w-full text-left flex items-center gap-3 px-4 py-3 text-red-600 font-bold hover:bg-red-50 rounded-lg"
+            class="cursor-pointer w-full text-left flex items-center gap-3 px-4 py-3 text-red-600 font-bold hover:bg-white rounded-lg"
           >
             <ng-icon name="bootstrapBoxArrowRight" class="text-xl"></ng-icon>
             Cerrar Sesión

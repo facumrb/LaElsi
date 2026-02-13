@@ -3,10 +3,13 @@ import { Component, computed, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { IApiProduct } from '@models/product.model';
 import { environment } from 'src/environments/environment';
+import { NgIconComponent, provideIcons } from '@ng-icons/core';
+import { bootstrapArrowRight } from '@ng-icons/bootstrap-icons';
 
 @Component({
   selector: 'app-product-card',
-  imports: [CurrencyPipe, RouterLink],
+  imports: [CurrencyPipe, RouterLink, NgIconComponent],
+  viewProviders: provideIcons({ bootstrapArrowRight }),
   templateUrl: './product-card.component.html',
 })
 export class ProductCardComponent {
@@ -33,13 +36,20 @@ export class ProductCardComponent {
     return `${this.imageBaseUrl}${photoToUse.fileName}`;
   });
 
-  getProductPrice(): number {
+  price = computed(() => {
     const currentPrice = this.product().prices?.find((p) => p.isCurrent);
     return currentPrice ? currentPrice.amount : 0;
-  }
+  });
 
-  getProductCurrency(): string {
+  currency = computed(() => {
     const currentPrice = this.product().prices?.find((p) => p.isCurrent);
     return currentPrice ? currentPrice.currency : 'ARS';
+  });
+
+  handleImageError(event: Event) {
+    const imgElement = event.target as HTMLImageElement;
+    // Evitamos bucle infinito si la imagen por defecto también falla
+    if (imgElement.src.includes(this.defaultImage)) return;
+    imgElement.src = this.defaultImage;
   }
 }

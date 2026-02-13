@@ -2,9 +2,9 @@
   <div class="container mx-auto px-4">
     <div class="grid grid-cols-1 gap-y-6 gap-x-4 md:grid-cols-3">
       <div>
-        <h4 class="mb-2 text-xl font-bold text-[#f4abac]">
+        <h2 class="mb-2 text-xl font-bold text-[#f4abac]">
           Horarios de atención
-        </h4>
+        </h2>
         <div class="flex flex-col gap-1 text-sm">
           <div class="flex items-center gap-2">
             <ng-icon name="bootstrapClock" class="text-[#f4abac]"></ng-icon>
@@ -19,9 +19,9 @@
 
       <div class="flex flex-col md:items-center">
         <div class="w-fit">
-          <h4 class="mb-2 text-xl font-bold text-[#f4abac]">
+          <h2 class="mb-2 text-xl font-bold text-[#f4abac]">
             Enlaces de Interés
-          </h4>
+          </h2>
           <nav class="text-sm">
             <ul class="space-y-1">
               <li>
@@ -47,12 +47,13 @@
 
       <div class="flex flex-col md:items-end">
         <div class="flex flex-col gap-2">
-          <h4 class="text-xl font-bold text-[#f4abac]">Contacto</h4>
+          <h2 class="text-xl font-bold text-[#f4abac]">Contacto</h2>
 
           <div class="flex flex-wrap items-center gap-4">
             <a
               href="https://www.instagram.com/laelsi.ros/"
               target="_blank"
+              aria-label="Seguinos en Instagram"
               class="flex items-center hover:text-[#f4abac] hover:scale-110 transition-transform"
             >
               <ng-icon name="bootstrapInstagram" class="text-xl"></ng-icon>
@@ -61,6 +62,7 @@
             <a
               href="https://wa.me/5493417121860"
               target="_blank"
+              aria-label="Contactanos por WhatsApp"
               class="flex items-center gap-2 hover:text-[#f4abac] hover:scale-105 transition-all group"
             >
               <ng-icon name="bootstrapWhatsapp" class="text-xl"></ng-icon>
@@ -76,6 +78,7 @@
             <ng-icon
               name="bootstrapGeoAlt"
               class="mt-0.5 text-[#f4abac] shrink-0"
+              aria-hidden="true"
             ></ng-icon>
             <span>9 de Julio 2325, Rosario (2000), Santa Fe, Argentina</span>
           </a>
@@ -84,11 +87,12 @@
     </div>
 
     <div
-      class="mt-3 border-t border-white/10 pt-3 text-center text-xs text-gray-400"
+      class="mt-3 border-t border-white/10 pt-3 text-center text-xs text-gray-300"
     >
       <p>
-        Copyright &copy; {{ currentYear() }} LaElsi &boxh; Todos los derechos
-        reservados.
+        Copyright &copy; {{ currentYear() }}
+        <span class="font-bold text-[#f4abac]">LaElsi</span> &boxh; Todos los
+        derechos reservados.
       </p>
     </div>
   </div>

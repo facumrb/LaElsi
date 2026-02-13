@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { IApiCategory } from '@models/category.model';
 import { ApiCategoryService } from '@services/api-category.service';
@@ -6,20 +6,17 @@ import { AuthService } from '@services/auth.service';
 import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
-  bootstrapSearch,
   bootstrapPersonCircle,
   bootstrapCart3,
   bootstrapList,
-  bootstrapX,
-  bootstrapPrinter,
-  bootstrapPalette,
-  bootstrapPostageFill,
-  bootstrapChevronRight,
+  bootstrapChevronDown,
   bootstrapBoxArrowRight,
   bootstrapSpeedometer2,
   bootstrapPerson,
+  bootstrapGear,
 } from '@ng-icons/bootstrap-icons';
 import { SearchBarComponent } from './search-bar/search-bar.component';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-navbar',
@@ -32,18 +29,14 @@ import { SearchBarComponent } from './search-bar/search-bar.component';
   ],
   viewProviders: [
     provideIcons({
-      bootstrapSearch,
       bootstrapPersonCircle,
       bootstrapCart3,
       bootstrapList,
-      bootstrapX,
-      bootstrapPrinter,
-      bootstrapPalette,
-      bootstrapPostageFill,
-      bootstrapChevronRight,
+      bootstrapChevronDown,
       bootstrapBoxArrowRight,
       bootstrapSpeedometer2,
       bootstrapPerson,
+      bootstrapGear,
     }),
   ],
   templateUrl: './navbar.component.html',
@@ -57,6 +50,26 @@ export class NavbarComponent implements OnInit {
   showUserMenu = signal(false);
 
   categories: IApiCategory[] = [];
+
+  readonly userImagesUrl = environment.userImagesUrl;
+
+  // Signal computada para obtener la foto o null
+  userPhotoUrl = computed(() => {
+    const user = this.authService.currentUser();
+    if (user && user.photo?.fileName) {
+      return `${this.userImagesUrl}${user.photo.fileName}`;
+    }
+    return null;
+  });
+
+  // Signal computada para las iniciales
+  userInitials = computed(() => {
+    const user = this.authService.currentUser();
+    if (!user) return '';
+    const first = user.name?.charAt(0) || '';
+    const last = user.last_name?.charAt(0) || '';
+    return (first + last).toUpperCase();
+  });
 
   ngOnInit() {
     this.apiCategoryService.getAllCategories().subscribe({

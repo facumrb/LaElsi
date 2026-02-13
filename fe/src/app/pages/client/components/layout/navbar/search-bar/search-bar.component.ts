@@ -1,25 +1,26 @@
-import { Component, signal, inject } from '@angular/core';
+import { Component, signal, inject, DestroyRef } from '@angular/core';
 import { Router } from '@angular/router';
-import { CurrencyPipe, UpperCasePipe } from '@angular/common';
+import { CurrencyPipe } from '@angular/common';
 import { IApiProduct } from '@models/product.model';
 import { ApiProductService } from '@services/api-product.service';
 import { environment } from 'src/environments/environment';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { bootstrapSearch } from '@ng-icons/bootstrap-icons';
 import { FormsModule } from '@angular/forms';
-import { debounceTime, distinctUntilChanged, Subject, switchMap } from 'rxjs';
+import {
+  debounceTime,
+  distinctUntilChanged,
+  finalize,
+  Subject,
+  switchMap,
+  tap,
+} from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
 
 @Component({
   selector: 'app-search-bar',
-  imports: [
-    CurrencyPipe,
-    UpperCasePipe,
-    NgIconComponent,
-    FormsModule,
-    ClickOutsideDirective,
-  ],
+  imports: [CurrencyPipe, NgIconComponent, FormsModule, ClickOutsideDirective],
   viewProviders: provideIcons({
     bootstrapSearch,
   }),
@@ -27,27 +28,36 @@ import { ClickOutsideDirective } from '@shared/directives/click-outside.directiv
 })
 export class SearchBarComponent {
   private router = inject(Router);
-
+  private destroyRef = inject(DestroyRef);
   ApiProductService = inject(ApiProductService);
+
   query = signal('');
   results = signal<IApiProduct[]>([]); // Resultados rápidos (limitados a 5 o 6)
   showResults = signal(false);
+  isLoading = signal(false);
 
-  // Lógica para evitar peticiones excesivas (Debounce)
+  // Lógica para evitar peticiones excesivas
   private searchSubject = new Subject<string>();
 
   constructor() {
     // Escuchamos el Subject y solo buscamos cuando el usuario deja de escribir
     this.searchSubject
       .pipe(
-        debounceTime(300), // Espera 300ms
+        debounceTime(200),
         distinctUntilChanged(), // Solo busca si el texto cambió
-        switchMap((term) => this.ApiProductService.searchProducts(term)), // Llama al servicio
-        takeUntilDestroyed(), // Limpieza automática en Angular 21
+        tap(() => this.isLoading.set(true)),
+        switchMap((term) =>
+          this.ApiProductService.searchProducts(term).pipe(
+            // Aseguramos que si falla o termina, quitamos el loading
+            finalize(() => this.isLoading.set(false)),
+          ),
+        ),
+        takeUntilDestroyed(this.destroyRef), // Limpieza automática
       )
       .subscribe((products) => {
         this.results.set(products.slice(0, 6)); // Guardamos solo las 6 mejores coincidencias
         this.showResults.set(products.length > 0);
+        this.isLoading.set(false);
       });
   }
 
@@ -72,9 +82,11 @@ export class SearchBarComponent {
     this.query.set(term);
     if (term.length > 2) {
       this.searchSubject.next(term); // Enviamos al flujo de RxJS
+      this.isLoading.set(true);
     } else {
       this.showResults.set(false);
       this.results.set([]);
+      this.isLoading.set(false);
     }
   }
 
@@ -91,5 +103,11 @@ export class SearchBarComponent {
       this.showResults.set(false);
       this.router.navigate(['/search'], { queryParams: { q: this.query() } });
     }
+  }
+
+  clearSearch() {
+    this.query.set('');
+    this.results.set([]);
+    this.showResults.set(false);
   }
 }
