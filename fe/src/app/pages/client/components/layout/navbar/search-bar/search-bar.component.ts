@@ -8,9 +8,10 @@ import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { bootstrapSearch } from '@ng-icons/bootstrap-icons';
 import { FormsModule } from '@angular/forms';
 import {
+  catchError,
   debounceTime,
   distinctUntilChanged,
-  finalize,
+  of,
   Subject,
   switchMap,
   tap,
@@ -49,15 +50,23 @@ export class SearchBarComponent {
         switchMap((term) =>
           this.ApiProductService.searchProducts(term).pipe(
             // Aseguramos que si falla o termina, quitamos el loading
-            finalize(() => this.isLoading.set(false)),
+            catchError((err) => {
+              console.error(err);
+              return of([]); // Retorna array vacío si falla
+            }),
           ),
         ),
         takeUntilDestroyed(this.destroyRef), // Limpieza automática
       )
-      .subscribe((products) => {
-        this.results.set(products.slice(0, 6)); // Guardamos solo las 6 mejores coincidencias
-        this.showResults.set(products.length > 0);
-        this.isLoading.set(false);
+      .subscribe({
+        next: (products) => {
+          this.results.set(products.slice(0, 6)); // Guardamos solo las 6 mejores coincidencias
+          this.showResults.set(products.length > 0);
+          this.isLoading.set(false);
+        },
+        error: () => {
+          this.isLoading.set(false);
+        },
       });
   }
 
@@ -81,8 +90,8 @@ export class SearchBarComponent {
   onSearch(term: string) {
     this.query.set(term);
     if (term.length > 2) {
-      this.searchSubject.next(term); // Enviamos al flujo de RxJS
       this.isLoading.set(true);
+      this.searchSubject.next(term); // Enviamos al flujo de RxJS
     } else {
       this.showResults.set(false);
       this.results.set([]);
