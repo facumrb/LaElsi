@@ -4,12 +4,10 @@ import { ProductPhoto } from '../photo/productPhoto/productPhoto.entity.js';
 import { ProductState } from '../shared/enums/state.enum.js';
 import { Price } from './price/price.entity.js';
 import { Currency } from '../shared/enums/currency.enum.js';
+import { CustomBaseEntity } from '../shared/db/customBaseEntity.entity.js';
 
 @Entity()
-export class Product {
-  @PrimaryKey()
-  id!: number;
-
+export class Product extends CustomBaseEntity {
   @Property({ nullable: false, unique: true, length: 50 })
   name!: string;
 

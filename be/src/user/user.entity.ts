@@ -1,6 +1,7 @@
 import { Property, Entity, PrimaryKey, Enum, OneToOne, Rel } from '@mikro-orm/core';
 import bcrypt from 'bcrypt';
 import type { UserPhoto } from '../photo/userPhoto/userPhoto.entity.js';
+import { CustomBaseEntity } from '../shared/db/customBaseEntity.entity.js';
 
 export enum UserRole {
   ADMIN = 'Admin',
@@ -10,10 +11,7 @@ export enum UserRole {
 // Usamos STI (Single Table Inheritance) porque UserPhoto necesita apuntar a una tabla "User".
 // Admin y Client se guardarán en la misma tabla 'user' diferenciados por una columna 'dtype'.
 @Entity({ discriminatorColumn: 'dtype' })
-export abstract class User {
-  @PrimaryKey()
-  id!: number;
-
+export abstract class User extends CustomBaseEntity {
   @Property({ nullable: false, length: 100 })
   name!: string;
 
@@ -37,15 +35,6 @@ export abstract class User {
 
   @Enum(() => UserRole)
   role!: UserRole;
-
-  @Property()
-  createdAt: Date = new Date();
-
-  @Property({ onUpdate: () => new Date() })
-  updatedAt: Date = new Date();
-
-  @Property({ nullable: true })
-  deletedAt?: Date;
 
   @OneToOne('UserPhoto', 'user', { nullable: true })
   photo?: Rel<UserPhoto>;

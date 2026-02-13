@@ -1,13 +1,11 @@
 import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
+import { CustomBaseEntity } from '../shared/db/customBaseEntity.entity.js';
 
 @Entity({
   discriminatorColumn: 'type',
   abstract: true
 })
-export abstract class Photo {
-  @PrimaryKey()
-  id!: number;
-
+export abstract class Photo extends CustomBaseEntity {
   // Guardamos el nombre del archivo generado (ej: "1234-5678.jpg")
   // Esto es lo que usaremos para construir la URL pública
   @Property({ nullable: false, unique: true })
