@@ -28,7 +28,7 @@ export class ProductsListComponent {
     if (product.photos && product.photos.length > 0) {
       return this.getImageUrl(product.photos[0].fileName);
     }
-    return 'assets/no-image.jpg';
+    return 'assets/Webp/no-image.webp';
   }
 
   getProductPrice(product: IApiProduct): number {

@@ -5,20 +5,17 @@ import { IApiProduct } from '@models/product.model';
 import { CurrencyPipe, DecimalPipe } from '@angular/common';
 import { environment } from 'src/environments/environment';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { 
+import {
   bootstrapCheckLg,
   bootstrapShieldCheck,
   bootstrapChevronLeft,
   bootstrapChevronRight,
   bootstrapChevronDown,
-  bootstrapChevronUp
+  bootstrapChevronUp,
 } from '@ng-icons/bootstrap-icons';
-
-
 
 @Component({
   selector: 'app-product-page',
-  standalone: true,
   imports: [CurrencyPipe, DecimalPipe, NgIconComponent],
   viewProviders: [
     provideIcons({
@@ -28,14 +25,14 @@ import {
       bootstrapChevronRight,
       bootstrapChevronUp,
       bootstrapChevronDown,
-    })
+    }),
   ],
   templateUrl: './product-page.component.html',
 })
 export class ProductPageComponent implements OnInit {
   // Cambia esto por la URL real de tu backend
   private readonly imageBaseUrl = environment.productImagesUrl;
-  private readonly defaultImage = 'assets/no-image.jpg';
+  private readonly defaultImage = 'assets/Webp/no-image.webp';
 
   product?: IApiProduct;
   selectedPhotoUrl?: string; // Aquí guardaremos la URL completa de la foto visible

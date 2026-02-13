@@ -8,31 +8,48 @@
       placeholder="Buscar en La Elsi..."
       class="h-11 w-full rounded-l-xl bg-white px-4 text-sm text-black focus:outline-none focus:ring-2 focus:ring-[#049A8F]"
     />
-    <button (click)="handleFullSearch()" 
-            class="h-11 w-14 bg-[#037971] rounded-r-xl text-white flex items-center justify-center cursor-pointer hover:bg-[#049A8F] transition-colors">
+    <button
+      (click)="handleFullSearch()"
+      class="h-11 w-14 bg-[#037971] rounded-r-xl text-white flex items-center justify-center cursor-pointer hover:bg-[#049A8F] transition-colors"
+    >
       <ng-icon name="bootstrapSearch" class="text-lg"></ng-icon>
     </button>
   </div>
 
   @if (showResults() && results().length > 0) {
-    <div class="absolute top-full left-0 w-full bg-white mt-1 shadow-2xl rounded-xl overflow-hidden z-[200] border border-gray-100">
+    <div
+      class="absolute top-full left-0 w-full bg-white mt-1 shadow-2xl rounded-xl overflow-hidden z-200 border border-gray-100"
+    >
       <div class="p-2">
         @for (product of results(); track product.id) {
-          <div (click)="goToProduct(product.id)" 
-               class="flex items-center gap-3 p-3 hover:bg-gray-50 cursor-pointer rounded-lg transition-colors group">
-            <img [src]="buildUrl(product.photos[0].fileName)" class="w-12 h-12 object-cover rounded-md" />
+          <div
+            (click)="goToProduct(product.id)"
+            class="flex items-center gap-3 p-3 hover:bg-gray-50 cursor-pointer rounded-lg transition-colors group"
+          >
+            <img
+              [src]="buildUrl(product.photos[0].fileName)"
+              class="w-12 h-12 object-cover rounded-md"
+            />
             <div class="flex flex-col">
-              <span class="text-sm font-bold text-gray-800 group-hover:text-[#3d4494]">{{ product.name }}</span>
+              <span
+                class="text-sm font-bold text-gray-800 group-hover:text-[#3d4494]"
+                >{{ product.name }}</span
+              >
               <span class="text-xs text-gray-500">{{ product.brand }}</span>
             </div>
             <span class="ml-auto text-sm font-black text-gray-900">
-              {{getProductPrice(product) | currency: getProductCurrency(product) : "symbol" : "1.0-0"}}
+              {{
+                getProductPrice(product)
+                  | currency: getProductCurrency(product) : "symbol" : "1.0-0"
+              }}
             </span>
           </div>
         }
-        
-        <button (click)="handleFullSearch()" 
-                class="w-full py-3 mt-2 text-center text-xs font-bold text-[#3d4494] bg-indigo-50 hover:bg-indigo-100 transition-all">
+
+        <button
+          (click)="handleFullSearch()"
+          class="w-full py-3 mt-2 text-center text-xs font-bold text-[#3d4494] bg-indigo-50 hover:bg-indigo-100 transition-all"
+        >
           VER TODOS LOS RESULTADOS PARA "{{ query() | uppercase }}"
         </button>
       </div>
