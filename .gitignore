@@ -15,8 +15,8 @@ tmp/
 out-tsc/
 bazel-out/
 coverage/
-# Archivos intermedios de NestJS/TS
-tsconfig.build.tsbuildinfo
+*.tsbuildinfo
+tsconfig.tsbuildinfo
 
 # Ignorar subidas de imágenes
 uploads/*
