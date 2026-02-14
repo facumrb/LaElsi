@@ -5,6 +5,7 @@ import { UserRole } from '../user.entity.js';
 import jwt from 'jsonwebtoken';
 import { asyncHandler } from '../../shared/errors/asyncHandler.js';
 import { AppError } from '../../shared/errors/appError.js';
+import { ApiResponse } from '../../shared/utils/apiResponse.js';
 import fs from 'fs/promises';
 import path from 'path';
 
@@ -55,10 +56,7 @@ export class ClientController {
 
     if (!client) throw new AppError('Cliente no encontrado', 404);
 
-    return res.status(200).send({
-      message: 'Cuenta encontrada',
-      data: client
-    });
+    return res.status(200).json(ApiResponse.success('Cuenta encontrada', client));
   });
 
   static findOne = asyncHandler(async (req: Request, res: Response) => {
@@ -69,20 +67,14 @@ export class ClientController {
     const client = await em.findOne(Client, { id });
     if (!client) throw new AppError('Cliente no encontrado', 404);
 
-    return res.status(200).json({
-      message: 'Cliente encontrado',
-      data: client
-    });
+    return res.status(200).json(ApiResponse.success('Cliente encontrado', client));
   });
 
   static findAll = asyncHandler(async (req: Request, res: Response) => {
     const em = orm.em;
     const clients = await em.find(Client, {});
 
-    return res.status(200).json({
-      message: 'Todos los Clientes fueron encontrados',
-      data: clients
-    });
+    return res.status(200).json(ApiResponse.success('Todos los Clientes fueron encontrados', clients));
   });
 
   static searchClientByText = asyncHandler(async (req: Request, res: Response) => {
@@ -102,10 +94,7 @@ export class ClientController {
       ]
     });
 
-    return res.status(200).json({
-      message: 'Resultados de búsqueda',
-      data: clients
-    });
+    return res.status(200).json(ApiResponse.success('Resultados de búsqueda', clients));
   });
 
   static add = asyncHandler(async (req: Request, res: Response) => {
@@ -163,19 +152,16 @@ export class ClientController {
       expiresIn: '24h'
     });
 
-    return res.status(201).json({
-      message: 'Usuario registrado exitosamente',
-      data: {
-        token,
-        user: {
-          id: client.id,
-          email: client.email,
-          firstName: client.name,
-          lastName: client.last_name,
-          role: client.role
-        }
+    return res.status(201).json(ApiResponse.created('Usuario registrado exitosamente', {
+      token,
+      user: {
+        id: client.id,
+        email: client.email,
+        firstName: client.name,
+        lastName: client.last_name,
+        role: client.role
       }
-    });
+    }));
   });
 
   static update = asyncHandler(async (req: Request, res: Response) => {
@@ -211,10 +197,7 @@ export class ClientController {
       throw error;
     }
 
-    return res.status(200).json({
-      message: 'Datos actualizados correctamente',
-      data: client
-    });
+    return res.status(200).json(ApiResponse.success('Datos actualizados correctamente', client));
   });
 
   static remove = asyncHandler(async (req: Request, res: Response) => {
@@ -237,9 +220,7 @@ export class ClientController {
     em.remove(client);
     await em.flush();
 
-    return res.status(200).json({
-      message: 'Cliente eliminado correctamente'
-    });
+    return res.status(200).json(ApiResponse.success('Cliente eliminado correctamente'));
   });
 }
 

@@ -6,6 +6,7 @@ import path from 'path';
 import fs from 'fs/promises';
 import { asyncHandler } from '../../shared/errors/asyncHandler.js';
 import { AppError } from '../../shared/errors/appError.js';
+import { ApiResponse } from '../../shared/utils/apiResponse.js';
 
 const UPLOADS_PATH = path.join(process.cwd(), 'uploads', 'products');
 const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB por archivo
@@ -71,10 +72,7 @@ export class ProductPhotoController {
 
       await em.flush();
 
-      return res.status(201).json({
-        message: 'Fotos subidas correctamente',
-        cantidad: files.length
-      });
+      return res.status(201).json(ApiResponse.created('Fotos subidas correctamente', { cantidad: files.length }));
 
     } catch (error: any) {
       // Cleanup en caso de error
@@ -120,7 +118,7 @@ export class ProductPhotoController {
     }
 
     await em.flush();
-    return res.status(200).json({ message: 'Orden actualizado' });
+    return res.status(200).json(ApiResponse.success('Orden actualizado'));
   });
 
   static deleteProductPhoto = asyncHandler(async (req: Request, res: Response) => {
@@ -145,6 +143,6 @@ export class ProductPhotoController {
     em.remove(photo);
     await em.flush();
 
-    return res.status(200).json({ message: 'Foto eliminada correctamente' });
+    return res.status(200).json(ApiResponse.success('Foto eliminada correctamente'));
   });
 }

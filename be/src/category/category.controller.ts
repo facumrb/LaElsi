@@ -4,6 +4,7 @@ import { orm } from '../shared/db/orm.js';
 import { CategoryState, ProductState } from '../shared/enums/state.enum.js';
 import { asyncHandler } from '../shared/errors/asyncHandler.js';
 import { AppError } from '../shared/errors/appError.js';
+import { ApiResponse } from '../shared/utils/apiResponse.js';
 
 function sanitizeCategoryInput(req: Request, res: Response, next: NextFunction) {
   req.body.sanitizedInput = {
@@ -34,10 +35,7 @@ export class CategoryController {
       },
       { populate: ['products'] }
     );
-    return res.status(200).json({
-      message: 'Categorías encontradas',
-      data: categories
-    });
+    return res.status(200).json(ApiResponse.success('Categorías encontradas', categories));
   });
 
   static add = asyncHandler(async (req: Request, res: Response) => {
@@ -57,19 +55,13 @@ export class CategoryController {
     const category = em.create(Category, categoryData as any);
     await em.flush();
 
-    return res.status(201).json({
-      message: 'Categoría creada',
-      data: category
-    });
+    return res.status(201).json(ApiResponse.created('Categoría creada', category));
   });
 
   static findAll = asyncHandler(async (req: Request, res: Response) => {
     const em = orm.em;
     const categories = await em.find(Category, {}, { populate: ['products'] });
-    return res.status(200).json({
-      message: 'Todas las Categorías fueron encontradas',
-      data: categories
-    });
+    return res.status(200).json(ApiResponse.success('Todas las Categorías fueron encontradas', categories));
   });
 
   static findOne = asyncHandler(async (req: Request, res: Response) => {
@@ -81,10 +73,7 @@ export class CategoryController {
       throw new AppError('Categoría no encontrada', 404);
     }
 
-    return res.status(200).json({
-      message: 'Categoría encontrada',
-      data: category
-    });
+    return res.status(200).json(ApiResponse.success('Categoría encontrada', category));
   });
 
   static update = asyncHandler(async (req: Request, res: Response) => {
@@ -98,10 +87,7 @@ export class CategoryController {
 
     em.assign(category, req.body.sanitizedInput);
     await em.flush();
-    return res.status(200).json({
-      message: 'Categoría actualizada',
-      data: category
-    });
+    return res.status(200).json(ApiResponse.success('Categoría actualizada', category));
   });
 
   static remove = asyncHandler(async (req: Request, res: Response) => {
@@ -119,9 +105,7 @@ export class CategoryController {
 
     em.remove(category);
     await em.flush();
-    return res.status(200).send({
-      message: 'Categoría eliminada'
-    });
+    return res.status(200).json(ApiResponse.success('Categoría eliminada'));
   });
 
   static findAllActive = asyncHandler(async (req: Request, res: Response) => {
@@ -138,10 +122,7 @@ export class CategoryController {
         populateOrderBy: { 'products.photos': { order: 'ASC' } } as any
       }
     );
-    return res.status(200).json({
-      message: 'Categorías activas encontradas',
-      data: categories
-    });
+    return res.status(200).json(ApiResponse.success('Categorías activas encontradas', categories));
   });
 }
 

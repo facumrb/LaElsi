@@ -7,6 +7,7 @@ import { OrderState } from '../shared/enums/state.enum.js';
 import { DeliveryMethod } from '../shared/enums/delivery-method.enum.js';
 import { asyncHandler } from '../shared/errors/asyncHandler.js';
 import { AppError } from '../shared/errors/appError.js';
+import { ApiResponse } from '../shared/utils/apiResponse.js';
 
 // --- DTOs ---
 interface CreateOrderDto {
@@ -98,10 +99,7 @@ export class OrderController {
 
         await em.persistAndFlush(order);
 
-        return res.status(201).json({
-            message: 'Orden creada exitosamente',
-            data: order
-        });
+        return res.status(201).json(ApiResponse.created('Orden creada exitosamente', order));
     });
 
     static findAll = asyncHandler(async (req: Request, res: Response) => {
@@ -110,10 +108,7 @@ export class OrderController {
             populate: ['client', 'items', 'items.product']
         });
 
-        return res.status(200).json({
-            message: 'Todas las órdenes encontradas',
-            data: orders
-        });
+        return res.status(200).json(ApiResponse.success('Todas las órdenes encontradas', orders));
     });
 
     static findOne = asyncHandler(async (req: Request, res: Response) => {
@@ -129,10 +124,7 @@ export class OrderController {
             throw new AppError('Orden no encontrada', 404);
         }
 
-        return res.status(200).json({
-            message: 'Orden encontrada',
-            data: order
-        });
+        return res.status(200).json(ApiResponse.success('Orden encontrada', order));
     });
 
     static findByClient = asyncHandler(async (req: Request, res: Response) => {
@@ -145,10 +137,7 @@ export class OrderController {
             orderBy: { createdAt: 'DESC' }
         });
 
-        return res.status(200).json({
-            message: 'Órdenes del cliente encontradas',
-            data: orders
-        });
+        return res.status(200).json(ApiResponse.success('Órdenes del cliente encontradas', orders));
     });
 
     static updateStatus = asyncHandler(async (req: Request, res: Response) => {
@@ -176,10 +165,7 @@ export class OrderController {
 
         await em.flush();
 
-        return res.status(200).json({
-            message: 'Estado de la orden actualizado',
-            data: order
-        });
+        return res.status(200).json(ApiResponse.success('Estado de la orden actualizado', order));
     });
 
     static updateDeliveryMethod = asyncHandler(async (req: Request, res: Response) => {
@@ -206,10 +192,7 @@ export class OrderController {
         order.deliveryMethod = deliveryMethod;
         await em.flush();
 
-        return res.status(200).json({
-            message: 'Método de entrega actualizado',
-            data: order
-        });
+        return res.status(200).json(ApiResponse.success('Método de entrega actualizado', order));
     });
 
     static cancel = asyncHandler(async (req: Request, res: Response) => {
@@ -246,9 +229,6 @@ export class OrderController {
 
         await em.flush();
 
-        return res.status(200).json({
-            message: 'Orden cancelada correctamente',
-            data: order
-        });
+        return res.status(200).json(ApiResponse.success('Orden cancelada correctamente', order));
     });
 }

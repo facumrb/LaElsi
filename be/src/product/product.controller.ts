@@ -9,6 +9,7 @@ import path from 'path';
 import fs from 'fs/promises';
 import { asyncHandler } from '../shared/errors/asyncHandler.js';
 import { AppError } from '../shared/errors/appError.js';
+import { ApiResponse } from '../shared/utils/apiResponse.js';
 
 const PRODUCT_PATH = path.join(process.cwd(), 'uploads', 'products');
 const VALID_CURRENCIES = Object.values(Currency);
@@ -85,10 +86,7 @@ export class ProductController {
       throw error;
     }
 
-    return res.status(201).json({
-      message: 'Producto creado',
-      data: product
-    });
+    return res.status(201).json(ApiResponse.created('Producto creado', product));
   });
 
 
@@ -110,10 +108,7 @@ export class ProductController {
       }
     );
 
-    return res.status(200).json({
-      message: 'Productos encontrados',
-      data: products
-    });
+    return res.status(200).json(ApiResponse.success('Productos encontrados', products));
   });
 
   static findProductsByCategory = asyncHandler(async (req: Request, res: Response) => {
@@ -131,10 +126,7 @@ export class ProductController {
       }
     );
 
-    return res.status(200).json({
-      message: 'Productos encontrados en la categoría',
-      data: products
-    });
+    return res.status(200).json(ApiResponse.success('Productos encontrados en la categoría', products));
   });
 
   static findAll = asyncHandler(async (req: Request, res: Response) => {
@@ -147,10 +139,7 @@ export class ProductController {
         populateOrderBy: { photos: { order: 'ASC' } }
       }
     );
-    return res.status(200).json({
-      message: 'Todos los Productos fueron encontrados',
-      data: products
-    });
+    return res.status(200).json(ApiResponse.success('Todos los Productos fueron encontrados', products));
   });
 
   static findOne = asyncHandler(async (req: Request, res: Response) => {
@@ -164,10 +153,7 @@ export class ProductController {
       throw new AppError('Producto no encontrado', 404);
     }
 
-    return res.status(200).json({
-      message: 'Producto encontrado',
-      data: product
-    });
+    return res.status(200).json(ApiResponse.success('Producto encontrado', product));
   });
 
   static update = asyncHandler(async (req: Request, res: Response) => {
@@ -219,10 +205,7 @@ export class ProductController {
       throw error;
     }
 
-    return res.status(200).json({
-      message: 'Producto actualizado',
-      data: product
-    });
+    return res.status(200).json(ApiResponse.success('Producto actualizado', product));
   });
 
   static remove = asyncHandler(async (req: Request, res: Response) => {
@@ -247,9 +230,7 @@ export class ProductController {
     em.remove(product);
     await em.flush();
 
-    return res.status(200).send({
-      message: 'Producto eliminado'
-    });
+    return res.status(200).json(ApiResponse.success('Producto eliminado'));
   });
 
   static findPage = asyncHandler(async (req: Request, res: Response) => {
@@ -271,14 +252,13 @@ export class ProductController {
       }
     );
 
-    return res.status(200).json({
-      message: 'Página de productos encontrada',
-      data: products,
+    return res.status(200).json(ApiResponse.success('Página de productos encontrada', {
+      products,
       total,
       page,
       limit,
       totalPages: Math.ceil(total / limit)
-    });
+    }));
   });
 
   static findAllActive = asyncHandler(async (req: Request, res: Response) => {
@@ -293,10 +273,7 @@ export class ProductController {
       }
     );
 
-    return res.status(200).json({
-      message: 'Productos activos encontrados',
-      data: products
-    });
+    return res.status(200).json(ApiResponse.success('Productos activos encontrados', products));
   });
 }
 

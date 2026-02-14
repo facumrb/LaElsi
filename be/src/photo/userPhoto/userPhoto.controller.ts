@@ -6,6 +6,7 @@ import path from 'path';
 import fs from 'fs/promises';
 import { asyncHandler } from '../../shared/errors/asyncHandler.js';
 import { AppError } from '../../shared/errors/appError.js';
+import { ApiResponse } from '../../shared/utils/apiResponse.js';
 
 const USERS_PATH = path.join(process.cwd(), 'uploads', 'users');
 
@@ -73,13 +74,10 @@ export class UserPhotoController {
       user.updatedAt = new Date();
       await em.flush();
 
-      return res.status(201).json({
-        message: 'Foto de perfil actualizada correctamente',
-        photo: {
-          fileName: userPhoto.fileName,
-          id: userPhoto.id
-        }
-      });
+      return res.status(201).json(ApiResponse.created('Foto de perfil actualizada correctamente', {
+        fileName: userPhoto.fileName,
+        id: userPhoto.id
+      }));
 
     } catch (error: any) {
       if (file) await UserPhotoController.deleteUserUploadedFile(file);
@@ -120,7 +118,7 @@ export class UserPhotoController {
     em.remove(photo);
     await em.flush();
 
-    return res.status(200).json({ message: 'Foto de perfil eliminada' });
+    return res.status(200).json(ApiResponse.success('Foto de perfil eliminada'));
   });
 
   private static async deleteUserUploadedFile(file: Express.Multer.File) {

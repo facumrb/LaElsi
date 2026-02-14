@@ -4,6 +4,7 @@ import { orm } from '../../shared/db/orm.js';
 import { UserRole } from '../user.entity.js';
 import { asyncHandler } from '../../shared/errors/asyncHandler.js';
 import { AppError } from '../../shared/errors/appError.js';
+import { ApiResponse } from '../../shared/utils/apiResponse.js';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MIN_PASSWORD_LENGTH = 6;
@@ -37,10 +38,7 @@ export class AdminController {
     const admin = await em.findOne(Admin, { id });
     if (!admin) throw new AppError('Administrador no encontrado', 404);
 
-    return res.status(200).json({
-      message: 'Información de cuenta obtenida',
-      data: admin
-    });
+    return res.status(200).json(ApiResponse.success('Información de cuenta obtenida', admin));
   });
 
   static findOne = asyncHandler(async (req: Request, res: Response) => {
@@ -51,20 +49,14 @@ export class AdminController {
     const admin = await em.findOne(Admin, { id });
     if (!admin) throw new AppError('Administrador no encontrado', 404);
 
-    return res.status(200).json({
-      message: 'Administrador encontrado',
-      data: admin
-    });
+    return res.status(200).json(ApiResponse.success('Administrador encontrado', admin));
   });
 
   static findAll = asyncHandler(async (req: Request, res: Response) => {
     const em = orm.em;
     const admins = await em.find(Admin, {});
 
-    return res.status(200).json({
-      message: 'Todos los Administradores fueron encontrados',
-      data: admins
-    });
+    return res.status(200).json(ApiResponse.success('Todos los Administradores fueron encontrados', admins));
   });
 
   static searchAdminByText = asyncHandler(async (req: Request, res: Response) => {
@@ -84,10 +76,7 @@ export class AdminController {
       ]
     });
 
-    return res.status(200).json({
-      message: 'Resultados de búsqueda',
-      data: admins
-    });
+    return res.status(200).json(ApiResponse.success('Resultados de búsqueda', admins));
   });
 
   static add = asyncHandler(async (req: Request, res: Response) => {
@@ -141,10 +130,7 @@ export class AdminController {
       throw error;
     }
 
-    return res.status(201).json({
-      message: 'Administrador creado',
-      data: admin
-    });
+    return res.status(201).json(ApiResponse.created('Administrador creado', admin));
   });
 
   static update = asyncHandler(async (req: Request, res: Response) => {
@@ -180,10 +166,7 @@ export class AdminController {
       throw error;
     }
 
-    return res.status(200).json({
-      message: 'Administrador actualizado',
-      data: admin
-    });
+    return res.status(200).json(ApiResponse.success('Administrador actualizado', admin));
   });
 
   static remove = asyncHandler(async (req: Request, res: Response) => {
@@ -197,9 +180,7 @@ export class AdminController {
     em.remove(admin);
     await em.flush();
 
-    return res.status(200).json({
-      message: 'Administrador eliminado'
-    });
+    return res.status(200).json(ApiResponse.success('Administrador eliminado'));
   });
 }
 

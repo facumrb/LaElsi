@@ -1,6 +1,6 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { map, Observable, tap } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Router } from '@angular/router';
 import { LoginResponse, RegisterData, UserSession } from '@models/auth.model';
@@ -25,18 +25,20 @@ export class AuthService {
     this.loadSession();
   }
 
-  login(username: string, password: string): Observable<LoginResponse> {
+  login(username: string, password: string): Observable<any> {
     return this._http
-      .post<LoginResponse>(`${this.apiUrl}/login`, { username, password })
+      .post<any>(`${this.apiUrl}/login`, { username, password })
       .pipe(
         tap((response) => {
-          this.saveSession(response.token, response.user);
+          this.saveSession(response.data.token, response.data.user);
         }),
       );
   }
 
   register(userData: RegisterData): Observable<any> {
-    return this._http.post(`${this.apiUrl}/register`, userData);
+    return this._http
+      .post<any>(`${this.apiUrl}/register`, userData)
+      .pipe(map((response) => response.data));
   }
 
   logout(): void {
