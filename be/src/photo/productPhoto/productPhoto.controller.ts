@@ -7,142 +7,142 @@ import fs from 'fs/promises';
 
 const UPLOADS_PATH = path.join(process.cwd(), 'uploads', 'products');
 
-async function uploadProductPhotos(req: Request, res: Response) {
-  const em = orm.em.fork();
-  const files = req.files as Express.Multer.File[];
-  const { orders } = req.body;
+export class ProductPhotoController {
+  static async uploadProductPhotos(req: Request, res: Response): Promise<any> {
+    const em = orm.em.fork();
+    const files = req.files as Express.Multer.File[];
+    const { orders } = req.body;
 
-  try {
-    const id = Number(req.params.id);
-
-    if (!id) return res.status(400).json({ message: 'ID de Producto inválido' });
-    if (!files || files.length === 0) {
-      return res.status(400).json({ message: 'No se enviaron imágenes' });
-    }
-
-    // Buscamos el producto al que le vamos a asignar las fotos
-    const product = await em.findOne(Product, { id }, { populate: ['photos'] });
-    if (!product) {
-      await deleteProductUploadedFiles(files);
-      return res.status(404).json({ message: 'El producto no existe' });
-    }
-
-    // Validamos el límite de fotos por producto
-    const MAX_PHOTOS = 10;
-    if (product.photos.length + files.length > MAX_PHOTOS) {
-      await deleteProductUploadedFiles(files);
-      return res.status(400).json({
-        message: `Limite de ${MAX_PHOTOS} fotos excedido.`
-      });
-    }
-
-    // Lógica de ordenamiento de las fotos
-    let ordersArray: number[] = [];
-    if (Array.isArray(orders)) {
-      ordersArray = orders.map((o) => Number(o));
-    } else if (orders) {
-      ordersArray = [Number(orders)];
-    }
-    const useExplicitOrder = ordersArray.length === files.length;
-
-    let nextFallbackOrder = (product.photos.length > 0 ? Math.max(...product.photos.getItems().map((p) => p.order)) : -1) + 1;
-
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      const photo = new ProductPhoto();
-      photo.fileName = file.filename; // Nombre generado (uuid)
-      photo.originalName = file.originalname; // Nombre original
-      photo.mimeType = file.mimetype;
-      photo.product = product;
-      if (useExplicitOrder) {
-        photo.order = ordersArray[i]; // Usamos lo que dijo el usuario
-      } else {
-        photo.order = nextFallbackOrder++; // Si falla, lo mandamos al final
-      }
-      em.persist(photo);
-    }
-
-    await em.flush();
-
-    return res.status(201).json({
-      message: 'Fotos subidas correctamente',
-      cantidad: files.length
-    });
-  } catch (error: any) {
-    if (files) await deleteProductUploadedFiles(files);
-    return res.status(500).json({ message: 'Error interno: ' + error.message });
-  }
-}
-
-// Función auxiliar para limpiar fotos basura si la validación falla
-async function deleteProductUploadedFiles(files: Express.Multer.File[]) {
-  for (const file of files) {
     try {
-      await fs.unlink(file.path);
-    } catch (e) {
-      console.warn('No se pudo borrar archivo temporal:', file.filename);
+      const id = Number(req.params.id);
+
+      if (!id) return res.status(400).json({ message: 'ID de Producto inválido' });
+      if (!files || files.length === 0) {
+        return res.status(400).json({ message: 'No se enviaron imágenes' });
+      }
+
+      // Buscamos el producto al que le vamos a asignar las fotos
+      const product = await em.findOne(Product, { id }, { populate: ['photos'] });
+      if (!product) {
+        await ProductPhotoController.deleteProductUploadedFiles(files);
+        return res.status(404).json({ message: 'El producto no existe' });
+      }
+
+      // Validamos el límite de fotos por producto
+      const MAX_PHOTOS = 10;
+      if (product.photos.length + files.length > MAX_PHOTOS) {
+        await ProductPhotoController.deleteProductUploadedFiles(files);
+        return res.status(400).json({
+          message: `Limite de ${MAX_PHOTOS} fotos excedido.`
+        });
+      }
+
+      // Lógica de ordenamiento de las fotos
+      let ordersArray: number[] = [];
+      if (Array.isArray(orders)) {
+        ordersArray = orders.map((o) => Number(o));
+      } else if (orders) {
+        ordersArray = [Number(orders)];
+      }
+      const useExplicitOrder = ordersArray.length === files.length;
+
+      let nextFallbackOrder = (product.photos.length > 0 ? Math.max(...product.photos.getItems().map((p) => p.order)) : -1) + 1;
+
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const photo = new ProductPhoto();
+        photo.fileName = file.filename; // Nombre generado (uuid)
+        photo.originalName = file.originalname; // Nombre original
+        photo.mimeType = file.mimetype;
+        photo.product = product;
+        if (useExplicitOrder) {
+          photo.order = ordersArray[i]; // Usamos lo que dijo el usuario
+        } else {
+          photo.order = nextFallbackOrder++; // Si falla, lo mandamos al final
+        }
+        em.persist(photo);
+      }
+
+      await em.flush();
+
+      return res.status(201).json({
+        message: 'Fotos subidas correctamente',
+        cantidad: files.length
+      });
+    } catch (error: any) {
+      if (files) await ProductPhotoController.deleteProductUploadedFiles(files);
+      return res.status(500).json({ message: 'Error interno: ' + error.message });
     }
   }
-}
 
-async function reorderProductPhotos(req: Request, res: Response) {
-  const em = orm.em.fork();
-  try {
-    const { photosOrder } = req.body;
-
-    if (!photosOrder || !Array.isArray(photosOrder)) {
-      return res.status(400).json({ message: 'Formato inválido' });
+  // Función auxiliar para limpiar fotos basura si la validación falla
+  private static async deleteProductUploadedFiles(files: Express.Multer.File[]) {
+    for (const file of files) {
+      try {
+        await fs.unlink(file.path);
+      } catch (e) {
+        console.warn('No se pudo borrar archivo temporal:', file.filename);
+      }
     }
+  }
 
-    for (const item of photosOrder) {
-      // Solo actualizamos fotos existentes, si el ID no existe lo ignoramos (podría ser una foto nueva que aún no tiene ID)
-      if (item.id) {
-        const photo = await em.findOne(ProductPhoto, { id: item.id });
-        if (photo) {
-          photo.order = item.order;
+  static async reorderProductPhotos(req: Request, res: Response): Promise<any> {
+    const em = orm.em.fork();
+    try {
+      const { photosOrder } = req.body;
+
+      if (!photosOrder || !Array.isArray(photosOrder)) {
+        return res.status(400).json({ message: 'Formato inválido' });
+      }
+
+      for (const item of photosOrder) {
+        // Solo actualizamos fotos existentes, si el ID no existe lo ignoramos (podría ser una foto nueva que aún no tiene ID)
+        if (item.id) {
+          const photo = await em.findOne(ProductPhoto, { id: item.id });
+          if (photo) {
+            photo.order = item.order;
+          }
         }
       }
+
+      await em.flush();
+      res.status(200).json({ message: 'Orden actualizado' });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
     }
-
-    await em.flush();
-    res.status(200).json({ message: 'Orden actualizado' });
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
   }
-}
 
-async function deleteProductPhoto(req: Request, res: Response) {
-  const em = orm.em.fork();
-  try {
-    const id = Number(req.params.photoId);
-
-    // Buscamos la foto en la BD para saber su nombre.
-    const photo = await em.findOneOrFail(ProductPhoto, { id });
-
-    // Construimos la ruta absoluta al archivo debe coincidir con la carpeta donde Multer las guarda
-    const filePath = path.join(UPLOADS_PATH, photo.fileName);
-
-    // Intentamos borrar el archivo físico
+  static async deleteProductPhoto(req: Request, res: Response): Promise<any> {
+    const em = orm.em.fork();
     try {
-      await fs.unlink(filePath);
-      console.log(`Archivo borrado: ${filePath}`);
-    } catch (err) {
-      // Si el archivo no existe en disco, solo avisamos pero seguimos para poder borrar el registro de la BD.
-      console.warn(`No se pudo borrar el archivo físico (quizás no existía): ${err}`);
-    }
+      const id = Number(req.params.photoId);
 
-    // Borramos el registro de la Base de Datos
-    em.remove(photo);
-    await em.flush();
+      // Buscamos la foto en la BD para saber su nombre.
+      const photo = await em.findOneOrFail(ProductPhoto, { id });
 
-    res.status(200).json({ message: 'Foto eliminada correctamente' });
-  } catch (error: any) {
-    console.error(error);
-    if (error.name === 'NotFoundError') {
-      return res.status(404).json({ message: 'La foto no existe' });
+      // Construimos la ruta absoluta al archivo debe coincidir con la carpeta donde Multer las guarda
+      const filePath = path.join(UPLOADS_PATH, photo.fileName);
+
+      // Intentamos borrar el archivo físico
+      try {
+        await fs.unlink(filePath);
+        console.log(`Archivo borrado: ${filePath}`);
+      } catch (err) {
+        // Si el archivo no existe en disco, solo avisamos pero seguimos para poder borrar el registro de la BD.
+        console.warn(`No se pudo borrar el archivo físico (quizás no existía): ${err}`);
+      }
+
+      // Borramos el registro de la Base de Datos
+      em.remove(photo);
+      await em.flush();
+
+      res.status(200).json({ message: 'Foto eliminada correctamente' });
+    } catch (error: any) {
+      console.error(error);
+      if (error.name === 'NotFoundError') {
+        return res.status(404).json({ message: 'La foto no existe' });
+      }
+      res.status(500).json({ message: error.message });
     }
-    res.status(500).json({ message: error.message });
   }
 }
-
-export { uploadProductPhotos, reorderProductPhotos, deleteProductPhoto };

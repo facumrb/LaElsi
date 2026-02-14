@@ -1,10 +1,12 @@
 import { Entity, PrimaryKey, Property, ManyToOne, Rel, Enum } from '@mikro-orm/core';
 import { Product } from '../product.entity.js';
 import { Currency } from '../../shared/enums/currency.enum.js';
-import { CustomBaseEntity } from '../../shared/db/customBaseEntity.entity.js';
 
 @Entity()
-export class Price extends CustomBaseEntity {
+export class Price {
+  @PrimaryKey()
+  id!: number;
+
   @Property({ nullable: false })
   amount!: number;
 

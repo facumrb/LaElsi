@@ -33,200 +33,201 @@ function sanitizeProductInput(req: Request, res: Response, next: NextFunction) {
   next();
 }
 
-async function add(req: Request, res: Response) {
-  const em = orm.em;
-  try {
-    const input = req.body.sanitizedInput;
-    const { price, currency, ...productData } = input;
-    productData.category = em.getReference(Category, productData.category);
+export class ProductController {
+  static async add(req: Request, res: Response): Promise<any> {
+    const em = orm.em;
+    try {
+      const input = req.body.sanitizedInput;
+      const { price, currency, ...productData } = input;
+      productData.category = em.getReference(Category, productData.category);
 
-    const product = em.create(Product, productData);
-    product.updatePrice(price, currency);
-
-    await em.flush();
-
-    res.status(201).json({ message: 'Producto creado', data: product });
-  } catch (error: any) {
-    console.error('Error al crear el producto:', error);
-    res.status(500).json({ message: 'Error al crear el producto: ' + error.message });
-  }
-}
-
-// Función para buscar productos por nombre, descripcion y marca
-async function searchProductsByText(req: Request, res: Response) {
-  const em = orm.em;
-  const { query } = req.query; // Obtener el texto de búsqueda
-
-  try {
-    const products = await em.find(
-      Product,
-      {
-        $or: [{ name: { $like: `%${query}%` } }, { description: { $like: `%${query}%` } }, { brand: { $like: `%${query}%` } }]
-      },
-      {
-        populate: ['category', 'photos', 'prices']
-      }
-    );
-    res.status(200).json({ message: 'Productos encontrados', data: products });
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
-  }
-}
-
-// Función para obtener productos por categoría
-async function findProductsByCategory(req: Request, res: Response) {
-  const em = orm.em;
-  const categoryId = Number.parseInt(req.params.categoryId); // Obtener ID de categoría
-
-  try {
-    const products = await em.find(
-      Product,
-      {
-        category: { id: categoryId }
-      },
-      {
-        populate: ['category', 'photos', 'prices']
-      }
-    );
-    res.status(200).json({ message: 'Productos encontrados en la categoría', data: products });
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
-  }
-}
-
-async function findAll(req: Request, res: Response) {
-  const em = orm.em;
-  try {
-    const products = await em.find(
-      Product,
-      {},
-      {
-        populate: ['category', 'photos', 'prices'],
-        populateOrderBy: { photos: { order: 'ASC' } }
-      }
-    );
-    res.status(200).json({ message: 'Todos los Productos fueron encontrados', data: products });
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
-  }
-}
-
-async function findOne(req: Request, res: Response) {
-  const em = orm.em;
-  try {
-    const id = Number.parseInt(req.params.id);
-    const product = await em.findOneOrFail(Product, { id }, { populate: ['category', 'photos', 'prices'], populateOrderBy: { photos: { order: 'ASC' } } });
-    res.status(200).json({ message: 'Producto encontrado', data: product });
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
-  }
-}
-
-async function update(req: Request, res: Response) {
-  const em = orm.em;
-  try {
-    const id = Number.parseInt(req.params.id);
-    const product = await em.findOneOrFail(
-      Product,
-      { id },
-      {
-        populate: ['category', 'photos', 'prices']
-      }
-    );
-    const { price, currency, ...updateData } = req.body.sanitizedInput;
-
-    // Si el precio cambio, usamos el metodo de la entidad para guardar el historico
-    const currentPrice = product.prices.getItems().find((p) => p.isCurrent);
-    if (price !== undefined && price !== currentPrice?.amount) {
+      const product = em.create(Product, productData);
       product.updatePrice(price, currency);
+
+      await em.flush();
+
+      res.status(201).json({ message: 'Producto creado', data: product });
+    } catch (error: any) {
+      console.error('Error al crear el producto:', error);
+      res.status(500).json({ message: 'Error al crear el producto: ' + error.message });
     }
-
-    em.assign(product, updateData);
-    await em.flush();
-    res.status(200).json({ message: 'Producto actualizado', data: product });
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
   }
-}
 
-async function remove(req: Request, res: Response) {
-  const em = orm.em;
-  try {
-    const id = Number.parseInt(req.params.id);
-    const product = await em.findOneOrFail(Product, { id }, { populate: ['photos'] });
-    for (const photo of product.photos) {
-      const filePath = path.join(PRODUCT_PATH, photo.fileName);
-      try {
-        await fs.unlink(filePath);
-      } catch (err) {
-        // Solo advertimos, no detenemos el proceso si el archivo ya no existe
-        console.warn(`No se pudo borrar el archivo físico (quizás no existía): ${photo.fileName}`);
+  // Función para buscar productos por nombre, descripcion y marca
+  static async searchProductsByText(req: Request, res: Response) {
+    const em = orm.em;
+    const { query } = req.query; // Obtener el texto de búsqueda
+
+    try {
+      const products = await em.find(
+        Product,
+        {
+          $or: [{ name: { $like: `%${query}%` } }, { description: { $like: `%${query}%` } }, { brand: { $like: `%${query}%` } }]
+        },
+        {
+          populate: ['category', 'photos', 'prices']
+        }
+      );
+      res.status(200).json({ message: 'Productos encontrados', data: products });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  }
+
+  // Función para obtener productos por categoría
+  static async findProductsByCategory(req: Request, res: Response) {
+    const em = orm.em;
+    const categoryId = Number.parseInt(req.params.categoryId); // Obtener ID de categoría
+
+    try {
+      const products = await em.find(
+        Product,
+        {
+          category: { id: categoryId }
+        },
+        {
+          populate: ['category', 'photos', 'prices']
+        }
+      );
+      res.status(200).json({ message: 'Productos encontrados en la categoría', data: products });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  }
+
+  static async findAll(req: Request, res: Response) {
+    const em = orm.em;
+    try {
+      const products = await em.find(
+        Product,
+        {},
+        {
+          populate: ['category', 'photos', 'prices'],
+          populateOrderBy: { photos: { order: 'ASC' } }
+        }
+      );
+      res.status(200).json({ message: 'Todos los Productos fueron encontrados', data: products });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  }
+
+  static async findOne(req: Request, res: Response) {
+    const em = orm.em;
+    try {
+      const id = Number.parseInt(req.params.id);
+      const product = await em.findOneOrFail(Product, { id }, { populate: ['category', 'photos', 'prices'], populateOrderBy: { photos: { order: 'ASC' } } });
+      res.status(200).json({ message: 'Producto encontrado', data: product });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  }
+
+  static async update(req: Request, res: Response) {
+    const em = orm.em;
+    try {
+      const id = Number.parseInt(req.params.id);
+      const product = await em.findOneOrFail(
+        Product,
+        { id },
+        {
+          populate: ['category', 'photos', 'prices']
+        }
+      );
+      const { price, currency, ...updateData } = req.body.sanitizedInput;
+
+      // Si el precio cambio, usamos el metodo de la entidad para guardar el historico
+      const currentPrice = product.prices.getItems().find((p) => p.isCurrent);
+      if (price !== undefined && price !== currentPrice?.amount) {
+        product.updatePrice(price, currency);
       }
+
+      em.assign(product, updateData);
+      await em.flush();
+      res.status(200).json({ message: 'Producto actualizado', data: product });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
     }
-    em.remove(product);
-    await em.flush();
-    res.status(200).send({ message: 'Producto eliminado' });
-  } catch (error: any) {
-    if (error.name === 'NotFoundError') {
-      return res.status(404).json({ message: 'El producto no existe' });
-    }
-    res.status(500).json({ message: error.message });
   }
-}
 
-const DEFAULT_LIMIT = 10;
+  static async remove(req: Request, res: Response): Promise<any> {
+    const em = orm.em;
+    try {
+      const id = Number.parseInt(req.params.id);
+      const product = await em.findOneOrFail(Product, { id }, { populate: ['photos'] });
+      for (const photo of product.photos) {
+        const filePath = path.join(PRODUCT_PATH, photo.fileName);
+        try {
+          await fs.unlink(filePath);
+        } catch (err) {
+          // Solo advertimos, no detenemos el proceso si el archivo ya no existe
+          console.warn(`No se pudo borrar el archivo físico (quizás no existía): ${photo.fileName}`);
+        }
+      }
+      em.remove(product);
+      await em.flush();
+      res.status(200).send({ message: 'Producto eliminado' });
+    } catch (error: any) {
+      if (error.name === 'NotFoundError') {
+        return res.status(404).json({ message: 'El producto no existe' });
+      }
+      res.status(500).json({ message: error.message });
+    }
+  }
 
-async function findPage(req: Request, res: Response) {
-  const em = orm.em;
+  static async findPage(req: Request, res: Response) {
+    const em = orm.em;
+    const DEFAULT_LIMIT = 10;
 
-  // Obtenemos los parámetros de la query (con valores por defecto)
-  const page = Number.parseInt(req.query.page as string) || 1;
-  const limit = Number.parseInt(req.query.limit as string) || DEFAULT_LIMIT;
-  const offset = (page - 1) * limit; // Salta los productos anteriores a la página actual (page - 1)
+    // Obtenemos los parámetros de la query (con valores por defecto)
+    const page = Number.parseInt(req.query.page as string) || 1;
+    const limit = Number.parseInt(req.query.limit as string) || DEFAULT_LIMIT;
+    const offset = (page - 1) * limit; // Salta los productos anteriores a la página actual (page - 1)
 
-  try {
-    // findAndCount devuelve un array: [items, totalCount]
-    const [products, total] = await em.findAndCount(
-      Product,
-      {},
-      {
-        populate: ['category', 'photos', 'prices'],
+    try {
+      // findAndCount devuelve un array: [items, totalCount]
+      const [products, total] = await em.findAndCount(
+        Product,
+        {},
+        {
+          populate: ['category', 'photos', 'prices'],
+          limit,
+          offset,
+          populateOrderBy: { photos: { order: 'ASC' } } // Ordena las fotos por orden creciente basado en "order"
+        }
+      );
+
+      // construimos un objeto que le da al frontend todo lo que necesita para dibujar la barrita de paginación
+      res.status(200).json({
+        message: 'Página de productos encontrada',
+        data: products,
+        total,
+        page,
         limit,
-        offset,
-        populateOrderBy: { photos: { order: 'ASC' } } // Ordena las fotos por orden creciente basado en "order"
-      }
-    );
+        totalPages: Math.ceil(total / limit)
+      });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  }
 
-    // construimos un objeto que le da al frontend todo lo que necesita para dibujar la barrita de paginación
-    res.status(200).json({
-      message: 'Página de productos encontrada',
-      data: products,
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit)
-    });
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
+  static async findAllActive(req: Request, res: Response) {
+    const em = orm.em;
+    try {
+      const products = await em.find(
+        Product,
+        { state: ProductState.ACTIVO, category: { state: CategoryState.ACTIVO } },
+        {
+          populate: ['category', 'photos', 'prices'],
+          populateWhere: { prices: { isCurrent: true } },
+          populateOrderBy: { photos: { order: 'ASC' } }
+        }
+      );
+      res.status(200).json({ message: 'Productos activos encontrados', data: products });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
   }
 }
 
-async function findAllActive(req: Request, res: Response) {
-  const em = orm.em;
-  try {
-    const products = await em.find(
-      Product,
-      { state: ProductState.ACTIVO, category: { state: CategoryState.ACTIVO } },
-      {
-        populate: ['category', 'photos', 'prices'],
-        populateWhere: { prices: { isCurrent: true } },
-        populateOrderBy: { photos: { order: 'ASC' } }
-      }
-    );
-    res.status(200).json({ message: 'Productos activos encontrados', data: products });
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
-  }
-}
-
-export { findPage, sanitizeProductInput, findAll, findAllActive, findOne, add, update, remove, searchProductsByText, findProductsByCategory };
+export { sanitizeProductInput };

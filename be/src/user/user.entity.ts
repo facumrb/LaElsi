@@ -1,4 +1,4 @@
-import { Property, Entity, PrimaryKey, Enum, OneToOne, Rel } from '@mikro-orm/core';
+import { Property, Entity, Enum, OneToOne, Rel } from '@mikro-orm/core';
 import bcrypt from 'bcrypt';
 import type { UserPhoto } from '../photo/userPhoto/userPhoto.entity.js';
 import { CustomBaseEntity } from '../shared/db/customBaseEntity.entity.js';

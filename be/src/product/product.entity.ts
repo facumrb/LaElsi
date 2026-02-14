@@ -1,4 +1,4 @@
-import { PrimaryKey, Entity, Property, ManyToOne, Rel, OneToMany, Collection, Enum, Cascade } from '@mikro-orm/core';
+import { Entity, Property, ManyToOne, Rel, OneToMany, Collection, Enum, Cascade } from '@mikro-orm/core';
 import { Category } from '../category/category.entity.js';
 import { ProductPhoto } from '../photo/productPhoto/productPhoto.entity.js';
 import { ProductState } from '../shared/enums/state.enum.js';
@@ -52,12 +52,6 @@ export class Product extends CustomBaseEntity {
     this.prices.add(newPrice);
   }
 }
-
-// @Property({ nullable: false })
-// registration_date?: Date;
-
-// @Property({ nullable: false })
-// update_date?: Date;
 
 // @Property({ nullable: false })
 // to_reserve!: boolean;

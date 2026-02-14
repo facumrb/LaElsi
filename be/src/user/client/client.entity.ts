@@ -1,9 +1,13 @@
-import { Entity, Property, Enum } from '@mikro-orm/core';
+import { Entity, Property, Enum, OneToMany, Collection, Cascade } from '@mikro-orm/core';
 import { User } from '../user.entity.js';
 import { FiscalCondition } from '../../shared/enums/fiscal-condition.enum.js';
+import { Order } from '../../order/order.entity.js';
 
 @Entity()
 export class Client extends User {
+  @OneToMany(() => Order, order => order.client, { cascade: [Cascade.ALL] })
+  orders = new Collection<Order>(this);
+
   @Property({ nullable: true, unique: true, length: 11 })
   cuit?: string;
 
