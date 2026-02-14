@@ -35,7 +35,7 @@ app.use('/api/orders', orderRouter);
 
 // Rutas de Fotos de Productos
 // Ejemplo URL: http://localhost:3000/uploads/products/foto.jpg
-app.use('/uploads/productPhotos', express.static(path.join(process.cwd(), 'uploads/productPhotos')));
+app.use('/uploads/products', express.static(path.join(process.cwd(), 'uploads/products')));
 
 // Rutas de Fotos de Usuarios/Perfil
 // Ejemplo URL: http://localhost:3000/uploads/users/avatar.jpg
