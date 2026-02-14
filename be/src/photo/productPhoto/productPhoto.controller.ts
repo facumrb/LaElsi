@@ -4,40 +4,47 @@ import { Product } from '../../product/product.entity.js';
 import { ProductPhoto } from './productPhoto.entity.js';
 import path from 'path';
 import fs from 'fs/promises';
+import { asyncHandler } from '../../shared/errors/asyncHandler.js';
+import { AppError } from '../../shared/errors/appError.js';
 
 const UPLOADS_PATH = path.join(process.cwd(), 'uploads', 'products');
+const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB por archivo
 
 export class ProductPhotoController {
-  static async uploadProductPhotos(req: Request, res: Response): Promise<any> {
-    const em = orm.em.fork();
+
+  static uploadProductPhotos = asyncHandler(async (req: Request, res: Response) => {
+    const em = orm.em;
     const files = req.files as Express.Multer.File[];
     const { orders } = req.body;
+    const id = Number(req.params.id);
+
+    if (isNaN(id)) throw new AppError('ID de Producto inválido', 400);
+    if (!files || files.length === 0) {
+      throw new AppError('No se enviaron imágenes', 400);
+    }
 
     try {
-      const id = Number(req.params.id);
-
-      if (!id) return res.status(400).json({ message: 'ID de Producto inválido' });
-      if (!files || files.length === 0) {
-        return res.status(400).json({ message: 'No se enviaron imágenes' });
+      // Validar tamaño de cada archivo
+      for (const file of files) {
+        if (file.size > MAX_FILE_SIZE) {
+          throw new AppError(`El archivo "${file.originalname}" excede el límite de 2MB`, 400);
+        }
       }
 
-      // Buscamos el producto al que le vamos a asignar las fotos
+      // Buscamos el producto
       const product = await em.findOne(Product, { id }, { populate: ['photos'] });
+
       if (!product) {
-        await ProductPhotoController.deleteProductUploadedFiles(files);
-        return res.status(404).json({ message: 'El producto no existe' });
+        throw new AppError('El producto no existe', 404);
       }
 
-      // Validamos el límite de fotos por producto
+      // Validamos el límite de fotos
       const MAX_PHOTOS = 10;
       if (product.photos.length + files.length > MAX_PHOTOS) {
-        await ProductPhotoController.deleteProductUploadedFiles(files);
-        return res.status(400).json({
-          message: `Limite de ${MAX_PHOTOS} fotos excedido.`
-        });
+        throw new AppError(`Limite de ${MAX_PHOTOS} fotos excedido.`, 400);
       }
 
-      // Lógica de ordenamiento de las fotos
+      // Ordenamiento
       let ordersArray: number[] = [];
       if (Array.isArray(orders)) {
         ordersArray = orders.map((o) => Number(o));
@@ -45,20 +52,19 @@ export class ProductPhotoController {
         ordersArray = [Number(orders)];
       }
       const useExplicitOrder = ordersArray.length === files.length;
-
       let nextFallbackOrder = (product.photos.length > 0 ? Math.max(...product.photos.getItems().map((p) => p.order)) : -1) + 1;
 
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         const photo = new ProductPhoto();
-        photo.fileName = file.filename; // Nombre generado (uuid)
-        photo.originalName = file.originalname; // Nombre original
+        photo.fileName = file.filename;
+        photo.originalName = file.originalname;
         photo.mimeType = file.mimetype;
         photo.product = product;
         if (useExplicitOrder) {
-          photo.order = ordersArray[i]; // Usamos lo que dijo el usuario
+          photo.order = ordersArray[i];
         } else {
-          photo.order = nextFallbackOrder++; // Si falla, lo mandamos al final
+          photo.order = nextFallbackOrder++;
         }
         em.persist(photo);
       }
@@ -69,13 +75,14 @@ export class ProductPhotoController {
         message: 'Fotos subidas correctamente',
         cantidad: files.length
       });
-    } catch (error: any) {
-      if (files) await ProductPhotoController.deleteProductUploadedFiles(files);
-      return res.status(500).json({ message: 'Error interno: ' + error.message });
-    }
-  }
 
-  // Función auxiliar para limpiar fotos basura si la validación falla
+    } catch (error: any) {
+      // Cleanup en caso de error
+      if (files) await ProductPhotoController.deleteProductUploadedFiles(files);
+      throw error; // Re-throw para que lo capture el global handler
+    }
+  });
+
   private static async deleteProductUploadedFiles(files: Express.Multer.File[]) {
     for (const file of files) {
       try {
@@ -86,63 +93,58 @@ export class ProductPhotoController {
     }
   }
 
-  static async reorderProductPhotos(req: Request, res: Response): Promise<any> {
-    const em = orm.em.fork();
-    try {
-      const { photosOrder } = req.body;
+  static reorderProductPhotos = asyncHandler(async (req: Request, res: Response) => {
+    const em = orm.em;
+    const { photosOrder } = req.body;
 
-      if (!photosOrder || !Array.isArray(photosOrder)) {
-        return res.status(400).json({ message: 'Formato inválido' });
-      }
-
-      for (const item of photosOrder) {
-        // Solo actualizamos fotos existentes, si el ID no existe lo ignoramos (podría ser una foto nueva que aún no tiene ID)
-        if (item.id) {
-          const photo = await em.findOne(ProductPhoto, { id: item.id });
-          if (photo) {
-            photo.order = item.order;
-          }
-        }
-      }
-
-      await em.flush();
-      res.status(200).json({ message: 'Orden actualizado' });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
+    if (!photosOrder || !Array.isArray(photosOrder)) {
+      throw new AppError('Formato inválido', 400);
     }
-  }
 
-  static async deleteProductPhoto(req: Request, res: Response): Promise<any> {
-    const em = orm.em.fork();
-    try {
-      const id = Number(req.params.photoId);
-
-      // Buscamos la foto en la BD para saber su nombre.
-      const photo = await em.findOneOrFail(ProductPhoto, { id });
-
-      // Construimos la ruta absoluta al archivo debe coincidir con la carpeta donde Multer las guarda
-      const filePath = path.join(UPLOADS_PATH, photo.fileName);
-
-      // Intentamos borrar el archivo físico
-      try {
-        await fs.unlink(filePath);
-        console.log(`Archivo borrado: ${filePath}`);
-      } catch (err) {
-        // Si el archivo no existe en disco, solo avisamos pero seguimos para poder borrar el registro de la BD.
-        console.warn(`No se pudo borrar el archivo físico (quizás no existía): ${err}`);
+    // Validar cada item del array
+    for (const item of photosOrder) {
+      if (!item.id || isNaN(Number(item.id))) {
+        throw new AppError('Cada elemento debe tener un "id" numérico válido', 400);
       }
-
-      // Borramos el registro de la Base de Datos
-      em.remove(photo);
-      await em.flush();
-
-      res.status(200).json({ message: 'Foto eliminada correctamente' });
-    } catch (error: any) {
-      console.error(error);
-      if (error.name === 'NotFoundError') {
-        return res.status(404).json({ message: 'La foto no existe' });
+      if (item.order === undefined || item.order === null || isNaN(Number(item.order)) || !Number.isInteger(Number(item.order)) || Number(item.order) < 0) {
+        throw new AppError(`El "order" del elemento con id ${item.id} debe ser un entero mayor o igual a 0`, 400);
       }
-      res.status(500).json({ message: error.message });
     }
-  }
+
+    for (const item of photosOrder) {
+      const photo = await em.findOne(ProductPhoto, { id: Number(item.id) });
+      if (!photo) {
+        throw new AppError(`Foto con id ${item.id} no encontrada`, 404);
+      }
+      photo.order = Number(item.order);
+    }
+
+    await em.flush();
+    return res.status(200).json({ message: 'Orden actualizado' });
+  });
+
+  static deleteProductPhoto = asyncHandler(async (req: Request, res: Response) => {
+    const em = orm.em;
+    const id = Number(req.params.photoId);
+    if (isNaN(id)) throw new AppError('ID de foto inválido', 400);
+
+    const photo = await em.findOne(ProductPhoto, { id });
+
+    if (!photo) {
+      throw new AppError('La foto no existe', 404);
+    }
+
+    const filePath = path.join(UPLOADS_PATH, photo.fileName);
+
+    try {
+      await fs.unlink(filePath);
+    } catch (err) {
+      console.warn(`No se pudo borrar el archivo físico (quizás no existía): ${err}`);
+    }
+
+    em.remove(photo);
+    await em.flush();
+
+    return res.status(200).json({ message: 'Foto eliminada correctamente' });
+  });
 }

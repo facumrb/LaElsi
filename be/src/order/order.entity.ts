@@ -63,11 +63,24 @@ export class Order extends CustomBaseEntity {
         }, 0);
     }
 
+    private static readonly VALID_TRANSITIONS: Record<OrderState, OrderState[]> = {
+        [OrderState.PENDING]: [OrderState.PAID, OrderState.CANCELLED],
+        [OrderState.PAID]: [OrderState.SHIPPED, OrderState.CANCELLED],
+        [OrderState.SHIPPED]: [OrderState.DELIVERED, OrderState.CANCELLED],
+        [OrderState.DELIVERED]: [],
+        [OrderState.CANCELLED]: [],
+    };
+
     changeStatus(newState: OrderState) {
-        if (this.status === OrderState.CANCELLED) {
-            throw new Error('No se puede cambiar el estado de una orden cancelada');
+        const allowedTransitions = Order.VALID_TRANSITIONS[this.status];
+
+        if (!allowedTransitions || !allowedTransitions.includes(newState)) {
+            throw new Error(
+                `No se puede cambiar el estado de "${this.status}" a "${newState}". ` +
+                `Transiciones válidas desde "${this.status}": ${allowedTransitions.length > 0 ? allowedTransitions.join(', ') : 'ninguna (estado final)'}`
+            );
         }
-        // Aquí se pueden agregar más reglas de negocio, como no volver a PENDING si ya fue SHIPPED, etc.
+
         this.status = newState;
     }
 }

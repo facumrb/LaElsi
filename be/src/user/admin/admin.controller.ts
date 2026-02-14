@@ -2,22 +2,23 @@ import { Request, Response, NextFunction } from 'express';
 import { Admin } from './admin.entity.js';
 import { orm } from '../../shared/db/orm.js';
 import { UserRole } from '../user.entity.js';
-import fs from 'fs/promises';
-import path from 'path';
+import { asyncHandler } from '../../shared/errors/asyncHandler.js';
+import { AppError } from '../../shared/errors/appError.js';
 
-const USERS_PATH = path.join(process.cwd(), 'uploads', 'users');
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MIN_PASSWORD_LENGTH = 6;
 
 function sanitizeAdminInput(req: Request, res: Response, next: NextFunction) {
   req.body.sanitizedInput = {
+    email: req.body.email,
+    password: req.body.password,
     name: req.body.name,
     last_name: req.body.last_name,
     phone: req.body.phone,
+    address: req.body.address,
     username: req.body.username,
-    password: req.body.password,
-    email: req.body.email,
     dni: req.body.dni
   };
-
   Object.keys(req.body.sanitizedInput).forEach((key) => {
     if (req.body.sanitizedInput[key] === undefined) {
       delete req.body.sanitizedInput[key];
@@ -26,149 +27,180 @@ function sanitizeAdminInput(req: Request, res: Response, next: NextFunction) {
   next();
 }
 
-// Obtener información de cuenta del administrador
 export class AdminController {
 
-  // Obtener información de cuenta del administrador
-  static async getAccountInfo(req: Request, res: Response) {
+  static getAccountInfo = asyncHandler(async (req: Request, res: Response) => {
     const em = orm.em;
-    try {
-      const id = Number.parseInt(req.params.id);
-      const admin = await em.findOneOrFail(Admin, id, { populate: ['photo'] });
-      // Filtrar los datos que se enviarán al cliente
-      const accountInfo = {
-        id: admin.id,
-        name: admin.name,
-        last_name: admin.last_name,
-        phone: admin.phone,
-        username: admin.username,
-        email: admin.email,
-        dni: admin.dni,
-        role: admin.role,
-        photo: admin.photo
-          ? {
-            id: admin.photo.id,
-            fileName: admin.photo.fileName
-          }
-          : null
-      };
+    const id = Number.parseInt(req.params.id);
+    if (isNaN(id)) throw new AppError('ID de administrador inválido', 400);
 
-      res.status(200).json({ message: 'Información de cuenta obtenida', data: accountInfo });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
-  }
+    const admin = await em.findOne(Admin, { id });
+    if (!admin) throw new AppError('Administrador no encontrado', 404);
 
-  static async findOne(req: Request, res: Response) {
+    return res.status(200).json({
+      message: 'Información de cuenta obtenida',
+      data: admin
+    });
+  });
+
+  static findOne = asyncHandler(async (req: Request, res: Response) => {
     const em = orm.em;
-    try {
-      const id = Number.parseInt(req.params.id);
-      const admin = await em.findOneOrFail(Admin, id, { populate: ['photo'] });
-      res.status(200).json({ message: 'Administrador encontrado', data: admin });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
-  }
+    const id = Number.parseInt(req.params.id);
+    if (isNaN(id)) throw new AppError('ID de administrador inválido', 400);
 
-  static async findAll(req: Request, res: Response) {
+    const admin = await em.findOne(Admin, { id });
+    if (!admin) throw new AppError('Administrador no encontrado', 404);
+
+    return res.status(200).json({
+      message: 'Administrador encontrado',
+      data: admin
+    });
+  });
+
+  static findAll = asyncHandler(async (req: Request, res: Response) => {
     const em = orm.em;
-    try {
-      const admins = await em.find(Admin, {}, { populate: ['photo'] });
-      res.status(200).json({ message: 'Todos los Administradores fueron encontrados', data: admins });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
-  }
+    const admins = await em.find(Admin, {});
 
-  static async searchAdminByText(req: Request, res: Response) {
+    return res.status(200).json({
+      message: 'Todos los Administradores fueron encontrados',
+      data: admins
+    });
+  });
+
+  static searchAdminByText = asyncHandler(async (req: Request, res: Response) => {
     const em = orm.em;
     const { query } = req.query;
 
-    try {
-      const admins = await em.find(
-        Admin,
-        {
-          $or: [{ name: { $like: `%${query}%` } }, { last_name: { $like: `%${query}%` } }, { username: { $like: `%${query}%` } }, { dni: { $like: `%${query}%` } }]
-        },
-        { populate: ['photo'] }
-      );
-      res.status(200).json({ message: 'Administradores encontrados', data: admins });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
+    if (!query || typeof query !== 'string' || query.trim().length === 0) {
+      throw new AppError('El parámetro de búsqueda es requerido', 400);
     }
-  }
 
-  static async add(req: Request, res: Response) {
+    const admins = await em.find(Admin, {
+      $or: [
+        { name: { $like: `%${query}%` } },
+        { last_name: { $like: `%${query}%` } },
+        { email: { $like: `%${query}%` } },
+        { dni: { $like: `%${query}%` } }
+      ]
+    });
+
+    return res.status(200).json({
+      message: 'Resultados de búsqueda',
+      data: admins
+    });
+  });
+
+  static add = asyncHandler(async (req: Request, res: Response) => {
     const em = orm.em;
-    try {
-      const admin = new Admin();
-      // Asignar propiedades manualmente o con assign, pero cuidando el password
-      const { password, ...rest } = req.body.sanitizedInput;
-      em.assign(admin, rest);
+    const { email, password, name, last_name, phone, username, dni } = req.body.sanitizedInput;
 
-      admin.role = UserRole.ADMIN;
-
-      if (password) {
-        await admin.setPassword(password);
-      } // Si no hay password, fallará en la base si es required.
-
-      em.persist(admin);
-      await em.flush();
-      res.status(201).json({ message: 'Administrador creado', data: admin });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
+    // Validar campos obligatorios
+    if (!email || !password || !name || !last_name || !phone || !username || !dni) {
+      throw new AppError('Todos los campos obligatorios deben ser proporcionados (email, contraseña, nombre, apellido, teléfono, nombre de usuario, DNI)', 400);
     }
-  }
 
-  // Actualizar información de la cuenta del administrador
-  static async update(req: Request, res: Response) {
+    if (!EMAIL_REGEX.test(email)) {
+      throw new AppError('El formato del correo electrónico es inválido', 400);
+    }
+
+    if (password.length < MIN_PASSWORD_LENGTH) {
+      throw new AppError(`La contraseña debe tener al menos ${MIN_PASSWORD_LENGTH} caracteres`, 400);
+    }
+
+    const existingByEmail = await em.findOne(Admin, { email });
+    if (existingByEmail) {
+      throw new AppError('El correo electrónico ya está registrado', 400);
+    }
+
+    const existingByUsername = await em.findOne(Admin, { username });
+    if (existingByUsername) {
+      throw new AppError('El nombre de usuario ya está en uso', 400);
+    }
+
+    const existingByDni = await em.findOne(Admin, { dni });
+    if (existingByDni) {
+      throw new AppError('El DNI ya está registrado', 400);
+    }
+
+    const admin = new Admin();
+    admin.email = email;
+    await admin.setPassword(password);
+    admin.name = name;
+    admin.last_name = last_name;
+    admin.phone = phone;
+    admin.username = username;
+    admin.dni = dni;
+    admin.role = UserRole.ADMIN;
+
+    try {
+      await em.persistAndFlush(admin);
+    } catch (error: any) {
+      if (error.message?.includes('unique') || error.message?.includes('duplicate') || error.code === 'ER_DUP_ENTRY' || error.code === '23505') {
+        throw new AppError('Ya existe un registro con los mismos datos únicos (email, DNI o nombre de usuario)', 409);
+      }
+      throw error;
+    }
+
+    return res.status(201).json({
+      message: 'Administrador creado',
+      data: admin
+    });
+  });
+
+  static update = asyncHandler(async (req: Request, res: Response) => {
     const em = orm.em;
-    try {
-      const id = Number.parseInt(req.params.id);
-      const adminToUpdate = await em.findOneOrFail(Admin, id);
+    const id = Number.parseInt(req.params.id);
+    if (isNaN(id)) throw new AppError('ID de administrador inválido', 400);
 
-      const { password, ...rest } = req.body.sanitizedInput;
+    const admin = await em.findOne(Admin, { id });
+    if (!admin) throw new AppError('Administrador no encontrado', 404);
 
-      em.assign(adminToUpdate, rest);
+    const input = req.body.sanitizedInput;
 
-      if (password) {
-        await adminToUpdate.setPassword(password);
-      }
-
-      await em.flush();
-      res.status(200).json({ message: 'Información de cuenta actualizada' });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
+    if (input.email !== undefined && !EMAIL_REGEX.test(input.email)) {
+      throw new AppError('El formato del correo electrónico es inválido', 400);
     }
-  }
 
-  static async remove(req: Request, res: Response): Promise<any> {
+    if (input.password) {
+      if (input.password.length < MIN_PASSWORD_LENGTH) {
+        throw new AppError(`La contraseña debe tener al menos ${MIN_PASSWORD_LENGTH} caracteres`, 400);
+      }
+      await admin.setPassword(input.password);
+      delete input.password;
+    }
+
+    em.assign(admin, input);
+
+    try {
+      await em.flush();
+    } catch (error: any) {
+      if (error.message?.includes('unique') || error.message?.includes('duplicate') || error.code === 'ER_DUP_ENTRY' || error.code === '23505') {
+        throw new AppError('Ya existe un registro con los mismos datos únicos (email, DNI o nombre de usuario)', 409);
+      }
+      throw error;
+    }
+
+    return res.status(200).json({
+      message: 'Administrador actualizado',
+      data: admin
+    });
+  });
+
+  static remove = asyncHandler(async (req: Request, res: Response) => {
     const em = orm.em;
-    try {
-      const id = Number.parseInt(req.params.id);
-      const admin = await em.findOneOrFail(Admin, { id }, { populate: ['photo'] });
+    const id = Number.parseInt(req.params.id);
+    if (isNaN(id)) throw new AppError('ID de administrador inválido', 400);
 
-      // Si tiene foto, intentamos borrar el archivo físico
-      if (admin.photo) {
-        const filePath = path.join(USERS_PATH, admin.photo.fileName);
-        try {
-          await fs.unlink(filePath);
-        } catch (err) {
-          // Solo advertimos, no detenemos el proceso si el archivo ya no existe
-          console.warn(`No se pudo borrar el archivo físico: ${err}`);
-        }
-      }
+    const admin = await em.findOne(Admin, { id });
+    if (!admin) throw new AppError('Administrador no encontrado', 404);
 
-      em.remove(admin);
-      await em.flush();
-      res.status(200).send({ message: 'Administrador eliminado' });
-    } catch (error: any) {
-      if (error.name === 'NotFoundError') {
-        return res.status(404).json({ message: 'El administrador no existe' });
-      }
-      res.status(500).json({ message: error.message });
-    }
-  }
+    em.remove(admin);
+    await em.flush();
+
+    return res.status(200).json({
+      message: 'Administrador eliminado'
+    });
+  });
 }
 
 export { sanitizeAdminInput };

@@ -2,10 +2,15 @@ import { Request, Response, NextFunction } from 'express';
 import { Client } from './client.entity.js';
 import { orm } from '../../shared/db/orm.js';
 import { UserRole } from '../user.entity.js';
+import jwt from 'jsonwebtoken';
+import { asyncHandler } from '../../shared/errors/asyncHandler.js';
+import { AppError } from '../../shared/errors/appError.js';
 import fs from 'fs/promises';
 import path from 'path';
 
 const USERS_PATH = path.join(process.cwd(), 'uploads', 'users');
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MIN_PASSWORD_LENGTH = 6;
 
 function sanitizeClientInput(req: Request, res: Response, next: NextFunction) {
   req.body.sanitizedInput = {
@@ -35,154 +40,207 @@ function sanitizeClientInput(req: Request, res: Response, next: NextFunction) {
   next();
 }
 
-// Obtener información de cuenta del cliente
 export class ClientController {
 
-  // Obtener información de cuenta del cliente
-  static async getAccountInfo(req: Request, res: Response) {
+  static getAccountInfo = asyncHandler(async (req: Request, res: Response) => {
     const em = orm.em;
-    try {
-      const id = Number.parseInt(req.params.id);
-      const client = await em.findOneOrFail(Client, id, { populate: ['photo'] });
-      // Filtrar los datos que se enviarán al cliente
-      const accountInfo = {
-        id: client.id,
-        name: client.name,
-        last_name: client.last_name,
-        phone: client.phone,
-        username: client.username,
-        email: client.email,
-        dni: client.dni,
-        cuit: client.cuit,
-        fiscalCondition: client.fiscalCondition,
-        street: client.street,
-        streetNumber: client.streetNumber,
-        city: client.city,
-        province: client.province,
-        postalCode: client.postalCode,
-        floor: client.floor,
-        apartment: client.apartment,
-        role: client.role,
-        photo: client.photo
-          ? {
-            id: client.photo.id,
-            fileName: client.photo.fileName
-          }
-          : null
-      };
+    const id = Number.parseInt(req.params.id);
+    if (isNaN(id)) throw new AppError('ID de cliente inválido', 400);
 
-      res.status(200).json({ message: 'Información de cuenta obtenida', data: accountInfo });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
-  }
+    const client = await em.findOne(
+      Client,
+      { id },
+      { populate: ['orders'] }
+    );
 
-  static async findOne(req: Request, res: Response) {
+    if (!client) throw new AppError('Cliente no encontrado', 404);
+
+    return res.status(200).send({
+      message: 'Cuenta encontrada',
+      data: client
+    });
+  });
+
+  static findOne = asyncHandler(async (req: Request, res: Response) => {
     const em = orm.em;
-    try {
-      const id = Number.parseInt(req.params.id);
-      const client = await em.findOneOrFail(Client, id, { populate: ['photo'] });
-      res.status(200).json({ message: 'Cliente encontrado', data: client });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
-  }
+    const id = Number.parseInt(req.params.id);
+    if (isNaN(id)) throw new AppError('ID de cliente inválido', 400);
 
-  static async findAll(req: Request, res: Response) {
+    const client = await em.findOne(Client, { id });
+    if (!client) throw new AppError('Cliente no encontrado', 404);
+
+    return res.status(200).json({
+      message: 'Cliente encontrado',
+      data: client
+    });
+  });
+
+  static findAll = asyncHandler(async (req: Request, res: Response) => {
     const em = orm.em;
-    try {
-      const clients = await em.find(Client, {}, { populate: ['photo'] });
-      res.status(200).json({ message: 'Todos los Clientes fueron encontrados', data: clients });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
-  }
+    const clients = await em.find(Client, {});
 
-  static async searchClientByText(req: Request, res: Response) {
+    return res.status(200).json({
+      message: 'Todos los Clientes fueron encontrados',
+      data: clients
+    });
+  });
+
+  static searchClientByText = asyncHandler(async (req: Request, res: Response) => {
     const em = orm.em;
     const { query } = req.query;
 
-    try {
-      const clients = await em.find(
-        Client,
-        {
-          $or: [{ name: { $like: `%${query}%` } }, { last_name: { $like: `%${query}%` } }, { username: { $like: `%${query}%` } }, { dni: { $like: `%${query}%` } }]
-        },
-        { populate: ['photo'] }
-      );
-      res.status(200).json({ message: 'Clientes encontrados', data: clients });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
+    if (!query || typeof query !== 'string' || query.trim().length === 0) {
+      throw new AppError('El parámetro de búsqueda es requerido', 400);
     }
-  }
 
-  static async add(req: Request, res: Response) {
+    const clients = await em.find(Client, {
+      $or: [
+        { name: { $like: `%${query}%` } },
+        { last_name: { $like: `%${query}%` } },
+        { email: { $like: `%${query}%` } },
+        { dni: { $like: `%${query}%` } }
+      ]
+    });
+
+    return res.status(200).json({
+      message: 'Resultados de búsqueda',
+      data: clients
+    });
+  });
+
+  static add = asyncHandler(async (req: Request, res: Response) => {
     const em = orm.em;
+    const { email, password, name, last_name, phone, username, dni } = req.body.sanitizedInput;
+
+    // Validar campos obligatorios
+    if (!email || !password || !name || !last_name || !phone || !username || !dni) {
+      throw new AppError('Todos los campos obligatorios deben ser proporcionados (email, contraseña, nombre, apellido, teléfono, nombre de usuario, DNI)', 400);
+    }
+
+    if (!EMAIL_REGEX.test(email)) {
+      throw new AppError('El formato del correo electrónico es inválido', 400);
+    }
+
+    if (password.length < MIN_PASSWORD_LENGTH) {
+      throw new AppError(`La contraseña debe tener al menos ${MIN_PASSWORD_LENGTH} caracteres`, 400);
+    }
+
+    const existingByEmail = await em.findOne(Client, { email });
+    if (existingByEmail) {
+      throw new AppError('El correo electrónico ya está registrado', 400);
+    }
+
+    const existingByUsername = await em.findOne(Client, { username });
+    if (existingByUsername) {
+      throw new AppError('El nombre de usuario ya está en uso', 400);
+    }
+
+    const existingByDni = await em.findOne(Client, { dni });
+    if (existingByDni) {
+      throw new AppError('El DNI ya está registrado', 400);
+    }
+
+    const client = new Client();
+    client.email = email;
+    await client.setPassword(password);
+    client.name = name;
+    client.last_name = last_name;
+    client.phone = phone;
+    client.username = username;
+    client.dni = dni;
+    client.role = UserRole.CLIENT;
+
     try {
-      const client = new Client();
-      const { password, ...rest } = req.body.sanitizedInput;
-      em.assign(client, rest);
-
-      client.role = UserRole.CLIENT;
-
-      if (password) {
-        await client.setPassword(password);
+      await em.persistAndFlush(client);
+    } catch (error: any) {
+      if (error.message?.includes('unique') || error.message?.includes('duplicate') || error.code === 'ER_DUP_ENTRY' || error.code === '23505') {
+        throw new AppError('Ya existe un registro con los mismos datos únicos (email, DNI o nombre de usuario)', 409);
       }
-
-      em.persist(client);
-      await em.flush();
-      res.status(201).json({ message: 'Cliente creado', data: client });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      throw error;
     }
-  }
 
-  // Actualizar información de cuenta del cliente
-  static async update(req: Request, res: Response): Promise<any> {
-    const em = orm.em;
-    try {
-      const id = Number.parseInt(req.params.id);
+    const token = jwt.sign({ id: client.id, role: client.role }, process.env.JWT_SECRET || 'secret', {
+      expiresIn: '24h'
+    });
 
-      // Seguridad: Si no es Admin, solo puede actualizarse a sí mismo
-      if (req.user?.role !== UserRole.ADMIN && req.user?.id !== id) {
-        return res.status(403).json({ message: 'No tienes permisos para actualizar este perfil' });
-      }
-
-      const clientToUpdate = await em.getReference(Client, id);
-      em.assign(clientToUpdate, req.body.sanitizedInput);
-      await em.flush();
-      res.status(200).json({ message: 'Información de cuenta actualizada' });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
-  }
-
-  static async remove(req: Request, res: Response): Promise<any> {
-    const em = orm.em;
-    try {
-      const id = Number.parseInt(req.params.id);
-      const client = await em.findOneOrFail(Client, { id }, { populate: ['photo'] });
-
-      // Si tiene foto, intentamos borrar el archivo físico
-      if (client.photo) {
-        const filePath = path.join(USERS_PATH, client.photo.fileName);
-        try {
-          await fs.unlink(filePath);
-        } catch (err) {
-          // Solo advertimos, no detenemos el proceso si el archivo ya no existe
-          console.warn(`No se pudo borrar el archivo físico: ${err}`);
+    return res.status(201).json({
+      message: 'Usuario registrado exitosamente',
+      data: {
+        token,
+        user: {
+          id: client.id,
+          email: client.email,
+          firstName: client.name,
+          lastName: client.last_name,
+          role: client.role
         }
       }
-      em.remove(client);
-      await em.flush();
-      res.status(200).send({ message: 'Cliente eliminado' });
-    } catch (error: any) {
-      if (error.name === 'NotFoundError') {
-        return res.status(404).json({ message: 'El cliente no existe' });
-      }
-      res.status(500).json({ message: error.message });
+    });
+  });
+
+  static update = asyncHandler(async (req: Request, res: Response) => {
+    const em = orm.em;
+    const id = Number.parseInt(req.params.id);
+    if (isNaN(id)) throw new AppError('ID de cliente inválido', 400);
+
+    const client = await em.findOne(Client, { id });
+    if (!client) throw new AppError('Cliente no encontrado', 404);
+
+    const input = req.body.sanitizedInput;
+
+    if (input.email !== undefined && !EMAIL_REGEX.test(input.email)) {
+      throw new AppError('El formato del correo electrónico es inválido', 400);
     }
-  }
+
+    if (input.password) {
+      if (input.password.length < MIN_PASSWORD_LENGTH) {
+        throw new AppError(`La contraseña debe tener al menos ${MIN_PASSWORD_LENGTH} caracteres`, 400);
+      }
+      await client.setPassword(input.password);
+      delete input.password;
+    }
+
+    em.assign(client, input);
+
+    try {
+      await em.flush();
+    } catch (error: any) {
+      if (error.message?.includes('unique') || error.message?.includes('duplicate') || error.code === 'ER_DUP_ENTRY' || error.code === '23505') {
+        throw new AppError('Ya existe un registro con los mismos datos únicos (email, DNI o nombre de usuario)', 409);
+      }
+      throw error;
+    }
+
+    return res.status(200).json({
+      message: 'Datos actualizados correctamente',
+      data: client
+    });
+  });
+
+  static remove = asyncHandler(async (req: Request, res: Response) => {
+    const em = orm.em;
+    const id = Number.parseInt(req.params.id);
+    if (isNaN(id)) throw new AppError('ID de cliente inválido', 400);
+
+    const client = await em.findOne(Client, { id }, { populate: ['photo'] });
+    if (!client) throw new AppError('Cliente no encontrado', 404);
+
+    if (client.photo) {
+      const filePath = path.join(USERS_PATH, client.photo.fileName);
+      try {
+        await fs.unlink(filePath);
+      } catch (err) {
+        console.warn(`No se pudo borrar el archivo físico: ${err}`);
+      }
+    }
+
+    em.remove(client);
+    await em.flush();
+
+    return res.status(200).json({
+      message: 'Cliente eliminado correctamente'
+    });
+  });
 }
 
 export { sanitizeClientInput };

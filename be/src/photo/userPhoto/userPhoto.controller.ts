@@ -4,43 +4,44 @@ import { User } from '../../user/user.entity.js';
 import { UserPhoto } from './userPhoto.entity.js';
 import path from 'path';
 import fs from 'fs/promises';
+import { asyncHandler } from '../../shared/errors/asyncHandler.js';
+import { AppError } from '../../shared/errors/appError.js';
 
 const USERS_PATH = path.join(process.cwd(), 'uploads', 'users');
 
 export class UserPhotoController {
-  static async uploadUserPhoto(req: Request, res: Response): Promise<any> {
-    const em = orm.em.fork();
+  static uploadUserPhoto = asyncHandler(async (req: Request, res: Response) => {
+    const em = orm.em;
     const file = req.file;
+    const id = Number(req.params.id);
+
+    if (isNaN(id)) throw new AppError('ID de Usuario inválido', 400);
 
     try {
-      const id = Number(req.params.id);
-
-      if (!id) return res.status(400).json({ message: 'ID de Usuario inválido' });
-
       // Validación de que el usuario solo pueda modificar su propia foto (a menos que sea un admin)
       const isOwner = req.user?.id === id;
       const isAdmin = req.user?.role === 'Admin';
 
       if (!isOwner && !isAdmin) {
         if (file) await UserPhotoController.deleteUserUploadedFile(file);
-        return res.status(403).json({ message: 'No tienes permisos para modificar esta foto' });
+        throw new AppError('No tienes permisos para modificar esta foto', 403);
       }
 
       if (!file) {
-        return res.status(400).json({ message: 'No se envió ninguna imagen' });
+        throw new AppError('No se envió ninguna imagen', 400);
       }
 
       const maxFileSize = 2 * 1024 * 1024; // 2MB
       if (file.size > maxFileSize) {
         await UserPhotoController.deleteUserUploadedFile(file);
-        return res.status(400).json({ message: 'La imagen excede el límite de 2MB' });
+        throw new AppError('La imagen excede el límite de 2MB', 400);
       }
 
       // Buscamos el usuario
       const user = await em.findOne(User, { id });
       if (!user) {
         await UserPhotoController.deleteUserUploadedFile(file);
-        return res.status(404).json({ message: 'El usuario no existe' });
+        throw new AppError('El usuario no existe', 404);
       }
 
       // Buscamos si ya tiene foto de perfil
@@ -79,49 +80,48 @@ export class UserPhotoController {
           id: userPhoto.id
         }
       });
+
     } catch (error: any) {
       if (file) await UserPhotoController.deleteUserUploadedFile(file);
-      return res.status(500).json({ message: 'Error interno: ' + error.message });
+      throw error;
     }
-  }
+  });
 
-  static async deleteUserPhoto(req: Request, res: Response): Promise<any> {
-    const em = orm.em.fork();
+  static deleteUserPhoto = asyncHandler(async (req: Request, res: Response) => {
+    const em = orm.em;
+    const photoId = Number(req.params.photoId);
+    if (isNaN(photoId)) throw new AppError('ID de foto inválido', 400);
+
+    const photo = await em.findOne(UserPhoto, { id: photoId });
+
+    if (!photo) {
+      throw new AppError('Foto no encontrada', 404);
+    }
+
+    const userId = photo.user.id;
+
+    // Validar que el usuario solo pueda eliminar su propia foto (a menos que sea un admin)
+    const isOwner = req.user?.id === userId;
+    const isAdmin = req.user?.role === 'Admin';
+
+    if (!isOwner && !isAdmin) {
+      throw new AppError('No tienes permisos para eliminar esta foto', 403);
+    }
+
+    const filePath = path.join(USERS_PATH, photo.fileName);
+
     try {
-      const photoId = Number(req.params.photoId);
-
-      const photo = await em.findOneOrFail(UserPhoto, { id: photoId });
-
-      const userId = photo.user.id;
-
-      // Validar que el usuario solo pueda eliminar su propia foto (a menos que sea un admin)
-      const isOwner = req.user?.id === userId;
-      const isAdmin = req.user?.role === 'Admin';
-
-      if (!isOwner && !isAdmin) {
-        return res.status(403).json({ message: 'No tienes permisos para eliminar esta foto' });
-      }
-
-      const filePath = path.join(USERS_PATH, photo.fileName);
-
-      try {
-        await fs.unlink(filePath);
-      } catch (err) {
-        console.warn(`No se pudo borrar el archivo físico: ${err}`);
-      }
-
-      await em.nativeUpdate(User, { id: userId }, { updatedAt: new Date() });
-      em.remove(photo);
-      await em.flush();
-
-      res.status(200).json({ message: 'Foto de perfil eliminada' });
-    } catch (error: any) {
-      if (error.name === 'NotFoundError') {
-        return res.status(404).json({ message: 'Foto no encontrada' });
-      }
-      res.status(500).json({ message: error.message });
+      await fs.unlink(filePath);
+    } catch (err) {
+      console.warn(`No se pudo borrar el archivo físico: ${err}`);
     }
-  }
+
+    await em.nativeUpdate(User, { id: userId }, { updatedAt: new Date() });
+    em.remove(photo);
+    await em.flush();
+
+    return res.status(200).json({ message: 'Foto de perfil eliminada' });
+  });
 
   private static async deleteUserUploadedFile(file: Express.Multer.File) {
     try {

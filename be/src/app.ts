@@ -35,15 +35,26 @@ app.use('/api/orders', orderRouter);
 
 // Rutas de Fotos de Productos
 // Ejemplo URL: http://localhost:3000/uploads/products/foto.jpg
-app.use('/uploads/products', express.static(path.join(process.cwd(), 'uploads/products')));
+app.use('/uploads/productPhotos', express.static(path.join(process.cwd(), 'uploads/productPhotos')));
 
 // Rutas de Fotos de Usuarios/Perfil
 // Ejemplo URL: http://localhost:3000/uploads/users/avatar.jpg
 app.use('/uploads/users', express.static(path.join(process.cwd(), 'uploads/users')));
 
-app.use((_, res) => {
-  return res.status(404).send({ message: 'Recurso no encontrado' });
+import { errorHandler } from './shared/errors/errorHandler.js';
+import { AppError } from './shared/errors/appError.js';
+
+// ... (other imports)
+
+// (Rest of app setup)
+
+// Handle 404 before global error handler
+app.use((req, res, next) => {
+  next(new AppError(`No se encontró la ruta ${req.originalUrl} en este servidor`, 404));
 });
+
+// Global Error Handler
+app.use(errorHandler as any);
 
 async function startServer() {
   try {

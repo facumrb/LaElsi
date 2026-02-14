@@ -1,28 +1,29 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { orm } from '../shared/db/orm.js';
 import { Product } from './product.entity.js';
 import { Category } from '../category/category.entity.js';
+import { ProductPhoto } from '../photo/productPhoto/productPhoto.entity.js';
 import { ProductState, CategoryState } from '../shared/enums/state.enum.js';
+import { Currency } from '../shared/enums/currency.enum.js';
 import path from 'path';
 import fs from 'fs/promises';
+import { asyncHandler } from '../shared/errors/asyncHandler.js';
+import { AppError } from '../shared/errors/appError.js';
 
 const PRODUCT_PATH = path.join(process.cwd(), 'uploads', 'products');
+const VALID_CURRENCIES = Object.values(Currency);
+const VALID_PRODUCT_STATES = Object.values(ProductState);
 
-function sanitizeProductInput(req: Request, res: Response, next: NextFunction) {
+function sanitizeProductInput(req: Request, res: Response, next: any) {
   req.body.sanitizedInput = {
     name: req.body.name,
     description: req.body.description,
+    brand: req.body.brand,
     price: req.body.price,
     currency: req.body.currency,
-    brand: req.body.brand,
-    total_sold: req.body.total_sold,
-    state: req.body.state,
     stock: req.body.stock,
-    category: req.body.categoryId
-    /* registration_date: req.body.registration_date,
-    update_date: req.body.update_date,
-    to_reserve: req.body.to_reserve,
-    quantity_to_reserve: req.body.quantity_to_reserve */
+    category: req.body.category,
+    state: req.body.state
   };
 
   Object.keys(req.body.sanitizedInput).forEach((key) => {
@@ -34,200 +35,269 @@ function sanitizeProductInput(req: Request, res: Response, next: NextFunction) {
 }
 
 export class ProductController {
-  static async add(req: Request, res: Response): Promise<any> {
-    const em = orm.em;
-    try {
-      const input = req.body.sanitizedInput;
-      const { price, currency, ...productData } = input;
-      productData.category = em.getReference(Category, productData.category);
 
-      const product = em.create(Product, productData);
+  static add = asyncHandler(async (req: Request, res: Response) => {
+    const em = orm.em;
+    const input = req.body.sanitizedInput;
+    const { price, currency, ...productData } = input;
+
+    // Validar campos obligatorios
+    if (!productData.name || !productData.description || !productData.brand || productData.stock === undefined || price === undefined) {
+      throw new AppError('Los campos nombre, descripción, marca, stock y precio son obligatorios', 400);
+    }
+
+    // Validar precio positivo
+    if (typeof price !== 'number' || price <= 0) {
+      throw new AppError('El precio debe ser un número positivo', 400);
+    }
+
+    // Validar stock >= 0 y entero
+    if (typeof productData.stock !== 'number' || productData.stock < 0 || !Number.isInteger(productData.stock)) {
+      throw new AppError('El stock debe ser un número entero mayor o igual a 0', 400);
+    }
+
+    // Validar currency si se proporciona
+    if (currency !== undefined && !VALID_CURRENCIES.includes(currency)) {
+      throw new AppError(`Moneda inválida. Las monedas válidas son: ${VALID_CURRENCIES.join(', ')}`, 400);
+    }
+
+    // Verificar que la categoría existe
+    if (!productData.category) {
+      throw new AppError('La categoría es obligatoria', 400);
+    }
+
+    const category = await em.findOne(Category, { id: productData.category });
+    if (!category) {
+      throw new AppError('La categoría especificada no existe', 404);
+    }
+
+    productData.category = em.getReference(Category, productData.category);
+
+    const product = em.create(Product, productData);
+    product.updatePrice(price, currency);
+
+    try {
+      await em.flush();
+    } catch (error: any) {
+      if (error.message?.includes('unique') || error.message?.includes('duplicate') || error.code === 'ER_DUP_ENTRY' || error.code === '23505') {
+        throw new AppError('Ya existe un producto con el mismo nombre', 409);
+      }
+      throw error;
+    }
+
+    return res.status(201).json({
+      message: 'Producto creado',
+      data: product
+    });
+  });
+
+
+  static searchProductsByText = asyncHandler(async (req: Request, res: Response) => {
+    const em = orm.em;
+    const { query } = req.query;
+
+    if (!query || typeof query !== 'string' || query.trim().length === 0) {
+      throw new AppError('El parámetro de búsqueda es requerido', 400);
+    }
+
+    const products = await em.find(
+      Product,
+      {
+        $or: [{ name: { $like: `%${query}%` } }, { description: { $like: `%${query}%` } }, { brand: { $like: `%${query}%` } }]
+      },
+      {
+        populate: ['category', 'photos', 'prices']
+      }
+    );
+
+    return res.status(200).json({
+      message: 'Productos encontrados',
+      data: products
+    });
+  });
+
+  static findProductsByCategory = asyncHandler(async (req: Request, res: Response) => {
+    const em = orm.em;
+    const categoryId = Number.parseInt(req.params.categoryId);
+    if (isNaN(categoryId)) throw new AppError('ID de categoría inválido', 400);
+
+    const products = await em.find(
+      Product,
+      {
+        category: { id: categoryId }
+      },
+      {
+        populate: ['category', 'photos', 'prices']
+      }
+    );
+
+    return res.status(200).json({
+      message: 'Productos encontrados en la categoría',
+      data: products
+    });
+  });
+
+  static findAll = asyncHandler(async (req: Request, res: Response) => {
+    const em = orm.em;
+    const products = await em.find(
+      Product,
+      {},
+      {
+        populate: ['category', 'photos', 'prices'],
+        populateOrderBy: { photos: { order: 'ASC' } }
+      }
+    );
+    return res.status(200).json({
+      message: 'Todos los Productos fueron encontrados',
+      data: products
+    });
+  });
+
+  static findOne = asyncHandler(async (req: Request, res: Response) => {
+    const em = orm.em;
+    const id = Number.parseInt(req.params.id);
+    if (isNaN(id)) throw new AppError('ID de producto inválido', 400);
+
+    const product = await em.findOne(Product, { id }, { populate: ['category', 'photos', 'prices'], populateOrderBy: { photos: { order: 'ASC' } } });
+
+    if (!product) {
+      throw new AppError('Producto no encontrado', 404);
+    }
+
+    return res.status(200).json({
+      message: 'Producto encontrado',
+      data: product
+    });
+  });
+
+  static update = asyncHandler(async (req: Request, res: Response) => {
+    const em = orm.em;
+    const id = Number.parseInt(req.params.id);
+    if (isNaN(id)) throw new AppError('ID de producto inválido', 400);
+
+    const product = await em.findOne(Product, { id }, { populate: ['category', 'photos', 'prices'] });
+
+    if (!product) {
+      throw new AppError('Producto no encontrado', 404);
+    }
+
+    const { price, currency, ...updateData } = req.body.sanitizedInput;
+
+    // Validar precio si se proporciona
+    if (price !== undefined && (typeof price !== 'number' || price <= 0)) {
+      throw new AppError('El precio debe ser un número positivo', 400);
+    }
+
+    // Validar stock si se proporciona
+    if (updateData.stock !== undefined && (typeof updateData.stock !== 'number' || updateData.stock < 0 || !Number.isInteger(updateData.stock))) {
+      throw new AppError('El stock debe ser un número entero mayor o igual a 0', 400);
+    }
+
+    // Validar currency si se proporciona
+    if (currency !== undefined && !VALID_CURRENCIES.includes(currency)) {
+      throw new AppError(`Moneda inválida. Las monedas válidas son: ${VALID_CURRENCIES.join(', ')}`, 400);
+    }
+
+    // Validar state si se proporciona
+    if (updateData.state !== undefined && !VALID_PRODUCT_STATES.includes(updateData.state)) {
+      throw new AppError(`Estado de producto inválido. Los estados válidos son: ${VALID_PRODUCT_STATES.join(', ')}`, 400);
+    }
+
+    const currentPrice = product.prices.getItems().find((p) => p.isCurrent);
+    if (price !== undefined && price !== currentPrice?.amount) {
       product.updatePrice(price, currency);
+    }
 
+    em.assign(product, updateData);
+
+    try {
       await em.flush();
-
-      res.status(201).json({ message: 'Producto creado', data: product });
     } catch (error: any) {
-      console.error('Error al crear el producto:', error);
-      res.status(500).json({ message: 'Error al crear el producto: ' + error.message });
-    }
-  }
-
-  // Función para buscar productos por nombre, descripcion y marca
-  static async searchProductsByText(req: Request, res: Response) {
-    const em = orm.em;
-    const { query } = req.query; // Obtener el texto de búsqueda
-
-    try {
-      const products = await em.find(
-        Product,
-        {
-          $or: [{ name: { $like: `%${query}%` } }, { description: { $like: `%${query}%` } }, { brand: { $like: `%${query}%` } }]
-        },
-        {
-          populate: ['category', 'photos', 'prices']
-        }
-      );
-      res.status(200).json({ message: 'Productos encontrados', data: products });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
-  }
-
-  // Función para obtener productos por categoría
-  static async findProductsByCategory(req: Request, res: Response) {
-    const em = orm.em;
-    const categoryId = Number.parseInt(req.params.categoryId); // Obtener ID de categoría
-
-    try {
-      const products = await em.find(
-        Product,
-        {
-          category: { id: categoryId }
-        },
-        {
-          populate: ['category', 'photos', 'prices']
-        }
-      );
-      res.status(200).json({ message: 'Productos encontrados en la categoría', data: products });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
-  }
-
-  static async findAll(req: Request, res: Response) {
-    const em = orm.em;
-    try {
-      const products = await em.find(
-        Product,
-        {},
-        {
-          populate: ['category', 'photos', 'prices'],
-          populateOrderBy: { photos: { order: 'ASC' } }
-        }
-      );
-      res.status(200).json({ message: 'Todos los Productos fueron encontrados', data: products });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
-  }
-
-  static async findOne(req: Request, res: Response) {
-    const em = orm.em;
-    try {
-      const id = Number.parseInt(req.params.id);
-      const product = await em.findOneOrFail(Product, { id }, { populate: ['category', 'photos', 'prices'], populateOrderBy: { photos: { order: 'ASC' } } });
-      res.status(200).json({ message: 'Producto encontrado', data: product });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
-  }
-
-  static async update(req: Request, res: Response) {
-    const em = orm.em;
-    try {
-      const id = Number.parseInt(req.params.id);
-      const product = await em.findOneOrFail(
-        Product,
-        { id },
-        {
-          populate: ['category', 'photos', 'prices']
-        }
-      );
-      const { price, currency, ...updateData } = req.body.sanitizedInput;
-
-      // Si el precio cambio, usamos el metodo de la entidad para guardar el historico
-      const currentPrice = product.prices.getItems().find((p) => p.isCurrent);
-      if (price !== undefined && price !== currentPrice?.amount) {
-        product.updatePrice(price, currency);
+      if (error.message?.includes('unique') || error.message?.includes('duplicate') || error.code === 'ER_DUP_ENTRY' || error.code === '23505') {
+        throw new AppError('Ya existe un producto con el mismo nombre', 409);
       }
-
-      em.assign(product, updateData);
-      await em.flush();
-      res.status(200).json({ message: 'Producto actualizado', data: product });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      throw error;
     }
-  }
 
-  static async remove(req: Request, res: Response): Promise<any> {
+    return res.status(200).json({
+      message: 'Producto actualizado',
+      data: product
+    });
+  });
+
+  static remove = asyncHandler(async (req: Request, res: Response) => {
     const em = orm.em;
-    try {
-      const id = Number.parseInt(req.params.id);
-      const product = await em.findOneOrFail(Product, { id }, { populate: ['photos'] });
-      for (const photo of product.photos) {
-        const filePath = path.join(PRODUCT_PATH, photo.fileName);
-        try {
-          await fs.unlink(filePath);
-        } catch (err) {
-          // Solo advertimos, no detenemos el proceso si el archivo ya no existe
-          console.warn(`No se pudo borrar el archivo físico (quizás no existía): ${photo.fileName}`);
-        }
-      }
-      em.remove(product);
-      await em.flush();
-      res.status(200).send({ message: 'Producto eliminado' });
-    } catch (error: any) {
-      if (error.name === 'NotFoundError') {
-        return res.status(404).json({ message: 'El producto no existe' });
-      }
-      res.status(500).json({ message: error.message });
-    }
-  }
+    const id = Number.parseInt(req.params.id);
+    if (isNaN(id)) throw new AppError('ID de producto inválido', 400);
 
-  static async findPage(req: Request, res: Response) {
+    const product = await em.findOne(Product, { id }, { populate: ['photos'] });
+
+    if (!product) {
+      throw new AppError('El producto no existe', 404);
+    }
+
+    for (const photo of product.photos) {
+      const filePath = path.join(PRODUCT_PATH, photo.fileName);
+      try {
+        await fs.unlink(filePath);
+      } catch (err) {
+        console.warn(`No se pudo borrar el archivo físico (quizás no existía): ${photo.fileName}`);
+      }
+    }
+    em.remove(product);
+    await em.flush();
+
+    return res.status(200).send({
+      message: 'Producto eliminado'
+    });
+  });
+
+  static findPage = asyncHandler(async (req: Request, res: Response) => {
     const em = orm.em;
     const DEFAULT_LIMIT = 10;
 
-    // Obtenemos los parámetros de la query (con valores por defecto)
     const page = Number.parseInt(req.query.page as string) || 1;
     const limit = Number.parseInt(req.query.limit as string) || DEFAULT_LIMIT;
-    const offset = (page - 1) * limit; // Salta los productos anteriores a la página actual (page - 1)
+    const offset = (page - 1) * limit;
 
-    try {
-      // findAndCount devuelve un array: [items, totalCount]
-      const [products, total] = await em.findAndCount(
-        Product,
-        {},
-        {
-          populate: ['category', 'photos', 'prices'],
-          limit,
-          offset,
-          populateOrderBy: { photos: { order: 'ASC' } } // Ordena las fotos por orden creciente basado en "order"
-        }
-      );
-
-      // construimos un objeto que le da al frontend todo lo que necesita para dibujar la barrita de paginación
-      res.status(200).json({
-        message: 'Página de productos encontrada',
-        data: products,
-        total,
-        page,
+    const [products, total] = await em.findAndCount(
+      Product,
+      {},
+      {
+        populate: ['category', 'photos', 'prices'],
         limit,
-        totalPages: Math.ceil(total / limit)
-      });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
-  }
+        offset,
+        populateOrderBy: { photos: { order: 'ASC' } }
+      }
+    );
 
-  static async findAllActive(req: Request, res: Response) {
+    return res.status(200).json({
+      message: 'Página de productos encontrada',
+      data: products,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit)
+    });
+  });
+
+  static findAllActive = asyncHandler(async (req: Request, res: Response) => {
     const em = orm.em;
-    try {
-      const products = await em.find(
-        Product,
-        { state: ProductState.ACTIVO, category: { state: CategoryState.ACTIVO } },
-        {
-          populate: ['category', 'photos', 'prices'],
-          populateWhere: { prices: { isCurrent: true } },
-          populateOrderBy: { photos: { order: 'ASC' } }
-        }
-      );
-      res.status(200).json({ message: 'Productos activos encontrados', data: products });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
-  }
+    const products = await em.find(
+      Product,
+      { state: ProductState.ACTIVO, category: { state: CategoryState.ACTIVO } },
+      {
+        populate: ['category', 'photos', 'prices'],
+        populateWhere: { prices: { isCurrent: true } },
+        populateOrderBy: { photos: { order: 'ASC' } }
+      }
+    );
+
+    return res.status(200).json({
+      message: 'Productos activos encontrados',
+      data: products
+    });
+  });
 }
 
 export { sanitizeProductInput };
