@@ -18,7 +18,10 @@ router.get('/client/:clientId', OrderController.findByClient);
 // 5. Actualizar Estado (PATCH /api/orders/:id/status)
 router.patch('/:id/status', OrderController.updateStatus);
 
-// 6. Cancelar Orden (PATCH /api/orders/:id/cancel)
+// 6. Actualizar Método de Entrega (PATCH /api/orders/:id/delivery-method)
+router.patch('/:id/delivery-method', OrderController.updateDeliveryMethod);
+
+// 7. Cancelar Orden (PATCH /api/orders/:id/cancel)
 router.patch('/:id/cancel', OrderController.cancel);
 
 export const orderRouter = router;

@@ -4,12 +4,14 @@ import { Order } from './order.entity.js';
 import { Client } from '../user/client/client.entity.js';
 import { Product } from '../product/product.entity.js';
 import { OrderState } from '../shared/enums/state.enum.js';
+import { DeliveryMethod } from '../shared/enums/delivery-method.enum.js';
 import { asyncHandler } from '../shared/errors/asyncHandler.js';
 import { AppError } from '../shared/errors/appError.js';
 
-// --- DTOs (Por simplicidad se dejan aquí, podrían ir a un archivo aparte) ---
+// --- DTOs ---
 interface CreateOrderDto {
     clientId: number;
+    deliveryMethod?: DeliveryMethod;
     items: {
         productId: number;
         quantity: number;
@@ -21,12 +23,13 @@ interface UpdateOrderStatusDto {
 }
 
 const VALID_ORDER_STATES = Object.values(OrderState);
+const VALID_DELIVERY_METHODS = Object.values(DeliveryMethod);
 
 export class OrderController {
 
     static create = asyncHandler(async (req: Request, res: Response) => {
         const em = orm.em;
-        const { clientId, items } = req.body;
+        const { clientId, items, deliveryMethod } = req.body;
 
         // Validar clientId
         if (clientId === undefined || clientId === null || isNaN(Number(clientId))) {
@@ -48,6 +51,11 @@ export class OrderController {
             }
         }
 
+        // Validar deliveryMethod si se proporciona
+        if (deliveryMethod !== undefined && !VALID_DELIVERY_METHODS.includes(deliveryMethod)) {
+            throw new AppError(`Método de entrega inválido. Los métodos válidos son: ${VALID_DELIVERY_METHODS.join(', ')}`, 400);
+        }
+
         // Validar cliente
         const client = await em.findOne(Client, { id: Number(clientId) });
         if (!client) {
@@ -56,10 +64,10 @@ export class OrderController {
 
         const order = new Order();
         order.client = client;
+        order.deliveryMethod = deliveryMethod || DeliveryMethod.RETIRO_SUCURSAL;
 
         // items is array of { productId, quantity }
         for (const item of items) {
-            // Populate prices to get current price
             const product = await em.findOne(Product, { id: item.productId }, { populate: ['prices'] });
 
             if (!product) {
@@ -170,6 +178,36 @@ export class OrderController {
 
         return res.status(200).json({
             message: 'Estado de la orden actualizado',
+            data: order
+        });
+    });
+
+    static updateDeliveryMethod = asyncHandler(async (req: Request, res: Response) => {
+        const em = orm.em;
+        const id = Number(req.params.id);
+        if (isNaN(id)) throw new AppError('ID de orden inválido', 400);
+
+        const { deliveryMethod } = req.body;
+
+        if (!deliveryMethod || !VALID_DELIVERY_METHODS.includes(deliveryMethod)) {
+            throw new AppError(`Método de entrega inválido. Los métodos válidos son: ${VALID_DELIVERY_METHODS.join(', ')}`, 400);
+        }
+
+        const order = await em.findOne(Order, { id });
+        if (!order) {
+            throw new AppError('Orden no encontrada', 404);
+        }
+
+        // No permitir cambiar el método si la orden ya fue enviada o entregada
+        if ([OrderState.SHIPPED, OrderState.DELIVERED, OrderState.CANCELLED].includes(order.status)) {
+            throw new AppError(`No se puede cambiar el método de entrega de una orden en estado "${order.status}"`, 400);
+        }
+
+        order.deliveryMethod = deliveryMethod;
+        await em.flush();
+
+        return res.status(200).json({
+            message: 'Método de entrega actualizado',
             data: order
         });
     });

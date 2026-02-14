@@ -1,1 +1,7 @@
-<p>orders-page works!</p>
+<div class="container mx-auto py-6">
+    <app-orders-toolbar [(searchQuery)]="searchQuery" />
+
+    <app-orders-list class="mt-6 block" [orders]="ordersFiltered()" [isFilterActive]="searchQuery().length > 0"
+        (onUpdateStatus)="handleUpdateStatus($event)" (onUpdateDelivery)="handleUpdateDelivery($event)"
+        (onCancel)="handleCancel($event)" />
+</div>

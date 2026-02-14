@@ -3,6 +3,7 @@ import { CustomBaseEntity } from '../shared/db/customBaseEntity.entity.js';
 import { Client } from '../user/client/client.entity.js';
 import { OrderLine } from './order-line.entity.js';
 import { OrderState } from '../shared/enums/state.enum.js';
+import { DeliveryMethod } from '../shared/enums/delivery-method.enum.js';
 import { Product } from '../product/product.entity.js';
 
 @Entity()
@@ -16,6 +17,9 @@ export class Order extends CustomBaseEntity {
     @Enum(() => OrderState)
     status: OrderState = OrderState.PENDING;
 
+    @Enum(() => DeliveryMethod)
+    deliveryMethod: DeliveryMethod = DeliveryMethod.RETIRO_SUCURSAL;
+
     @Property({ nullable: false, type: 'decimal', precision: 10, scale: 2 })
     totalAmount: number = 0;
 
@@ -28,7 +32,7 @@ export class Order extends CustomBaseEntity {
 
         if (existingLine) {
             existingLine.quantity += quantity;
-            existingLine.price = currentPrice; // Actualizamos precio al actual si cambia? Usualmente se mantiene el acordado o se actualiza todo. Asumiremos precio actual.
+            existingLine.price = currentPrice;
         } else {
             const line = new OrderLine(this, product, quantity, currentPrice);
             this.items.add(line);
@@ -63,7 +67,8 @@ export class Order extends CustomBaseEntity {
         }, 0);
     }
 
-    private static readonly VALID_TRANSITIONS: Record<OrderState, OrderState[]> = {
+    // Transiciones según método de entrega
+    private static readonly TRANSITIONS_ENVIO: Record<OrderState, OrderState[]> = {
         [OrderState.PENDING]: [OrderState.PAID, OrderState.CANCELLED],
         [OrderState.PAID]: [OrderState.SHIPPED, OrderState.CANCELLED],
         [OrderState.SHIPPED]: [OrderState.DELIVERED, OrderState.CANCELLED],
@@ -71,13 +76,32 @@ export class Order extends CustomBaseEntity {
         [OrderState.CANCELLED]: [],
     };
 
-    changeStatus(newState: OrderState) {
-        const allowedTransitions = Order.VALID_TRANSITIONS[this.status];
+    private static readonly TRANSITIONS_RETIRO: Record<OrderState, OrderState[]> = {
+        [OrderState.PENDING]: [OrderState.PAID, OrderState.CANCELLED],
+        [OrderState.PAID]: [OrderState.DELIVERED, OrderState.CANCELLED],
+        [OrderState.SHIPPED]: [], // No debería llegar aquí en retiro
+        [OrderState.DELIVERED]: [],
+        [OrderState.CANCELLED]: [],
+    };
 
-        if (!allowedTransitions || !allowedTransitions.includes(newState)) {
+    getValidTransitions(): OrderState[] {
+        const map = this.deliveryMethod === DeliveryMethod.ENVIO
+            ? Order.TRANSITIONS_ENVIO
+            : Order.TRANSITIONS_RETIRO;
+        return map[this.status] || [];
+    }
+
+    changeStatus(newState: OrderState) {
+        const allowedTransitions = this.getValidTransitions();
+
+        if (!allowedTransitions.includes(newState)) {
+            const transitionsStr = allowedTransitions.length > 0
+                ? allowedTransitions.join(', ')
+                : 'ninguna (estado final)';
             throw new Error(
-                `No se puede cambiar el estado de "${this.status}" a "${newState}". ` +
-                `Transiciones válidas desde "${this.status}": ${allowedTransitions.length > 0 ? allowedTransitions.join(', ') : 'ninguna (estado final)'}`
+                `No se puede cambiar el estado de "${this.status}" a "${newState}" ` +
+                `para una orden de tipo "${this.deliveryMethod}". ` +
+                `Transiciones válidas: ${transitionsStr}`
             );
         }
 
