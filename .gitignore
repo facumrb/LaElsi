@@ -12,9 +12,6 @@ dist/
 build/
 out/
 tmp/
-out-tsc/
-bazel-out/
-coverage/
 *.tsbuildinfo
 tsconfig.tsbuildinfo
 
