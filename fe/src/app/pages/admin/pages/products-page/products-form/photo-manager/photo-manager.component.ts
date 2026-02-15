@@ -1,4 +1,11 @@
-import { Component, effect, inject, input, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
 import { IApiProductPhoto } from '@models/photo.model';
 import { ApiPhotoService } from '@services/api-photo.service';
 import { environment } from 'src/environments/environment';
@@ -46,6 +53,9 @@ export class PhotoManagerComponent {
   gallery = signal<IUiPhoto[]>([]);
   photosToDeleteIds: number[] = [];
 
+  // NUEVO: Guardamos el orden original de los IDs para comparar cambios en el modo edicion
+  private originalOrder = signal<number[]>([]);
+
   constructor() {
     // Escuchamos cambios en el input (cuando carga el producto en el padre)
     effect(() => {
@@ -59,6 +69,7 @@ export class PhotoManagerComponent {
             isNew: false,
           })),
         );
+        this.originalOrder.set(photos.map((p) => p.id));
       }
     });
   }
@@ -125,6 +136,30 @@ export class PhotoManagerComponent {
       return current.filter((_, i) => i !== index);
     });
   }
+
+  hasChanges = computed(() => {
+    // A. ¿Hay fotos nuevas?
+    const hasNewPhotos = this.gallery().some((p) => p.isNew);
+    if (hasNewPhotos) return true;
+
+    // B. ¿Hay fotos marcadas para borrar?
+    if (this.photosToDeleteIds.length > 0) return true;
+
+    // C. ¿Cambió el orden?
+    const currentOrderIds = this.gallery()
+      .filter((p) => !p.isNew && p.originalId) // Solo miramos las viejas
+      .map((p) => p.originalId!);
+
+    // Comparamos arrays: Si la longitud cambió o el orden es distinto
+    if (currentOrderIds.length !== this.originalOrder().length) return true;
+
+    // Comparamos ID por ID en su posición
+    for (let i = 0; i < currentOrderIds.length; i++) {
+      if (currentOrderIds[i] !== this.originalOrder()[i]) return true;
+    }
+
+    return false;
+  });
 
   // --- LÓGICA DE GUARDADO (Llamada por el Padre) ---
   saveChanges(productId: number): Observable<any> {

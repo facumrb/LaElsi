@@ -52,6 +52,9 @@ export class AdminsFormComponent implements OnInit {
   adminId = signal<number | null>(null);
   currentPhoto = signal<IApiUserPhoto | null>(null);
 
+  // Signal para guardar el estado inicial del formulario
+  initialFormValue = signal<string>('');
+
   formAdmin = this.fb.group({
     name: [
       '',
@@ -163,6 +166,9 @@ export class AdminsFormComponent implements OnInit {
 
         this.formAdmin.get('password')?.removeValidators(Validators.required);
         this.formAdmin.get('password')?.updateValueAndValidity();
+
+        const formSnapshot = this.formAdmin.getRawValue();
+        this.initialFormValue.set(JSON.stringify(formSnapshot));
       },
       error: () => {
         this.alertService.toast('Error al cargar administrador', 'error');
@@ -181,20 +187,18 @@ export class AdminsFormComponent implements OnInit {
     this.location.back();
   }
 
-  get hasUnsavedChanges(): boolean {
-    // Si estamos CREANDO, siempre hay "cambios"
+  get hasRealChanges(): boolean {
+    // Si estamos creando, siempre permitimos guardar (si es válido)
     if (!this.isEditMode()) return true;
 
-    // Si estamos EDITANDO:
-    // ¿El usuario tocó algún input de texto?
-    const textChanges = this.formAdmin.dirty;
+    // Comparar formulario actual vs inicial
+    const currentJson = JSON.stringify(this.formAdmin.getRawValue());
+    const formHasChanges = currentJson !== this.initialFormValue();
 
-    // ¿El usuario tocó la foto?
-    const photoChanges = this.photoManager
-      ? this.photoManager.hasChanges()
-      : false;
+    // Verificar cambios en la foto
+    const photoHasChanges = this.photoManager?.hasChanges() ?? false;
 
-    return textChanges || photoChanges;
+    return formHasChanges || photoHasChanges;
   }
 
   onSubmit() {
@@ -262,11 +266,15 @@ export class AdminsFormComponent implements OnInit {
               lastName: formValue.lastName,
             };
 
-            if (photoResponse && photoResponse.photo) {
-              sessionUpdates.photo = photoResponse.photo;
-            } else if (this.photoManager.deletePending()) {
+            // Caso A: Se subió una foto nueva
+            if (photoResponse && photoResponse.id) {
+              sessionUpdates.photo = photoResponse;
+            }
+            // Caso B: No hay foto nueva devuelta, PERO se marcó para borrar
+            else if (this.photoManager.deletePending()) {
               sessionUpdates.photo = null;
             }
+
             // Actualizamos el AuthService (y por ende el Navbar)
             this.authService.updateCurrentUser(sessionUpdates);
           }

@@ -339,8 +339,16 @@
         </div>
       </div>
 
+      @if (isEditMode()) {
+        <app-audit-info
+          [createdAt]="formProduct.get('createdAt')?.value"
+          [updatedAt]="formProduct.get('updatedAt')?.value"
+          [deletedAt]="formProduct.get('deletedAt')?.value"
+        />
+      }
+
       <div
-        class="mt-10 pt-6 flex items-center justify-end gap-x-4 border-t border-gray-100"
+        class="mt-4 pt-4 flex items-center justify-end gap-x-4 border-t border-gray-100"
       >
         <button
           type="button"
@@ -352,7 +360,7 @@
 
         <button
           type="submit"
-          [disabled]="formProduct.invalid"
+          [disabled]="formProduct.invalid || !hasRealChanges"
           class="cursor-pointer rounded-md bg-[#3d4494] px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#2a2f63] focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-[#3d4494] disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
         >
           {{ isEditMode() ? "Guardar Cambios" : "Crear Producto" }}

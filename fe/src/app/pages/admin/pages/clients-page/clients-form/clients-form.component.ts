@@ -60,6 +60,9 @@ export class ClientsFormComponent implements OnInit {
   clientId = signal<number | null>(null);
   currentPhoto = signal<IApiUserPhoto | null>(null);
 
+  // Signal para guardar el estado inicial del formulario
+  initialFormValue = signal<string>('');
+
   fiscalConditions = Object.values(FiscalCondition);
   isFiscalMenuOpen = signal(false);
 
@@ -220,6 +223,9 @@ export class ClientsFormComponent implements OnInit {
 
         this.formClient.get('password')?.removeValidators(Validators.required);
         this.formClient.get('password')?.updateValueAndValidity();
+
+        const formSnapshot = this.formClient.getRawValue();
+        this.initialFormValue.set(JSON.stringify(formSnapshot));
       },
       error: () => {
         this.alertService.toast('Error al cargar cliente', 'error');
@@ -238,20 +244,18 @@ export class ClientsFormComponent implements OnInit {
     this.location.back();
   }
 
-  get hasUnsavedChanges(): boolean {
-    // Si estamos CREANDO, siempre hay "cambios"
+  get hasRealChanges(): boolean {
+    // Si estamos creando, siempre permitimos guardar (si es válido)
     if (!this.isEditMode()) return true;
 
-    // Si estamos EDITANDO:
-    // ¿El usuario tocó algún input de texto?
-    const textChanges = this.formClient.dirty;
+    // Comparar formulario actual vs inicial
+    const currentJson = JSON.stringify(this.formClient.getRawValue());
+    const formHasChanges = currentJson !== this.initialFormValue();
 
-    // ¿El usuario tocó la foto?
-    const photoChanges = this.photoManager
-      ? this.photoManager.hasChanges()
-      : false;
+    // Verificar cambios en la foto
+    const photoHasChanges = this.photoManager?.hasChanges() ?? false;
 
-    return textChanges || photoChanges;
+    return formHasChanges || photoHasChanges;
   }
 
   onSubmit() {
