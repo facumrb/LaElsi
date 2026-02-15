@@ -262,14 +262,11 @@ export class AdminsFormComponent implements OnInit {
               lastName: formValue.lastName,
             };
 
-            const uploadedPhoto = photoResponse?.data || photoResponse;
-
             // Caso A: Se subió una foto nueva
-            if (uploadedPhoto && uploadedPhoto.id) {
-              sessionUpdates.photo = uploadedPhoto;
+            if (photoResponse && photoResponse.id) {
+              sessionUpdates.photo = photoResponse;
             }
             // Caso B: No hay foto nueva devuelta, PERO se marcó para borrar
-            // Nota: Verificamos deletePending() en el componente hijo
             else if (this.photoManager.deletePending()) {
               sessionUpdates.photo = null;
             }
