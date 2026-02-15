@@ -1,0 +1,195 @@
+<div class="max-w-3xl mx-auto">
+  <div class="mb-6 flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-[#3d4494]">
+        {{ isEditMode() ? "Editar Categoría" : "Nueva Categoría" }}
+      </h1>
+    </div>
+
+    <button
+      (click)="goBack()"
+      class="cursor-pointer inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition-colors"
+    >
+      <ng-icon name="bootstrapArrowLeft" class="text-lg"></ng-icon>
+      Volver
+    </button>
+  </div>
+
+  <div
+    class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden"
+  >
+    <form [formGroup]="formCategory" (ngSubmit)="onSubmit()" class="p-6 md:p-8">
+      <div class="grid grid-cols-1 gap-y-3">
+        <div>
+          <label
+            for="name"
+            class="block text-sm font-medium text-gray-700 mb-1"
+          >
+            Nombre de la categoría <span class="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            formControlName="name"
+            maxlength="50"
+            placeholder="Ej: Electrónica, Ropa..."
+            class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm sm:text-sm"
+          />
+          <div class="flex justify-between items-start mt-1">
+            <div class="text-xs text-red-500 min-h-5">
+              @if (formUtils.isValidField(formCategory, "name")) {
+                <span>{{ formUtils.getFieldError(formCategory, "name") }}</span>
+              }
+            </div>
+            <div class="text-xs text-gray-500">
+              {{ formCategory.get("name")?.value?.length || 0 }} / 50
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label
+            for="description"
+            class="block text-sm font-medium text-gray-700 mb-1"
+          >
+            Descripción
+          </label>
+          <textarea
+            id="description"
+            name="description"
+            formControlName="description"
+            rows="4"
+            placeholder="Breve descripción de la categoría..."
+            maxlength="1000"
+            class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm sm:text-sm"
+          ></textarea>
+          <div class="flex justify-between items-start mt-1">
+            <div class="text-xs text-red-500 min-h-5">
+              @if (formUtils.isValidField(formCategory, "description")) {
+                <span>{{
+                  formUtils.getFieldError(formCategory, "description")
+                }}</span>
+              }
+            </div>
+            <div class="text-xs text-gray-500">
+              {{ formCategory.get("description")?.value?.length || 0 }} / 1000
+            </div>
+          </div>
+        </div>
+
+        <div class="relative w-full" (clickOutside)="showStateMenu.set(false)">
+          <label
+            for="state"
+            class="block text-sm font-medium text-gray-700 mb-1"
+          >
+            Estado <span class="text-red-500">*</span>
+          </label>
+
+          <button
+            type="button"
+            id="state"
+            (click)="toggleStateMenu()"
+            class="relative w-full cursor-pointer bg-white rounded-lg border border-gray-300 py-2.5 pl-3 pr-10 text-left shadow-sm focus:outline-none focus:ring-1 sm:text-sm"
+          >
+            <span class="flex items-center gap-3">
+              <span
+                class="h-2.5 w-2.5 rounded-full"
+                [class]="
+                  formCategory.get('state')?.value === 'Activo'
+                    ? 'bg-green-500'
+                    : 'bg-red-500'
+                "
+              ></span>
+              <span class="block truncate">{{
+                formCategory.get("state")?.value
+              }}</span>
+            </span>
+            <span
+              class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2"
+            >
+              <ng-icon
+                name="bootstrapChevronDown"
+                class="text-gray-400 transition-transform duration-200"
+                [class.rotate-180]="showStateMenu()"
+              ></ng-icon>
+            </span>
+          </button>
+
+          @if (showStateMenu()) {
+            <ul
+              class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
+            >
+              @for (option of ["Activo", "Inactivo"]; track option) {
+                <li
+                  (click)="selectState(option)"
+                  class="relative cursor-pointer select-none py-2 pl-3 pr-9 text-gray-900 hover:bg-gray-50"
+                >
+                  <div class="flex items-center">
+                    <span
+                      class="h-2.5 w-2.5 rounded-full mr-2"
+                      [class]="
+                        option === 'Activo' ? 'bg-green-500' : 'bg-red-500'
+                      "
+                    ></span>
+                    <span
+                      [class.font-semibold]="
+                        formCategory.get('state')?.value === option
+                      "
+                    >
+                      {{ option }}
+                    </span>
+                  </div>
+                  @if (formCategory.get("state")?.value === option) {
+                    <span
+                      class="absolute inset-y-0 right-0 flex items-center pr-4"
+                    >
+                      <ng-icon
+                        name="bootstrapCheckLg"
+                        class="text-lg"
+                      ></ng-icon>
+                    </span>
+                  }
+                </li>
+              }
+            </ul>
+          }
+          <div class="mt-1 min-h-5 text-xs text-red-600">
+            @if (formUtils.isValidField(formCategory, "state")) {
+              <span>{{ formUtils.getFieldError(formCategory, "state") }}</span>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-2 pt-2">
+        @if (isEditMode()) {
+          <app-audit-info
+            [createdAt]="formCategory.get('createdAt')?.value"
+            [updatedAt]="formCategory.get('updatedAt')?.value"
+            [deletedAt]="formCategory.get('deletedAt')?.value"
+          />
+        }
+      </div>
+
+      <div
+        class="mt-4 pt-4 border-t border-gray-100 flex items-center justify-end gap-3"
+      >
+        <button
+          type="button"
+          (click)="goBack()"
+          class="cursor-pointer rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition-colors"
+        >
+          Cancelar
+        </button>
+        <button
+          type="submit"
+          [disabled]="formCategory.invalid || !hasRealChanges"
+          class="cursor-pointer rounded-md bg-[#3d4494] px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#2a2f63] focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-[#3d4494] disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+        >
+          {{ isEditMode() ? "Guardar Cambios" : "Crear Categoría" }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

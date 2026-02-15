@@ -67,6 +67,20 @@ export const adminRoutes: Routes = [
           ),
       },
       {
+        path: 'categories/create',
+        loadComponent: () =>
+          import('./pages/categories-page/categories-form/categories-form.component').then(
+            (m) => m.CategoriesFormComponent,
+          ),
+      },
+      {
+        path: 'categories/edit/:id',
+        loadComponent: () =>
+          import('./pages/categories-page/categories-form/categories-form.component').then(
+            (m) => m.CategoriesFormComponent,
+          ),
+      },
+      {
         path: 'products',
         loadComponent: () =>
           import('./pages/products-page/products-page.component').then(

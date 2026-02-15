@@ -3,22 +3,14 @@
     [(searchQuery)]="searchQuery"
     [(statusFilter)]="statusFilter"
     [(stockFilter)]="stockFilter"
-    (onAdd)="openAddModal()"
+    (onAdd)="handleNavigateToCreate()"
   />
 
   <app-categories-list
     class="mt-6 block"
     [categories]="categoriesFiltered()"
     [isFilterActive]="filtersActive()"
-    (onEdit)="openEditModal($event)"
+    (onEdit)="handleNavigateToEdit($event)"
     (onDelete)="handleDelete($event)"
   />
 </div>
-
-@if (isModalOpen()) {
-  <app-categories-modal
-    [categoryData]="selectedCategory()"
-    (close)="isModalOpen.set(false)"
-    (save)="modalSubmit($event)"
-  />
-}

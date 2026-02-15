@@ -16,7 +16,7 @@ import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
   bootstrapArrowLeft,
   bootstrapChevronDown,
-  bootstrapCheck,
+  bootstrapCheckLg,
 } from '@ng-icons/bootstrap-icons';
 import { AuditInfoComponent } from '@shared/components/audit-info/audit-info.component';
 
@@ -34,7 +34,7 @@ import { AuditInfoComponent } from '@shared/components/audit-info/audit-info.com
     provideIcons({
       bootstrapArrowLeft,
       bootstrapChevronDown,
-      bootstrapCheck,
+      bootstrapCheckLg,
     }),
   ],
   providers: [DatePipe],

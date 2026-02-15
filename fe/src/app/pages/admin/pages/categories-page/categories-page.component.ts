@@ -4,19 +4,18 @@ import { IApiCategory } from '@models/category.model';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AlertService } from '@shared/alert.service';
 import { ApiErrorService } from '@shared/api-error.service';
-import { CategoriesModalComponent } from './categories-modal/categories-modal.component';
 import { CategoriesListComponent } from './categories-list/categories-list.component';
 import {
   CategoriesToolbarComponent,
   StatusFilter,
   StockFilter,
 } from './categories-toolbar/categories-toolbar.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-categories-page',
   imports: [
     ReactiveFormsModule,
-    CategoriesModalComponent,
     CategoriesListComponent,
     CategoriesToolbarComponent,
   ],
@@ -26,6 +25,7 @@ export class CategoriesPageComponent implements OnInit {
   private _alertService = inject(AlertService);
   private _errorService = inject(ApiErrorService);
   private _apiService = inject(ApiCategoryService);
+  private _router = inject(Router);
   private categoriesRaw = signal<IApiCategory[]>([]);
 
   statusFilter = signal<StatusFilter>('Todos');
@@ -84,58 +84,27 @@ export class CategoriesPageComponent implements OnInit {
     return filtered;
   });
 
-  // Estado del modal
-  isModalOpen = signal(false);
-  selectedCategory = signal<IApiCategory | null>(null);
-
   ngOnInit() {
     this.loadCategories();
   }
 
   loadCategories() {
-    this._apiService.getAllCategories().subscribe((data) => {
-      this.categoriesRaw.set(data);
-    });
-  }
-
-  // --- Lógica del Modal ---
-  openAddModal() {
-    this.selectedCategory.set(null);
-    this.isModalOpen.set(true);
-  }
-
-  openEditModal(category: IApiCategory) {
-    this.selectedCategory.set(category);
-    this.isModalOpen.set(true);
-  }
-
-  modalSubmit(formData: any) {
-    const currentCat = this.selectedCategory();
-    const esEdicion = !!currentCat;
-
-    // Al editar, pasamos currentCat.id para la URL (ID viejo)
-    // y formData DIRECTO como body (datos nuevos).
-
-    const request$ = esEdicion
-      ? this._apiService.updateCategory(currentCat.id, formData)
-      : this._apiService.addCategory(formData);
-
-    request$.subscribe({
-      next: () => {
-        this.loadCategories();
-        this.isModalOpen.set(false);
-        this._alertService.toast(
-          `Categoría ${esEdicion ? 'editada' : 'creada'} con éxito`,
-          'success',
-        );
+    this._apiService.getAllCategories().subscribe({
+      next: (data) => {
+        this.categoriesRaw.set(data);
       },
       error: (err) => {
-        this._errorService.handle(
-          err,
-          esEdicion ? 'editar la categoría' : 'crear la categoría',
-        );
+        this._errorService.handle(err, 'cargar las categorías');
       },
     });
+  }
+
+  handleNavigateToCreate() {
+    this._router.navigate(['/admin/categories/create']);
+  }
+
+  handleNavigateToEdit(category: IApiCategory) {
+    this._router.navigate(['/admin/categories/edit', category.id]);
   }
 
   // --- Lógica para borrar la categoria ---
