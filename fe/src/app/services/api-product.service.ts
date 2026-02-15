@@ -73,4 +73,29 @@ export class ApiProductService {
       .delete<{ message: string }>(`${this.apiUrl}/${id}`)
       .pipe(map(() => void 0));
   }
+
+  // Bulk operations
+  previewBulkPriceChange(productIds: number[], adjustmentType: string, adjustmentValue: number, roundingRule?: string): Observable<any[]> {
+    return this._http
+      .post<{ message: string, data: any[] }>(`${this.apiUrl}/bulk/preview`, { productIds, adjustmentType, adjustmentValue, roundingRule })
+      .pipe(map(res => res.data));
+  }
+
+  applyBulkPriceChange(productIds: number[], adjustmentType: string, adjustmentValue: number, roundingRule?: string): Observable<any> {
+    return this._http
+      .post<{ message: string, data: any }>(`${this.apiUrl}/bulk/apply`, { productIds, adjustmentType, adjustmentValue, roundingRule })
+      .pipe(map(res => res.data));
+  }
+
+  rollbackBulkPriceChange(batchId: number): Observable<void> {
+    return this._http
+      .post<{ message: string }>(`${this.apiUrl}/bulk/rollback/${batchId}`, {})
+      .pipe(map(() => void 0));
+  }
+
+  getBulkHistory(): Observable<any[]> {
+    return this._http
+      .get<{ message: string, data: any[] }>(`${this.apiUrl}/bulk/history`)
+      .pipe(map(res => res.data));
+  }
 }

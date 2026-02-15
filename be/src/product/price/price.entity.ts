@@ -1,6 +1,7 @@
 import { Entity, PrimaryKey, Property, ManyToOne, Rel, Enum } from '@mikro-orm/core';
 import { Product } from '../product.entity.js';
 import { Currency } from '../../shared/enums/currency.enum.js';
+import type { PriceChangeBatch } from '../price-change-batch/priceChangeBatch.entity.js';
 
 @Entity()
 export class Price {
@@ -21,4 +22,7 @@ export class Price {
 
   @ManyToOne(() => Product, { deleteRule: 'cascade', nullable: false })
   product!: Rel<Product>;
+
+  @ManyToOne('PriceChangeBatch', { nullable: true })
+  batch?: Rel<PriceChangeBatch>;
 }

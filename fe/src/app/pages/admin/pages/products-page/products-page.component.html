@@ -1,16 +1,13 @@
 <div class="container mx-auto">
-  <app-products-toolbar
-    [(searchQuery)]="searchQuery"
-    [(statusFilter)]="statusFilter"
-    [(stockFilter)]="stockFilter"
-    (onAdd)="handleNavigateToCreate()"
-  />
+  <app-products-toolbar [(searchQuery)]="searchQuery" [(statusFilter)]="statusFilter" [(stockFilter)]="stockFilter"
+    [hasSelection]="selectedIds().length > 0" (onAdd)="handleNavigateToCreate()"
+    (onBulkPriceUpdate)="handleBulkPriceUpdate()" />
 
-  <app-products-list
-    class="mt-6 block"
-    [products]="productsFiltered()"
-    [isFilterActive]="filtersActive()"
-    (onEdit)="handleNavigateToEdit($event)"
-    (onDelete)="handleDelete($event)"
-  />
+  <app-products-list class="mt-6 block" [products]="productsFiltered()" [isFilterActive]="filtersActive()"
+    (onEdit)="handleNavigateToEdit($event)" (onDelete)="handleDelete($event)" [(selectedIds)]="selectedIds" />
+
+  @if (showBulkModal()) {
+  <app-bulk-price-modal [productIds]="selectedIds()" (close)="showBulkModal.set(false)"
+    (success)="handleBulkSuccess()"></app-bulk-price-modal>
+  }
 </div>

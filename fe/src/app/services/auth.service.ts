@@ -27,10 +27,14 @@ export class AuthService {
 
   login(username: string, password: string): Observable<LoginResponse> {
     return this._http
-      .post<LoginResponse>(`${this.apiUrl}/login`, { username, password })
+      .post<{ message: string; data: LoginResponse }>(
+        `${this.apiUrl}/login`,
+        { username, password },
+      )
       .pipe(
-        tap((response) => {
-          this.saveSession(response.token, response.user);
+        map((res) => res.data),
+        tap((session) => {
+          this.saveSession(session.token, session.user);
         }),
       );
   }

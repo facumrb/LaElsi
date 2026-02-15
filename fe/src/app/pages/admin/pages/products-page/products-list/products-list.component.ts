@@ -1,6 +1,6 @@
 import { TableActionsComponent } from '@admin/components/table-actions/table-actions.component';
 import { CurrencyPipe } from '@angular/common';
-import { Component, input, output } from '@angular/core';
+import { Component, input, output, model } from '@angular/core';
 import { IApiProduct } from '@models/product.model';
 import { environment } from 'src/environments/environment';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
@@ -17,6 +17,33 @@ export class ProductsListComponent {
   onEdit = output<IApiProduct>();
   onDelete = output<IApiProduct>();
   isFilterActive = input<boolean>(false);
+
+  selectedIds = model<number[]>([]);
+
+  isSelected(id: number): boolean {
+    return this.selectedIds().includes(id);
+  }
+
+  isAllSelected(): boolean {
+    return (
+      this.products().length > 0 &&
+      this.products().every((p) => this.selectedIds().includes(p.id))
+    );
+  }
+
+  toggleSelect(id: number) {
+    this.selectedIds.update((ids) =>
+      ids.includes(id) ? ids.filter((i) => i !== id) : [...ids, id],
+    );
+  }
+
+  toggleSelectAll() {
+    if (this.isAllSelected()) {
+      this.selectedIds.set([]);
+    } else {
+      this.selectedIds.set(this.products().map((p) => p.id));
+    }
+  }
 
   private readonly imageBaseUrl = environment.productImagesUrl;
 

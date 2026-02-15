@@ -1,4 +1,4 @@
-import { Component, model, output, signal } from '@angular/core';
+import { Component, input, model, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
@@ -8,6 +8,7 @@ import {
   bootstrapFunnel,
   bootstrapFunnelFill,
   bootstrapPlusLg,
+  bootstrapCurrencyDollar,
 } from '@ng-icons/bootstrap-icons';
 
 export type StockFilter =
@@ -29,6 +30,7 @@ export type StatusFilter = 'Todos' | 'Activo' | 'Inactivo';
     bootstrapFunnel,
     bootstrapFunnelFill,
     bootstrapPlusLg,
+    bootstrapCurrencyDollar,
   }),
   templateUrl: './products-toolbar.component.html',
 })
@@ -36,9 +38,11 @@ export class ProductsToolbarComponent {
   searchQuery = model.required<string>();
   statusFilter = model.required<StatusFilter>();
   stockFilter = model.required<StockFilter>();
+  hasSelection = input<boolean>(false);
 
-  // OUTPUT: Para avisar que hicieron clic en "Agregar"
+  // OUTPUTS
   onAdd = output<void>();
+  onBulkPriceUpdate = output<void>();
 
   showFilterMenu = signal(false);
   toggleMenu() {

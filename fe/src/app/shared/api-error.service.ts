@@ -1,19 +1,20 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { AlertService } from './alert.service'; // Tu servicio de alertas
+import { AlertService } from './alert.service';
+import { AuthService } from '@services/auth.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ApiErrorService {
   private _alertService = inject(AlertService);
+  private _authService = inject(AuthService);
 
   handle(err: HttpErrorResponse, accion: string = 'procesar la solicitud') {
     let titulo = 'Error';
     let mensaje = `Ocurrió un problema al intentar ${accion}.`;
-    let esCritico = false; // Flag para decidir si usar Modal o Toast
+    let esCritico = false;
 
-    // Con esto obtenermos el mensaje que haya enviado el backend, si es que hay uno.
     const backendMessage = err.error?.message;
     if (backendMessage) {
       mensaje = backendMessage;
@@ -26,14 +27,21 @@ export class ApiErrorService {
         break;
 
       case 401:
-        if (backendMessage) {
-          // Login fallido (Credenciales incorrectas) -> Toast
+        if (backendMessage && !accion.includes('iniciar sesión')) {
+          // Si hay un mensaje del backend y NO estamos intentando loguearnos,
+          // significa que el token es inválido o fue rechazado -> Logout forzado
+          this._authService.logout();
+          titulo = 'Sesión Inválida';
+          mensaje = 'Tu sesión ya no es válida. Por favor, ingresa de nuevo.';
+          esCritico = true;
+        } else if (backendMessage) {
+          // Si estamos en la pantalla de login y falla -> Solo mostramos error
           titulo = 'Acceso No Autorizado';
         } else {
-          // Token vencido -> Modal
+          // Token vencido o ausencia de token -> Logout y aviso modal
+          this._authService.logout();
           titulo = 'Sesión Expirada';
-          mensaje =
-            'Tu sesión ha caducado. Por favor, inicia sesión nuevamente.';
+          mensaje = 'Tu sesión ha caducado. Por favor, inicia sesión nuevamente.';
           esCritico = true;
         }
         break;

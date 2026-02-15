@@ -11,13 +11,16 @@ import {
   StockFilter,
 } from './products-toolbar/products-toolbar.component';
 import { Router } from '@angular/router';
+import { BulkPriceModalComponent } from './bulk-price-modal/bulk-price-modal.component';
 
 @Component({
   selector: 'app-products-page',
+  standalone: true,
   imports: [
     ReactiveFormsModule,
     ProductsListComponent,
     ProductsToolbarComponent,
+    BulkPriceModalComponent,
   ],
   templateUrl: './products-page.component.html',
 })
@@ -32,6 +35,8 @@ export class ProductsPageComponent implements OnInit {
   searchQuery = signal('');
   statusFilter = signal<StatusFilter>('Todos');
   stockFilter = signal<StockFilter>('Todos');
+
+  showBulkModal = signal(false);
 
   filtersActive = computed(() => {
     return (
@@ -83,6 +88,22 @@ export class ProductsPageComponent implements OnInit {
 
     return filtered;
   });
+
+  selectedIds = signal<number[]>([]);
+
+  handleBulkPriceUpdate() {
+    if (this.selectedIds().length === 0) {
+      this._alertService.toast('Selecciona al menos un producto', 'warning');
+      return;
+    }
+    this.showBulkModal.set(true);
+  }
+
+  handleBulkSuccess() {
+    this.showBulkModal.set(false);
+    this.loadProducts();
+    this.selectedIds.set([]); // Limpiar selección tras éxito
+  }
 
   ngOnInit() {
     this.loadProducts();

@@ -5,6 +5,7 @@ import { ProductState } from '../shared/enums/state.enum.js';
 import { Price } from './price/price.entity.js';
 import { Currency } from '../shared/enums/currency.enum.js';
 import { CustomBaseEntity } from '../shared/db/customBaseEntity.entity.js';
+import type { PriceChangeBatch } from './price-change-batch/priceChangeBatch.entity.js';
 
 @Entity()
 export class Product extends CustomBaseEntity {
@@ -35,7 +36,7 @@ export class Product extends CustomBaseEntity {
   @ManyToOne(() => Category, { nullable: false, updateRule: 'cascade' })
   category!: Rel<Category>;
 
-  updatePrice(amount: number, currency: Currency = Currency.ARS) {
+  updatePrice(amount: number, currency: Currency = Currency.ARS, batch?: PriceChangeBatch) {
     // Marcamos los precios actuales como no vigentes
     this.prices.getItems().forEach((p) => {
       if (p.isCurrent) p.isCurrent = false;
@@ -48,6 +49,7 @@ export class Product extends CustomBaseEntity {
     newPrice.product = this;
     newPrice.isCurrent = true;
     newPrice.validFrom = new Date();
+    if (batch) newPrice.batch = batch;
 
     this.prices.add(newPrice);
   }

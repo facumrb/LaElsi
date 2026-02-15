@@ -12,4 +12,9 @@ export abstract class CustomBaseEntity {
 
   @Property({ nullable: true })
   deletedAt?: Date;
+
+  @Property({ persist: false })
+  get estado(): string {
+    return this.deletedAt ? 'Inactivo' : 'Activo';
+  }
 }
