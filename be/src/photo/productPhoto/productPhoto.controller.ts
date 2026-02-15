@@ -12,9 +12,8 @@ const UPLOADS_PATH = path.join(process.cwd(), 'uploads', 'products');
 const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB por archivo
 
 export class ProductPhotoController {
-
   static uploadProductPhotos = asyncHandler(async (req: Request, res: Response) => {
-    const em = orm.em;
+    const em = orm.em.fork();
     const files = req.files as Express.Multer.File[];
     const { orders } = req.body;
     const id = Number(req.params.id);
@@ -73,7 +72,6 @@ export class ProductPhotoController {
       await em.flush();
 
       return res.status(201).json(ApiResponse.created('Fotos subidas correctamente', { cantidad: files.length }));
-
     } catch (error: any) {
       // Cleanup en caso de error
       if (files) await ProductPhotoController.deleteProductUploadedFiles(files);
@@ -92,7 +90,7 @@ export class ProductPhotoController {
   }
 
   static reorderProductPhotos = asyncHandler(async (req: Request, res: Response) => {
-    const em = orm.em;
+    const em = orm.em.fork();
     const { photosOrder } = req.body;
 
     if (!photosOrder || !Array.isArray(photosOrder)) {
@@ -122,7 +120,7 @@ export class ProductPhotoController {
   });
 
   static deleteProductPhoto = asyncHandler(async (req: Request, res: Response) => {
-    const em = orm.em;
+    const em = orm.em.fork();
     const id = Number(req.params.photoId);
     if (isNaN(id)) throw new AppError('ID de foto inválido', 400);
 

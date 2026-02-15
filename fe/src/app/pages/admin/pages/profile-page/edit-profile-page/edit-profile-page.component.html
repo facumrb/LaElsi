@@ -46,25 +46,25 @@
 
             <!-- Apellido -->
             <div class="col-md-6 mb-3">
-              <label for="last_name" class="form-label">Apellido</label>
+              <label for="lastName" class="form-label">Apellido</label>
               <input
                 type="text"
                 class="form-control"
-                id="last_name"
-                name="last_name"
-                formControlName="last_name"
+                id="lastName"
+                name="lastName"
+                formControlName="lastName"
                 [ngClass]="{
                   'is-invalid':
-                    hasErrors('last_name', 'required') ||
-                    hasErrors('last_name', 'pattern'),
+                    hasErrors('lastName', 'required') ||
+                    hasErrors('lastName', 'pattern'),
                 }"
               />
               <!-- Contenedor de mensajes de error -->
               <div class="error-container">
-                @if (hasErrors("last_name", "required")) {
+                @if (hasErrors("lastName", "required")) {
                   <div class="text-danger">El apellido es obligatorio.</div>
                 }
-                @if (hasErrors("last_name", "pattern")) {
+                @if (hasErrors("lastName", "pattern")) {
                   <div class="text-danger">
                     El formato del apellido es inválido.
                   </div>

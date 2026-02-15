@@ -43,26 +43,28 @@ const login = asyncHandler(async (req: Request, res: Response) => {
     email: user.email
   });
 
-  return res.status(200).json(ApiResponse.success('Login exitoso', {
-    token,
-    user: {
-      id: user.id,
-      name: user.name,
-      last_name: user.last_name,
-      role: user.role,
-      photo: user.photo
-        ? {
-          id: user.photo.id,
-          fileName: user.photo.fileName
-        }
-        : null
-    }
-  }));
+  return res.status(200).json(
+    ApiResponse.success('Login exitoso', {
+      token,
+      user: {
+        id: user.id,
+        name: user.name,
+        lastName: user.lastName,
+        role: user.role,
+        photo: user.photo
+          ? {
+              id: user.photo.id,
+              fileName: user.photo.fileName
+            }
+          : null
+      }
+    })
+  );
 });
 
 const register = asyncHandler(async (req: Request, res: Response) => {
   const em = orm.em;
-  const { name, last_name, dni, phone, username, password, email, cuit, fiscalCondition, ...addressFields } = req.body;
+  const { name, lastName, dni, phone, username, password, email, cuit, fiscalCondition, ...addressFields } = req.body;
 
   // Verificar duplicados (email o username) en ambas tablas
   const existingAdmin = await em.findOne(Admin, { $or: [{ email }, { username }] });
@@ -75,7 +77,7 @@ const register = asyncHandler(async (req: Request, res: Response) => {
   // Crear Cliente por defecto
   const newClient = new Client();
   newClient.name = name;
-  newClient.last_name = last_name;
+  newClient.lastName = lastName;
   newClient.dni = dni;
   newClient.phone = phone;
   newClient.username = username;

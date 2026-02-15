@@ -34,7 +34,7 @@ export class ClientsPageComponent implements OnInit {
       // Buscamos por nombre, apellido, username o dni
       return (
         client.name.toLowerCase().includes(query) ||
-        client.last_name.toLowerCase().includes(query) ||
+        client.lastName.toLowerCase().includes(query) ||
         client.username.toLowerCase().includes(query) ||
         client.dni.includes(query)
       );

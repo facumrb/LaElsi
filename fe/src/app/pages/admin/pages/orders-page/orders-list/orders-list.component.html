@@ -1,131 +1,226 @@
 <div
-    class="animate-fadeIn w-full bg-gray-50 lg:bg-white lg:rounded-lg lg:shadow-md lg:border lg:border-gray-200 overflow-hidden">
-    <div class="w-full overflow-x-auto">
-        <table class="w-full text-left text-sm text-gray-500 border-separate border-spacing-0">
-            <thead class="hidden lg:table-header-group bg-[#3d4494] text-white">
-                <tr>
-                    <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[10%] rounded-tl-lg">ID</th>
-                    <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[20%]">Cliente</th>
-                    <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[15%]">Método Entrega</th>
-                    <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[15%]">Estado</th>
-                    <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[15%]">Total</th>
-                    <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[15%] text-center">Acciones</th>
-                </tr>
-            </thead>
+  class="animate-fadeIn w-full bg-gray-50 lg:bg-white lg:rounded-lg lg:shadow-md lg:border lg:border-gray-200 overflow-hidden"
+>
+  <div class="w-full overflow-x-auto">
+    <table
+      class="w-full text-left text-sm text-gray-500 border-separate border-spacing-0"
+    >
+      <thead class="hidden lg:table-header-group bg-[#3d4494] text-white">
+        <tr>
+          <th
+            class="px-6 py-4 font-semibold uppercase tracking-wider w-[10%] rounded-tl-lg"
+          >
+            ID
+          </th>
+          <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[20%]">
+            Cliente
+          </th>
+          <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[15%]">
+            Método Entrega
+          </th>
+          <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[15%]">
+            Estado
+          </th>
+          <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[15%]">
+            Total
+          </th>
+          <th
+            class="px-6 py-4 font-semibold uppercase tracking-wider w-[15%] text-center"
+          >
+            Acciones
+          </th>
+        </tr>
+      </thead>
 
-            <tbody class="block lg:table-row-group">
-                @for (order of orders(); track order.id; let isLast = $last) {
-                <tr
-                    class="flex flex-col relative lg:static bg-white rounded-xl shadow border border-gray-200 mb-4 mx-4 mt-4 lg:mx-0 lg:mt-0 lg:mb-0 lg:table-row lg:shadow-none lg:border-0 lg:rounded-none transition-hover duration-200 hover:bg-gray-50 hover:z-10">
-                    <!-- ID Column -->
-                    <td
-                        class="px-5 pt-6 pb-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle font-bold text-[#3d4494]">
-                        <span class="font-bold uppercase text-gray-400 mb-2 block lg:hidden text-xs">ID Orden:</span>
-                        #{{ order.id }}
-                    </td>
+      <tbody class="block lg:table-row-group">
+        @for (order of orders(); track order.id; let isLast = $last) {
+          <tr
+            class="flex flex-col relative lg:static bg-white rounded-xl shadow border border-gray-200 mb-4 mx-4 mt-4 lg:mx-0 lg:mt-0 lg:mb-0 lg:table-row lg:shadow-none lg:border-0 lg:rounded-none transition-hover duration-200 hover:bg-gray-50 hover:z-10"
+          >
+            <!-- ID Column -->
+            <td
+              class="px-5 pt-6 pb-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle font-bold text-[#3d4494]"
+            >
+              <span
+                class="font-bold uppercase text-gray-400 mb-2 block lg:hidden text-xs"
+                >ID Orden:</span
+              >
+              #{{ order.id }}
+            </td>
 
-                    <!-- Client Column -->
-                    <td
-                        class="px-5 py-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle">
-                        <span class="font-bold uppercase text-gray-400 block mb-1 lg:hidden text-xs">Cliente:</span>
-                        <div class="text-gray-900 font-semibold">{{ order.client.name }} {{ order.client.last_name }}
-                        </div>
-                        <div class="text-xs text-gray-500">{{ order.client.email }}</div>
-                    </td>
+            <!-- Client Column -->
+            <td
+              class="px-5 py-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle"
+            >
+              <span
+                class="font-bold uppercase text-gray-400 block mb-1 lg:hidden text-xs"
+                >Cliente:</span
+              >
+              <div class="text-gray-900 font-semibold">
+                {{ order.client.name }} {{ order.client.lastName }}
+              </div>
+              <div class="text-xs text-gray-500">{{ order.client.email }}</div>
+            </td>
 
-                    <!-- Delivery Method Column -->
-                    <td
-                        class="px-5 py-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle">
-                        <span class="font-bold uppercase text-gray-400 block mb-1 lg:hidden text-xs">Método:</span>
-                        <div class="flex items-center gap-2">
-                            <ng-icon
-                                [name]="order.deliveryMethod === DeliveryMethod.ENVIO ? 'bootstrapTruck' : 'bootstrapShop'"
-                                class="text-lg" [class.text-indigo-600]="order.deliveryMethod === DeliveryMethod.ENVIO"
-                                [class.text-amber-600]="order.deliveryMethod === DeliveryMethod.RETIRO_SUCURSAL"></ng-icon>
-                            <div class="font-medium text-gray-700">{{ order.deliveryMethod }}</div>
+            <!-- Delivery Method Column -->
+            <td
+              class="px-5 py-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle"
+            >
+              <span
+                class="font-bold uppercase text-gray-400 block mb-1 lg:hidden text-xs"
+                >Método:</span
+              >
+              <div class="flex items-center gap-2">
+                <ng-icon
+                  [name]="
+                    order.deliveryMethod === DeliveryMethod.ENVIO
+                      ? 'bootstrapTruck'
+                      : 'bootstrapShop'
+                  "
+                  class="text-lg"
+                  [class.text-indigo-600]="
+                    order.deliveryMethod === DeliveryMethod.ENVIO
+                  "
+                  [class.text-amber-600]="
+                    order.deliveryMethod === DeliveryMethod.RETIRO_SUCURSAL
+                  "
+                ></ng-icon>
+                <div class="font-medium text-gray-700">
+                  {{ order.deliveryMethod }}
+                </div>
 
-                            @if (canTranslateDelivery(order)) {
-                            <button
-                                (click)="onUpdateDelivery.emit({ id: order.id, method: order.deliveryMethod === DeliveryMethod.ENVIO ? DeliveryMethod.RETIRO_SUCURSAL : DeliveryMethod.ENVIO })"
-                                class="ml-2 text-xs text-blue-600 hover:underline cursor-pointer"
-                                title="Cambiar método">
-                                (Cambiar)
-                            </button>
-                            }
-                        </div>
-                    </td>
-
-                    <!-- Status Column -->
-                    <td
-                        class="px-5 py-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle">
-                        <span class="font-bold uppercase text-gray-400 block mb-1 lg:hidden text-xs">Estado:</span>
-                        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border"
-                            [ngClass]="getStatusColor(order.status)">
-                            <ng-icon [name]="getStatusIcon(order.status)"></ng-icon>
-                            {{ order.status }}
-                        </div>
-                    </td>
-
-                    <!-- Total Column -->
-                    <td
-                        class="px-5 py-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle">
-                        <span class="font-bold uppercase text-gray-400 block mb-1 lg:hidden text-xs">Total:</span>
-                        <span class="text-gray-900 font-bold text-lg lg:text-sm">
-                            {{ order.totalAmount | currency: 'ARS' : 'symbol-narrow' }}
-                        </span>
-                    </td>
-
-                    <!-- Actions Column -->
-                    <td
-                        class="px-5 pt-2 pb-5 lg:px-6 lg:py-4 lg:table-cell lg:align-middle lg:border-b lg:border-gray-100">
-                        <div class="flex flex-wrap items-center justify-start lg:justify-center gap-2">
-                            <span
-                                class="font-bold uppercase text-gray-400 lg:hidden text-xs w-full mb-2">Acciones:</span>
-
-                            <!-- Next Status Buttons -->
-                            @for (nextState of getNextStates(order); track nextState) {
-                            <button (click)="onUpdateStatus.emit({ id: order.id, status: nextState })"
-                                class="cursor-pointer bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-blue-700 transition-colors flex items-center gap-1">
-                                <ng-icon name="bootstrapArrowRight"></ng-icon>
-                                A {{ nextState }}
-                            </button>
-                            }
-
-                            <!-- Cancel Button -->
-                            @if (order.status !== OrderState.CANCELLED && order.status !== OrderState.DELIVERED) {
-                            <button (click)="onCancel.emit(order.id)"
-                                class="cursor-pointer border border-rose-300 text-rose-600 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-rose-50 transition-colors flex items-center gap-1">
-                                <ng-icon name="bootstrapXCircle"></ng-icon>
-                                Cancelar
-                            </button>
-                            } @else if (order.status === OrderState.DELIVERED) {
-                            <span class="text-xs text-emerald-600 font-semibold italic flex items-center gap-1">
-                                <ng-icon name="bootstrapCheck2All"></ng-icon> Finalizada
-                            </span>
-                            } @else {
-                            <span class="text-xs text-rose-600 font-semibold italic flex items-center gap-1">
-                                <ng-icon name="bootstrapXCircle"></ng-icon> Anulada
-                            </span>
-                            }
-                        </div>
-                    </td>
-                </tr>
-                } @empty {
-                <tr>
-                    <td colspan="6" class="px-6 py-12 text-center bg-white lg:rounded-b-lg">
-                        <div class="flex flex-col items-center justify-center">
-                            @if (isFilterActive()) {
-                            <ng-icon name="bootstrapSearch" class="text-4xl text-gray-300 mb-2"></ng-icon>
-                            <p class="text-gray-500 font-medium">No se encontraron órdenes para tu búsqueda</p>
-                            } @else {
-                            <ng-icon name="bootstrapInbox" class="text-4xl text-gray-200 mb-2"></ng-icon>
-                            <p class="text-gray-400 font-medium">Todavía no hay órdenes registradas</p>
-                            }
-                        </div>
-                    </td>
-                </tr>
+                @if (canTranslateDelivery(order)) {
+                  <button
+                    (click)="
+                      onUpdateDelivery.emit({
+                        id: order.id,
+                        method:
+                          order.deliveryMethod === DeliveryMethod.ENVIO
+                            ? DeliveryMethod.RETIRO_SUCURSAL
+                            : DeliveryMethod.ENVIO,
+                      })
+                    "
+                    class="ml-2 text-xs text-blue-600 hover:underline cursor-pointer"
+                    title="Cambiar método"
+                  >
+                    (Cambiar)
+                  </button>
                 }
-            </tbody>
-        </table>
-    </div>
+              </div>
+            </td>
+
+            <!-- Status Column -->
+            <td
+              class="px-5 py-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle"
+            >
+              <span
+                class="font-bold uppercase text-gray-400 block mb-1 lg:hidden text-xs"
+                >Estado:</span
+              >
+              <div
+                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border"
+                [ngClass]="getStatusColor(order.status)"
+              >
+                <ng-icon [name]="getStatusIcon(order.status)"></ng-icon>
+                {{ order.status }}
+              </div>
+            </td>
+
+            <!-- Total Column -->
+            <td
+              class="px-5 py-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle"
+            >
+              <span
+                class="font-bold uppercase text-gray-400 block mb-1 lg:hidden text-xs"
+                >Total:</span
+              >
+              <span class="text-gray-900 font-bold text-lg lg:text-sm">
+                {{ order.totalAmount | currency: "ARS" : "symbol-narrow" }}
+              </span>
+            </td>
+
+            <!-- Actions Column -->
+            <td
+              class="px-5 pt-2 pb-5 lg:px-6 lg:py-4 lg:table-cell lg:align-middle lg:border-b lg:border-gray-100"
+            >
+              <div
+                class="flex flex-wrap items-center justify-start lg:justify-center gap-2"
+              >
+                <span
+                  class="font-bold uppercase text-gray-400 lg:hidden text-xs w-full mb-2"
+                  >Acciones:</span
+                >
+
+                <!-- Next Status Buttons -->
+                @for (nextState of getNextStates(order); track nextState) {
+                  <button
+                    (click)="
+                      onUpdateStatus.emit({ id: order.id, status: nextState })
+                    "
+                    class="cursor-pointer bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-blue-700 transition-colors flex items-center gap-1"
+                  >
+                    <ng-icon name="bootstrapArrowRight"></ng-icon>
+                    A {{ nextState }}
+                  </button>
+                }
+
+                <!-- Cancel Button -->
+                @if (
+                  order.status !== OrderState.CANCELLED &&
+                  order.status !== OrderState.DELIVERED
+                ) {
+                  <button
+                    (click)="onCancel.emit(order.id)"
+                    class="cursor-pointer border border-rose-300 text-rose-600 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-rose-50 transition-colors flex items-center gap-1"
+                  >
+                    <ng-icon name="bootstrapXCircle"></ng-icon>
+                    Cancelar
+                  </button>
+                } @else if (order.status === OrderState.DELIVERED) {
+                  <span
+                    class="text-xs text-emerald-600 font-semibold italic flex items-center gap-1"
+                  >
+                    <ng-icon name="bootstrapCheck2All"></ng-icon> Finalizada
+                  </span>
+                } @else {
+                  <span
+                    class="text-xs text-rose-600 font-semibold italic flex items-center gap-1"
+                  >
+                    <ng-icon name="bootstrapXCircle"></ng-icon> Anulada
+                  </span>
+                }
+              </div>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td
+              colspan="6"
+              class="px-6 py-12 text-center bg-white lg:rounded-b-lg"
+            >
+              <div class="flex flex-col items-center justify-center">
+                @if (isFilterActive()) {
+                  <ng-icon
+                    name="bootstrapSearch"
+                    class="text-4xl text-gray-300 mb-2"
+                  ></ng-icon>
+                  <p class="text-gray-500 font-medium">
+                    No se encontraron órdenes para tu búsqueda
+                  </p>
+                } @else {
+                  <ng-icon
+                    name="bootstrapInbox"
+                    class="text-4xl text-gray-200 mb-2"
+                  ></ng-icon>
+                  <p class="text-gray-400 font-medium">
+                    Todavía no hay órdenes registradas
+                  </p>
+                }
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
 </div>

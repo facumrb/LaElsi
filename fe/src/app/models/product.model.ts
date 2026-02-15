@@ -1,6 +1,11 @@
 import { IApiCategory } from './category.model';
 import { IApiProductPhoto } from './photo.model';
 
+export enum ProductState {
+  Activo = 'Activo',
+  Inactivo = 'Inactivo',
+}
+
 export interface IApiPrice {
   id: number;
   amount: number;
@@ -15,21 +20,28 @@ export interface IApiProduct {
   description: string;
   prices: IApiPrice[];
   brand: string;
-  total_sold: number;
-  state: 'Activo' | 'Inactivo';
+  totalSold: number;
+  state: ProductState;
   stock: number;
   photos: IApiProductPhoto[]; // Array de URLs de las fotos del producto
   category: IApiCategory;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string | null;
 }
 
-export interface ICreateProduct {
-  name: string;
-  description: string;
-  price: number; // El formulario sigue enviando un número simple que el BE convierte
-  currency?: string;
-  brand: string;
-  total_sold: number;
-  state: 'Activo' | 'Inactivo';
-  stock: number;
-  categoryId: number; // Enviamos el ID de la categoria que tenga
-}
+export type ICreateProduct = Omit<
+  IApiProduct,
+  | 'id'
+  | 'photos'
+  | 'category'
+  | 'prices'
+  | 'createdAt'
+  | 'updatedAt'
+  | 'deletedAt'
+> & {
+  price: number;
+  category: number;
+};
+
+export type IUpdateProduct = Partial<ICreateProduct>;

@@ -8,7 +8,7 @@ Content-Type: application/json
 
 {
   "name": "Jorge",
-  "last_name": "Quinoa",
+  "lastName": "Quinoa",
   "phone": "3415044454",
   "username": "jorge_quinoa",
   "password": "papasfritas",
@@ -27,7 +27,7 @@ Content-Type: application/json
 
 {
   "name": "Jorge Actualizado",
-  "last_name": "Quinoa Actualizado",
+  "lastName": "Quinoa Actualizado",
 }
 
 ### DELETE Eliminar un Cliente

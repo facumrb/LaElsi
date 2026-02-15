@@ -62,7 +62,7 @@ export class AdminsFormComponent implements OnInit {
         FormUtils.notOnlyWhiteSpace,
       ],
     ],
-    last_name: [
+    lastName: [
       '',
       [
         Validators.required,
@@ -149,7 +149,7 @@ export class AdminsFormComponent implements OnInit {
 
         this.formAdmin.patchValue({
           name: admin.name,
-          last_name: admin.last_name,
+          lastName: admin.lastName,
           dni: admin.dni,
           phone: admin.phone,
           username: admin.username,
@@ -173,7 +173,7 @@ export class AdminsFormComponent implements OnInit {
 
   get fullName(): string {
     const name = this.formAdmin.get('name')?.value || '';
-    const lastName = this.formAdmin.get('last_name')?.value || '';
+    const lastName = this.formAdmin.get('lastName')?.value || '';
     return `${name} ${lastName}`;
   }
 
@@ -207,7 +207,7 @@ export class AdminsFormComponent implements OnInit {
 
     const adminData: ICreateAdmin = {
       name: formValue.name!,
-      last_name: formValue.last_name!,
+      lastName: formValue.lastName!,
       dni: formValue.dni!,
       phone: formValue.phone!,
       username: formValue.username!,
@@ -259,7 +259,7 @@ export class AdminsFormComponent implements OnInit {
             // Preparamos los cambios de texto
             const sessionUpdates: any = {
               name: formValue.name,
-              last_name: formValue.last_name,
+              lastName: formValue.lastName,
             };
 
             if (photoResponse && photoResponse.photo) {

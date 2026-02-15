@@ -42,7 +42,7 @@ export class ProfilePageComponent implements OnInit {
   formPerfil = this.fb.nonNullable.group({
     // Datos personales (Readonly por ahora)
     name: [{ value: '', disabled: true }],
-    last_name: [{ value: '', disabled: true }],
+    lastName: [{ value: '', disabled: true }],
     dni: [{ value: '', disabled: true }],
     email: [{ value: '', disabled: true }],
     phone: ['', Validators.required],
@@ -78,7 +78,7 @@ export class ProfilePageComponent implements OnInit {
         this.fullProfile.set(fullUser);
         this.formPerfil.patchValue({
           name: fullUser.name,
-          last_name: fullUser.last_name,
+          lastName: fullUser.lastName,
           dni: fullUser.dni,
           email: fullUser.email,
           phone: fullUser.phone,

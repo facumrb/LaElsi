@@ -104,12 +104,12 @@
             class="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-semibold uppercase"
             >Marca: {{ product.brand }}</span
           >
-          @if (product.total_sold >= 10) {
+          @if (product.totalSold >= 10) {
             <span
               class="text-xs font-bold text-orange-600 bg-orange-50 px-2 py-1 rounded border border-orange-100 flex items-center gap-1"
             >
               <ng-icon name="bootstrapLightningFill" class="text-sm"></ng-icon>
-              +{{ (product.total_sold / 10 | number: "1.0-0") + "0" }} ventas
+              +{{ (product.totalSold / 10 | number: "1.0-0") + "0" }} ventas
             </span>
           }
         </div>

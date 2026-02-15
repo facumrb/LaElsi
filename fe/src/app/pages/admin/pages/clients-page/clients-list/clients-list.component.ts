@@ -33,7 +33,7 @@ export class ClientsListComponent {
 
   getInitials(client: IApiClient): string {
     const first = client.name?.charAt(0) || '';
-    const last = client.last_name?.charAt(0) || '';
+    const last = client.lastName?.charAt(0) || '';
     return (first + last).toUpperCase();
   }
 

@@ -9,7 +9,6 @@ import { OrdersToolbarComponent } from './orders-toolbar/orders-toolbar.componen
 
 @Component({
   selector: 'app-orders-page',
-  standalone: true,
   imports: [CommonModule, OrdersListComponent, OrdersToolbarComponent],
   templateUrl: './orders-page.component.html',
 })
@@ -27,14 +26,17 @@ export class OrdersPageComponent implements OnInit {
 
     if (!query) return orders.sort((a, b) => b.id - a.id);
 
-    return orders.filter((order) => {
-      const clientName = `${order.client.name} ${order.client.last_name}`.toLowerCase();
-      return (
-        clientName.includes(query) ||
-        order.id.toString().includes(query) ||
-        order.status.toLowerCase().includes(query)
-      );
-    }).sort((a, b) => b.id - a.id);
+    return orders
+      .filter((order) => {
+        const clientName =
+          `${order.client.name} ${order.client.lastName}`.toLowerCase();
+        return (
+          clientName.includes(query) ||
+          order.id.toString().includes(query) ||
+          order.status.toLowerCase().includes(query)
+        );
+      })
+      .sort((a, b) => b.id - a.id);
   });
 
   ngOnInit() {
@@ -55,7 +57,10 @@ export class OrdersPageComponent implements OnInit {
   handleUpdateStatus(event: { id: number; status: OrderState }) {
     this._orderService.updateStatus(event.id, event.status).subscribe({
       next: (updatedOrder) => {
-        this._alertService.toast(`Orden #${event.id} pasó a ${event.status}`, 'success');
+        this._alertService.toast(
+          `Orden #${event.id} pasó a ${event.status}`,
+          'success',
+        );
         this.updateOrderInList(updatedOrder);
       },
       error: (err) => {
@@ -67,7 +72,10 @@ export class OrdersPageComponent implements OnInit {
   handleUpdateDelivery(event: { id: number; method: DeliveryMethod }) {
     this._orderService.updateDeliveryMethod(event.id, event.method).subscribe({
       next: (updatedOrder) => {
-        this._alertService.toast(`Método actualizado a "${event.method}"`, 'success');
+        this._alertService.toast(
+          `Método actualizado a "${event.method}"`,
+          'success',
+        );
         this.updateOrderInList(updatedOrder);
       },
       error: (err) => {
@@ -77,24 +85,31 @@ export class OrdersPageComponent implements OnInit {
   }
 
   handleCancel(id: number) {
-    this._alertService.confirmDelete('Esta acción cancelará la orden y restaurará el stock de los productos.').then((confirm) => {
-      if (confirm) {
-        this._orderService.cancelOrder(id).subscribe({
-          next: (updatedOrder) => {
-            this._alertService.toast('Orden cancelada correctamente', 'success');
-            this.updateOrderInList(updatedOrder);
-          },
-          error: (err) => {
-            this._errorService.handle(err, 'cancelar la orden');
-          },
-        });
-      }
-    });
+    this._alertService
+      .confirmDelete(
+        'Esta acción cancelará la orden y restaurará el stock de los productos.',
+      )
+      .then((confirm) => {
+        if (confirm) {
+          this._orderService.cancelOrder(id).subscribe({
+            next: (updatedOrder) => {
+              this._alertService.toast(
+                'Orden cancelada correctamente',
+                'success',
+              );
+              this.updateOrderInList(updatedOrder);
+            },
+            error: (err) => {
+              this._errorService.handle(err, 'cancelar la orden');
+            },
+          });
+        }
+      });
   }
 
   private updateOrderInList(updatedOrder: IApiOrder) {
     this.ordersRaw.update((current) =>
-      current.map((o) => (o.id === updatedOrder.id ? updatedOrder : o))
+      current.map((o) => (o.id === updatedOrder.id ? updatedOrder : o)),
     );
   }
 }

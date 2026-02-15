@@ -12,7 +12,7 @@ Content-Type: application/json
     "description": "Pista para autos con curvas y elevaciones.",
     "price": 29.99,
     "brand": "TrackMasters",
-    "total_sold": 250,
+    "totalSold": 250,
     "state": "Activo",
     "stock": 100,
     "category": "Juguetería", 
@@ -37,7 +37,7 @@ Content-Type: application/json
 
 {
     "price": 25,
-    "total_sold": 300,
+    "totalSold": 300,
     "stock": 50
 }
 
@@ -52,7 +52,7 @@ Content-Type: application/json
     "description": "Sombrero de mago",
     "price": 25,
     "brand": "Magic",
-    "total_sold": 10,
+    "totalSold": 10,
     "state": "Activo",
     "stock": 45,
     "category": "Juguetería",
@@ -72,7 +72,7 @@ Content-Type: application/json
     "description": "Tijera punta redonda",
     "price": 5.50,
     "brand": "Modul",
-    "total_sold": 100,
+    "totalSold": 100,
     "state": "Inactivo", 
     "stock": 90,
     "category": "Librería"
@@ -93,7 +93,7 @@ Content-Type: application/json
 
 {
     "price": 25,
-    "total_sold": 100,
+    "totalSold": 100,
     "stock": 20
 }
 

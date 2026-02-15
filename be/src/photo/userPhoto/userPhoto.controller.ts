@@ -12,7 +12,7 @@ const USERS_PATH = path.join(process.cwd(), 'uploads', 'users');
 
 export class UserPhotoController {
   static uploadUserPhoto = asyncHandler(async (req: Request, res: Response) => {
-    const em = orm.em;
+    const em = orm.em.fork();
     const file = req.file;
     const id = Number(req.params.id);
 
@@ -74,11 +74,12 @@ export class UserPhotoController {
       user.updatedAt = new Date();
       await em.flush();
 
-      return res.status(201).json(ApiResponse.created('Foto de perfil actualizada correctamente', {
-        fileName: userPhoto.fileName,
-        id: userPhoto.id
-      }));
-
+      return res.status(201).json(
+        ApiResponse.created('Foto de perfil actualizada correctamente', {
+          fileName: userPhoto.fileName,
+          id: userPhoto.id
+        })
+      );
     } catch (error: any) {
       if (file) await UserPhotoController.deleteUserUploadedFile(file);
       throw error;
@@ -86,7 +87,7 @@ export class UserPhotoController {
   });
 
   static deleteUserPhoto = asyncHandler(async (req: Request, res: Response) => {
-    const em = orm.em;
+    const em = orm.em.fork();
     const photoId = Number(req.params.photoId);
     if (isNaN(photoId)) throw new AppError('ID de foto inválido', 400);
 

@@ -35,7 +35,7 @@ export class EditProfilePageComponent implements OnInit {
           Validators.pattern('^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9.,;:?!()_\'"-\\s]*$'),
         ],
       ],
-      last_name: [
+      lastName: [
         '',
         [
           Validators.required,
@@ -70,7 +70,7 @@ export class EditProfilePageComponent implements OnInit {
         this.loading = false;
         this.formEditProfile.patchValue({
           name: this.admin.name,
-          last_name: this.admin.last_name,
+          lastName: this.admin.lastName,
           phone: this.admin.phone,
           username: this.admin.username,
           email: this.admin.email,

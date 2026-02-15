@@ -16,7 +16,7 @@ const MIN_PASSWORD_LENGTH = 6;
 function sanitizeClientInput(req: Request, res: Response, next: NextFunction) {
   req.body.sanitizedInput = {
     name: req.body.name,
-    last_name: req.body.last_name,
+    lastName: req.body.lastName,
     phone: req.body.phone,
     username: req.body.username,
     password: req.body.password,
@@ -42,17 +42,12 @@ function sanitizeClientInput(req: Request, res: Response, next: NextFunction) {
 }
 
 export class ClientController {
-
   static getAccountInfo = asyncHandler(async (req: Request, res: Response) => {
     const em = orm.em;
     const id = Number.parseInt(req.params.id);
     if (isNaN(id)) throw new AppError('ID de cliente inválido', 400);
 
-    const client = await em.findOne(
-      Client,
-      { id },
-      { populate: ['orders'] }
-    );
+    const client = await em.findOne(Client, { id }, { populate: ['orders'] });
 
     if (!client) throw new AppError('Cliente no encontrado', 404);
 
@@ -86,12 +81,7 @@ export class ClientController {
     }
 
     const clients = await em.find(Client, {
-      $or: [
-        { name: { $like: `%${query}%` } },
-        { last_name: { $like: `%${query}%` } },
-        { email: { $like: `%${query}%` } },
-        { dni: { $like: `%${query}%` } }
-      ]
+      $or: [{ name: { $like: `%${query}%` } }, { lastName: { $like: `%${query}%` } }, { email: { $like: `%${query}%` } }, { dni: { $like: `%${query}%` } }]
     });
 
     return res.status(200).json(ApiResponse.success('Resultados de búsqueda', clients));
@@ -99,10 +89,10 @@ export class ClientController {
 
   static add = asyncHandler(async (req: Request, res: Response) => {
     const em = orm.em;
-    const { email, password, name, last_name, phone, username, dni } = req.body.sanitizedInput;
+    const { email, password, name, lastName, phone, username, dni } = req.body.sanitizedInput;
 
     // Validar campos obligatorios
-    if (!email || !password || !name || !last_name || !phone || !username || !dni) {
+    if (!email || !password || !name || !lastName || !phone || !username || !dni) {
       throw new AppError('Todos los campos obligatorios deben ser proporcionados (email, contraseña, nombre, apellido, teléfono, nombre de usuario, DNI)', 400);
     }
 
@@ -133,14 +123,15 @@ export class ClientController {
     client.email = email;
     await client.setPassword(password);
     client.name = name;
-    client.last_name = last_name;
+    client.lastName = lastName;
     client.phone = phone;
     client.username = username;
     client.dni = dni;
     client.role = UserRole.CLIENT;
 
     try {
-      await em.persistAndFlush(client);
+      em.persist(client);
+      await em.flush();
     } catch (error: any) {
       if (error.message?.includes('unique') || error.message?.includes('duplicate') || error.code === 'ER_DUP_ENTRY' || error.code === '23505') {
         throw new AppError('Ya existe un registro con los mismos datos únicos (email, DNI o nombre de usuario)', 409);
@@ -152,16 +143,18 @@ export class ClientController {
       expiresIn: '24h'
     });
 
-    return res.status(201).json(ApiResponse.created('Usuario registrado exitosamente', {
-      token,
-      user: {
-        id: client.id,
-        email: client.email,
-        firstName: client.name,
-        lastName: client.last_name,
-        role: client.role
-      }
-    }));
+    return res.status(201).json(
+      ApiResponse.created('Usuario registrado exitosamente', {
+        token,
+        user: {
+          id: client.id,
+          email: client.email,
+          firstName: client.name,
+          lastName: client.lastName,
+          role: client.role
+        }
+      })
+    );
   });
 
   static update = asyncHandler(async (req: Request, res: Response) => {

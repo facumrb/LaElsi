@@ -4,7 +4,7 @@ import { UserRole } from './user.model';
 export interface UserSession {
   id: number;
   name: string;
-  last_name: string;
+  lastName: string;
   role: UserRole;
   photo?: IApiUserPhoto | null;
 }
@@ -18,7 +18,7 @@ export interface LoginResponse {
 // Interfaz para el registro
 export interface RegisterData {
   name: string;
-  last_name: string;
+  lastName: string;
   dni: string;
   phone: string;
   username: string;

@@ -33,7 +33,7 @@ export class AdminsListComponent {
 
   getInitials(admin: IApiAdmin): string {
     const first = admin.name?.charAt(0) || '';
-    const last = admin.last_name?.charAt(0) || '';
+    const last = admin.lastName?.charAt(0) || '';
     return (first + last).toUpperCase();
   }
 }

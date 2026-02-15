@@ -8,7 +8,7 @@ Content-Type: application/json
 
 {
   "name": "AdminSeguro",
-  "last_name": "Ramírez",
+  "lastName": "Ramírez",
   "phone": "423423423",
   "username": "admin1",
   "password": "12345",
@@ -36,7 +36,7 @@ Content-Type: application/json
 
 {
   "name": "Cesar Actualizado",
-  "last_name": "Ramírez Actualizado",
+  "lastName": "Ramírez Actualizado",
   "phone": "123456789",
   "email": "nuevoemail@gmail.com"
 }

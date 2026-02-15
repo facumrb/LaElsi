@@ -1,4 +1,11 @@
-import { Component, inject, OnInit, signal, computed, effect } from '@angular/core';
+import {
+  Component,
+  inject,
+  OnInit,
+  signal,
+  computed,
+  effect,
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ApiProductService } from '@services/api-product.service';
 import { ApiCategoryService } from '@services/api-category.service';
@@ -35,7 +42,8 @@ export class CategoryPageComponent implements OnInit {
 
     let filtered = currentProducts.filter((p) => {
       // Filtro de Marca
-      const matchesBrand = brandSelected === 'Todas' || p.brand === brandSelected;
+      const matchesBrand =
+        brandSelected === 'Todas' || p.brand === brandSelected;
       return matchesBrand;
     });
 
@@ -59,10 +67,10 @@ export class CategoryPageComponent implements OnInit {
     // Ordenamiento por Ventas
     if (popularityOrder === 'MasVentas') {
       // Mayor a Menor (más ventas primero)
-      filtered.sort((a, b) => b.total_sold - a.total_sold);
+      filtered.sort((a, b) => b.totalSold - a.totalSold);
     } else if (popularityOrder === 'MenosVentas') {
       // Menor a Mayor (menos ventas primero)
-      filtered.sort((a, b) => a.total_sold - b.total_sold);
+      filtered.sort((a, b) => a.totalSold - b.totalSold);
     }
 
     // Si no hay ordenamiento por precio ni por ventas, mantener orden por ID
@@ -78,13 +86,11 @@ export class CategoryPageComponent implements OnInit {
   private route = inject(ActivatedRoute);
 
   // Effect para extraer las marcas disponibles de los productos
-  private brandExtractor = effect(
-    () => {
-      const products = this.productsRaw();
-      const brands = [...new Set(products.map((p) => p.brand))].sort();
-      this.availableBrands.set(brands);
-    },
-  );
+  private brandExtractor = effect(() => {
+    const products = this.productsRaw();
+    const brands = [...new Set(products.map((p) => p.brand))].sort();
+    this.availableBrands.set(brands);
+  });
 
   ngOnInit(): void {
     this.route.params.subscribe((params) => {

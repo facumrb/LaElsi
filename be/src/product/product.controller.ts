@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import { orm } from '../shared/db/orm.js';
 import { Product } from './product.entity.js';
 import { Category } from '../category/category.entity.js';
-import { ProductPhoto } from '../photo/productPhoto/productPhoto.entity.js';
 import { ProductState, CategoryState } from '../shared/enums/state.enum.js';
 import { Currency } from '../shared/enums/currency.enum.js';
 import path from 'path';
@@ -20,11 +19,12 @@ function sanitizeProductInput(req: Request, res: Response, next: any) {
     name: req.body.name,
     description: req.body.description,
     brand: req.body.brand,
+    totalSold: req.body.totalSold,
+    state: req.body.state,
+    stock: req.body.stock,
     price: req.body.price,
     currency: req.body.currency,
-    stock: req.body.stock,
-    category: req.body.category,
-    state: req.body.state
+    category: req.body.category
   };
 
   Object.keys(req.body.sanitizedInput).forEach((key) => {
@@ -36,15 +36,14 @@ function sanitizeProductInput(req: Request, res: Response, next: any) {
 }
 
 export class ProductController {
-
   static add = asyncHandler(async (req: Request, res: Response) => {
     const em = orm.em;
     const input = req.body.sanitizedInput;
     const { price, currency, ...productData } = input;
 
     // Validar campos obligatorios
-    if (!productData.name || !productData.description || !productData.brand || productData.stock === undefined || price === undefined) {
-      throw new AppError('Los campos nombre, descripción, marca, stock y precio son obligatorios', 400);
+    if (!productData.name || !productData.description || !productData.brand || !productData.stock || !productData.stock || price === undefined) {
+      throw new AppError('Los campos nombre, descripción, marca, stock, total vendido y precio son obligatorios', 400);
     }
 
     // Validar precio positivo
@@ -55,6 +54,11 @@ export class ProductController {
     // Validar stock >= 0 y entero
     if (typeof productData.stock !== 'number' || productData.stock < 0 || !Number.isInteger(productData.stock)) {
       throw new AppError('El stock debe ser un número entero mayor o igual a 0', 400);
+    }
+
+    // Validar totalSold >= 0 y entero
+    if (typeof productData.totalSold !== 'number' || productData.totalSold < 0 || !Number.isInteger(productData.totalSold)) {
+      throw new AppError('El Total vendido debe ser un número entero mayor o igual a 0', 400);
     }
 
     // Validar currency si se proporciona
@@ -85,10 +89,8 @@ export class ProductController {
       }
       throw error;
     }
-
     return res.status(201).json(ApiResponse.created('Producto creado', product));
   });
-
 
   static searchProductsByText = asyncHandler(async (req: Request, res: Response) => {
     const em = orm.em;
@@ -252,13 +254,15 @@ export class ProductController {
       }
     );
 
-    return res.status(200).json(ApiResponse.success('Página de productos encontrada', {
-      products,
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit)
-    }));
+    return res.status(200).json(
+      ApiResponse.success('Página de productos encontrada', {
+        products,
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit)
+      })
+    );
   });
 
   static findAllActive = asyncHandler(async (req: Request, res: Response) => {

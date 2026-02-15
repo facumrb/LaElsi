@@ -20,7 +20,7 @@ export enum FiscalCondition {
 export interface IApiUser {
   id: number;
   name: string;
-  last_name: string;
+  lastName: string;
   dni: string;
   phone: string;
   username: string;

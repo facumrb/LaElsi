@@ -16,7 +16,7 @@ export abstract class User extends CustomBaseEntity {
   name!: string;
 
   @Property({ nullable: false, length: 100 })
-  last_name!: string;
+  lastName!: string;
 
   @Property({ nullable: false, unique: true, length: 15 })
   dni!: string;

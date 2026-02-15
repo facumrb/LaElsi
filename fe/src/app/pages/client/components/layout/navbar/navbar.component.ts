@@ -67,7 +67,7 @@ export class NavbarComponent implements OnInit {
     const user = this.authService.currentUser();
     if (!user) return '';
     const first = user.name?.charAt(0) || '';
-    const last = user.last_name?.charAt(0) || '';
+    const last = user.lastName?.charAt(0) || '';
     return (first + last).toUpperCase();
   });
 

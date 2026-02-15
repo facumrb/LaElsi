@@ -85,7 +85,7 @@ export class ClientsFormComponent implements OnInit {
         FormUtils.notOnlyWhiteSpace,
       ],
     ],
-    last_name: [
+    lastName: [
       '',
       [
         Validators.required,
@@ -191,7 +191,7 @@ export class ClientsFormComponent implements OnInit {
 
         this.formClient.patchValue({
           name: client.name,
-          last_name: client.last_name,
+          lastName: client.lastName,
           dni: client.dni,
           phone: client.phone,
           username: client.username,
@@ -230,7 +230,7 @@ export class ClientsFormComponent implements OnInit {
 
   get fullName(): string {
     const name = this.formClient.get('name')?.value || '';
-    const lastName = this.formClient.get('last_name')?.value || '';
+    const lastName = this.formClient.get('lastName')?.value || '';
     return `${name} ${lastName}`;
   }
 
@@ -265,7 +265,7 @@ export class ClientsFormComponent implements OnInit {
     // Construimos el objeto ICreateClient
     const clientData: ICreateClient = {
       name: formValue.name!,
-      last_name: formValue.last_name!,
+      lastName: formValue.lastName!,
       dni: formValue.dni!,
       phone: formValue.phone!,
       username: formValue.username!,
@@ -275,7 +275,7 @@ export class ClientsFormComponent implements OnInit {
 
       // Campos opcionales
       cuit: formValue.cuit || undefined,
-      fiscalCondition: formValue.fiscalCondition as FiscalCondition,
+      fiscalCondition: formValue.fiscalCondition!,
       street: formValue.street || undefined,
       streetNumber: formValue.streetNumber
         ? Number(formValue.streetNumber)

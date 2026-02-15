@@ -7,7 +7,7 @@ import { IApiCategory } from '@models/category.model';
 import { FormUtils } from '@shared/form-utils';
 import { ApiProductService } from '@services/api-product.service';
 import { AlertService } from '@shared/alert.service';
-import { ICreateProduct } from '@models/product.model';
+import { ICreateProduct, ProductState } from '@models/product.model';
 import { PhotoManagerComponent } from './photo-manager/photo-manager.component';
 import { IApiProductPhoto } from '@models/photo.model';
 import { NumericInputDirective } from '@shared/directives/numeric-input.directive';
@@ -89,7 +89,7 @@ export class ProductsFormComponent implements OnInit {
       ],
     ],
     brand: ['', [Validators.required, FormUtils.notOnlyWhiteSpace]],
-    total_sold: [
+    totalSold: [
       0,
       [
         Validators.required,
@@ -105,9 +105,14 @@ export class ProductsFormComponent implements OnInit {
         Validators.pattern(FormUtils.numberPattern),
       ],
     ],
-    state: ['Activo' as 'Activo' | 'Inactivo', [Validators.required]],
+    state: [ProductState.Activo, [Validators.required]],
     category: [null as IApiCategory | null, [Validators.required]],
     photos: [[]], // array vacío por defecto por si no se cargan fotos
+
+    // --- AUDITORÍA ---
+    createdAt: [{ value: '', disabled: true }],
+    updatedAt: [{ value: '', disabled: true }],
+    deletedAt: [{ value: '', disabled: true }],
   });
 
   ngOnInit() {
@@ -139,7 +144,7 @@ export class ProductsFormComponent implements OnInit {
             brand: product.brand,
             stock: product.stock,
             state: product.state,
-            total_sold: product.total_sold,
+            totalSold: product.totalSold,
             category: product.category,
           });
 
@@ -174,7 +179,7 @@ export class ProductsFormComponent implements OnInit {
     this.showCategoryMenu.set(false);
   }
   selectState(state: string) {
-    this.formProduct.patchValue({ state: state as 'Activo' | 'Inactivo' });
+    this.formProduct.patchValue({ state: state as ProductState });
     this.showStateMenu.set(false);
   }
 
@@ -186,15 +191,23 @@ export class ProductsFormComponent implements OnInit {
     if (this.formProduct.valid) {
       const formValue = this.formProduct.getRawValue();
 
+      if (!formValue.category || !formValue.category.id) {
+        this.alertService.toast(
+          'Debe seleccionar una categoría válida',
+          'error',
+        );
+        return;
+      }
+
       const productJson: ICreateProduct = {
-        name: formValue.name ?? '',
-        description: formValue.description ?? '',
-        brand: formValue.brand ?? '',
-        total_sold: Number(formValue.total_sold),
+        name: formValue.name!,
+        description: formValue.description!,
+        brand: formValue.brand!,
+        totalSold: Number(formValue.totalSold),
         price: Number(formValue.price),
         stock: Number(formValue.stock),
-        state: formValue.state ?? 'Activo',
-        categoryId: formValue.category?.id ?? 0,
+        state: formValue.state!,
+        category: formValue.category.id,
       };
 
       // 1. GUARDAR/ACTUALIZAR PRODUCTO (PADRE)

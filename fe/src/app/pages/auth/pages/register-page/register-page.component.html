@@ -44,20 +44,20 @@
         <!-- Apellido -->
         <div>
           <label
-            for="last_name"
+            for="lastName"
             class="mb-2 block text-sm font-medium text-gray-700"
             >Apellido</label
           >
           <input
             type="text"
-            id="last_name"
-            name="last_name"
-            formControlName="last_name"
+            id="lastName"
+            name="lastName"
+            formControlName="lastName"
             class="block w-full rounded-md border p-2.5 text-gray-900 shadow-sm focus:outline-none focus:ring-2 sm:text-sm border-gray-300 focus:border-[#049A8F] focus:ring-[#049A8F]"
-            [class.border-red-500]="hasErrors('last_name', 'required')"
+            [class.border-red-500]="hasErrors('lastName', 'required')"
           />
           <div class="mt-1 min-h-5 text-xs text-red-600">
-            @if (hasErrors("last_name", "required")) {
+            @if (hasErrors("lastName", "required")) {
               <span>Obligatorio</span>
             }
           </div>

@@ -34,7 +34,7 @@ export class AdminsPageComponent implements OnInit {
       // Buscamos por nombre, apellido, username o dni
       return (
         admin.name.toLowerCase().includes(query) ||
-        admin.last_name.toLowerCase().includes(query) ||
+        admin.lastName.toLowerCase().includes(query) ||
         admin.username.toLowerCase().includes(query) ||
         admin.dni.includes(query)
       );

@@ -1,7 +1,11 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
-import { IApiProduct, ICreateProduct } from '@models/product.model';
+import {
+  IApiProduct,
+  ICreateProduct,
+  IUpdateProduct,
+} from '@models/product.model';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -54,7 +58,7 @@ export class ApiProductService {
   }
 
   // Actualiza un producto
-  updateProduct(id: number, product: ICreateProduct): Observable<IApiProduct> {
+  updateProduct(id: number, product: IUpdateProduct): Observable<IApiProduct> {
     return this._http
       .patch<{
         message: string;

@@ -154,7 +154,7 @@ async function seedAdmin(em: EntityManager) {
 
   const superAdmin = new Admin();
   superAdmin.name = ADMIN_DATA.name;
-  superAdmin.last_name = ADMIN_DATA.lastName;
+  superAdmin.lastName = ADMIN_DATA.lastName;
   superAdmin.dni = ADMIN_DATA.dni;
   superAdmin.email = ADMIN_DATA.email;
   superAdmin.phone = ADMIN_DATA.phone;
@@ -172,7 +172,7 @@ async function seedClients(em: EntityManager) {
   for (const clientData of CLIENTS_DATA) {
     const client = new Client();
     client.name = clientData.name;
-    client.last_name = clientData.lastName;
+    client.lastName = clientData.lastName;
     client.dni = clientData.dni;
     client.email = clientData.email;
     client.phone = clientData.phone;
@@ -221,7 +221,7 @@ function createProductEntity(data: IProductSeed, category: Category): Product {
   product.name = data.name;
   product.description = data.description;
   product.brand = data.brand;
-  product.total_sold = 0;
+  product.totalSold = 0;
   product.stock = data.stock;
   product.category = category;
 
