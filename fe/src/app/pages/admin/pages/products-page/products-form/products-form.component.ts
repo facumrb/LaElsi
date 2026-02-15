@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Location } from '@angular/common';
+import { DatePipe, Location } from '@angular/common';
 import { ApiCategoryService } from '@services/api-category.service';
 import { IApiCategory } from '@models/category.model';
 import { FormUtils } from '@shared/form-utils';
@@ -18,6 +18,7 @@ import {
   bootstrapChevronDown,
   bootstrapCheck,
 } from '@ng-icons/bootstrap-icons';
+import { AuditInfoComponent } from '@shared/components/audit-info/audit-info.component';
 
 @Component({
   selector: 'app-products-form',
@@ -27,6 +28,7 @@ import {
     ClickOutsideDirective,
     PhotoManagerComponent,
     NgIconComponent,
+    AuditInfoComponent,
   ],
   viewProviders: [
     provideIcons({
@@ -35,6 +37,7 @@ import {
       bootstrapCheck,
     }),
   ],
+  providers: [DatePipe],
   templateUrl: './products-form.component.html',
 })
 export class ProductsFormComponent implements OnInit {
@@ -45,6 +48,7 @@ export class ProductsFormComponent implements OnInit {
   private categoryService = inject(ApiCategoryService);
   private productService = inject(ApiProductService);
   private alertService = inject(AlertService);
+  private datePipe = inject(DatePipe);
 
   formUtils = FormUtils;
 
@@ -59,6 +63,9 @@ export class ProductsFormComponent implements OnInit {
   categories = signal<IApiCategory[]>([]);
   isEditMode = signal(false);
   productId = signal<number | null>(null);
+
+  // Señal para guardar el estado inicial del formulario
+  initialFormValue = signal<string>('');
 
   // Formulario
   formProduct = this.fb.group({
@@ -137,6 +144,8 @@ export class ProductsFormComponent implements OnInit {
       this.productService.getProductById(+id).subscribe({
         next: (product) => {
           const currentPrice = product.prices?.find((p) => p.isCurrent);
+          const dateFormat = 'dd/MM/yyyy HH:mm';
+
           this.formProduct.patchValue({
             name: product.name,
             description: product.description,
@@ -146,7 +155,16 @@ export class ProductsFormComponent implements OnInit {
             state: product.state,
             totalSold: product.totalSold,
             category: product.category,
+            createdAt: this.datePipe.transform(product.createdAt, dateFormat),
+            updatedAt: this.datePipe.transform(product.updatedAt, dateFormat),
+            deletedAt: product.deletedAt
+              ? this.datePipe.transform(product.deletedAt, dateFormat)
+              : 'No eliminado',
           });
+
+          const formSnapshot = this.formProduct.getRawValue();
+
+          this.initialFormValue.set(JSON.stringify(formSnapshot));
 
           // PASAMOS LAS FOTOS AL HIJO
           if (product.photos) {
@@ -187,6 +205,19 @@ export class ProductsFormComponent implements OnInit {
     this.location.back();
   }
 
+  get hasRealChanges(): boolean {
+    if (!this.isEditMode()) return true;
+
+    // Comparamos el JSON actual completo contra el inicial
+    const currentJson = JSON.stringify(this.formProduct.getRawValue());
+    const formHasChanges = currentJson !== this.initialFormValue();
+
+    // Verificar fotos
+    const photosHaveChanges = this.photoManager?.hasChanges() ?? false;
+
+    return formHasChanges || photosHaveChanges;
+  }
+
   onSubmit() {
     if (this.formProduct.valid) {
       const formValue = this.formProduct.getRawValue();
@@ -210,7 +241,7 @@ export class ProductsFormComponent implements OnInit {
         category: formValue.category.id,
       };
 
-      // 1. GUARDAR/ACTUALIZAR PRODUCTO (PADRE)
+      // GUARDAR/ACTUALIZAR PRODUCTO (PADRE)
       let productObs;
       if (this.isEditMode() && this.productId()) {
         productObs = this.productService.updateProduct(
@@ -227,7 +258,7 @@ export class ProductsFormComponent implements OnInit {
             ? this.productId()!
             : responseProduct.id;
 
-          // 2. DELEGAR FOTOS AL HIJO
+          // DELEGAR FOTOS AL HIJO
           this.photoManager.saveChanges(finalId).subscribe({
             next: () => {
               this.alertService.toast('Guardado exitosamente', 'success');

@@ -248,7 +248,7 @@
 
         <button
           type="submit"
-          [disabled]="formAdmin.invalid || !hasUnsavedChanges"
+          [disabled]="formAdmin.invalid || !hasRealChanges"
           class="cursor-pointer rounded-md bg-[#3d4494] px-8 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#2a2f63] focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-[#3d4494] disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
         >
           {{ isEditMode() ? "Guardar Cambios" : "Crear Administrador" }}

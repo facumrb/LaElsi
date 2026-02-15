@@ -69,6 +69,7 @@ export class ProductPhotoController {
         em.persist(photo);
       }
 
+      product.updatedAt = new Date();
       await em.flush();
 
       return res.status(201).json(ApiResponse.created('Fotos subidas correctamente', { cantidad: files.length }));
@@ -107,12 +108,23 @@ export class ProductPhotoController {
       }
     }
 
+    // Variable para guardar el ID del producto y actualizarlo al final
+    let productIdToUpdate: number | null = null;
+
     for (const item of photosOrder) {
-      const photo = await em.findOne(ProductPhoto, { id: Number(item.id) });
+      const photo = await em.findOne(ProductPhoto, { id: Number(item.id) }, { populate: ['product'] });
       if (!photo) {
         throw new AppError(`Foto con id ${item.id} no encontrada`, 404);
       }
       photo.order = Number(item.order);
+      if (!productIdToUpdate) {
+        productIdToUpdate = photo.product.id;
+      }
+    }
+
+    // Ejecutar la actualización de fecha update del producto
+    if (productIdToUpdate) {
+      await em.nativeUpdate(Product, { id: productIdToUpdate }, { updatedAt: new Date() });
     }
 
     await em.flush();
@@ -124,7 +136,7 @@ export class ProductPhotoController {
     const id = Number(req.params.photoId);
     if (isNaN(id)) throw new AppError('ID de foto inválido', 400);
 
-    const photo = await em.findOne(ProductPhoto, { id });
+    const photo = await em.findOne(ProductPhoto, { id }, { populate: ['product'] });
 
     if (!photo) {
       throw new AppError('La foto no existe', 404);
@@ -138,6 +150,7 @@ export class ProductPhotoController {
       console.warn(`No se pudo borrar el archivo físico (quizás no existía): ${err}`);
     }
 
+    await em.nativeUpdate(Product, { id: photo.product.id }, { updatedAt: new Date() });
     em.remove(photo);
     await em.flush();
 

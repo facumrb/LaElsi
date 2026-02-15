@@ -41,7 +41,20 @@ export class PhotoManagerComponent {
   // Bandera para saber si el usuario pidió borrar la foto
   deletePending = signal(false);
 
-  hasChanges = computed(() => !!this.pendingFile() || this.deletePending());
+  hasChanges = computed(() => {
+    // Si hay un archivo recién subido, seguro es un cambio
+    if (this.pendingFile()) return true;
+
+    // Si está marcado para borrar...
+    if (this.deletePending()) {
+      // ... SOLO cuenta como cambio si originalmente HABÍA una foto.
+      // (Si antes era null y ahora lo borro, el resultado es el mismo: null).
+      return !!this.currentPhoto();
+    }
+
+    // Si no hay archivo nuevo ni borrado, no hay cambios
+    return false;
+  });
 
   // Nombre para mostrar iniciales si no hay foto
   userFullName = input<string>('');
@@ -106,13 +119,19 @@ export class PhotoManagerComponent {
 
   // BORRADO VISUAL (Marcar para borrar)
   async markForDeletion() {
-    const isConfirmed = await this.alertService.confirmDelete(
-      'La foto solo se quitará de la vista previa. Se eliminara cuando haga click en Guardar Cambios',
-    );
+    // "Cancelar Subida"
+    // Si el usuario subió una foto nueva pero se arrepintió y le dio al tacho
+    if (this.pendingFile()) {
+      this.pendingFile.set(null);
+      return;
+    }
 
+    // "Borrar Foto Existente"
+    const isConfirmed = await this.alertService.confirmDelete(
+      'La foto se eliminará permanentemente al guardar los cambios.',
+    );
     if (isConfirmed) {
       this.deletePending.set(true);
-      this.pendingFile.set(null);
       this.previewUrl.set(null);
     }
   }
