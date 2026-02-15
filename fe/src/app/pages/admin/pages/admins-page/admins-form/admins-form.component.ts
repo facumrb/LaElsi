@@ -262,11 +262,18 @@ export class AdminsFormComponent implements OnInit {
               lastName: formValue.lastName,
             };
 
-            if (photoResponse && photoResponse.photo) {
-              sessionUpdates.photo = photoResponse.photo;
-            } else if (this.photoManager.deletePending()) {
+            const uploadedPhoto = photoResponse?.data || photoResponse;
+
+            // Caso A: Se subió una foto nueva
+            if (uploadedPhoto && uploadedPhoto.id) {
+              sessionUpdates.photo = uploadedPhoto;
+            }
+            // Caso B: No hay foto nueva devuelta, PERO se marcó para borrar
+            // Nota: Verificamos deletePending() en el componente hijo
+            else if (this.photoManager.deletePending()) {
               sessionUpdates.photo = null;
             }
+
             // Actualizamos el AuthService (y por ende el Navbar)
             this.authService.updateCurrentUser(sessionUpdates);
           }

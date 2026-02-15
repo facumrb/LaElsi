@@ -3,7 +3,12 @@ import { HttpClient } from '@angular/common/http';
 import { map, Observable, tap } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Router } from '@angular/router';
-import { LoginResponse, RegisterData, UserSession } from '@models/auth.model';
+import {
+  IApiResponse,
+  LoginData,
+  RegisterData,
+  UserSession,
+} from '@models/auth.model';
 import { UserRole } from '@models/user.model';
 
 @Injectable({
@@ -25,19 +30,23 @@ export class AuthService {
     this.loadSession();
   }
 
-  login(username: string, password: string): Observable<LoginResponse> {
+  login(username: string, password: string): Observable<LoginData> {
     return this._http
-      .post<LoginResponse>(`${this.apiUrl}/login`, { username, password })
+      .post<IApiResponse<LoginData>>(`${this.apiUrl}/login`, {
+        username,
+        password,
+      })
       .pipe(
-        tap((response) => {
-          this.saveSession(response.token, response.user);
+        map((response) => response.data),
+        tap((data) => {
+          this.saveSession(data.token, data.user);
         }),
       );
   }
 
   register(userData: RegisterData): Observable<any> {
     return this._http
-      .post<any>(`${this.apiUrl}/register`, userData)
+      .post<IApiResponse<any>>(`${this.apiUrl}/register`, userData)
       .pipe(map((response) => response.data));
   }
 

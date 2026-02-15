@@ -9,10 +9,15 @@ export interface UserSession {
   photo?: IApiUserPhoto | null;
 }
 
-export interface LoginResponse {
-  message: string;
+export interface LoginData {
   token: string;
   user: UserSession;
+}
+
+export interface IApiResponse<T> {
+  status: string;
+  message: string;
+  data: T;
 }
 
 // Interfaz para el registro
