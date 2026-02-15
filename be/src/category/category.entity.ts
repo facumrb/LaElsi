@@ -12,7 +12,7 @@ export class Category extends CustomBaseEntity {
   description!: string;
 
   @Enum(() => CategoryState)
-  state: CategoryState = CategoryState.ACTIVO;
+  state: CategoryState = CategoryState.Activo;
 
   @OneToMany(() => Product, (product) => product.category)
   products = new Collection<Product>(this);

@@ -8,9 +8,9 @@ import { UserRole } from '../user/user.entity.js';
 export const photoRouter = Router();
 
 // --- Rutas de Producto (Solo Admin) ---
-photoRouter.post('/upload/productPhotos/:id', verifyToken, verifyRole([UserRole.ADMIN]), uploadProduct.array('files', 10), ProductPhotoController.uploadProductPhotos);
-photoRouter.post('/reorder', verifyToken, verifyRole([UserRole.ADMIN]), ProductPhotoController.reorderProductPhotos);
-photoRouter.delete('/productPhotos/:photoId', verifyToken, verifyRole([UserRole.ADMIN]), ProductPhotoController.deleteProductPhoto);
+photoRouter.post('/upload/productPhotos/:id', verifyToken, verifyRole([UserRole.Admin]), uploadProduct.array('files', 10), ProductPhotoController.uploadProductPhotos);
+photoRouter.post('/reorder', verifyToken, verifyRole([UserRole.Admin]), ProductPhotoController.reorderProductPhotos);
+photoRouter.delete('/productPhotos/:photoId', verifyToken, verifyRole([UserRole.Admin]), ProductPhotoController.deleteProductPhoto);
 
 // --- Rutas de Usuario (Usuario logueado) ---
 // TODO: Validar que el usuario solo pueda modificar su propia foto

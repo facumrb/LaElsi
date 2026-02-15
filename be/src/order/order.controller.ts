@@ -64,7 +64,7 @@ export class OrderController {
 
     const order = new Order();
     order.client = client;
-    order.deliveryMethod = deliveryMethod || DeliveryMethod.RETIRO_SUCURSAL;
+    order.deliveryMethod = deliveryMethod || DeliveryMethod.RetiroSucursal;
 
     // items is array of { productId, quantity }
     for (const item of items) {
@@ -196,7 +196,7 @@ export class OrderController {
     }
 
     // No permitir cambiar el método si la orden ya fue enviada o entregada
-    if ([OrderState.SHIPPED, OrderState.DELIVERED, OrderState.CANCELLED].includes(order.status)) {
+    if ([OrderState.Shipped, OrderState.Delivered, OrderState.Cancelled].includes(order.status)) {
       throw new AppError(`No se puede cambiar el método de entrega de una orden en estado "${order.status}"`, 400);
     }
 
@@ -217,7 +217,7 @@ export class OrderController {
       throw new AppError('Orden no encontrada', 404);
     }
 
-    if (order.status === OrderState.CANCELLED) {
+    if (order.status === OrderState.Cancelled) {
       throw new AppError('La orden ya se encuentra cancelada', 400);
     }
 
@@ -233,7 +233,7 @@ export class OrderController {
     });
 
     try {
-      order.changeStatus(OrderState.CANCELLED);
+      order.changeStatus(OrderState.Cancelled);
     } catch (e: any) {
       throw new AppError(e.message, 400);
     }

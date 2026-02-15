@@ -12,6 +12,6 @@ categoryRouter.get('/', CategoryController.findAll);
 categoryRouter.get('/:id', CategoryController.findOne);
 
 // Rutas protegidas (solo Admin puede crear/editar/eliminar)
-categoryRouter.post('/', verifyToken, verifyRole([UserRole.ADMIN]), sanitizeCategoryInput, CategoryController.add);
-categoryRouter.patch('/:id', verifyToken, verifyRole([UserRole.ADMIN]), sanitizeCategoryInput, CategoryController.update);
-categoryRouter.delete('/:id', verifyToken, verifyRole([UserRole.ADMIN]), CategoryController.remove);
+categoryRouter.post('/', verifyToken, verifyRole([UserRole.Admin]), sanitizeCategoryInput, CategoryController.add);
+categoryRouter.patch('/:id', verifyToken, verifyRole([UserRole.Admin]), sanitizeCategoryInput, CategoryController.update);
+categoryRouter.delete('/:id', verifyToken, verifyRole([UserRole.Admin]), CategoryController.remove);

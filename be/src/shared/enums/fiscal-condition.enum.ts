@@ -1,6 +1,6 @@
 export enum FiscalCondition {
-    CONSUMIDOR_FINAL = 'Consumidor Final',
-    RESPONSABLE_INSCRIPTO = 'Responsable Inscripto',
-    MONOTRIBUTISTA = 'Monotributista',
-    EXENTO = 'Exento',
+  ConsumidorFinal = 'Consumidor Final',
+  ResponsableInscripto = 'Responsable Inscripto',
+  Monotributista = 'Monotributista',
+  Exento = 'Exento'
 }

@@ -4,8 +4,8 @@ import type { UserPhoto } from '../photo/userPhoto/userPhoto.entity.js';
 import { CustomBaseEntity } from '../shared/db/customBaseEntity.entity.js';
 
 export enum UserRole {
-  ADMIN = 'Admin',
-  CLIENT = 'Client'
+  Admin = 'Admin',
+  Client = 'Client'
 }
 
 // Usamos STI (Single Table Inheritance) porque UserPhoto necesita apuntar a una tabla "User".

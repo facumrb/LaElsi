@@ -9,7 +9,7 @@ import { AppError } from '../../shared/errors/appError.js';
 import { ApiResponse } from '../../shared/utils/apiResponse.js';
 
 const UPLOADS_PATH = path.join(process.cwd(), 'uploads', 'products');
-const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB por archivo
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB por archivo
 
 export class ProductPhotoController {
   static uploadProductPhotos = asyncHandler(async (req: Request, res: Response) => {
@@ -27,7 +27,7 @@ export class ProductPhotoController {
       // Validar tamaño de cada archivo
       for (const file of files) {
         if (file.size > MAX_FILE_SIZE) {
-          throw new AppError(`El archivo "${file.originalname}" excede el límite de 2MB`, 400);
+          throw new AppError(`El archivo "${file.originalname}" excede el límite de 5MB`, 400);
         }
       }
 

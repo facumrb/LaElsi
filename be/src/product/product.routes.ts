@@ -14,6 +14,6 @@ productRouter.get('/category/:categoryId', ProductController.findProductsByCateg
 productRouter.get('/:id', ProductController.findOne);
 
 // Rutas protegidas (solo Admin puede crear/editar/eliminar)
-productRouter.post('/', verifyToken, verifyRole([UserRole.ADMIN]), sanitizeProductInput, ProductController.add);
-productRouter.patch('/:id', verifyToken, verifyRole([UserRole.ADMIN]), sanitizeProductInput, ProductController.update);
-productRouter.delete('/:id', verifyToken, verifyRole([UserRole.ADMIN]), ProductController.remove);
+productRouter.post('/', verifyToken, verifyRole([UserRole.Admin]), sanitizeProductInput, ProductController.add);
+productRouter.patch('/:id', verifyToken, verifyRole([UserRole.Admin]), sanitizeProductInput, ProductController.update);
+productRouter.delete('/:id', verifyToken, verifyRole([UserRole.Admin]), ProductController.remove);

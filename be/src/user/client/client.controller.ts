@@ -47,7 +47,13 @@ export class ClientController {
     const id = Number.parseInt(req.params.id);
     if (isNaN(id)) throw new AppError('ID de cliente inválido', 400);
 
-    const client = await em.findOne(Client, { id }, { populate: ['orders'] });
+    const client = await em.findOne(
+      Client,
+      { id },
+      {
+        populate: ['photo', 'orders']
+      }
+    );
 
     if (!client) throw new AppError('Cliente no encontrado', 404);
 
@@ -59,7 +65,13 @@ export class ClientController {
     const id = Number.parseInt(req.params.id);
     if (isNaN(id)) throw new AppError('ID de cliente inválido', 400);
 
-    const client = await em.findOne(Client, { id });
+    const client = await em.findOne(
+      Client,
+      { id },
+      {
+        populate: ['photo', 'orders']
+      }
+    );
     if (!client) throw new AppError('Cliente no encontrado', 404);
 
     return res.status(200).json(ApiResponse.success('Cliente encontrado', client));
@@ -67,7 +79,7 @@ export class ClientController {
 
   static findAll = asyncHandler(async (req: Request, res: Response) => {
     const em = orm.em;
-    const clients = await em.find(Client, {});
+    const clients = await em.find(Client, {}, { populate: ['photo'] });
 
     return res.status(200).json(ApiResponse.success('Todos los Clientes fueron encontrados', clients));
   });
@@ -80,9 +92,13 @@ export class ClientController {
       throw new AppError('El parámetro de búsqueda es requerido', 400);
     }
 
-    const clients = await em.find(Client, {
-      $or: [{ name: { $like: `%${query}%` } }, { lastName: { $like: `%${query}%` } }, { email: { $like: `%${query}%` } }, { dni: { $like: `%${query}%` } }]
-    });
+    const clients = await em.find(
+      Client,
+      {
+        $or: [{ name: { $like: `%${query}%` } }, { lastName: { $like: `%${query}%` } }, { username: { $like: `%${query}%` } }, { dni: { $like: `%${query}%` } }]
+      },
+      { populate: ['photo'] }
+    );
 
     return res.status(200).json(ApiResponse.success('Resultados de búsqueda', clients));
   });
@@ -127,7 +143,7 @@ export class ClientController {
     client.phone = phone;
     client.username = username;
     client.dni = dni;
-    client.role = UserRole.CLIENT;
+    client.role = UserRole.Client;
 
     try {
       em.persist(client);

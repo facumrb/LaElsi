@@ -1,17 +1,17 @@
 export enum CategoryState {
-    ACTIVO = 'Activo',
-    INACTIVO = 'Inactivo',
+  Activo = 'Activo',
+  Inactivo = 'Inactivo'
 }
 
 export enum ProductState {
-    ACTIVO = 'Activo',
-    INACTIVO = 'Inactivo',
+  Activo = 'Activo',
+  Inactivo = 'Inactivo'
 }
 
 export enum OrderState {
-    PENDING = 'Pendiente',
-    PAID = 'Pagado',
-    SHIPPED = 'Enviado',
-    DELIVERED = 'Entregado',
-    CANCELLED = 'Cancelado',
+  Pending = 'Pendiente',
+  Paid = 'Pagado',
+  Shipped = 'Enviado',
+  Delivered = 'Entregado',
+  Cancelled = 'Cancelado'
 }

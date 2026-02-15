@@ -82,7 +82,7 @@ const register = asyncHandler(async (req: Request, res: Response) => {
   newClient.phone = phone;
   newClient.username = username;
   newClient.email = email;
-  newClient.role = UserRole.CLIENT;
+  newClient.role = UserRole.Client;
 
   // Asignar campos de facturación si vienen
   if (cuit) newClient.cuit = cuit;

@@ -269,7 +269,7 @@ export class ProductController {
     const em = orm.em;
     const products = await em.find(
       Product,
-      { state: ProductState.ACTIVO, category: { state: CategoryState.ACTIVO } },
+      { state: ProductState.Activo, category: { state: CategoryState.Activo } },
       {
         populate: ['category', 'photos', 'prices'],
         populateWhere: { prices: { isCurrent: true } },

@@ -23,7 +23,6 @@ function sanitizeCategoryInput(req: Request, res: Response, next: NextFunction) 
 }
 
 export class CategoryController {
-
   static searchCategoriesByText = asyncHandler(async (req: Request, res: Response) => {
     const em = orm.em;
     const { query } = req.query;
@@ -49,7 +48,7 @@ export class CategoryController {
     const categoryData = {
       name,
       description,
-      state: req.body.sanitizedInput.state || CategoryState.ACTIVO
+      state: req.body.sanitizedInput.state || CategoryState.Activo
     };
 
     const category = em.create(Category, categoryData as any);
@@ -112,11 +111,11 @@ export class CategoryController {
     const em = orm.em;
     const categories = await em.find(
       Category,
-      { state: CategoryState.ACTIVO },
+      { state: CategoryState.Activo },
       {
         populate: ['products.photos', 'products.prices'] as any,
         populateWhere: {
-          products: { state: ProductState.ACTIVO },
+          products: { state: ProductState.Activo },
           'products.prices': { isCurrent: true }
         } as any,
         populateOrderBy: { 'products.photos': { order: 'ASC' } } as any

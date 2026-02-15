@@ -5,14 +5,14 @@ import { Order } from '../../order/order.entity.js';
 
 @Entity()
 export class Client extends User {
-  @OneToMany(() => Order, order => order.client, { cascade: [Cascade.ALL] })
+  @OneToMany(() => Order, (order) => order.client, { cascade: [Cascade.ALL] })
   orders = new Collection<Order>(this);
 
   @Property({ nullable: true, unique: true, length: 11 })
   cuit?: string;
 
-  @Enum({ items: () => FiscalCondition, default: FiscalCondition.CONSUMIDOR_FINAL })
-  fiscalCondition: FiscalCondition = FiscalCondition.CONSUMIDOR_FINAL;
+  @Enum({ items: () => FiscalCondition, default: FiscalCondition.ConsumidorFinal })
+  fiscalCondition: FiscalCondition = FiscalCondition.ConsumidorFinal;
 
   @Property({ nullable: true, length: 100 })
   street?: string;

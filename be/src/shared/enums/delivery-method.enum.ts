@@ -1,4 +1,4 @@
 export enum DeliveryMethod {
-    ENVIO = 'Envío',
-    RETIRO_SUCURSAL = 'Retiro en sucursal',
+  Envio = 'Envío',
+  RetiroSucursal = 'Retiro en sucursal'
 }

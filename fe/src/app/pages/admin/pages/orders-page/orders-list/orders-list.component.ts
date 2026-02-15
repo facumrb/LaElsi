@@ -1,5 +1,5 @@
 import { Component, input, output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CurrencyPipe } from '@angular/common';
 import { IApiOrder, OrderState, DeliveryMethod } from '@models/order.model';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
@@ -16,7 +16,7 @@ import {
 
 @Component({
   selector: 'app-orders-list',
-  imports: [CommonModule, NgIconComponent],
+  imports: [CurrencyPipe, NgIconComponent],
   viewProviders: provideIcons({
     bootstrapSearch,
     bootstrapInbox,
@@ -43,15 +43,15 @@ export class OrdersListComponent {
 
   getStatusColor(status: OrderState): string {
     switch (status) {
-      case OrderState.PENDING:
+      case OrderState.Pending:
         return 'bg-amber-100 text-amber-700 border-amber-200';
-      case OrderState.PAID:
+      case OrderState.Paid:
         return 'bg-blue-100 text-blue-700 border-blue-200';
-      case OrderState.SHIPPED:
+      case OrderState.Shipped:
         return 'bg-indigo-100 text-indigo-700 border-indigo-200';
-      case OrderState.DELIVERED:
+      case OrderState.Delivered:
         return 'bg-emerald-100 text-emerald-700 border-emerald-200';
-      case OrderState.CANCELLED:
+      case OrderState.Cancelled:
         return 'bg-rose-100 text-rose-700 border-rose-200';
       default:
         return 'bg-gray-100 text-gray-700 border-gray-200';
@@ -60,15 +60,15 @@ export class OrdersListComponent {
 
   getStatusIcon(status: OrderState): string {
     switch (status) {
-      case OrderState.PENDING:
+      case OrderState.Pending:
         return 'bootstrapClock';
-      case OrderState.PAID:
+      case OrderState.Paid:
         return 'bootstrapCheckCircle';
-      case OrderState.SHIPPED:
+      case OrderState.Shipped:
         return 'bootstrapTruck';
-      case OrderState.DELIVERED:
+      case OrderState.Delivered:
         return 'bootstrapCheck2All';
-      case OrderState.CANCELLED:
+      case OrderState.Cancelled:
         return 'bootstrapXCircle';
       default:
         return 'bootstrapInbox';
@@ -77,29 +77,29 @@ export class OrdersListComponent {
 
   getNextStates(order: IApiOrder): OrderState[] {
     if (
-      order.status === OrderState.CANCELLED ||
-      order.status === OrderState.DELIVERED
+      order.status === OrderState.Cancelled ||
+      order.status === OrderState.Delivered
     ) {
       return [];
     }
 
-    if (order.deliveryMethod === DeliveryMethod.ENVIO) {
+    if (order.deliveryMethod === DeliveryMethod.Envio) {
       switch (order.status) {
-        case OrderState.PENDING:
-          return [OrderState.PAID];
-        case OrderState.PAID:
-          return [OrderState.SHIPPED];
-        case OrderState.SHIPPED:
-          return [OrderState.DELIVERED];
+        case OrderState.Pending:
+          return [OrderState.Paid];
+        case OrderState.Paid:
+          return [OrderState.Shipped];
+        case OrderState.Shipped:
+          return [OrderState.Delivered];
         default:
           return [];
       }
     } else {
       switch (order.status) {
-        case OrderState.PENDING:
-          return [OrderState.PAID];
-        case OrderState.PAID:
-          return [OrderState.DELIVERED];
+        case OrderState.Pending:
+          return [OrderState.Paid];
+        case OrderState.Paid:
+          return [OrderState.Delivered];
         default:
           return [];
       }
@@ -107,6 +107,6 @@ export class OrdersListComponent {
   }
 
   canTranslateDelivery(order: IApiOrder): boolean {
-    return [OrderState.PENDING, OrderState.PAID].includes(order.status);
+    return [OrderState.Pending, OrderState.Paid].includes(order.status);
   }
 }

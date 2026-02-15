@@ -5,9 +5,12 @@ import { UserRole } from '../user.entity.js';
 import { asyncHandler } from '../../shared/errors/asyncHandler.js';
 import { AppError } from '../../shared/errors/appError.js';
 import { ApiResponse } from '../../shared/utils/apiResponse.js';
+import fs from 'fs/promises';
+import path from 'path';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MIN_PASSWORD_LENGTH = 6;
+const USERS_PATH = path.join(process.cwd(), 'uploads', 'users');
 
 function sanitizeAdminInput(req: Request, res: Response, next: NextFunction) {
   req.body.sanitizedInput = {
@@ -16,7 +19,6 @@ function sanitizeAdminInput(req: Request, res: Response, next: NextFunction) {
     name: req.body.name,
     lastName: req.body.lastName,
     phone: req.body.phone,
-    address: req.body.address,
     username: req.body.username,
     dni: req.body.dni
   };
@@ -34,7 +36,7 @@ export class AdminController {
     const id = Number.parseInt(req.params.id);
     if (isNaN(id)) throw new AppError('ID de administrador inválido', 400);
 
-    const admin = await em.findOne(Admin, { id });
+    const admin = await em.findOne(Admin, { id }, { populate: ['photo'] });
     if (!admin) throw new AppError('Administrador no encontrado', 404);
 
     return res.status(200).json(ApiResponse.success('Información de cuenta obtenida', admin));
@@ -45,7 +47,7 @@ export class AdminController {
     const id = Number.parseInt(req.params.id);
     if (isNaN(id)) throw new AppError('ID de administrador inválido', 400);
 
-    const admin = await em.findOne(Admin, { id });
+    const admin = await em.findOne(Admin, { id }, { populate: ['photo'] });
     if (!admin) throw new AppError('Administrador no encontrado', 404);
 
     return res.status(200).json(ApiResponse.success('Administrador encontrado', admin));
@@ -53,7 +55,7 @@ export class AdminController {
 
   static findAll = asyncHandler(async (req: Request, res: Response) => {
     const em = orm.em;
-    const admins = await em.find(Admin, {});
+    const admins = await em.find(Admin, {}, { populate: ['photo'] });
 
     return res.status(200).json(ApiResponse.success('Todos los Administradores fueron encontrados', admins));
   });
@@ -66,9 +68,13 @@ export class AdminController {
       throw new AppError('El parámetro de búsqueda es requerido', 400);
     }
 
-    const admins = await em.find(Admin, {
-      $or: [{ name: { $like: `%${query}%` } }, { lastName: { $like: `%${query}%` } }, { email: { $like: `%${query}%` } }, { dni: { $like: `%${query}%` } }]
-    });
+    const admins = await em.find(
+      Admin,
+      {
+        $or: [{ name: { $like: `%${query}%` } }, { lastName: { $like: `%${query}%` } }, { email: { $like: `%${query}%` } }, { dni: { $like: `%${query}%` } }]
+      },
+      { populate: ['photo'] }
+    );
 
     return res.status(200).json(ApiResponse.success('Resultados de búsqueda', admins));
   });
@@ -113,7 +119,7 @@ export class AdminController {
     admin.phone = phone;
     admin.username = username;
     admin.dni = dni;
-    admin.role = UserRole.ADMIN;
+    admin.role = UserRole.Admin;
 
     try {
       em.persist(admin);
@@ -169,8 +175,19 @@ export class AdminController {
     const id = Number.parseInt(req.params.id);
     if (isNaN(id)) throw new AppError('ID de administrador inválido', 400);
 
-    const admin = await em.findOne(Admin, { id });
+    const admin = await em.findOne(Admin, { id }, { populate: ['photo'] });
     if (!admin) throw new AppError('Administrador no encontrado', 404);
+
+    // Si tiene foto, intentamos borrar el archivo físico
+    if (admin.photo) {
+      const filePath = path.join(USERS_PATH, admin.photo.fileName);
+      try {
+        await fs.unlink(filePath);
+      } catch (err) {
+        // Solo advertimos, no detenemos el proceso si el archivo ya no existe
+        console.warn(`No se pudo borrar el archivo físico: ${err}`);
+      }
+    }
 
     em.remove(admin);
     await em.flush();

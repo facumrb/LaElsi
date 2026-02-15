@@ -1,18 +1,14 @@
-// ==========================================================
-// ENUMS
-// ==========================================================
-
 export enum OrderState {
-  PENDING = 'Pendiente',
-  PAID = 'Pagado',
-  SHIPPED = 'Enviado',
-  DELIVERED = 'Entregado',
-  CANCELLED = 'Cancelado',
+  Pending = 'Pendiente',
+  Paid = 'Pagado',
+  Shipped = 'Enviado',
+  Delivered = 'Entregado',
+  Cancelled = 'Cancelado',
 }
 
 export enum DeliveryMethod {
-  ENVIO = 'Envío',
-  RETIRO_SUCURSAL = 'Retiro en sucursal',
+  Envio = 'Envío',
+  RetiroSucursal = 'Retiro en sucursal',
 }
 
 // ==========================================================

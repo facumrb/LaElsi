@@ -21,7 +21,7 @@ export class Product extends CustomBaseEntity {
   totalSold!: number;
 
   @Enum(() => ProductState)
-  state: ProductState = ProductState.ACTIVO;
+  state: ProductState = ProductState.Activo;
 
   @Property({ nullable: false })
   stock!: number;

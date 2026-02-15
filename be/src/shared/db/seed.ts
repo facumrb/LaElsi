@@ -31,8 +31,8 @@ const CLIENTS_DATA = [
     phone: '3411111111',
     username: 'cliente',
     password: 'password123',
-    role: UserRole.CLIENT,
-    fiscalCondition: FiscalCondition.CONSUMIDOR_FINAL,
+    role: UserRole.Client,
+    fiscalCondition: FiscalCondition.ConsumidorFinal,
     street: 'Av. Pellegrini',
     streetNumber: 1500,
     city: 'Rosario',
@@ -47,9 +47,9 @@ const CLIENTS_DATA = [
     phone: '3412222222',
     username: 'empresa',
     password: 'password123',
-    role: UserRole.CLIENT,
+    role: UserRole.Client,
     cuit: '20333333339',
-    fiscalCondition: FiscalCondition.RESPONSABLE_INSCRIPTO,
+    fiscalCondition: FiscalCondition.ResponsableInscripto,
     street: 'Bv. Oroño',
     streetNumber: 500,
     floor: '4',
@@ -159,7 +159,7 @@ async function seedAdmin(em: EntityManager) {
   superAdmin.email = ADMIN_DATA.email;
   superAdmin.phone = ADMIN_DATA.phone;
   superAdmin.username = ADMIN_DATA.username;
-  superAdmin.role = UserRole.ADMIN;
+  superAdmin.role = UserRole.Admin;
   await superAdmin.setPassword(ADMIN_DATA.password);
 
   em.persist(superAdmin);

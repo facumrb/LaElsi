@@ -25,12 +25,12 @@ export class AuthService {
     this.loadSession();
   }
 
-  login(username: string, password: string): Observable<any> {
+  login(username: string, password: string): Observable<LoginResponse> {
     return this._http
-      .post<any>(`${this.apiUrl}/login`, { username, password })
+      .post<LoginResponse>(`${this.apiUrl}/login`, { username, password })
       .pipe(
         tap((response) => {
-          this.saveSession(response.data.token, response.data.user);
+          this.saveSession(response.token, response.user);
         }),
       );
   }

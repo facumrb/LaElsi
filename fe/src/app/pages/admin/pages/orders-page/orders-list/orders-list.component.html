@@ -73,16 +73,16 @@
               <div class="flex items-center gap-2">
                 <ng-icon
                   [name]="
-                    order.deliveryMethod === DeliveryMethod.ENVIO
+                    order.deliveryMethod === DeliveryMethod.Envio
                       ? 'bootstrapTruck'
                       : 'bootstrapShop'
                   "
                   class="text-lg"
                   [class.text-indigo-600]="
-                    order.deliveryMethod === DeliveryMethod.ENVIO
+                    order.deliveryMethod === DeliveryMethod.Envio
                   "
                   [class.text-amber-600]="
-                    order.deliveryMethod === DeliveryMethod.RETIRO_SUCURSAL
+                    order.deliveryMethod === DeliveryMethod.RetiroSucursal
                   "
                 ></ng-icon>
                 <div class="font-medium text-gray-700">
@@ -95,9 +95,9 @@
                       onUpdateDelivery.emit({
                         id: order.id,
                         method:
-                          order.deliveryMethod === DeliveryMethod.ENVIO
-                            ? DeliveryMethod.RETIRO_SUCURSAL
-                            : DeliveryMethod.ENVIO,
+                          order.deliveryMethod === DeliveryMethod.Envio
+                            ? DeliveryMethod.RetiroSucursal
+                            : DeliveryMethod.Envio,
                       })
                     "
                     class="ml-2 text-xs text-blue-600 hover:underline cursor-pointer"
@@ -119,7 +119,7 @@
               >
               <div
                 class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border"
-                [ngClass]="getStatusColor(order.status)"
+                [class]="getStatusColor(order.status)"
               >
                 <ng-icon [name]="getStatusIcon(order.status)"></ng-icon>
                 {{ order.status }}
@@ -166,8 +166,8 @@
 
                 <!-- Cancel Button -->
                 @if (
-                  order.status !== OrderState.CANCELLED &&
-                  order.status !== OrderState.DELIVERED
+                  order.status !== OrderState.Cancelled &&
+                  order.status !== OrderState.Delivered
                 ) {
                   <button
                     (click)="onCancel.emit(order.id)"
@@ -176,7 +176,7 @@
                     <ng-icon name="bootstrapXCircle"></ng-icon>
                     Cancelar
                   </button>
-                } @else if (order.status === OrderState.DELIVERED) {
+                } @else if (order.status === OrderState.Delivered) {
                   <span
                     class="text-xs text-emerald-600 font-semibold italic flex items-center gap-1"
                   >
