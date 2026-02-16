@@ -1,8 +1,75 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { ApiProductService } from '@services/api-product.service';
+import { ApiCategoryService } from '@services/api-category.service';
+import { IApiProduct } from '@models/product.model';
+import { IApiCategory } from '@models/category.model';
+import { CommonModule } from '@angular/common';
+import { ProductCardComponent } from '../../components/product-card/product-card.component';
+import { forkJoin, map } from 'rxjs';
 
 @Component({
   selector: 'app-main-page',
-  imports: [],
+  imports: [CommonModule, ProductCardComponent],
   templateUrl: './main-page.component.html',
 })
-export class MainPageComponent {}
+export class MainPageComponent implements OnInit {
+  private apiProductService = inject(ApiProductService);
+  private apiCategoryService = inject(ApiCategoryService);
+
+  globalBestSellers = signal<IApiProduct[]>([]);
+  categoriesWithBestSellers = signal<
+    { category: IApiCategory; products: IApiProduct[] }[]
+  >([]);
+  loading = signal(true);
+
+  ngOnInit(): void {
+    this.loadData();
+  }
+
+  loadData() {
+    // 1. Obtener los más vendidos generales
+    this.apiProductService.getBestSellers(10).subscribe({
+      next: (products) => this.globalBestSellers.set(products),
+      error: (err) => console.error('Error fetching global best sellers', err),
+    });
+
+    // 2. Obtener categorías y sus más vendidos
+    this.apiCategoryService.getAllCategories().subscribe({
+      next: (categories) => {
+        const activeCategories = categories.filter((c) => c.state === 'Activo');
+
+        // Limitamos a algunas categorías para la home
+        const topCategories = activeCategories.slice(0, 5);
+
+        const requests = topCategories.map((cat) =>
+          this.apiProductService.getBestSellersByCategory(cat.id, 10).pipe(
+            map((products) => ({ category: cat, products })),
+          ),
+        );
+
+        if (requests.length === 0) {
+          this.loading.set(false);
+          return;
+        }
+
+        forkJoin(requests).subscribe({
+          next: (results) => {
+            // Mostramos solo categorías con productos vendidos
+            this.categoriesWithBestSellers.set(
+              results.filter((r) => r.products.length > 0),
+            );
+            this.loading.set(false);
+          },
+          error: (err) => {
+            console.error('Error fetching categories best sellers', err);
+            this.loading.set(false);
+          },
+        });
+      },
+      error: (err) => {
+        console.error('Error fetching categories', err);
+        this.loading.set(false);
+      },
+    });
+  }
+}

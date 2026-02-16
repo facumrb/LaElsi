@@ -1,4 +1,70 @@
 
 
 
-<p>main-page works!</p>
+<main class="min-h-screen bg-neutral-50 pb-20">
+  <!-- Hero Section -->
+  <header class="bg-gradient-to-r from-blue-600 to-indigo-700 py-16 mb-12 shadow-inner">
+    <div class="container mx-auto px-6 text-center">
+      <h1 class="text-4xl md:text-5xl font-extrabold text-white mb-4 tracking-tight">
+        Bienvenidos a La Elsi
+      </h1>
+      <p class="text-xl text-blue-100 max-w-2xl mx-auto">
+        Todo en librería, juguetería y tecnología. Calidad y servicio a tu alcance.
+      </p>
+    </div>
+  </header>
+
+  <div class="container mx-auto px-6">
+    <div *ngIf="loading()" class="flex justify-center items-center py-20">
+      <div class="animate-spin rounded-full h-16 w-16 border-4 border-blue-500 border-t-transparent"></div>
+    </div>
+
+    <div *ngIf="!loading()" class="animate-in fade-in duration-700">
+      
+      <!-- Global Best Sellers Carousel -->
+      <section class="mb-16" *ngIf="globalBestSellers().length > 0">
+        <div class="flex items-center justify-between mb-8">
+          <h2 class="text-3xl font-bold text-neutral-800 border-l-4 border-blue-600 pl-4">
+            🔥 Los Más Vendidos en General
+          </h2>
+        </div>
+        
+        <div class="relative group">
+          <div class="flex overflow-x-auto gap-6 pb-6 scroll-smooth scrollbar-hide snap-x snap-mandatory">
+            <div *ngFor="let product of globalBestSellers()" class="flex-none w-72 snap-start">
+              <app-product-card 
+                [product]="product" 
+                class="hover:scale-[1.02] transition-transform duration-300 block"
+              ></app-product-card>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Category Best Sellers Carousels -->
+      <section *ngFor="let item of categoriesWithBestSellers()" class="mb-16">
+        <div class="flex items-center justify-between mb-8">
+          <h2 class="text-2xl font-bold text-neutral-800">
+            {{ item.category.name }} - <span class="text-blue-600">Más Populares</span>
+          </h2>
+        </div>
+
+        <div class="relative group">
+          <div class="flex overflow-x-auto gap-6 pb-6 scroll-smooth scrollbar-hide snap-x snap-mandatory">
+            <div *ngFor="let product of item.products" class="flex-none w-64 snap-start">
+              <app-product-card 
+                [product]="product"
+                class="hover:scale-[1.02] transition-transform duration-300 block"
+              ></app-product-card>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- No products state -->
+      <div *ngIf="globalBestSellers().length === 0 && categoriesWithBestSellers().length === 0" class="text-center py-20 bg-white rounded-2xl shadow-sm">
+        <p class="text-xl text-neutral-500">Aún no hay productos destacados para mostrar.</p>
+      </div>
+    </div>
+  </div>
+</main>

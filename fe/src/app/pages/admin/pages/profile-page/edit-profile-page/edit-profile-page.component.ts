@@ -44,6 +44,7 @@ export class EditProfilePageComponent implements OnInit {
       ],
 
       phone: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
+      dni: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
       username: [
         '',
         [
@@ -72,6 +73,7 @@ export class EditProfilePageComponent implements OnInit {
           name: this.admin.name,
           lastName: this.admin.lastName,
           phone: this.admin.phone,
+          dni: this.admin.dni,
           username: this.admin.username,
           email: this.admin.email,
         });

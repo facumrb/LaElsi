@@ -11,6 +11,8 @@ productRouter.get('/', ProductController.findAll);
 productRouter.get('/active', ProductController.findAllActive);
 productRouter.get('/page', ProductController.findPage);
 productRouter.get('/search', ProductController.searchProductsByText);
+productRouter.get('/best-sellers', ProductController.findBestSellers);
+productRouter.get('/best-sellers/category/:categoryId', ProductController.findBestSellersByCategory);
 productRouter.get('/category/:categoryId', ProductController.findProductsByCategory);
 productRouter.get('/:id', ProductController.findOne);
 

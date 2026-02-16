@@ -279,6 +279,50 @@ export class ProductController {
 
     return res.status(200).json(ApiResponse.success('Productos activos encontrados', products));
   });
+
+  static findBestSellers = asyncHandler(async (req: Request, res: Response) => {
+    const em = orm.em;
+    const limit = Number.parseInt(req.query.limit as string) || 10;
+
+    const products = await em.find(
+      Product,
+      { state: ProductState.Activo, category: { state: CategoryState.Activo } },
+      {
+        populate: ['category', 'photos', 'prices'],
+        populateWhere: { prices: { isCurrent: true } },
+        populateOrderBy: { photos: { order: 'ASC' } },
+        orderBy: { totalSold: 'DESC' },
+        limit
+      }
+    );
+
+    return res.status(200).json(ApiResponse.success('Productos más vendidos encontrados', products));
+  });
+
+  static findBestSellersByCategory = asyncHandler(async (req: Request, res: Response) => {
+    const em = orm.em;
+    const categoryId = Number.parseInt(req.params.categoryId);
+    const limit = Number.parseInt(req.query.limit as string) || 10;
+
+    if (isNaN(categoryId)) throw new AppError('ID de categoría inválido', 400);
+
+    const products = await em.find(
+      Product,
+      {
+        category: { id: categoryId, state: CategoryState.Activo },
+        state: ProductState.Activo
+      },
+      {
+        populate: ['category', 'photos', 'prices'],
+        populateWhere: { prices: { isCurrent: true } },
+        populateOrderBy: { photos: { order: 'ASC' } },
+        orderBy: { totalSold: 'DESC' },
+        limit
+      }
+    );
+
+    return res.status(200).json(ApiResponse.success('Productos más vendidos de la categoría encontrados', products));
+  });
 }
 
 export { sanitizeProductInput };

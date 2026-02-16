@@ -98,4 +98,23 @@ export class ApiProductService {
       .get<{ message: string, data: any[] }>(`${this.apiUrl}/bulk/history`)
       .pipe(map(res => res.data));
   }
+
+  // Obtener los más vendidos
+  getBestSellers(limit: number = 10): Observable<IApiProduct[]> {
+    const params = new HttpParams().set('limit', limit.toString());
+    return this._http
+      .get<{ message: string; data: IApiProduct[] }>(`${this.apiUrl}/best-sellers`, { params })
+      .pipe(map((response) => response.data));
+  }
+
+  // Obtener los más vendidos por categoría
+  getBestSellersByCategory(categoryId: number, limit: number = 10): Observable<IApiProduct[]> {
+    const params = new HttpParams().set('limit', limit.toString());
+    return this._http
+      .get<{
+        message: string;
+        data: IApiProduct[];
+      }>(`${this.apiUrl}/best-sellers/category/${categoryId}`, { params })
+      .pipe(map((response) => response.data));
+  }
 }

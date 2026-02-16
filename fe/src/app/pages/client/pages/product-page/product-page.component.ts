@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, ɵEmptyOutletComponent } from '@angular/router';
 import { ApiProductService } from '@services/api-product.service';
+import { CartService } from '@services/cart.service';
 import { IApiProduct } from '@models/product.model';
 import { CurrencyPipe, DecimalPipe } from '@angular/common';
 import { environment } from 'src/environments/environment';
@@ -40,7 +41,8 @@ export class ProductPageComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private productService: ApiProductService,
-  ) {}
+    private cartService: CartService,
+  ) { }
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
@@ -66,7 +68,9 @@ export class ProductPageComponent implements OnInit {
   }
 
   addToCart() {
-    console.log('Producto añadido al carrito:', this.product?.name);
+    if (this.product) {
+      this.cartService.addToCart(this.product);
+    }
   }
 
   getProductPrice(): number {

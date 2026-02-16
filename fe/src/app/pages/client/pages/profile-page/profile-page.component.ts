@@ -2,6 +2,7 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '@services/auth.service';
 import { ApiClientService } from '@services/api-client.service';
+import { ApiOrderService } from '@services/api-order.service';
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
@@ -9,8 +10,13 @@ import {
   bootstrapPerson,
   bootstrapReceipt,
   bootstrapGeoAlt,
+  bootstrapClockHistory,
+  bootstrapCheckCircle,
+  bootstrapXCircle,
+  bootstrapBoxSeam,
 } from '@ng-icons/bootstrap-icons';
 import { IApiClient, IUpdateClient, FiscalCondition } from '@models/user.model';
+import { IApiOrder } from '@models/order.model';
 
 @Component({
   selector: 'app-profile-page',
@@ -20,6 +26,10 @@ import { IApiClient, IUpdateClient, FiscalCondition } from '@models/user.model';
       bootstrapPerson,
       bootstrapReceipt,
       bootstrapGeoAlt,
+      bootstrapClockHistory,
+      bootstrapCheckCircle,
+      bootstrapXCircle,
+      bootstrapBoxSeam,
     }),
   ],
   templateUrl: './profile-page.component.html',
@@ -28,9 +38,11 @@ export class ProfilePageComponent implements OnInit {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private apiClientService = inject(ApiClientService);
+  private apiOrderService = inject(ApiOrderService);
 
   loading = signal(true);
   saving = signal(false);
+  misPedidos = signal<IApiOrder[]>([]);
 
   // Señal del usuario actual
   currentUserSignal = this.authService.currentUser;
@@ -40,11 +52,11 @@ export class ProfilePageComponent implements OnInit {
   fiscalConditions = Object.values(FiscalCondition);
 
   formPerfil = this.fb.nonNullable.group({
-    // Datos personales (Readonly por ahora)
-    name: [{ value: '', disabled: true }],
-    lastName: [{ value: '', disabled: true }],
-    dni: [{ value: '', disabled: true }],
-    email: [{ value: '', disabled: true }],
+    // Datos personales
+    name: ['', Validators.required],
+    lastName: ['', Validators.required],
+    dni: ['', Validators.required],
+    email: ['', [Validators.required, Validators.email]],
     phone: ['', Validators.required],
 
     // Datos de facturación
@@ -108,6 +120,11 @@ export class ProfilePageComponent implements OnInit {
         );
       },
     });
+
+    this.apiOrderService.getOrdersByClient(id).subscribe({
+      next: (orders) => this.misPedidos.set(orders),
+      error: (err) => console.error('Error al cargar pedidos', err),
+    });
   }
 
   onSubmit() {
@@ -129,6 +146,10 @@ export class ProfilePageComponent implements OnInit {
 
     // Construimos un objeto limpio solo con los datos que queremos actualizar.
     const clientData: IUpdateClient = {
+      name: rawValue.name,
+      lastName: rawValue.lastName,
+      dni: rawValue.dni,
+      email: rawValue.email,
       phone: rawValue.phone,
       cuit: rawValue.cuit,
       fiscalCondition: rawValue.fiscalCondition as FiscalCondition,
