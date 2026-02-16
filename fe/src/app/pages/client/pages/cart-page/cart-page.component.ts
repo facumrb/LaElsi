@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { CartService } from '@services/cart.service';
 import { ApiOrderService } from '@services/api-order.service';
@@ -11,7 +11,6 @@ import {
   bootstrapPlus,
   bootstrapDash,
   bootstrapCartX,
-  bootstrapArrowLeft,
   bootstrapWhatsapp,
   bootstrapInfoCircle,
 } from '@ng-icons/bootstrap-icons';
@@ -19,7 +18,7 @@ import { environment } from 'src/environments/environment';
 import { DeliveryMethod } from '@models/order.model';
 
 @Component({
-  selector: 'app-carrito-page',
+  selector: 'app-cart-page',
   imports: [CurrencyPipe, RouterLink, NgIconComponent],
   viewProviders: [
     provideIcons({
@@ -27,14 +26,13 @@ import { DeliveryMethod } from '@models/order.model';
       bootstrapPlus,
       bootstrapDash,
       bootstrapCartX,
-      bootstrapArrowLeft,
       bootstrapWhatsapp,
       bootstrapInfoCircle,
     }),
   ],
-  templateUrl: './carrito-page.component.html',
+  templateUrl: './cart-page.component.html',
 })
-export class CarritoPageComponent {
+export class CartPageComponent {
   private cartService = inject(CartService);
   private apiOrderService = inject(ApiOrderService);
   private authService = inject(AuthService);
@@ -68,6 +66,7 @@ export class CarritoPageComponent {
       showCancelButton: true,
       confirmButtonText: 'Sí, vaciar',
       cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#ef4444',
     }).then((result) => {
       if (result.isConfirmed) {
         this.cartService.clearCart();
@@ -78,11 +77,13 @@ export class CarritoPageComponent {
   checkout() {
     const user = this.authService.currentUser();
     if (!user) {
-      Swal.fire(
-        'Inicia sesión',
-        'Debes estar identificado para realizar un pedido',
-        'info',
-      );
+      Swal.fire({
+        title: 'Inicia sesión',
+        text: 'Para finalizar la compra, necesitas identificarte.',
+        icon: 'info',
+        confirmButtonText: 'Ir al Login',
+        confirmButtonColor: '#3d4494',
+      });
       this.router.navigate(['/auth/login']);
       return;
     }
@@ -103,6 +104,7 @@ export class CarritoPageComponent {
       showCancelButton: true,
       confirmButtonText: 'Sí, confirmar',
       cancelButtonText: 'No, revisar',
+      confirmButtonColor: '#3d4494',
     }).then((result) => {
       if (result.isConfirmed) {
         this.apiOrderService.createOrder(orderData).subscribe({
@@ -111,6 +113,7 @@ export class CarritoPageComponent {
               title: '¡Pedido realizado!',
               text: 'Tu pedido ha sido creado correctamente. Por favor, realiza el pago usando el alias proporcionado.',
               icon: 'success',
+              confirmButtonColor: '#3d4494',
             });
             this.cartService.clearCart();
             this.router.navigate(['/client/profile']); // O a una página de mis pedidos si existiera
@@ -118,7 +121,7 @@ export class CarritoPageComponent {
           error: (err) => {
             Swal.fire(
               'Error',
-              err.error?.message || 'No se pudo crear el pedido',
+              err.error?.message || 'Hubo un problema al procesar el pedido.',
               'error',
             );
           },
@@ -131,13 +134,16 @@ export class CarritoPageComponent {
     this.shippingMethod.set(method);
   }
 
-  getWhatsAppLink(): string {
+  whatsAppLink = computed(() => {
     const message =
       `Hola La Elsi! Quiero realizar un pedido:\n\n` +
       this.items()
         .map((i) => `- ${i.product.name} x${i.quantity}`)
         .join('\n') +
-      `\n\nTotal: ${this.totalAmount().toLocaleString('es-AR', { style: 'currency', currency: 'ARS' })}`;
+      `\n\nTotal: ${this.totalAmount().toLocaleString('es-AR', {
+        style: 'currency',
+        currency: 'ARS',
+      })}`;
     return `https://wa.me/543411111111?text=${encodeURIComponent(message)}`;
-  }
+  });
 }

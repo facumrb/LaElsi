@@ -73,10 +73,10 @@ export const clientRoutes: Routes = [
           ),
       },
       {
-        path: 'carrito',
+        path: 'cart',
         loadComponent: () =>
-          import('./pages/carrito-page/carrito-page.component').then(
-            (m) => m.CarritoPageComponent,
+          import('./pages/cart-page/cart-page.component').then(
+            (m) => m.CartPageComponent,
           ),
       },
       // Ruta Protegida

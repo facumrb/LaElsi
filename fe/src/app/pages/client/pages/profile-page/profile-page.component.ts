@@ -85,7 +85,7 @@ export class ProfilePageComponent implements OnInit {
   }
 
   private loadFullProfile(id: number) {
-    this.apiClientService.getClientById(id).subscribe({
+    this.apiClientService.getAccountInfoById(id).subscribe({
       next: (fullUser) => {
         this.fullProfile.set(fullUser);
         this.formPerfil.patchValue({

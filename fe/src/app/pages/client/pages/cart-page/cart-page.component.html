@@ -1,120 +1,125 @@
-<main class="min-h-screen bg-neutral-50 pb-20">
-  <div class="container mx-auto px-6 py-12">
-    <div class="flex items-center mb-8">
-      <a
-        routerLink="/"
-        class="flex items-center text-blue-600 hover:text-blue-800 transition-colors"
-      >
-        <ng-icon name="bootstrapArrowLeft" class="text-xl mr-2"></ng-icon>
-        <span class="font-medium">Volver a la tienda</span>
-      </a>
-    </div>
-
-    <h1 class="text-3xl font-bold text-neutral-800 mb-8">Tu Carrito</h1>
-
+<main class="bg-neutral-50 pb-6">
+  <div class="container mx-auto px-6 py-8">
     @if (items().length > 0) {
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
         <!-- Items List -->
-        <div class="lg:col-span-2 space-y-6">
-          @for (item of items(); track $index) {
-            <div
-              class="bg-white rounded-2xl shadow-sm p-6 flex items-center gap-6 animate-in fade-in slide-in-from-bottom-4"
-            >
-              <!-- Product Image -->
-              <div
-                class="w-24 h-24 shrink-0 bg-neutral-100 rounded-xl overflow-hidden"
-              >
-                <img
-                  [src]="
-                    imageBaseUrl +
-                    (item.product.photos && item.product.photos.length > 0
-                      ? item.product.photos[0].fileName
-                      : 'assets/Webp/no-image.webp')
-                  "
-                  [alt]="item.product.name"
-                  class="w-full h-full object-cover"
-                />
-              </div>
-
-              <!-- Product Details -->
-              <div class="grow">
-                <h3 class="font-bold text-neutral-800 text-lg">
-                  {{ item.product.name }}
-                </h3>
-                <p class="text-neutral-500 text-sm mb-4">
-                  {{ item.product.brand }}
-                </p>
-
-                <div class="flex items-center justify-between">
-                  <!-- Quantity Controls -->
-                  <div class="flex items-center bg-neutral-100 rounded-lg p-1">
-                    <button
-                      (click)="
-                        updateQuantity(item.product.id, item.quantity - 1)
+        <div class="lg:col-span-2 flex flex-col gap-6">
+          <div
+            class="bg-white rounded-2xl shadow-sm border border-neutral-100 overflow-hidden"
+          >
+            <div class="divide-y divide-neutral-100">
+              @for (item of items(); track $index) {
+                <div
+                  class="p-6 flex items-center gap-6 hover:bg-neutral-50/50 transition-colors animate-in fade-in slide-in-from-bottom-2"
+                >
+                  <div
+                    class="w-24 h-24 shrink-0 bg-neutral-50 rounded-xl overflow-hidden border border-neutral-200"
+                  >
+                    <img
+                      [src]="
+                        imageBaseUrl +
+                        (item.product.photos && item.product.photos.length > 0
+                          ? item.product.photos[0].fileName
+                          : 'assets/Webp/no-image.webp')
                       "
-                      class="w-8 h-8 flex items-center justify-center hover:bg-white rounded-md transition-colors text-neutral-600"
-                    >
-                      <ng-icon name="bootstrapDash"></ng-icon>
-                    </button>
-                    <span class="w-10 text-center font-bold text-neutral-800">{{
-                      item.quantity
-                    }}</span>
-                    <button
-                      (click)="
-                        updateQuantity(item.product.id, item.quantity + 1)
-                      "
-                      class="w-8 h-8 flex items-center justify-center hover:bg-white rounded-md transition-colors text-neutral-600"
-                    >
-                      <ng-icon name="bootstrapPlus"></ng-icon>
-                    </button>
+                      [alt]="item.product.name"
+                      class="w-full h-full object-cover mix-blend-multiply"
+                    />
                   </div>
 
-                  <!-- Price -->
-                  <div class="text-right">
-                    <p class="text-lg font-bold text-blue-600">
-                      {{
-                        item.product.prices[0].amount * item.quantity
-                          | currency: "ARS" : "symbol-narrow" : "1.0-2"
-                      }}
+                  <div class="grow">
+                    <div class="flex justify-between items-start mb-1">
+                      <h3
+                        class="font-bold text-neutral-800 text-lg leading-tight"
+                      >
+                        {{ item.product.name }}
+                      </h3>
+                      <span class="text-sm font-medium text-neutral-900">
+                        {{
+                          item.product.prices[0].amount
+                            | currency: "ARS" : "symbol-narrow" : "1.0-0"
+                        }}
+                        c/u
+                      </span>
+                    </div>
+
+                    <p class="text-neutral-500 text-sm mb-4 font-medium">
+                      {{ item.product.brand }}
                     </p>
-                    <p class="text-xs text-neutral-400">
-                      {{
-                        item.product.prices[0].amount
-                          | currency: "ARS" : "symbol-narrow" : "1.0-2"
-                      }}
-                      c/u
-                    </p>
+
+                    <div class="flex items-center justify-between mt-4">
+                      <div
+                        class="flex items-center border border-neutral-200 rounded-lg"
+                      >
+                        <button
+                          (click)="
+                            updateQuantity(item.product.id, item.quantity - 1)
+                          "
+                          class="cursor-pointer w-9 h-9 flex items-center justify-center text-neutral-500 hover:text-[#3d4494] hover:bg-neutral-50 rounded-l-lg transition-colors disabled:opacity-50"
+                          [disabled]="item.quantity <= 1"
+                        >
+                          <ng-icon name="bootstrapDash"></ng-icon>
+                        </button>
+                        <span
+                          class="w-10 text-center font-semibold text-neutral-800 text-sm"
+                        >
+                          {{ item.quantity }}
+                        </span>
+                        <button
+                          (click)="
+                            updateQuantity(item.product.id, item.quantity + 1)
+                          "
+                          class="cursor-pointer w-9 h-9 flex items-center justify-center text-neutral-500 hover:text-[#3d4494] hover:bg-neutral-50 rounded-r-lg transition-colors"
+                        >
+                          <ng-icon name="bootstrapPlus"></ng-icon>
+                        </button>
+                      </div>
+
+                      <div class="flex items-center gap-6">
+                        <p class="text-lg font-bold text-[#3d4494]">
+                          {{
+                            item.product.prices[0].amount * item.quantity
+                              | currency: "ARS" : "symbol-narrow" : "1.0-0"
+                          }}
+                        </p>
+
+                        <button
+                          (click)="removeItem(item.product.id)"
+                          class="cursor-pointer flex items-center text-neutral-300 hover:text-red-500 hover:bg-red-50 rounded-full transition-all"
+                          title="Eliminar producto"
+                        >
+                          <ng-icon
+                            name="bootstrapTrash"
+                            class="text-lg"
+                          ></ng-icon>
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-
-              <!-- Remove Button -->
-              <button
-                (click)="removeItem(item.product.id)"
-                class="text-neutral-300 hover:text-red-500 transition-colors"
-              >
-                <ng-icon name="bootstrapTrash" class="text-xl"></ng-icon>
-              </button>
+              }
             </div>
-          }
+          </div>
 
-          <button
-            (click)="clearCart()"
-            class="text-red-500 hover:text-red-700 font-medium flex items-center px-4 py-2 transition-colors"
-          >
-            <ng-icon name="bootstrapCartX" class="mr-2"></ng-icon>
-            Vaciar carrito
-          </button>
+          <div class="flex justify-end">
+            <button
+              (click)="clearCart()"
+              class="cursor-pointer text-sm text-neutral-400 hover:text-red-600 font-medium flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-red-50 transition-all"
+            >
+              <ng-icon name="bootstrapCartX"></ng-icon>
+              Vaciar todo el carrito
+            </button>
+          </div>
         </div>
 
         <!-- Summary Sidebar -->
         <div class="lg:col-span-1">
           <div
-            class="bg-white rounded-2xl shadow-lg shadow-blue-900/5 p-8 sticky top-8"
+            class="bg-white rounded-2xl shadow-lg shadow-blue-900/5 p-6 sticky top-8"
           >
-            <h2 class="text-xl font-bold text-neutral-800 mb-6">
+            <h1 class="text-xl font-bold text-neutral-800 mb-6">
               Resumen del pedido
-            </h2>
+            </h1>
 
             <div class="space-y-4 mb-8">
               <div class="flex justify-between text-neutral-500">
@@ -123,12 +128,12 @@
                   totalAmount() | currency: "ARS" : "symbol-narrow" : "1.0-2"
                 }}</span>
               </div>
-              <div class="flex justify-between text-neutral-500 pb-4 border-b">
+              <div class="flex justify-between text-neutral-500 pb-2 border-b">
                 <span>Envío</span>
                 <span class="text-green-600 font-medium">A convenir</span>
               </div>
               <div
-                class="flex justify-between text-xl font-bold text-neutral-800 pt-4"
+                class="flex justify-between text-xl font-bold text-neutral-800"
               >
                 <span>Total</span>
                 <span>{{
@@ -235,13 +240,13 @@
             <button
               (click)="checkout()"
               [disabled]="shippingMethod() === DeliveryMethodEnum.Envio"
-              class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-blue-600/20 active:scale-95 mb-4 disabled:bg-neutral-300 disabled:shadow-none disabled:active:scale-100 disabled:cursor-not-allowed"
+              class="cursor-pointer w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-blue-600/20 active:scale-95 mb-4 disabled:bg-neutral-300 disabled:shadow-none disabled:active:scale-100 disabled:cursor-not-allowed"
             >
               Confirmar Pedido
             </button>
 
             <a
-              [href]="getWhatsAppLink()"
+              [href]="whatsAppLink()"
               target="_blank"
               class="w-full flex items-center justify-center bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-green-600/20 active:scale-95"
             >
@@ -252,11 +257,6 @@
         </div>
       </div>
     } @else {
-      emptyCart
-    }
-
-    <!-- Empty State -->
-    <ng-template #emptyCart>
       <div
         class="bg-white rounded-3xl shadow-sm p-20 text-center animate-in zoom-in duration-500"
       >
@@ -268,10 +268,10 @@
             class="text-6xl text-neutral-300"
           ></ng-icon>
         </div>
-        <h2 class="text-2xl font-bold text-neutral-800 mb-4">
+        <h1 class="text-2xl font-bold text-neutral-800 mb-4">
           Tu carrito está vacío
-        </h2>
-        <p class="text-neutral-500 mb-8 max-w-sm mx-auto">
+        </h1>
+        <p class="text-neutral-500 mb-6 max-w-sm mx-auto">
           ¡Aún no has añadido nada! Explora nuestros productos y encuentra lo
           que necesitas.
         </p>
@@ -282,6 +282,6 @@
           Empezar a comprar
         </a>
       </div>
-    </ng-template>
+    }
   </div>
 </main>

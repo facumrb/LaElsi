@@ -23,6 +23,15 @@ export class ApiClientService {
       .pipe(map((response) => response.data));
   }
 
+  getAccountInfoById(id: number): Observable<IApiClient> {
+    return this._http
+      .get<{
+        message: string;
+        data: IApiClient;
+      }>(`${this.apiUrl}/account/${id}`)
+      .pipe(map((response) => response.data));
+  }
+
   // Buscar clientes por nombre, apellido, nombre de usuario o dni
   searchClients(query: string): Observable<IApiClient[]> {
     const params = new HttpParams().set('query', query);

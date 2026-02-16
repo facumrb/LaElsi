@@ -86,13 +86,25 @@
             <div
               class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-1 origin-top-right border border-gray-100"
             >
-              <a
-                routerLink="/profile"
-                (click)="showUserMenu.set(false)"
-                class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                ><ng-icon name="bootstrapPerson" class="text-lg"></ng-icon> Mi
-                Perfil</a
-              >
+              @if (authService.isAdmin()) {
+                <a
+                  [routerLink]="['/admin/view-profile', currentUser?.id]"
+                  (click)="toggleMobileMenu()"
+                  class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                >
+                  <ng-icon name="bootstrapPerson" class="text-xl"></ng-icon> Mi
+                  Perfil
+                </a>
+              } @else {
+                <a
+                  routerLink="/profile"
+                  (click)="showUserMenu.set(false)"
+                  class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  ><ng-icon name="bootstrapPerson" class="text-lg"></ng-icon> Mi
+                  Perfil</a
+                >
+              }
+
               <div class="border-t border-gray-100 my-1 hidden md:block"></div>
               <button
                 (click)="handleLogout()"
@@ -118,16 +130,16 @@
       }
 
       <a
-        routerLink="/carrito"
-        class="relative flex items-center justify-center h-10 w-10 rounded-full bg-[#037971] text-white hover:bg-[#049A8F] hover:scale-105 transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-white/50 border border-white/10"
+        routerLink="/cart"
+        class="relative flex items-center justify-center h-10 w-10 rounded-full bg-[#037971] text-white hover:bg-[#049A8F] hover:scale-105 transition-all shadow-sm border border-white/10"
         aria-label="Ver carrito de compras"
       >
         <ng-icon name="bootstrapCart3" class="text-xl"></ng-icon>
-        @if (carritoSignal() > 0) {
+        @if (cartSignal() > 0) {
           <span
             class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#f4abac] text-[10px] font-bold text-[#3d4494] shadow-sm border-2 border-[#3d4494]"
           >
-            {{ carritoSignal() }}
+            {{ cartSignal() }}
           </span>
         }
       </a>
@@ -243,14 +255,24 @@
               <ng-icon name="bootstrapSpeedometer2" class="text-xl"></ng-icon>
               Admin
             </a>
+            <a
+              [routerLink]="['/admin/view-profile', currentUser?.id]"
+              (click)="toggleMobileMenu()"
+              class="flex items-center gap-3 px-4 py-3 text-gray-700 font-bold hover:bg-white rounded-lg mb-1"
+            >
+              <ng-icon name="bootstrapPerson" class="text-xl"></ng-icon> Mi
+              Perfil
+            </a>
+          } @else {
+            <a
+              routerLink="/profile"
+              (click)="toggleMobileMenu()"
+              class="flex items-center gap-3 px-4 py-3 text-gray-700 font-bold hover:bg-white rounded-lg mb-1"
+            >
+              <ng-icon name="bootstrapPerson" class="text-xl"></ng-icon> Mi
+              Perfil
+            </a>
           }
-          <a
-            routerLink="/profile"
-            (click)="toggleMobileMenu()"
-            class="flex items-center gap-3 px-4 py-3 text-gray-700 font-bold hover:bg-white rounded-lg mb-1"
-          >
-            <ng-icon name="bootstrapPerson" class="text-xl"></ng-icon> Mi Perfil
-          </a>
           <button
             (click)="handleLogout()"
             class="cursor-pointer w-full text-left flex items-center gap-3 px-4 py-3 text-red-600 font-bold hover:bg-white rounded-lg"

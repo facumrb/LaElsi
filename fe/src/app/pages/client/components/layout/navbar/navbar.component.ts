@@ -45,29 +45,29 @@ export class NavbarComponent implements OnInit {
   authService = inject(AuthService);
   private apiCategoryService = inject(ApiCategoryService);
 
-  carritoSignal = signal(0); // Esto debe estar conectado al servicio del carrito
+  cartSignal = signal(0); // Esto debe estar conectado al servicio del carrito
   showSideMenu = signal(false);
   showUserMenu = signal(false);
 
   categories: IApiCategory[] = [];
 
+  currentUser = this.authService.currentUser();
+
   readonly userImagesUrl = environment.userImagesUrl;
 
   // Signal computada para obtener la foto o null
   userPhotoUrl = computed(() => {
-    const user = this.authService.currentUser();
-    if (user && user.photo?.fileName) {
-      return `${this.userImagesUrl}${user.photo.fileName}`;
+    if (this.currentUser && this.currentUser.photo?.fileName) {
+      return `${this.userImagesUrl}${this.currentUser.photo.fileName}`;
     }
     return null;
   });
 
   // Signal computada para las iniciales
   userInitials = computed(() => {
-    const user = this.authService.currentUser();
-    if (!user) return '';
-    const first = user.name?.charAt(0) || '';
-    const last = user.lastName?.charAt(0) || '';
+    if (!this.currentUser) return '';
+    const first = this.currentUser.name?.charAt(0) || '';
+    const last = this.currentUser.lastName?.charAt(0) || '';
     return (first + last).toUpperCase();
   });
 
