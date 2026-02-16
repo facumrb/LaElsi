@@ -15,7 +15,6 @@ import { BulkPriceModalComponent } from './bulk-price-modal/bulk-price-modal.com
 
 @Component({
   selector: 'app-products-page',
-  standalone: true,
   imports: [
     ReactiveFormsModule,
     ProductsListComponent,

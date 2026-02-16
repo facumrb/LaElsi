@@ -1,11 +1,19 @@
-<div class="animate-fadeIn w-full bg-gray-50 lg:bg-white lg:rounded-lg lg:shadow-md lg:border lg:border-gray-200">
+<div
+  class="animate-fadeIn w-full bg-gray-50 lg:bg-white lg:rounded-lg lg:shadow-md lg:border lg:border-gray-200"
+>
   <div class="w-full">
-    <table class="w-full text-left text-sm text-gray-500 border-separate border-spacing-0">
+    <table
+      class="w-full text-left text-sm text-gray-500 border-separate border-spacing-0"
+    >
       <thead class="hidden lg:table-header-group bg-[#3d4494] text-white">
         <tr>
           <th class="px-6 py-4 w-[1%] rounded-tl-lg">
-            <input type="checkbox" class="w-4 h-4 rounded border-gray-300 text-[#3d4494] focus:ring-[#3d4494]"
-              [checked]="isAllSelected()" (change)="toggleSelectAll()" />
+            <input
+              type="checkbox"
+              class="cursor-pointer w-4 h-4 rounded border-gray-300 text-[#3d4494] focus:ring-[#3d4494]"
+              [checked]="isAllSelected()"
+              (change)="toggleSelectAll()"
+            />
           </th>
           <th class="px-6 py-4 font-semibold uppercase tracking-wider w-auto">
             Producto
@@ -13,17 +21,24 @@
           <th class="px-6 py-4 font-semibold uppercase tracking-wider w-1/4">
             Categoría
           </th>
-          <th class="pl-10 pr-6 py-4 text-left font-semibold uppercase tracking-wider whitespace-nowrap w-[1%]">
+          <th
+            class="pl-10 pr-6 py-4 text-left font-semibold uppercase tracking-wider whitespace-nowrap w-[1%]"
+          >
             Precio
           </th>
-          <th class="px-6 py-4 text-center font-semibold uppercase tracking-wider whitespace-nowrap w-[1%]">
+          <th
+            class="px-6 py-4 text-center font-semibold uppercase tracking-wider whitespace-nowrap w-[1%]"
+          >
             Stock
           </th>
-          <th class="px-6 py-4 text-center font-semibold uppercase tracking-wider whitespace-nowrap w-[1%]">
+          <th
+            class="px-6 py-4 text-center font-semibold uppercase tracking-wider whitespace-nowrap w-[1%]"
+          >
             Estado
           </th>
           <th
-            class="px-6 py-4 text-center font-semibold uppercase tracking-wider whitespace-nowrap w-[1%] rounded-tr-lg">
+            class="px-6 py-4 text-center font-semibold uppercase tracking-wider whitespace-nowrap w-[1%] rounded-tr-lg"
+          >
             Acciones
           </th>
         </tr>
@@ -31,127 +46,188 @@
 
       <tbody class="block lg:table-row-group">
         @for (product of products(); track product.id; let isLast = $last) {
-        <tr
-          class="flex flex-col relative lg:static bg-white rounded-xl shadow border border-gray-200 mb-4 mx-4 mt-4 lg:mx-0 lg:mt-0 lg:mb-0 lg:table-row lg:shadow-none lg:border-0 lg:rounded-none hover:bg-gray-50 transition-colors">
-          <td
-            class="px-5 py-2 lg:px-6 lg:py-4 lg:table-cell lg:align-middle border-b border-gray-50 lg:border-gray-100">
-            <input type="checkbox" class="w-4 h-4 rounded border-gray-300 text-[#3d4494] focus:ring-[#3d4494]"
-              [checked]="isSelected(product.id)" (change)="toggleSelect(product.id)" />
-          </td>
-          <td
-            class="px-5 pt-6 pb-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle"
-            [class.lg:rounded-bl-lg]="isLast" [class.lg:border-b-0]="isLast">
-            <span
-              class="absolute top-3 right-3 lg:hidden inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border"
-              [class]="
-                  product.state === 'Activo'
-                    ? 'bg-green-50 text-green-700 border-green-200'
-                    : 'bg-red-50 text-red-700 border-red-200'
-                ">
-              <span class="w-1.5 h-1.5 rounded-full mr-1.5" [class]="
-                    product.state === 'Activo' ? 'bg-green-500' : 'bg-red-500'
-                  "></span>
-              {{ product.state }}
-            </span>
-
-            <div class="flex items-center gap-4">
-              <div class="relative h-12 w-12 shrink-0">
-                <img class="h-full w-full rounded-lg object-cover border border-gray-200 bg-gray-50"
-                  [src]="getProductMainImage(product)" alt="" />
-              </div>
-              <div (click)="onEdit.emit(product)"
-                class="font-semibold text-gray-900 text-base lg:text-sm cursor-pointer hover:underline"
-                title="{{ product.name }}">
-                {{ product.name }}
-              </div>
-            </div>
-          </td>
-
-          <td
-            class="px-5 py-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle"
-            [class.lg:border-b-0]="isLast">
-            <span class="font-bold uppercase text-gray-500 block mb-1 lg:hidden">Categoría:</span>
-            <div class="text-gray-600 line-clamp-2 text-sm">
-              {{ product.category.name }}
-            </div>
-          </td>
-
-          <td
-            class="px-5 py-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:pl-10 lg:pr-6 lg:py-4 lg:table-cell lg:align-middle lg:text-left"
-            [class.lg:border-b-0]="isLast">
-            <div class="flex items-center justify-start gap-2">
-              <span class="font-bold uppercase text-gray-500 lg:hidden">Precio:</span>
-              <span class="text-gray-900 font-semibold">
-                {{
-                getProductPrice(product)
-                | currency
-                : getProductCurrency(product)
-                : "symbol"
-                : "1.0-0"
-                }}
-              </span>
-            </div>
-          </td>
-
-          <td
-            class="px-5 py-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle lg:text-center"
-            [class.lg:border-b-0]="isLast">
-            <div class="flex items-center justify-start lg:justify-center gap-2">
-              <span class="font-bold uppercase text-gray-500 lg:hidden">Stock:</span>
-
+          <tr
+            class="flex flex-col relative lg:static bg-white rounded-xl shadow border border-gray-200 mb-4 mx-4 mt-4 lg:mx-0 lg:mt-0 lg:mb-0 lg:table-row lg:shadow-none lg:border-0 lg:rounded-none hover:bg-gray-50 transition-colors"
+          >
+            <td
+              class="px-5 py-2 lg:px-6 lg:py-4 lg:table-cell lg:align-middle border-b border-gray-50 lg:border-gray-100"
+            >
+              <input
+                type="checkbox"
+                class="cursor-pointer w-4 h-4 rounded border-gray-300 text-[#3d4494] focus:ring-[#3d4494]"
+                [checked]="isSelected(product.id)"
+                (change)="toggleSelect(product.id)"
+              />
+            </td>
+            <td
+              class="px-5 pt-6 pb-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle"
+              [class.lg:rounded-bl-lg]="isLast"
+              [class.lg:border-b-0]="isLast"
+            >
               <span
-                class="w-28 h-7 inline-flex items-center justify-center rounded-md text-xs font-medium border whitespace-nowrap"
-                [class.bg-red-50]="product.stock === 0" [class.text-red-700]="product.stock === 0"
-                [class.border-red-100]="product.stock === 0"
-                [class.bg-amber-50]="product.stock > 0 && product.stock <= 10" [class.text-amber-700]="
-                    product.stock > 0 && product.stock <= 10
-                  " [class.border-amber-100]="
-                    product.stock > 0 && product.stock <= 10
-                  " [class.bg-gray-50]="product.stock > 10" [class.text-gray-600]="product.stock > 10"
-                [class.border-gray-200]="product.stock > 10">
-                {{ product.stock }} unidades
-              </span>
-            </div>
-          </td>
-
-          <td class="hidden lg:table-cell px-6 py-4 border-b border-gray-100 align-middle text-center"
-            [class.lg:border-b-0]="isLast">
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border" [class]="
+                class="absolute top-3 right-3 lg:hidden inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border"
+                [class]="
                   product.state === 'Activo'
                     ? 'bg-green-50 text-green-700 border-green-200'
                     : 'bg-red-50 text-red-700 border-red-200'
-                ">
-              <span class="w-1.5 h-1.5 rounded-full mr-1.5" [class]="
+                "
+              >
+                <span
+                  class="w-1.5 h-1.5 rounded-full mr-1.5"
+                  [class]="
                     product.state === 'Activo' ? 'bg-green-500' : 'bg-red-500'
-                  "></span>
-              {{ product.state }}
-            </span>
-          </td>
-
-          <td class="px-5 pt-2 pb-5 lg:px-6 lg:py-4 lg:table-cell lg:align-middle lg:border-b lg:border-gray-100"
-            [class.lg:rounded-br-lg]="isLast" [class.lg:border-b-0]="isLast">
-            <div class="flex items-center justify-start lg:justify-center gap-2">
-              <span class="font-bold uppercase text-gray-500 lg:hidden">
-                Acciones:
+                  "
+                ></span>
+                {{ product.state }}
               </span>
-              <app-table-actions [item]="product" (onEdit)="onEdit.emit($event)" (onDelete)="onDelete.emit($event)" />
-            </div>
-          </td>
-        </tr>
+
+              <div class="flex items-center gap-4">
+                <div class="relative h-12 w-12 shrink-0">
+                  <img
+                    class="h-full w-full rounded-lg object-cover border border-gray-200 bg-gray-50"
+                    [src]="getProductMainImage(product)"
+                    alt=""
+                  />
+                </div>
+                <div
+                  (click)="onEdit.emit(product)"
+                  class="font-semibold text-gray-900 text-base lg:text-sm cursor-pointer hover:underline"
+                  title="{{ product.name }}"
+                >
+                  {{ product.name }}
+                </div>
+              </div>
+            </td>
+
+            <td
+              class="px-5 py-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle"
+              [class.lg:border-b-0]="isLast"
+            >
+              <span
+                class="font-bold uppercase text-gray-500 block mb-1 lg:hidden"
+                >Categoría:</span
+              >
+              <div class="text-gray-600 line-clamp-2 text-sm">
+                {{ product.category.name }}
+              </div>
+            </td>
+
+            <td
+              class="px-5 py-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:pl-10 lg:pr-6 lg:py-4 lg:table-cell lg:align-middle lg:text-left"
+              [class.lg:border-b-0]="isLast"
+            >
+              <div class="flex items-center justify-start gap-2">
+                <span class="font-bold uppercase text-gray-500 lg:hidden"
+                  >Precio:</span
+                >
+                <span class="text-gray-900 font-semibold">
+                  {{
+                    getProductPrice(product)
+                      | currency
+                        : getProductCurrency(product)
+                        : "symbol"
+                        : "1.0-0"
+                  }}
+                </span>
+              </div>
+            </td>
+
+            <td
+              class="px-5 py-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle lg:text-center"
+              [class.lg:border-b-0]="isLast"
+            >
+              <div
+                class="flex items-center justify-start lg:justify-center gap-2"
+              >
+                <span class="font-bold uppercase text-gray-500 lg:hidden"
+                  >Stock:</span
+                >
+
+                <span
+                  class="w-28 h-7 inline-flex items-center justify-center rounded-md text-xs font-medium border whitespace-nowrap"
+                  [class.bg-red-50]="product.stock === 0"
+                  [class.text-red-700]="product.stock === 0"
+                  [class.border-red-100]="product.stock === 0"
+                  [class.bg-amber-50]="product.stock > 0 && product.stock <= 10"
+                  [class.text-amber-700]="
+                    product.stock > 0 && product.stock <= 10
+                  "
+                  [class.border-amber-100]="
+                    product.stock > 0 && product.stock <= 10
+                  "
+                  [class.bg-gray-50]="product.stock > 10"
+                  [class.text-gray-600]="product.stock > 10"
+                  [class.border-gray-200]="product.stock > 10"
+                >
+                  {{ product.stock }} unidades
+                </span>
+              </div>
+            </td>
+
+            <td
+              class="hidden lg:table-cell px-6 py-4 border-b border-gray-100 align-middle text-center"
+              [class.lg:border-b-0]="isLast"
+            >
+              <span
+                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border"
+                [class]="
+                  product.state === 'Activo'
+                    ? 'bg-green-50 text-green-700 border-green-200'
+                    : 'bg-red-50 text-red-700 border-red-200'
+                "
+              >
+                <span
+                  class="w-1.5 h-1.5 rounded-full mr-1.5"
+                  [class]="
+                    product.state === 'Activo' ? 'bg-green-500' : 'bg-red-500'
+                  "
+                ></span>
+                {{ product.state }}
+              </span>
+            </td>
+
+            <td
+              class="px-5 pt-2 pb-5 lg:px-6 lg:py-4 lg:table-cell lg:align-middle lg:border-b lg:border-gray-100"
+              [class.lg:rounded-br-lg]="isLast"
+              [class.lg:border-b-0]="isLast"
+            >
+              <div
+                class="flex items-center justify-start lg:justify-center gap-2"
+              >
+                <span class="font-bold uppercase text-gray-500 lg:hidden">
+                  Acciones:
+                </span>
+                <app-table-actions
+                  [item]="product"
+                  (onEdit)="onEdit.emit($event)"
+                  (onDelete)="onDelete.emit($event)"
+                />
+              </div>
+            </td>
+          </tr>
         } @empty {
-        <tr>
-          <td colspan="6" class="px-6 py-12 text-center bg-white lg:rounded-b-lg">
-            <div class="flex flex-col items-center justify-center">
-              @if (isFilterActive()) {
-              <ng-icon name="bootstrapSearch" class="text-3xl text-gray-400 mb-2"></ng-icon>
-              <p class="text-gray-500">No se encontraron resultados</p>
-              } @else {
-              <ng-icon name="bootstrapInbox" class="text-3xl text-gray-300 mb-2"></ng-icon>
-              <p class="text-gray-500">Sin productos cargados</p>
-              }
-            </div>
-          </td>
-        </tr>
+          <tr>
+            <td
+              colspan="6"
+              class="px-6 py-12 text-center bg-white lg:rounded-b-lg"
+            >
+              <div class="flex flex-col items-center justify-center">
+                @if (isFilterActive()) {
+                  <ng-icon
+                    name="bootstrapSearch"
+                    class="text-3xl text-gray-400 mb-2"
+                  ></ng-icon>
+                  <p class="text-gray-500">No se encontraron resultados</p>
+                } @else {
+                  <ng-icon
+                    name="bootstrapInbox"
+                    class="text-3xl text-gray-300 mb-2"
+                  ></ng-icon>
+                  <p class="text-gray-500">Sin productos cargados</p>
+                }
+              </div>
+            </td>
+          </tr>
         }
       </tbody>
     </table>
