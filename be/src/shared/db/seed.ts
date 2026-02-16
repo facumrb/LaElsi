@@ -73,50 +73,55 @@ interface IProductSeed {
   stock: number;
   categoryName: string;
   price: number;
+  totalSold?: number;
   photos: { fileName: string; mimeType: string }[];
 }
 
 const PRODUCTS_DATA: IProductSeed[] = [
   {
-    name: 'Lápiz HB',
-    description: 'Lápiz de grafito HB para escritura y dibujo',
-    brand: 'Marca Genérica',
-    stock: 100,
+    name: 'Lápiz HB Classic',
+    description: 'Lápiz de grafito HB para escritura graduada y dibujo artístico',
+    brand: 'Faber-Castell',
+    stock: 120,
     categoryName: 'Libreria',
-    price: 50,
+    price: 350,
+    totalSold: 85,
     photos: [
       { fileName: 'lapiz.jpg', mimeType: 'image/jpeg' },
       { fileName: 'lapiz2.jpg', mimeType: 'image/jpeg' }
     ]
   },
   {
-    name: 'Cuaderno rayado',
-    description: 'Cuaderno rayado de 100 hojas tamaño A4',
-    brand: 'Marca Genérica',
-    stock: 50,
+    name: 'Cuaderno Universitario Éxito',
+    description: 'Cuaderno rayado de 100 hojas tamaño A4 con espiral reforzado',
+    brand: 'Éxito',
+    stock: 45,
     categoryName: 'Libreria',
-    price: 200,
+    price: 4800,
+    totalSold: 32,
     photos: [
       { fileName: 'cuaderno.jpg', mimeType: 'image/jpeg' },
       { fileName: 'cuaderno-a4.jpg', mimeType: 'image/jpeg' }
     ]
   },
   {
-    name: 'Goma de borrar',
-    description: 'Goma de borrar blanca para lápiz',
-    brand: 'Marca Genérica',
-    stock: 80,
+    name: 'Goma de Borrar Dos Banderas',
+    description: 'Goma blanca de caucho natural, no mancha ni daña el papel',
+    brand: 'Dos Banderas',
+    stock: 200,
     categoryName: 'Libreria',
-    price: 30,
+    price: 450,
+    totalSold: 150,
     photos: [{ fileName: 'goma-de-borrar.png', mimeType: 'image/png' }]
   },
   {
-    name: 'Regla de 30 cm',
-    description: 'Regla transparente de 30 centímetros',
-    brand: 'Marca Genérica',
-    stock: 60,
+    name: 'Set de Reglas Pizzini',
+    description: 'Regla de 30cm técnica de alta precisión, fabricada en poliestireno cristal',
+    brand: 'Pizzini',
+    stock: 15,
     categoryName: 'Libreria',
-    price: 100,
+    price: 1500,
+    totalSold: 210,
     photos: [
       { fileName: 'regla.webp', mimeType: 'image/webp' },
       { fileName: 'regla0.webp', mimeType: 'image/webp' },
@@ -131,12 +136,13 @@ const PRODUCTS_DATA: IProductSeed[] = [
     ]
   },
   {
-    name: 'Remeras',
-    description: 'Remeras de algodón',
-    brand: 'Marca todoBolla',
-    stock: 0,
+    name: 'Remera Algodón Premium',
+    description: 'Remera 100% algodón peinado, ideal para personalización o uso diario',
+    brand: 'La Elsi',
+    stock: 30,
     categoryName: 'Libreria',
-    price: 1935081,
+    price: 12500,
+    totalSold: 18,
     photos: [
       { fileName: 'remeras1.jpeg', mimeType: 'image/jpeg' },
       { fileName: 'remeras2.jpeg', mimeType: 'image/jpeg' },
@@ -221,7 +227,7 @@ function createProductEntity(data: IProductSeed, category: Category): Product {
   product.name = data.name;
   product.description = data.description;
   product.brand = data.brand;
-  product.totalSold = 0;
+  product.totalSold = data.totalSold || 0;
   product.stock = data.stock;
   product.category = category;
 

@@ -42,8 +42,8 @@ export class ProductController {
     const { price, currency, ...productData } = input;
 
     // Validar campos obligatorios
-    if (!productData.name || !productData.description || !productData.brand || !productData.stock || !productData.stock || price === undefined) {
-      throw new AppError('Los campos nombre, descripción, marca, stock, total vendido y precio son obligatorios', 400);
+    if (!productData.name || !productData.description || !productData.brand || productData.stock === undefined || price === undefined) {
+      throw new AppError('Los campos nombre, descripción, marca, stock y precio son obligatorios', 400);
     }
 
     // Validar precio positivo
@@ -56,9 +56,11 @@ export class ProductController {
       throw new AppError('El stock debe ser un número entero mayor o igual a 0', 400);
     }
 
-    // Validar totalSold >= 0 y entero
-    if (typeof productData.totalSold !== 'number' || productData.totalSold < 0 || !Number.isInteger(productData.totalSold)) {
-      throw new AppError('El Total vendido debe ser un número entero mayor o igual a 0', 400);
+    // Validar totalSold >= 0 y entero (se inicializa en 0 si no se envía)
+    if (productData.totalSold !== undefined) {
+      if (typeof productData.totalSold !== 'number' || productData.totalSold < 0 || !Number.isInteger(productData.totalSold)) {
+        throw new AppError('El total vendido debe ser un número entero mayor o igual a 0', 400);
+      }
     }
 
     // Validar currency si se proporciona
