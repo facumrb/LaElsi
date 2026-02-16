@@ -1,9 +1,6 @@
-
-
-
 <main class="min-h-screen bg-neutral-50 pb-20">
   <!-- Hero Section -->
-  <header class="bg-gradient-to-r from-blue-600 to-indigo-700 py-16 mb-12 shadow-inner">
+  <header class="bg-linear-to-r from-blue-600 to-indigo-700 py-16 mb-12 shadow-inner">
     <div class="container mx-auto px-6 text-center">
       <h1 class="text-4xl md:text-5xl font-extrabold text-white mb-4 tracking-tight">
         Bienvenidos a La Elsi
@@ -20,7 +17,7 @@
     </div>
 
     <div *ngIf="!loading()" class="animate-in fade-in duration-700">
-      
+
       <!-- Global Best Sellers Carousel -->
       <section class="mb-16" *ngIf="globalBestSellers().length > 0">
         <div class="flex items-center justify-between mb-8">
@@ -28,14 +25,12 @@
             🔥 Los Más Vendidos en General
           </h2>
         </div>
-        
+
         <div class="relative group">
           <div class="flex overflow-x-auto gap-6 pb-6 scroll-smooth scrollbar-hide snap-x snap-mandatory">
             <div *ngFor="let product of globalBestSellers()" class="flex-none w-72 snap-start">
-              <app-product-card 
-                [product]="product" 
-                class="hover:scale-[1.02] transition-transform duration-300 block"
-              ></app-product-card>
+              <app-product-card [product]="product"
+                class="hover:scale-[1.02] transition-transform duration-300 block"></app-product-card>
             </div>
           </div>
         </div>
@@ -52,17 +47,16 @@
         <div class="relative group">
           <div class="flex overflow-x-auto gap-6 pb-6 scroll-smooth scrollbar-hide snap-x snap-mandatory">
             <div *ngFor="let product of item.products" class="flex-none w-64 snap-start">
-              <app-product-card 
-                [product]="product"
-                class="hover:scale-[1.02] transition-transform duration-300 block"
-              ></app-product-card>
+              <app-product-card [product]="product"
+                class="hover:scale-[1.02] transition-transform duration-300 block"></app-product-card>
             </div>
           </div>
         </div>
       </section>
 
       <!-- No products state -->
-      <div *ngIf="globalBestSellers().length === 0 && categoriesWithBestSellers().length === 0" class="text-center py-20 bg-white rounded-2xl shadow-sm">
+      <div *ngIf="globalBestSellers().length === 0 && categoriesWithBestSellers().length === 0"
+        class="text-center py-20 bg-white rounded-2xl shadow-sm">
         <p class="text-xl text-neutral-500">Aún no hay productos destacados para mostrar.</p>
       </div>
     </div>
