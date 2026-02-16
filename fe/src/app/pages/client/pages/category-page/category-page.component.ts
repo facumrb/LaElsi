@@ -24,17 +24,21 @@ import { IApiProduct } from '@models/product.model';
   templateUrl: './category-page.component.html',
 })
 export class CategoryPageComponent implements OnInit {
-  public category = signal<IApiCategory | null>(null);
+  private ApiCategoryService = inject(ApiCategoryService);
+  private ApiProductService = inject(ApiProductService);
+  private route = inject(ActivatedRoute);
+
+  category = signal<IApiCategory | null>(null);
   private productsRaw = signal<IApiProduct[]>([]);
-  public availableBrands = signal<string[]>([]);
+  availableBrands = signal<string[]>([]);
 
   // Filtros
-  public priceOrder = signal<PriceOrder>('Defecto');
-  public brandFilter = signal<string>('Todas');
-  public popularityOrder = signal<PopularityOrder>('Defecto');
+  priceOrder = signal<PriceOrder>('Defecto');
+  brandFilter = signal<string>('Todas');
+  popularityOrder = signal<PopularityOrder>('Defecto');
 
   // Computed para productos filtrados
-  public productsFiltered = computed(() => {
+  productsFiltered = computed(() => {
     const currentProducts = this.productsRaw();
     const priceOrder = this.priceOrder();
     const brandSelected = this.brandFilter();
@@ -80,10 +84,6 @@ export class CategoryPageComponent implements OnInit {
 
     return filtered;
   });
-
-  private ApiCategoryService = inject(ApiCategoryService);
-  private ApiProductService = inject(ApiProductService);
-  private route = inject(ActivatedRoute);
 
   // Effect para extraer las marcas disponibles de los productos
   private brandExtractor = effect(() => {

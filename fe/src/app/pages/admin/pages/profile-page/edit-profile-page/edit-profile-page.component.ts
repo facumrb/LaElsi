@@ -7,12 +7,11 @@ import {
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiAdminService } from '@services/api-admin.service';
-import { CommonModule } from '@angular/common';
 import { IApiAdmin } from '@models/user.model';
 
 @Component({
   selector: 'app-edit-profile-page',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [ReactiveFormsModule],
   templateUrl: './edit-profile-page.component.html',
   styleUrl: './edit-profile-page.component.css',
 })

@@ -40,8 +40,9 @@ export class ProductsToolbarComponent {
   stockFilter = model.required<StockFilter>();
   hasSelection = input<boolean>(false);
 
-  // OUTPUTS
+  // Output para avisar que hicieron clic en "Agregar"
   onAdd = output<void>();
+
   onBulkPriceUpdate = output<void>();
 
   showFilterMenu = signal(false);

@@ -3,13 +3,12 @@ import { ApiProductService } from '@services/api-product.service';
 import { ApiCategoryService } from '@services/api-category.service';
 import { IApiProduct } from '@models/product.model';
 import { IApiCategory } from '@models/category.model';
-import { CommonModule } from '@angular/common';
 import { ProductCardComponent } from '../../components/product-card/product-card.component';
 import { forkJoin, map } from 'rxjs';
 
 @Component({
   selector: 'app-main-page',
-  imports: [CommonModule, ProductCardComponent],
+  imports: [ProductCardComponent],
   templateUrl: './main-page.component.html',
 })
 export class MainPageComponent implements OnInit {
@@ -42,9 +41,9 @@ export class MainPageComponent implements OnInit {
         const topCategories = activeCategories.slice(0, 5);
 
         const requests = topCategories.map((cat) =>
-          this.apiProductService.getBestSellersByCategory(cat.id, 10).pipe(
-            map((products) => ({ category: cat, products })),
-          ),
+          this.apiProductService
+            .getBestSellersByCategory(cat.id, 10)
+            .pipe(map((products) => ({ category: cat, products }))),
         );
 
         if (requests.length === 0) {

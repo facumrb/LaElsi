@@ -1,12 +1,10 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiAdminService } from '@services/api-admin.service';
-import { CommonModule } from '@angular/common';
 import { IApiAdmin } from '@models/user.model';
 
 @Component({
   selector: 'app-view-profile-page',
-  imports: [CommonModule],
   templateUrl: './view-profile-page.component.html',
   styleUrl: './view-profile-page.component.css',
 })

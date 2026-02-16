@@ -44,10 +44,6 @@ app.use('/uploads/users', express.static(path.join(process.cwd(), 'uploads/users
 import { errorHandler } from './shared/errors/errorHandler.js';
 import { AppError } from './shared/errors/appError.js';
 
-// ... (other imports)
-
-// (Rest of app setup)
-
 // Handle 404 before global error handler
 app.use((req, res, next) => {
   next(new AppError(`No se encontró la ruta ${req.originalUrl} en este servidor`, 404));

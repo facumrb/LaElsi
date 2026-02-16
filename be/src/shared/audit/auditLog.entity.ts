@@ -4,18 +4,18 @@ import { CustomBaseEntity } from '../db/customBaseEntity.entity.js';
 
 @Entity()
 export class AuditLog extends CustomBaseEntity {
-    @ManyToOne(() => User, { nullable: false })
-    user!: Rel<User>;
+  @ManyToOne(() => User, { nullable: false })
+  user!: Rel<User>;
 
-    @Property({ nullable: false })
-    action!: string;
+  @Property({ nullable: false })
+  action!: string;
 
-    @Property({ nullable: false })
-    targetType!: string;
+  @Property({ nullable: false })
+  targetType!: string;
 
-    @Property({ nullable: true })
-    targetId?: number;
+  @Property({ nullable: true })
+  targetId?: number;
 
-    @Property({ type: 'json', nullable: true })
-    details?: any;
+  @Property({ type: 'json', nullable: true })
+  details?: any;
 }

@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, ɵEmptyOutletComponent } from '@angular/router';
+import { Component, inject, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { ApiProductService } from '@services/api-product.service';
 import { CartService } from '@services/cart.service';
 import { IApiProduct } from '@models/product.model';
@@ -31,21 +31,17 @@ import {
   templateUrl: './product-page.component.html',
 })
 export class ProductPageComponent implements OnInit {
-  // Cambia esto por la URL real de tu backend
   private readonly imageBaseUrl = environment.productImagesUrl;
   private readonly defaultImage = 'assets/Webp/no-image.webp';
+  private activatedRoute = inject(ActivatedRoute);
+  private productService = inject(ApiProductService);
+  private cartService = inject(CartService);
 
   product?: IApiProduct;
   selectedPhotoUrl?: string; // Aquí guardaremos la URL completa de la foto visible
 
-  constructor(
-    private route: ActivatedRoute,
-    private productService: ApiProductService,
-    private cartService: CartService,
-  ) { }
-
   ngOnInit(): void {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
+    const id = Number(this.activatedRoute.snapshot.paramMap.get('id'));
 
     this.productService.getProductById(id).subscribe({
       next: (data) => {

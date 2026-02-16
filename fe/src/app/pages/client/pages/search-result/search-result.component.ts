@@ -1,11 +1,4 @@
-import {
-  Component,
-  inject,
-  OnInit,
-  signal,
-  computed,
-  effect,
-} from '@angular/core';
+import { Component, inject, signal, computed, effect } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ApiProductService } from '@services/api-product.service';
 import { ProductCardComponent } from '@cliente/components/product-card/product-card.component';
@@ -21,11 +14,11 @@ import { IApiProduct } from '@models/product.model';
   imports: [ProductCardComponent, ProductsFilterComponent],
   templateUrl: './search-result.component.html',
 })
-export class SearchResultComponent implements OnInit {
+export class SearchResultComponent {
   private route = inject(ActivatedRoute);
   private productService = inject(ApiProductService);
   private productsRaw = signal<IApiProduct[]>([]);
-  public availableBrands = signal<string[]>([]);
+  availableBrands = signal<string[]>([]);
   searchTerm = signal<string>('');
 
   constructor() {
@@ -35,8 +28,6 @@ export class SearchResultComponent implements OnInit {
       this.loadProducts();
     });
   }
-
-  ngOnInit(): void {}
 
   loadProducts() {
     this.productService.searchProducts(this.searchTerm()).subscribe((prods) => {

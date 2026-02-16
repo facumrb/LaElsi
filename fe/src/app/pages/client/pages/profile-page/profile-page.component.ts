@@ -3,7 +3,6 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '@services/auth.service';
 import { ApiClientService } from '@services/api-client.service';
 import { ApiOrderService } from '@services/api-order.service';
-import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
@@ -17,10 +16,11 @@ import {
 } from '@ng-icons/bootstrap-icons';
 import { IApiClient, IUpdateClient, FiscalCondition } from '@models/user.model';
 import { IApiOrder } from '@models/order.model';
+import { CurrencyPipe, DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-profile-page',
-  imports: [CommonModule, ReactiveFormsModule, NgIconComponent],
+  imports: [ReactiveFormsModule, NgIconComponent, DatePipe, CurrencyPipe],
   viewProviders: [
     provideIcons({
       bootstrapPerson,
