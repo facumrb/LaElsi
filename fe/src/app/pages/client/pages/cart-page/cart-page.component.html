@@ -1,11 +1,11 @@
-<main class="animate-fadeIn pb-4">
+<div class="animate-fadeIn pb-4">
   <div class="container mx-auto p-4">
-    <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center justify-between mb-5">
       <h1
-        class="text-2xl md:text-3xl font-bold text-neutral-900 tracking-tight"
+        class="flex items-center text-2xl md:text-3xl font-bold text-neutral-900 tracking-tight"
       >
         Carrito
-        <span class="ml-2 text-lg md:text-xl font-medium text-neutral-500">
+        <span class="ml-3 text-lg md:text-xl font-medium text-neutral-500">
           ({{ totalItems() }}
           {{ totalItems() === 1 ? "producto" : "productos" }})
         </span>
@@ -40,12 +40,13 @@
 
                   <div class="grow">
                     <div class="flex justify-between items-start mb-1">
-                      <h3
+                      <h2
                         class="font-bold text-neutral-800 text-lg leading-snug"
                       >
                         {{ item.product.name }}
-                      </h3>
+                      </h2>
                       <button
+                        type="button"
                         (click)="removeItem(item.product.id)"
                         class="cursor-pointer text-neutral-400 hover:text-red-500 rounded-lg transition-all"
                         title="Eliminar producto"
@@ -66,26 +67,42 @@
                         class="flex items-center border border-neutral-200 rounded-lg"
                       >
                         <button
+                          type="button"
                           (click)="
                             updateQuantity(item.product.id, item.quantity - 1)
                           "
                           class="cursor-pointer w-9 h-9 flex items-center justify-center text-neutral-500 hover:text-[#3d4494] hover:bg-neutral-50 rounded-l-lg transition-colors disabled:opacity-50"
                           [disabled]="item.quantity <= 1"
+                          [attr.aria-label]="
+                            'Disminuir cantidad de ' + item.product.name
+                          "
                         >
-                          <ng-icon name="bootstrapDash"></ng-icon>
+                          <ng-icon
+                            name="bootstrapDash"
+                            aria-hidden="true"
+                          ></ng-icon>
                         </button>
+
                         <span
-                          class="w-10 text-center font-semibold text-neutral-800 text-sm"
+                          class="min-w-10 text-center font-semibold text-neutral-800 text-sm"
                         >
                           {{ item.quantity }}
                         </span>
+
                         <button
+                          type="button"
                           (click)="
                             updateQuantity(item.product.id, item.quantity + 1)
                           "
                           class="cursor-pointer w-9 h-9 flex items-center justify-center text-neutral-500 hover:text-[#3d4494] hover:bg-neutral-50 rounded-r-lg transition-colors"
+                          [attr.aria-label]="
+                            'Aumentar cantidad de ' + item.product.name
+                          "
                         >
-                          <ng-icon name="bootstrapPlus"></ng-icon>
+                          <ng-icon
+                            name="bootstrapPlus"
+                            aria-hidden="true"
+                          ></ng-icon>
                         </button>
                       </div>
 
@@ -129,72 +146,51 @@
         <!-- Summary Sidebar -->
         <div class="lg:col-span-1">
           <div
-            class="bg-white rounded-2xl shadow-lg shadow-blue-900/5 border border-neutral-100 p-6 sticky top-8"
+            class="bg-white rounded-2xl shadow-sm border border-neutral-200 p-6 sticky top-8"
           >
-            <h1 class="text-xl font-bold text-neutral-800 mb-6">
+            <h2 class="text-lg font-bold text-neutral-900 mb-5">
               Resumen del pedido
-            </h1>
+            </h2>
 
-            <div class="space-y-4 mb-8">
+            <dl class="space-y-3 mb-6 text-sm">
               <div class="flex justify-between text-neutral-500">
-                <span>Subtotal ({{ totalItems() }} productos)</span>
-                <span>{{
-                  totalAmount() | currency: "ARS" : "symbol-narrow" : "1.0-2"
-                }}</span>
+                <dt>Subtotal ({{ totalItems() }})</dt>
+                <dd class="font-medium text-neutral-900">
+                  {{
+                    totalAmount() | currency: "ARS" : "symbol-narrow" : "1.0-0"
+                  }}
+                </dd>
               </div>
-              <div class="flex justify-between text-neutral-500 pb-2 border-b">
-                <span>Envío</span>
-                <span class="text-green-600 font-medium">A convenir</span>
+
+              <div class="flex justify-between text-neutral-600">
+                <dt>Envío</dt>
+                <dd class="font-medium text-green-700">A convenir / Gratis</dd>
               </div>
+
               <div
-                class="flex justify-between text-xl font-bold text-neutral-800"
+                class="border-t border-neutral-100 pt-4 flex justify-between items-center"
               >
-                <span>Total</span>
-                <span>{{
-                  totalAmount() | currency: "ARS" : "symbol-narrow" : "1.0-2"
-                }}</span>
+                <dt class="text-base font-bold text-neutral-900">Total</dt>
+                <dd class="text-xl font-bold text-[#3d4494]">
+                  {{
+                    totalAmount() | currency: "ARS" : "symbol-narrow" : "1.0-0"
+                  }}
+                </dd>
               </div>
-            </div>
+            </dl>
 
-            <!-- Payment Info -->
-            <div class="bg-blue-50 rounded-xl p-4 mb-4">
-              <h4
-                class="text-sm font-bold text-blue-900 mb-2 uppercase tracking-wider"
+            <fieldset class="mb-6">
+              <legend
+                class="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-3"
               >
-                Datos de Pago
-              </h4>
-              <p class="text-sm text-blue-800 mb-1">Mercado Pago (Alias):</p>
-              <div class="flex items-center justify-between">
-                <span
-                  class="font-mono bg-white px-2 py-1 rounded border border-blue-200 text-blue-700 text-xs font-bold"
-                >
-                  {{ mpAlias }}
-                </span>
-              </div>
-            </div>
-
-            <!-- Shipping Method -->
-            <div
-              class="mb-8 p-4 bg-neutral-50 rounded-xl border border-neutral-100"
-            >
-              <h4
-                class="text-sm font-bold text-neutral-800 mb-4 uppercase tracking-wider"
-              >
-                Método de entrega
-              </h4>
+                Método de Entrega
+              </legend>
               <div class="space-y-3">
-                <label
-                  class="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all"
-                  [class]="{
-                    'border-blue-600 bg-blue-50':
-                      shippingMethod() === DeliveryMethodEnum.RetiroSucursal,
-                    'border-neutral-200 bg-white hover:bg-neutral-50':
-                      shippingMethod() !== DeliveryMethodEnum.RetiroSucursal,
-                  }"
-                >
+                <label class="relative block cursor-pointer group">
                   <input
                     type="radio"
                     name="shipping"
+                    class="peer sr-only"
                     [value]="DeliveryMethodEnum.RetiroSucursal"
                     [checked]="
                       shippingMethod() === DeliveryMethodEnum.RetiroSucursal
@@ -202,71 +198,170 @@
                     (change)="
                       setShippingMethod(DeliveryMethodEnum.RetiroSucursal)
                     "
-                    class="w-4 h-4 text-blue-600"
                   />
-                  <span class="font-medium text-neutral-800"
-                    >Retiro en sucursal</span
+                  <div
+                    class="p-3 rounded-xl border-2 border-neutral-100 bg-white transition-all hover:border-neutral-300 peer-checked:border-[#3d4494] peer-checked:bg-blue-50/10"
                   >
+                    <div class="flex items-center justify-between">
+                      <span
+                        class="font-semibold text-sm text-neutral-700 peer-checked:text-[#3d4494]"
+                        >Retiro en sucursal</span
+                      >
+                    </div>
+                  </div>
                 </label>
 
-                <label
-                  class="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all"
-                  [class]="{
-                    'border-blue-200 bg-blue-50/50 opacity-80':
-                      shippingMethod() === DeliveryMethodEnum.Envio,
-                    'border-neutral-200 bg-white hover:bg-neutral-50':
-                      shippingMethod() !== DeliveryMethodEnum.Envio,
-                  }"
-                >
+                <label class="relative block cursor-pointer group">
                   <input
                     type="radio"
                     name="shipping"
+                    class="peer sr-only"
                     [value]="DeliveryMethodEnum.Envio"
                     [checked]="shippingMethod() === DeliveryMethodEnum.Envio"
                     (change)="setShippingMethod(DeliveryMethodEnum.Envio)"
-                    class="w-4 h-4 text-blue-600"
                   />
-                  <span class="font-medium text-neutral-800"
-                    >Envío (Delivery)</span
+                  <div
+                    class="p-3 rounded-xl border-2 border-neutral-100 bg-white transition-all hover:border-neutral-300 peer-checked:border-[#3d4494] peer-checked:bg-blue-50/10"
                   >
+                    <div class="flex items-center justify-between">
+                      <span
+                        class="font-semibold text-sm text-neutral-700 peer-checked:text-[#3d4494]"
+                        >Envío a domicilio</span
+                      >
+                    </div>
+                  </div>
                 </label>
               </div>
 
-              <!-- Info Message for Delivery -->
               @if (shippingMethod() === DeliveryMethodEnum.Envio) {
                 <div
-                  class="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg animate-in fade-in slide-in-from-top-2"
+                  class="mt-2 text-xs text-amber-600 bg-amber-50 p-2.5 rounded-lg border border-amber-100 flex gap-2"
                 >
-                  <p class="text-xs text-amber-700 flex items-center gap-2">
-                    <ng-icon
-                      name="bootstrapInfoCircle"
-                      class="shrink-0"
-                    ></ng-icon>
-                    <span
-                      >Por el momento solo estamos realizando retiros en
-                      sucursal. ¡Próximamente habrá delivery disponible!</span
-                    >
-                  </p>
+                  <ng-icon
+                    name="bootstrapInfoCircle"
+                    class="shrink-0 mt-0.5"
+                  ></ng-icon>
+                  <span
+                    >Por el momento no hacemos envios. Podes coordinar con
+                    nosotros el retiro luego de la compra.</span
+                  >
                 </div>
               }
+            </fieldset>
+
+            <fieldset class="mb-6">
+              <legend
+                class="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-3"
+              >
+                Método de Pago
+              </legend>
+
+              <div class="flex flex-col gap-3 mb-3">
+                <label class="relative block cursor-pointer group">
+                  <input
+                    type="radio"
+                    name="payment"
+                    class="peer sr-only"
+                    [value]="PaymentMethodEnum.Transferencia"
+                    [checked]="
+                      paymentMethod() === PaymentMethodEnum.Transferencia
+                    "
+                    (change)="setPaymentMethod(PaymentMethodEnum.Transferencia)"
+                  />
+                  <div
+                    class="p-3 rounded-xl border-2 border-neutral-100 bg-white transition-all hover:border-neutral-300 peer-checked:border-[#3d4494] peer-checked:bg-blue-50/10 flex items-center justify-between"
+                  >
+                    <span
+                      class="font-semibold text-sm text-neutral-800 peer-checked:text-[#3d4494]"
+                    >
+                      Transferencia - Depósito Bancario
+                    </span>
+                  </div>
+                </label>
+
+                <label class="relative block cursor-pointer group">
+                  <input
+                    type="radio"
+                    name="payment"
+                    class="peer sr-only"
+                    [value]="PaymentMethodEnum.Local"
+                    [checked]="paymentMethod() === PaymentMethodEnum.Local"
+                    (change)="setPaymentMethod(PaymentMethodEnum.Local)"
+                  />
+                  <div
+                    class="p-3 rounded-xl border-2 border-neutral-100 bg-white transition-all hover:border-neutral-300 peer-checked:border-[#3d4494] peer-checked:bg-blue-50/10 flex items-center justify-between"
+                  >
+                    <span
+                      class="font-semibold text-sm text-neutral-800 peer-checked:text-[#3d4494]"
+                    >
+                      Pago en el Local
+                    </span>
+                  </div>
+                </label>
+              </div>
+
+              <div
+                class="h-26 bg-neutral-50 rounded-xl border border-neutral-200 p-4 relative overflow-hidden"
+              >
+                @if (paymentMethod() === PaymentMethodEnum.Transferencia) {
+                  <div
+                    class="absolute inset-0 flex flex-col justify-center px-4 animate-in fade-in zoom-in-95 duration-200"
+                  >
+                    <p class="text-sm font-medium text-neutral-600 mb-2">
+                      Alias para transferir:
+                    </p>
+                    <div
+                      class="flex items-center justify-between bg-white p-2 rounded-lg border border-neutral-200 shadow-sm"
+                    >
+                      <code
+                        class="text-base font-bold text-[#3d4494] font-mono select-all px-1 truncate"
+                      >
+                        {{ mpAlias }}
+                      </code>
+
+                      <button
+                        type="button"
+                        (click)="copyAlias()"
+                        class="text-xs font-semibold text-neutral-500 hover:text-[#3d4494] uppercase tracking-wide px-2 py-1 transition-colors cursor-pointer"
+                        title="Copiar alias al portapapeles"
+                      >
+                        Copiar
+                      </button>
+                    </div>
+                  </div>
+                } @else {
+                  <div
+                    class="absolute inset-0 flex flex-col justify-center px-4 animate-in fade-in zoom-in-95 duration-200"
+                  >
+                    <p class="text-sm text-neutral-500 pl-7 leading-snug">
+                      Aceptamos
+                      <span class="font-semibold text-neutral-700"
+                        >Efectivo, Débito y Crédito</span
+                      >.
+                    </p>
+                  </div>
+                }
+              </div>
+            </fieldset>
+
+            <div class="space-y-3">
+              <button
+                (click)="checkout()"
+                [disabled]="shippingMethod() === DeliveryMethodEnum.Envio"
+                class="w-full cursor-pointer bg-[#3d4494] hover:bg-[#2a2f63] text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-900/10 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2"
+              >
+                <span>Confirmar Pedido</span>
+              </button>
+              <a
+                [href]="whatsAppLink()"
+                target="_blank"
+                class="w-full flex items-center justify-center gap-2 text-emerald-700 font-bold py-3 rounded-xl border border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 transition-all active:scale-[0.98]"
+                aria-label="Consultar dudas por WhatsApp"
+              >
+                <ng-icon name="bootstrapWhatsapp" class="text-xl"></ng-icon>
+                <span class="text-sm">Consultar por WhatsApp</span>
+              </a>
             </div>
-
-            <button
-              (click)="checkout()"
-              [disabled]="shippingMethod() === DeliveryMethodEnum.Envio"
-              class="cursor-pointer w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-blue-600/20 active:scale-95 mb-4 disabled:bg-neutral-300 disabled:shadow-none disabled:active:scale-100 disabled:cursor-not-allowed"
-            >
-              Confirmar Pedido
-            </button>
-
-            <a
-              [href]="whatsAppLink()"
-              target="_blank"
-              class="w-full flex items-center justify-center gap-2 text-green-600 font-bold py-3 px-4 rounded-xl border-2 border-green-100 hover:bg-green-50 hover:border-green-200 transition-all active:scale-95"
-            >
-              <ng-icon name="bootstrapWhatsapp" class="text-xl"></ng-icon>
-              <span>Consultar por WhatsApp</span>
-            </a>
           </div>
         </div>
       </div>
@@ -298,4 +393,4 @@
       </div>
     }
   </div>
-</main>
+</div>

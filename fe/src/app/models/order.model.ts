@@ -11,6 +11,11 @@ export enum DeliveryMethod {
   RetiroSucursal = 'Retiro en sucursal',
 }
 
+export enum PaymentMethod {
+  Transferencia = 'Transferencia',
+  Local = 'Local',
+}
+
 // ==========================================================
 // MODELOS DE LECTURA (READ / GET)
 // ==========================================================
