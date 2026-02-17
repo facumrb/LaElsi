@@ -9,12 +9,12 @@ import {
 import { ActivatedRoute } from '@angular/router';
 import { ApiProductService } from '@services/api-product.service';
 import { ApiCategoryService } from '@services/api-category.service';
-import { ProductCardComponent } from '@cliente/components/product-card/product-card.component';
+import { ProductCardComponent } from '@client/components/product-card/product-card.component';
 import {
   ProductsFilterComponent,
   PriceOrder,
   PopularityOrder,
-} from '@cliente/components/products-filter/products-filter.component';
+} from '@client/components/products-filter/products-filter.component';
 import { IApiCategory } from '@models/category.model';
 import { IApiProduct } from '@models/product.model';
 

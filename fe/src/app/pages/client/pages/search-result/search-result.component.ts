@@ -1,12 +1,12 @@
 import { Component, inject, signal, computed, effect } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ApiProductService } from '@services/api-product.service';
-import { ProductCardComponent } from '@cliente/components/product-card/product-card.component';
+import { ProductCardComponent } from '@client/components/product-card/product-card.component';
 import {
   ProductsFilterComponent,
   PriceOrder,
   PopularityOrder,
-} from '@cliente/components/products-filter/products-filter.component';
+} from '@client/components/products-filter/products-filter.component';
 import { IApiProduct } from '@models/product.model';
 
 @Component({

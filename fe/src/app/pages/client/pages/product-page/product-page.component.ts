@@ -13,6 +13,7 @@ import {
   bootstrapChevronRight,
   bootstrapChevronDown,
   bootstrapChevronUp,
+  bootstrapLightningFill,
 } from '@ng-icons/bootstrap-icons';
 
 @Component({
@@ -26,6 +27,7 @@ import {
       bootstrapChevronRight,
       bootstrapChevronUp,
       bootstrapChevronDown,
+      bootstrapLightningFill,
     }),
   ],
   templateUrl: './product-page.component.html',

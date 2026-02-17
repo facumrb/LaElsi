@@ -1,5 +1,16 @@
-<main class="bg-neutral-50 pb-6">
-  <div class="container mx-auto px-6 py-8">
+<main class="animate-fadeIn pb-4">
+  <div class="container mx-auto p-4">
+    <div class="flex items-center justify-between mb-6">
+      <h1
+        class="text-2xl md:text-3xl font-bold text-neutral-900 tracking-tight"
+      >
+        Carrito
+        <span class="ml-2 text-lg md:text-xl font-medium text-neutral-500">
+          ({{ totalItems() }}
+          {{ totalItems() === 1 ? "producto" : "productos" }})
+        </span>
+      </h1>
+    </div>
     @if (items().length > 0) {
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
         <!-- Items List -->
@@ -30,17 +41,20 @@
                   <div class="grow">
                     <div class="flex justify-between items-start mb-1">
                       <h3
-                        class="font-bold text-neutral-800 text-lg leading-tight"
+                        class="font-bold text-neutral-800 text-lg leading-snug"
                       >
                         {{ item.product.name }}
                       </h3>
-                      <span class="text-sm font-medium text-neutral-900">
-                        {{
-                          item.product.prices[0].amount
-                            | currency: "ARS" : "symbol-narrow" : "1.0-0"
-                        }}
-                        c/u
-                      </span>
+                      <button
+                        (click)="removeItem(item.product.id)"
+                        class="cursor-pointer text-neutral-400 hover:text-red-500 rounded-lg transition-all"
+                        title="Eliminar producto"
+                      >
+                        <ng-icon
+                          name="bootstrapTrash"
+                          class="text-xl"
+                        ></ng-icon>
+                      </button>
                     </div>
 
                     <p class="text-neutral-500 text-sm mb-4 font-medium">
@@ -75,24 +89,23 @@
                         </button>
                       </div>
 
-                      <div class="flex items-center gap-6">
-                        <p class="text-lg font-bold text-[#3d4494]">
+                      <div class="text-right">
+                        <p
+                          class="text-lg font-bold text-[#3d4494] leading-tight mb-1"
+                        >
                           {{
                             item.product.prices[0].amount * item.quantity
                               | currency: "ARS" : "symbol-narrow" : "1.0-0"
                           }}
                         </p>
 
-                        <button
-                          (click)="removeItem(item.product.id)"
-                          class="cursor-pointer flex items-center text-neutral-300 hover:text-red-500 hover:bg-red-50 rounded-full transition-all"
-                          title="Eliminar producto"
-                        >
-                          <ng-icon
-                            name="bootstrapTrash"
-                            class="text-lg"
-                          ></ng-icon>
-                        </button>
+                        <p class="text-xs font-medium text-neutral-500">
+                          {{
+                            item.product.prices[0].amount
+                              | currency: "ARS" : "symbol-narrow" : "1.0-0"
+                          }}
+                          c/u
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -103,8 +116,9 @@
 
           <div class="flex justify-end">
             <button
+              type="button"
               (click)="clearCart()"
-              class="cursor-pointer text-sm text-neutral-400 hover:text-red-600 font-medium flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-red-50 transition-all"
+              class="cursor-pointer text-sm text-gray-500 hover:text-red-600 font-medium flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-red-50 transition-all"
             >
               <ng-icon name="bootstrapCartX"></ng-icon>
               Vaciar todo el carrito
@@ -115,7 +129,7 @@
         <!-- Summary Sidebar -->
         <div class="lg:col-span-1">
           <div
-            class="bg-white rounded-2xl shadow-lg shadow-blue-900/5 p-6 sticky top-8"
+            class="bg-white rounded-2xl shadow-lg shadow-blue-900/5 border border-neutral-100 p-6 sticky top-8"
           >
             <h1 class="text-xl font-bold text-neutral-800 mb-6">
               Resumen del pedido
@@ -248,10 +262,10 @@
             <a
               [href]="whatsAppLink()"
               target="_blank"
-              class="w-full flex items-center justify-center bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-green-600/20 active:scale-95"
+              class="w-full flex items-center justify-center gap-2 text-green-600 font-bold py-3 px-4 rounded-xl border-2 border-green-100 hover:bg-green-50 hover:border-green-200 transition-all active:scale-95"
             >
-              <ng-icon name="bootstrapWhatsapp" class="text-xl mr-2"></ng-icon>
-              Hacer pedido por WhatsApp
+              <ng-icon name="bootstrapWhatsapp" class="text-xl"></ng-icon>
+              <span>Consultar por WhatsApp</span>
             </a>
           </div>
         </div>
