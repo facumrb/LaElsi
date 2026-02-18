@@ -21,7 +21,8 @@
           Actualizar Precios
         </h2>
         <p class="text-sm text-gray-500 mt-0.5">
-          Editando {{ productIds().length }} productos
+          Editando {{ productIds().length }}
+          {{ productIds().length === 1 ? "producto" : "productos" }}
         </p>
       </div>
       <button
@@ -103,50 +104,98 @@
             class="space-y-2 relative"
             (clickOutside)="showRoundingOptions.set(false)"
           >
-            <label class="block text-sm font-medium text-gray-700"
-              >Regla de Redondeo</label
-            >
+            <label class="block text-sm font-medium text-gray-700">
+              Regla de Redondeo
+            </label>
 
             <button
+              type="button"
               (click)="showRoundingOptions.set(!showRoundingOptions())"
-              class="w-full flex items-center justify-between pl-3 pr-4 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 cursor-pointer text-left shadow-sm focus:outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 sm:text-sm"
+              class="relative w-full cursor-pointer bg-white rounded-xl border border-gray-300 py-2.5 pl-4 pr-10 text-left shadow-sm focus:outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-colors sm:text-sm"
             >
-              <span class="block truncate">{{ roundingLabel() }}</span>
-              <ng-icon
-                name="bootstrapChevronDown"
-                class="text-gray-400 text-sm transition-transform duration-200"
-                [class.rotate-180]="showRoundingOptions()"
-              ></ng-icon>
+              <span class="block truncate text-gray-900">
+                {{ roundingLabel() }}
+              </span>
+              <span
+                class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3"
+              >
+                <ng-icon
+                  name="bootstrapChevronDown"
+                  class="text-sm text-gray-500 transition-transform duration-200"
+                  [class.rotate-180]="showRoundingOptions()"
+                ></ng-icon>
+              </span>
             </button>
 
             @if (showRoundingOptions()) {
               <div
-                class="absolute z-10 mt-1 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-opacity-5 focus:outline-none sm:text-sm"
+                class="absolute z-20 mt-1 w-full overflow-auto rounded-xl bg-white py-1 text-base shadow-xl ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm animate-fadeIn"
               >
-                <button
+                <div
                   (click)="selectRoundingRule('none')"
-                  class="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 text-gray-700 hover:text-gray-900 cursor-pointer transition-colors"
-                  [class.font-bold]="roundingRule() === 'none'"
-                  [class.bg-gray-50]="roundingRule() === 'none'"
+                  class="relative cursor-pointer select-none py-2.5 pl-4 pr-9 text-gray-900 hover:bg-gray-100 transition-colors"
                 >
-                  Sin redondeo
-                </button>
-                <button
+                  <span
+                    class="block truncate font-normal"
+                    [class.font-semibold]="roundingRule() === 'none'"
+                  >
+                    Sin redondeo
+                  </span>
+                  @if (roundingRule() === "none") {
+                    <span
+                      class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-900"
+                    >
+                      <ng-icon
+                        name="bootstrapCheckLg"
+                        class="text-lg"
+                      ></ng-icon>
+                    </span>
+                  }
+                </div>
+
+                <div
                   (click)="selectRoundingRule('ceil')"
-                  class="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 text-gray-700 hover:text-gray-900 cursor-pointer transition-colors"
-                  [class.font-bold]="roundingRule() === 'ceil'"
-                  [class.bg-gray-50]="roundingRule() === 'ceil'"
+                  class="relative cursor-pointer select-none py-2.5 pl-4 pr-9 text-gray-900 hover:bg-gray-100 transition-colors"
                 >
-                  Redondeo hacia arriba
-                </button>
-                <button
+                  <span
+                    class="block truncate font-normal"
+                    [class.font-semibold]="roundingRule() === 'ceil'"
+                  >
+                    Redondeo hacia arriba
+                  </span>
+                  @if (roundingRule() === "ceil") {
+                    <span
+                      class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-900"
+                    >
+                      <ng-icon
+                        name="bootstrapCheckLg"
+                        class="text-lg"
+                      ></ng-icon>
+                    </span>
+                  }
+                </div>
+
+                <div
                   (click)="selectRoundingRule('floor')"
-                  class="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 text-gray-700 hover:text-gray-900 cursor-pointer transition-colors"
-                  [class.font-bold]="roundingRule() === 'floor'"
-                  [class.bg-gray-50]="roundingRule() === 'floor'"
+                  class="relative cursor-pointer select-none py-2.5 pl-4 pr-9 text-gray-900 hover:bg-gray-100 transition-colors"
                 >
-                  Redondeo hacia abajo
-                </button>
+                  <span
+                    class="block truncate font-normal"
+                    [class.font-semibold]="roundingRule() === 'floor'"
+                  >
+                    Redondeo hacia abajo
+                  </span>
+                  @if (roundingRule() === "floor") {
+                    <span
+                      class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-900"
+                    >
+                      <ng-icon
+                        name="bootstrapCheckLg"
+                        class="text-lg"
+                      ></ng-icon>
+                    </span>
+                  }
+                </div>
               </div>
             }
           </div>

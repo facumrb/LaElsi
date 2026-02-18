@@ -1,4 +1,11 @@
-import { Component, input, model, output, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  input,
+  model,
+  output,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
@@ -9,6 +16,8 @@ import {
   bootstrapFunnelFill,
   bootstrapPlusLg,
   bootstrapCurrencyDollar,
+  bootstrapChevronDown,
+  bootstrapCheckLg,
 } from '@ng-icons/bootstrap-icons';
 
 export type StockFilter =
@@ -21,6 +30,11 @@ export type StockFilter =
 
 export type StatusFilter = 'Todos' | 'Activo' | 'Inactivo';
 
+export interface SimpleCategory {
+  id: number;
+  name: string;
+}
+
 @Component({
   selector: 'app-products-toolbar',
   imports: [FormsModule, ClickOutsideDirective, NgIconComponent],
@@ -31,6 +45,8 @@ export type StatusFilter = 'Todos' | 'Activo' | 'Inactivo';
     bootstrapFunnelFill,
     bootstrapPlusLg,
     bootstrapCurrencyDollar,
+    bootstrapChevronDown,
+    bootstrapCheckLg,
   }),
   templateUrl: './products-toolbar.component.html',
 })
@@ -50,14 +66,44 @@ export class ProductsToolbarComponent {
     this.showFilterMenu.set(!this.showFilterMenu());
   }
 
+  categoryFilter = model.required<number | 'Todos'>();
+  categories = input.required<SimpleCategory[]>();
+  showCategoryMenu = signal(false);
+
+  selectedCategoryName = computed(() => {
+    const selected = this.categoryFilter();
+    if (selected === 'Todos') {
+      return 'Todas las categorías';
+    }
+    // Buscamos el nombre en el array de categorías
+    const cat = this.categories().find((c) => c.id === selected);
+    return cat ? cat.name : 'Categoría desconocida';
+  });
+
+  selectCategory(val: number | 'Todos') {
+    this.categoryFilter.set(val);
+    this.showCategoryMenu.set(false);
+  }
+
   hayFiltrosActivos() {
-    return this.statusFilter() !== 'Todos' || this.stockFilter() !== 'Todos';
+    return (
+      this.statusFilter() !== 'Todos' ||
+      this.stockFilter() !== 'Todos' ||
+      this.categoryFilter() !== 'Todos'
+    );
   }
 
   limpiar() {
     this.statusFilter.set('Todos');
     this.stockFilter.set('Todos');
+    this.categoryFilter.set('Todos');
     this.searchQuery.set('');
     this.showFilterMenu.set(false);
+  }
+
+  onCategoryChange(event: Event) {
+    const val = (event.target as HTMLSelectElement).value;
+    // Si es "Todos" pasamos el string, si es número lo parseamos
+    this.categoryFilter.set(val === 'Todos' ? 'Todos' : Number(val));
   }
 }

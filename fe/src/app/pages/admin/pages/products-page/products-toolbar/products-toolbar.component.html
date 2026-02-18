@@ -76,6 +76,90 @@
             class="absolute left-0 sm:left-auto sm:right-0 mt-2 w-72 max-w-[90vw] origin-top-left sm:origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 z-50"
           >
             <div class="p-4 space-y-4">
+              <div
+                class="relative"
+                (clickOutside)="showCategoryMenu.set(false)"
+              >
+                <h2
+                  class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2"
+                >
+                  Filtrar por Categoría
+                </h2>
+
+                <button
+                  type="button"
+                  (click)="showCategoryMenu.set(!showCategoryMenu())"
+                  class="relative w-full cursor-pointer bg-white rounded-lg border border-gray-300 py-2.5 pl-3 pr-10 text-left shadow-sm focus:outline-none focus:ring-1 sm:text-sm transition-colors"
+                >
+                  <span class="block truncate text-gray-700">
+                    {{ selectedCategoryName() }}
+                  </span>
+                  <span
+                    class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2"
+                  >
+                    <ng-icon
+                      name="bootstrapChevronDown"
+                      class="text-sm text-gray-400 transition-transform duration-200"
+                      [class.rotate-180]="showCategoryMenu()"
+                    ></ng-icon>
+                  </span>
+                </button>
+
+                @if (showCategoryMenu()) {
+                  <div
+                    class="absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm animate-fadeIn"
+                  >
+                    <div
+                      (click)="selectCategory('Todos')"
+                      class="relative cursor-pointer select-none py-2 pl-3 pr-9 text-gray-900 hover:bg-gray-100 transition-colors"
+                    >
+                      <span
+                        class="block truncate font-normal"
+                        [class.font-semibold]="categoryFilter() === 'Todos'"
+                      >
+                        Todas las categorías
+                      </span>
+                      @if (categoryFilter() === "Todos") {
+                        <span
+                          class="absolute inset-y-0 right-0 flex items-center pr-4"
+                        >
+                          <ng-icon
+                            name="bootstrapCheckLg"
+                            class="text-lg"
+                          ></ng-icon>
+                        </span>
+                      }
+                    </div>
+
+                    @for (cat of categories(); track cat.id) {
+                      <div
+                        (click)="selectCategory(cat.id)"
+                        class="relative cursor-pointer select-none py-2 pl-3 pr-9 text-gray-900 hover:bg-gray-100 transition-colors"
+                      >
+                        <span
+                          class="block truncate font-normal"
+                          [class.font-semibold]="categoryFilter() === cat.id"
+                        >
+                          {{ cat.name }}
+                        </span>
+                        @if (categoryFilter() === cat.id) {
+                          <span
+                            class="absolute inset-y-0 right-0 flex items-center pr-4 text-[#3d4494]"
+                          >
+                            <ng-icon
+                              name="bootstrapCheckLg"
+                              class="text-lg"
+                            ></ng-icon>
+                          </span>
+                        }
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+
+              <hr class="border-gray-100" />
+
               <div>
                 <h2
                   class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2"
@@ -179,8 +263,6 @@
                     />
                     <span class="text-sm text-gray-700">Stock agotado</span>
                   </label>
-
-                  <div class="pt-2 mt-2 border-t border-gray-100"></div>
 
                   <label
                     class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded"

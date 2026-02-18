@@ -3,6 +3,8 @@
     [(searchQuery)]="searchQuery"
     [(statusFilter)]="statusFilter"
     [(stockFilter)]="stockFilter"
+    [(categoryFilter)]="categoryFilter"
+    [categories]="availableCategories()"
     [hasSelection]="selectedIds().length > 0"
     (onAdd)="handleNavigateToCreate()"
     (onBulkPriceUpdate)="handleBulkPriceUpdate()"

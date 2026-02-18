@@ -19,6 +19,7 @@ import {
   bootstrapExclamationTriangle,
   bootstrapCheckCircle,
   bootstrapChevronDown,
+  bootstrapCheckLg,
 } from '@ng-icons/bootstrap-icons';
 import { ApiProductService } from '@services/api-product.service';
 import { AlertService } from '@shared/alert.service';
@@ -42,6 +43,7 @@ import { PriceAdjustmentInputDirective } from '@shared/directives/price-adjustme
       bootstrapExclamationTriangle,
       bootstrapCheckCircle,
       bootstrapChevronDown,
+      bootstrapCheckLg,
     }),
   ],
   templateUrl: './bulk-price-modal.component.html',

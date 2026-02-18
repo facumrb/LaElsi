@@ -13,6 +13,11 @@ import {
 import { Router } from '@angular/router';
 import { BulkPriceModalComponent } from './bulk-price-modal/bulk-price-modal.component';
 
+interface SimpleCategory {
+  id: number;
+  name: string;
+}
+
 @Component({
   selector: 'app-products-page',
   imports: [
@@ -34,14 +39,34 @@ export class ProductsPageComponent implements OnInit {
   searchQuery = signal('');
   statusFilter = signal<StatusFilter>('Todos');
   stockFilter = signal<StockFilter>('Todos');
+  categoryFilter = signal<number | 'Todos'>('Todos');
 
   showBulkModal = signal(false);
+
+  availableCategories = computed<SimpleCategory[]>(() => {
+    const products = this.productsRaw();
+    const uniqueCategories = new Map<number, string>();
+
+    products.forEach((p) => {
+      if (p.category) {
+        uniqueCategories.set(p.category.id, p.category.name);
+      }
+    });
+
+    return Array.from(uniqueCategories.entries())
+      .map(([id, name]) => ({
+        id,
+        name,
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name)); // Ordenado alfabéticamente
+  });
 
   filtersActive = computed(() => {
     return (
       this.searchQuery() !== '' ||
       this.statusFilter() !== 'Todos' ||
-      this.stockFilter() !== 'Todos'
+      this.stockFilter() !== 'Todos' ||
+      this.categoryFilter() !== 'Todos'
     );
   });
 
@@ -51,6 +76,7 @@ export class ProductsPageComponent implements OnInit {
     const query = this.searchQuery().toLowerCase().trim();
     const status = this.statusFilter();
     const stockType = this.stockFilter();
+    const categoryId = this.categoryFilter();
 
     // Aplicamos filtros (Search, Status, Stock)
     let filtered = currentProducts.filter((p) => {
@@ -71,7 +97,11 @@ export class ProductsPageComponent implements OnInit {
       // Nota: 'MasProductos' y 'MenosProductos' no filtran, solo ordenan,
       // así que aquí pasan como true.
 
-      return matchesSearch && matchesStatus && matchesStock;
+      // Filtro Categoría
+      const matchesCategory =
+        categoryId === 'Todos' || p.category.id === Number(categoryId);
+
+      return matchesSearch && matchesStatus && matchesStock && matchesCategory;
     });
 
     // Ordenamiento
