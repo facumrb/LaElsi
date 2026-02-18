@@ -5,52 +5,69 @@ import {
   output,
   signal,
   computed,
+  effect,
+  OnDestroy,
 } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
-  bootstrapCurrencyDollar,
   bootstrapX,
   bootstrapEye,
   bootstrapArrowClockwise,
   bootstrapExclamationTriangle,
+  bootstrapCheckCircle,
+  bootstrapChevronDown,
 } from '@ng-icons/bootstrap-icons';
 import { ApiProductService } from '@services/api-product.service';
 import { AlertService } from '@shared/alert.service';
 import { ApiErrorService } from '@shared/api-error.service';
+import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
+import { PriceAdjustmentInputDirective } from '@shared/directives/price-adjustment-input.directive';
 
 @Component({
   selector: 'app-bulk-price-modal',
-  imports: [NgIconComponent, CurrencyPipe],
+  imports: [
+    NgIconComponent,
+    CurrencyPipe,
+    ClickOutsideDirective,
+    PriceAdjustmentInputDirective,
+  ],
   viewProviders: [
     provideIcons({
-      bootstrapCurrencyDollar,
       bootstrapX,
       bootstrapEye,
       bootstrapArrowClockwise,
       bootstrapExclamationTriangle,
+      bootstrapCheckCircle,
+      bootstrapChevronDown,
     }),
   ],
   templateUrl: './bulk-price-modal.component.html',
 })
-export class BulkPriceModalComponent {
+export class BulkPriceModalComponent implements OnDestroy {
   private _apiService = inject(ApiProductService);
   private _alertService = inject(AlertService);
   private _errorService = inject(ApiErrorService);
 
+  // Inputs / Outputs
   productIds = input.required<number[]>();
-
   close = output<void>();
   success = output<void>();
 
+  // Signals de Configuración
   adjustmentType = signal<'percentage' | 'fixed'>('percentage');
   adjustmentValue = signal<number>(0);
-  roundingRule = signal<string>('nearest-integer');
+  roundingRule = signal<string>('none');
 
+  // UI State
+  showRoundingOptions = signal(false); // Para el custom select
   previewData = signal<any[]>([]);
   loadingPreview = signal(false);
   loadingApply = signal(false);
 
+  // Computeds
   hasErrors = computed(() => this.previewData().some((item) => !item.isValid));
   allInvalid = computed(
     () =>
@@ -58,80 +75,115 @@ export class BulkPriceModalComponent {
       this.previewData().every((item) => !item.isValid),
   );
 
+  // Lógica para etiquetas del select
+  roundingLabel = computed(() => {
+    switch (this.roundingRule()) {
+      case 'ceil':
+        return 'Redondeo hacia arriba';
+      case 'floor':
+        return 'Redondeo hacia abajo';
+      default:
+        return 'Sin redondeo';
+    }
+  });
+
+  // Manejo de Debounce para el Input
+  private _valueSubject = new Subject<number>();
+  private _valueSub: Subscription;
+
+  constructor() {
+    // 1. Configurar Debounce: Espera 500ms de inactividad antes de actualizar el signal
+    this._valueSub = this._valueSubject
+      .pipe(debounceTime(500), distinctUntilChanged())
+      .subscribe((val) => {
+        this.adjustmentValue.set(val);
+      });
+
+    // 2. Efecto Automático: Reacciona a cambios en Tipos, Valor o Regla
+    effect(() => {
+      // Leemos los signals para registrar la dependencia
+      const ids = this.productIds();
+      const type = this.adjustmentType();
+      const val = this.adjustmentValue();
+      const rule = this.roundingRule();
+
+      // Solo llamar a la API si hay un valor válido (distinto de 0)
+      if (ids.length > 0 && val !== 0) {
+        this.getPreview(ids, type, val, rule);
+      } else {
+        // Si el valor es 0 o vacío, limpiamos la tabla
+        this.previewData.set([]);
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    this._valueSub.unsubscribe();
+  }
+
+  // --- MÉTODOS DE UI ---
+
   setAdjustmentType(type: 'percentage' | 'fixed') {
     this.adjustmentType.set(type);
-    this.previewData.set([]); // Limpiar preview si cambia la configuración
+    // El effect se encargará de refrescar
   }
 
-  onValueChange(event: Event) {
-    const value = (event.target as HTMLInputElement).value;
-    this.adjustmentValue.set(Number(value) || 0);
+  onValueInput(event: Event) {
+    const rawValue = (event.target as HTMLInputElement).value;
+    // Pasamos el valor al Subject para que aplique el debounce
+    // Si está vacío es 0
+    this._valueSubject.next(rawValue ? Number(rawValue) : 0);
   }
 
-  onRoundingChange(event: Event) {
-    const value = (event.target as HTMLSelectElement).value;
-    this.roundingRule.set(value);
+  selectRoundingRule(rule: string) {
+    this.roundingRule.set(rule);
+    this.showRoundingOptions.set(false);
+    // El effect se encargará de refrescar
   }
 
-  getPreview() {
-    if (this.productIds().length === 0) return;
+  // --- API CALLS ---
 
+  // Ahora acepta parámetros para ser llamado desde el effect
+  private getPreview(ids: number[], type: string, val: number, rule: string) {
     this.loadingPreview.set(true);
+    this._apiService.previewBulkPriceChange(ids, type, val, rule).subscribe({
+      next: (data) => {
+        this.previewData.set(data);
+        this.loadingPreview.set(false);
+      },
+      error: (err) => {
+        this._errorService.handle(err, 'generar la vista previa');
+        this.loadingPreview.set(false);
+      },
+    });
+  }
+
+  onApply() {
+    if (this.allInvalid()) return;
+
+    // YA NO HAY CONFIRMACIÓN, se ejecuta directo
+    this.loadingApply.set(true);
+
     this._apiService
-      .previewBulkPriceChange(
+      .applyBulkPriceChange(
         this.productIds(),
         this.adjustmentType(),
         this.adjustmentValue(),
         this.roundingRule(),
       )
       .subscribe({
-        next: (data) => {
-          this.previewData.set(data);
-          this.loadingPreview.set(false);
+        next: (res) => {
+          this._alertService.toast(
+            `${res.updatedCount} productos actualizados.`,
+            'success',
+          );
+          this.loadingApply.set(false);
+          this.success.emit();
         },
         error: (err) => {
-          this._errorService.handle(err, 'generar la vista previa');
-          this.loadingPreview.set(false);
+          this._errorService.handle(err, 'aplicar los cambios');
+          this.loadingApply.set(false);
         },
       });
-  }
-
-  onApply() {
-    if (this.allInvalid()) return;
-
-    this._alertService
-      .confirmDelete('Se actualizarán los precios de los productos válidos.')
-      .then((confirm) => {
-        if (confirm) {
-          this.loadingApply.set(true);
-          this._apiService
-            .applyBulkPriceChange(
-              this.productIds(),
-              this.adjustmentType(),
-              this.adjustmentValue(),
-              this.roundingRule(),
-            )
-            .subscribe({
-              next: (res) => {
-                this._alertService.toast(
-                  `Actualización completada: ${res.updatedCount} productos actualizados.`,
-                  'success',
-                );
-                this.loadingApply.set(false);
-                this.success.emit();
-              },
-              error: (err) => {
-                this._errorService.handle(err, 'aplicar los cambios de precio');
-                this.loadingApply.set(false);
-              },
-            });
-        }
-      });
-  }
-
-  closeOnBackdrop(event: MouseEvent) {
-    if (event.target === event.currentTarget) {
-      this.close.emit();
-    }
   }
 }
