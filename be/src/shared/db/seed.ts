@@ -12,15 +12,10 @@ import { EntityManager } from '@mikro-orm/core';
 
 // --- DATOS CONSTANTES (Configuración) ---
 
-const ADMIN_DATA = {
-  name: 'Super',
-  lastName: 'Admin',
-  dni: '11111111',
-  email: 'admin@laelsi.com',
-  phone: '123456789',
-  username: 'admin',
-  password: 'admin123'
-};
+const ADMINS_DATA = [
+  { name: 'Super', lastName: 'Admin', dni: '11111111', email: 'admin@laelsi.com', phone: '123456789', username: 'admin', password: 'admin123' },
+  { name: 'Julio', lastName: 'Cezar', dni: '44222123', email: 'juliocezar@gmail.com', phone: '122345678', username: 'admin1', password: 'admin123' }
+];
 
 const CLIENTS_DATA = [
   {
@@ -154,21 +149,23 @@ const PRODUCTS_DATA: IProductSeed[] = [
 
 // --------- FUNCIONES DE LÓGICA ---------
 
-async function seedAdmin(em: EntityManager) {
+async function seedAdmins(em: EntityManager) {
   const adminCount = await em.count(Admin, {});
   if (adminCount > 0) return;
 
-  const superAdmin = new Admin();
-  superAdmin.name = ADMIN_DATA.name;
-  superAdmin.lastName = ADMIN_DATA.lastName;
-  superAdmin.dni = ADMIN_DATA.dni;
-  superAdmin.email = ADMIN_DATA.email;
-  superAdmin.phone = ADMIN_DATA.phone;
-  superAdmin.username = ADMIN_DATA.username;
-  superAdmin.role = UserRole.Admin;
-  await superAdmin.setPassword(ADMIN_DATA.password);
+  for (const adminData of ADMINS_DATA) {
+    const admin = new Admin();
+    admin.name = adminData.name;
+    admin.lastName = adminData.lastName;
+    admin.dni = adminData.dni;
+    admin.email = adminData.email;
+    admin.phone = adminData.phone;
+    admin.username = adminData.username;
+    admin.role = UserRole.Admin;
+    await admin.setPassword(adminData.password);
 
-  em.persist(superAdmin);
+    em.persist(admin);
+  }
 }
 
 async function seedClients(em: EntityManager) {
@@ -259,8 +256,8 @@ export async function seedDatabase() {
   const em = orm.em.fork();
 
   try {
-    // 1. Admin
-    await seedAdmin(em);
+    // 1. Admins
+    await seedAdmins(em);
 
     // 2. Clientes
     await seedClients(em);
