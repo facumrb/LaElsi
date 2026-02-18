@@ -4,12 +4,20 @@ import { Component, input, output, model } from '@angular/core';
 import { IApiProduct } from '@models/product.model';
 import { environment } from 'src/environments/environment';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { bootstrapSearch, bootstrapInbox } from '@ng-icons/bootstrap-icons';
+import {
+  bootstrapSearch,
+  bootstrapInbox,
+  bootstrapCheck,
+} from '@ng-icons/bootstrap-icons';
 
 @Component({
   selector: 'app-products-list',
   imports: [CurrencyPipe, TableActionsComponent, NgIconComponent],
-  viewProviders: provideIcons({ bootstrapSearch, bootstrapInbox }),
+  viewProviders: provideIcons({
+    bootstrapSearch,
+    bootstrapInbox,
+    bootstrapCheck,
+  }),
   templateUrl: './products-list.component.html',
 })
 export class ProductsListComponent {

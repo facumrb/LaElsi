@@ -8,12 +8,18 @@
       <thead class="hidden lg:table-header-group bg-[#3d4494] text-white">
         <tr>
           <th class="px-6 py-4 w-[1%] rounded-tl-lg">
-            <input
-              type="checkbox"
-              class="cursor-pointer w-4 h-4 rounded border-gray-300 text-[#3d4494] focus:ring-[#3d4494]"
-              [checked]="isAllSelected()"
-              (change)="toggleSelectAll()"
-            />
+            <div class="relative flex items-center justify-center">
+              <input
+                type="checkbox"
+                class="peer appearance-none w-5 h-5 border-2 border-gray-300 rounded cursor-pointer transition-all checked:bg-[#3d4494] checked:border-white hover:border-white"
+                [checked]="isAllSelected()"
+                (change)="toggleSelectAll()"
+              />
+              <ng-icon
+                name="bootstrapCheck"
+                class="absolute text-white text-lg pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity duration-200"
+              ></ng-icon>
+            </div>
           </th>
           <th class="px-6 py-4 font-semibold uppercase tracking-wider w-auto">
             Producto
@@ -48,16 +54,29 @@
         @for (product of products(); track product.id; let isLast = $last) {
           <tr
             class="flex flex-col relative lg:static bg-white rounded-xl shadow border border-gray-200 mb-4 mx-4 mt-4 lg:mx-0 lg:mt-0 lg:mb-0 lg:table-row lg:shadow-none lg:border-0 lg:rounded-none hover:bg-gray-50 transition-colors"
+          ></tr>
+          <tr
+            class="flex flex-col relative lg:static bg-white rounded-xl shadow border border-gray-200 mb-4 mx-4 mt-4 lg:mx-0 lg:mt-0 lg:mb-0 lg:table-row lg:shadow-none lg:border-0 lg:rounded-none hover:bg-gray-50 transition-colors"
+            [class.bg-indigo-50]="isSelected(product.id)"
+            [class.lg:bg-indigo-50]="isSelected(product.id)"
           >
             <td
               class="px-5 py-2 lg:px-6 lg:py-4 lg:table-cell lg:align-middle border-b border-gray-50 lg:border-gray-100"
             >
-              <input
-                type="checkbox"
-                class="cursor-pointer w-4 h-4 rounded border-gray-300 text-[#3d4494] focus:ring-[#3d4494]"
-                [checked]="isSelected(product.id)"
-                (change)="toggleSelect(product.id)"
-              />
+              <div
+                class="relative flex items-center justify-center lg:justify-start"
+              >
+                <input
+                  type="checkbox"
+                  class="peer appearance-none w-5 h-5 border-2 border-gray-300 rounded cursor-pointer transition-all checked:border-black checked:bg-transparent hover:border-gray-500"
+                  [checked]="isSelected(product.id)"
+                  (change)="toggleSelect(product.id)"
+                />
+                <ng-icon
+                  name="bootstrapCheck"
+                  class="absolute left-0.5 lg:left-0.5 text-black text-base pointer-events-none opacity-0 peer-checked:opacity-100"
+                ></ng-icon>
+              </div>
             </td>
             <td
               class="px-5 pt-6 pb-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle"
