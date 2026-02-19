@@ -1,12 +1,12 @@
 <div class="container mx-auto p-6">
-  @if (product) {
+  @if (product()) {
     <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
       <div class="flex flex-col gap-8">
         <div class="flex flex-col md:flex-row gap-4">
           <div class="flex md:flex-col items-center gap-2 order-2 md:order-1">
             <button
               (click)="prevThumbnails()"
-              [disabled]="thumbnailIndex === 0"
+              [disabled]="thumbnailIndex() === 0"
               class="disabled:opacity-20 text-gray-400 hover:text-[#f4abac] transition-colors p-1"
             >
               <ng-icon
@@ -17,21 +17,21 @@
 
             <div class="flex md:flex-col gap-3 overflow-hidden">
               @for (
-                photo of product.photos.slice(
-                  thumbnailIndex,
-                  thumbnailIndex + 5
+                photo of product()!.photos!.slice(
+                  thumbnailIndex(),
+                  thumbnailIndex() + 5
                 );
                 track photo.id
               ) {
                 <div
-                  (click)="selectedPhotoUrl = buildUrl(photo.fileName)"
-                  (mouseover)="selectedPhotoUrl = buildUrl(photo.fileName)"
+                  (click)="selectedPhotoUrl.set(buildUrl(photo.fileName))"
+                  (mouseover)="selectedPhotoUrl.set(buildUrl(photo.fileName))"
                   class="w-16 h-16 md:w-20 md:h-20 shrink-0 rounded-lg overflow-hidden cursor-pointer border-2 transition-all duration-300"
                   [class.border-[#f4abac]]="
-                    selectedPhotoUrl === buildUrl(photo.fileName)
+                    selectedPhotoUrl() === buildUrl(photo.fileName)
                   "
                   [class.border-gray-200]="
-                    selectedPhotoUrl !== buildUrl(photo.fileName)
+                    selectedPhotoUrl() !== buildUrl(photo.fileName)
                   "
                 >
                   <img
@@ -44,7 +44,7 @@
 
             <button
               (click)="nextThumbnails()"
-              [disabled]="thumbnailIndex + 5 >= product.photos.length"
+              [disabled]="thumbnailIndex() + 5 >= product()!.photos!.length"
               class="disabled:opacity-20 text-gray-400 hover:text-[#f4abac] transition-colors p-1"
             >
               <ng-icon
@@ -58,8 +58,8 @@
             class="relative group flex-1 order-1 md:order-2 rounded-2xl overflow-hidden shadow-xl bg-gray-100 border border-gray-200"
           >
             <img
-              [src]="selectedPhotoUrl"
-              [alt]="product.name"
+              [src]="selectedPhotoUrl()"
+              [alt]="product()!.name"
               class="w-full h-100 md:h-125 object-contain transition-all duration-500"
             />
 
@@ -85,7 +85,9 @@
           >
             Descripción
           </h3>
-          <p class="text-gray-600 leading-relaxed">{{ product.description }}</p>
+          <p class="text-gray-600 leading-relaxed">
+            {{ product()!.description }}
+          </p>
         </div>
       </div>
 
@@ -93,46 +95,45 @@
         <nav
           class="text-sm text-gray-400 mb-2 uppercase tracking-widest font-medium"
         >
-          {{ product.category.name }}
+          {{ product()!.category.name }}
         </nav>
         <h1 class="text-4xl font-black text-gray-900 mb-2 tracking-tight">
-          {{ product.name }}
+          {{ product()!.name }}
         </h1>
 
         <div class="flex items-center gap-3 mb-6">
           <span
             class="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-semibold uppercase"
-            >Marca: {{ product.brand }}</span
+            >Marca: {{ product()!.brand }}</span
           >
-          @if (product.totalSold >= 10) {
+          @if (product()!.totalSold >= 10) {
             <span
               class="text-xs font-bold text-orange-600 bg-orange-50 px-2 py-1 rounded border border-orange-100 flex items-center gap-1"
             >
               <ng-icon name="bootstrapLightningFill" class="text-sm"></ng-icon>
-              +{{ (product.totalSold / 10 | number: "1.0-0") + "0" }} ventas
+              +{{ (product()!.totalSold / 10 | number: "1.0-0") + "0" }} ventas
             </span>
           }
         </div>
 
         <div class="mb-8">
           <span class="text-4xl font-bold text-gray-900">{{
-            getProductPrice()
-              | currency: getProductCurrency() : "symbol" : "1.0-0"
+            productPrice() | currency: productCurrency() : "symbol" : "1.0-0"
           }}</span>
         </div>
 
         <div class="mb-6">
           <div
             [class]="
-              product.stock > 0
+              product()!.stock > 0
                 ? 'bg-green-50 text-green-700 border-green-200'
                 : 'bg-red-50 text-red-700 border-red-200'
             "
             class="inline-flex items-center gap-2 px-4 py-2 border rounded-lg text-sm font-bold"
           >
             {{
-              product.stock > 0
-                ? " Stock Disponible: " + product.stock + " unidades"
+              product()!.stock > 0
+                ? " Stock Disponible: " + product()!.stock + " unidades"
                 : "Agotado temporalmente"
             }}
           </div>
@@ -140,10 +141,10 @@
 
         <button
           (click)="addToCart()"
-          [disabled]="product.stock <= 0"
+          [disabled]="product()!.stock <= 0"
           class="w-full py-5 rounded-xl font-black text-lg text-white transition-all transform active:scale-95 disabled:bg-gray-300 bg-gray-900 hover:bg-[#f4abac] shadow-lg cursor-pointer flex items-center justify-center gap-2"
         >
-          {{ product.stock > 0 ? "AÑADIR AL CARRITO" : "SIN STOCK" }}
+          {{ product()!.stock > 0 ? "AÑADIR AL CARRITO" : "SIN STOCK" }}
         </button>
 
         <div class="mt-6 space-y-4 border-t pt-6">

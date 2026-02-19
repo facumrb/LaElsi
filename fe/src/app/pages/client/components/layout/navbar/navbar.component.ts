@@ -49,7 +49,7 @@ export class NavbarComponent implements OnInit {
   showSideMenu = signal(false);
   showUserMenu = signal(false);
 
-  categories: IApiCategory[] = [];
+  categories = signal<IApiCategory[]>([]);
 
   currentUser = this.authService.currentUser();
 
@@ -73,7 +73,7 @@ export class NavbarComponent implements OnInit {
 
   ngOnInit() {
     this.apiCategoryService.getAllCategories().subscribe({
-      next: (data) => (this.categories = data),
+      next: (data) => this.categories.set(data),
       error: (err) => console.error('Error al traer categorías', err),
     });
   }

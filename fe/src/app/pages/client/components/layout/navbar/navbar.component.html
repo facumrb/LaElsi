@@ -154,7 +154,7 @@
     class="hidden md:flex justify-around bg-[#805d8f] p-2.5 shadow-inner relative z-10"
     aria-label="Categorías de productos"
   >
-    @for (cat of categories; track cat.id) {
+    @for (cat of categories(); track cat.id) {
       <a
         [routerLink]="['/category', cat.id]"
         routerLinkActive="text-[#f4abac] underline decoration-2 underline-offset-4"
@@ -211,7 +211,7 @@
 
       <div class="flex-1 overflow-y-auto py-2">
         <nav class="flex flex-col" aria-label="Menú móvil de categorías">
-          @for (cat of categories; track cat.id) {
+          @for (cat of categories(); track cat.id) {
             <a
               [routerLink]="['/category', cat.id]"
               (click)="toggleMobileMenu()"

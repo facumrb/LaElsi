@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ApiProductService } from '@services/api-product.service';
 import { CartService } from '@services/cart.service';
@@ -39,21 +39,32 @@ export class ProductPageComponent implements OnInit {
   private productService = inject(ApiProductService);
   private cartService = inject(CartService);
 
-  product?: IApiProduct;
-  selectedPhotoUrl?: string; // Aquí guardaremos la URL completa de la foto visible
+  product = signal<IApiProduct | undefined>(undefined);
+  selectedPhotoUrl = signal<string | undefined>(undefined);
+  thumbnailIndex = signal(0);
+
+  // Computed signals for derived state
+  productPrice = computed(() => {
+    const currentPrice = this.product()?.prices?.find((p) => p.isCurrent);
+    return currentPrice ? currentPrice.amount : 0;
+  });
+
+  productCurrency = computed(() => {
+    const currentPrice = this.product()?.prices?.find((p) => p.isCurrent);
+    return currentPrice ? currentPrice.currency : 'ARS';
+  });
 
   ngOnInit(): void {
     const id = Number(this.activatedRoute.snapshot.paramMap.get('id'));
 
     this.productService.getProductById(id).subscribe({
       next: (data) => {
-        this.product = data;
+        this.product.set(data);
         // Al cargar, seteamos la primera foto si existe
         if (data.photos && data.photos.length > 0) {
-          this.selectedPhotoUrl = this.buildUrl(data.photos[0].fileName);
-        }
-        if (!data.photos || data.photos.length === 0) {
-          this.selectedPhotoUrl = this.defaultImage;
+          this.selectedPhotoUrl.set(this.buildUrl(data.photos[0].fileName));
+        } else {
+          this.selectedPhotoUrl.set(this.defaultImage);
         }
       },
       error: (err) => console.error('Error al cargar el producto', err),
@@ -66,59 +77,53 @@ export class ProductPageComponent implements OnInit {
   }
 
   addToCart() {
-    if (this.product) {
-      this.cartService.addToCart(this.product);
+    const currentProduct = this.product();
+    if (currentProduct) {
+      this.cartService.addToCart(currentProduct);
     }
-  }
-
-  getProductPrice(): number {
-    const currentPrice = this.product?.prices?.find((p) => p.isCurrent);
-    return currentPrice ? currentPrice.amount : 0;
-  }
-
-  getProductCurrency(): string {
-    const currentPrice = this.product?.prices?.find((p) => p.isCurrent);
-    return currentPrice ? currentPrice.currency : 'ARS';
   }
 
   // Lógica para navegar el carrusel de la foto principal
   nextPhoto() {
-    if (!this.product?.photos?.length) return;
-    const photos = this.product.photos;
+    const currentProduct = this.product();
+    if (!currentProduct?.photos?.length) return;
+
+    const photos = currentProduct.photos;
     const currentIndex = photos.findIndex(
-      (p) => this.buildUrl(p.fileName) === this.selectedPhotoUrl,
+      (p) => this.buildUrl(p.fileName) === this.selectedPhotoUrl(),
     );
     const nextIndex = (currentIndex + 1) % photos.length;
-    this.selectedPhotoUrl = this.buildUrl(photos[nextIndex].fileName);
+    this.selectedPhotoUrl.set(this.buildUrl(photos[nextIndex].fileName));
   }
 
   prevPhoto() {
-    if (!this.product?.photos?.length) return;
-    const photos = this.product.photos;
+    const currentProduct = this.product();
+    if (!currentProduct?.photos?.length) return;
+
+    const photos = currentProduct.photos;
     const currentIndex = photos.findIndex(
-      (p) => this.buildUrl(p.fileName) === this.selectedPhotoUrl,
+      (p) => this.buildUrl(p.fileName) === this.selectedPhotoUrl(),
     );
     const prevIndex =
       currentIndex === -1
         ? photos.length - 1
         : (currentIndex - 1 + photos.length) % photos.length;
-    this.selectedPhotoUrl = this.buildUrl(photos[prevIndex].fileName);
+    this.selectedPhotoUrl.set(this.buildUrl(photos[prevIndex].fileName));
   }
 
-  thumbnailIndex = 0; // Controla el inicio de la ventana de 5 fotos
-
   nextThumbnails() {
+    const currentProduct = this.product();
     if (
-      this.product?.photos &&
-      this.thumbnailIndex + 5 < this.product.photos.length
+      currentProduct?.photos &&
+      this.thumbnailIndex() + 5 < currentProduct.photos.length
     ) {
-      this.thumbnailIndex += 5;
+      this.thumbnailIndex.update((v) => v + 5);
     }
   }
 
   prevThumbnails() {
-    if (this.product?.photos && this.thumbnailIndex > 0) {
-      this.thumbnailIndex -= 5;
+    if (this.product()?.photos && this.thumbnailIndex() > 0) {
+      this.thumbnailIndex.update((v) => v - 5);
     }
   }
 }
