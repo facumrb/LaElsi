@@ -3,36 +3,40 @@
 >
   <div class="w-full">
     <table
-      class="w-full text-left text-sm text-gray-500 border-separate border-spacing-0"
+      class="w-full text-left text-sm text-gray-500 border-separate border-spacing-0 table-fixed"
     >
       <thead class="hidden lg:table-header-group bg-[#3d4494] text-white">
         <tr>
           <th
-            class="px-6 py-4 font-semibold uppercase tracking-wider w-[20%] rounded-tl-lg"
+            class="px-6 py-4 font-semibold uppercase tracking-wider w-[18%] rounded-tl-lg"
           >
             Usuario
           </th>
 
-          <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[20%]">
+          <th
+            class="px-6 py-4 font-semibold uppercase truncate tracking-wider w-[17%]"
+          >
             Nombre Completo
           </th>
 
           <th
-            class="px-6 py-4 font-semibold uppercase tracking-wider w-[19%] whitespace-nowrap"
+            class="px-6 py-4 font-semibold uppercase tracking-wider w-[18%] whitespace-nowrap"
           >
             DNI / CUIT
           </th>
 
-          <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[20%]">
+          <th
+            class="px-6 py-4 font-semibold truncate uppercase tracking-wider w-[18%]"
+          >
             Condición Fiscal
           </th>
 
-          <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[20%]">
+          <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[18%]">
             Contacto
           </th>
 
           <th
-            class="px-6 py-4 text-center font-semibold uppercase tracking-wider whitespace-nowrap w-[1%] rounded-tr-lg"
+            class="px-6 py-4 text-center font-semibold uppercase tracking-wider w-[13%] rounded-tr-lg"
           >
             Acciones
           </th>
@@ -86,7 +90,7 @@
                 class="font-bold uppercase text-gray-500 block mb-1 lg:hidden"
                 >Nombre Completo:</span
               >
-              <div class="text-gray-900 font-medium">
+              <div class="text-gray-900 truncate font-medium">
                 {{ client.name }} {{ client.lastName }}
               </div>
             </td>
@@ -103,7 +107,7 @@
                   DNI: {{ client.dni }}
                 </div>
                 @if (client.cuit) {
-                  <div class="text-indigo-600 font-medium mt-0.5">
+                  <div class="text-indigo-600 truncate font-medium mt-0.5">
                     CUIT: {{ client.cuit }}
                   </div>
                 }
@@ -119,10 +123,10 @@
                 >Condición Fiscal:</span
               >
               <span
-                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border"
+                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs truncate font-medium border"
                 [class]="getFiscalConditionClass(client.fiscalCondition)"
               >
-                {{ client.fiscalCondition || "Consumidor Final" }}
+                {{ client.fiscalCondition }}
               </span>
             </td>
 
@@ -134,24 +138,28 @@
                 class="font-bold uppercase text-gray-500 block mb-1 lg:hidden"
                 >Contacto:</span
               >
-              <div class="flex flex-col text-sm">
-                <div class="flex items-center gap-1.5 text-gray-900 mb-0.5">
+              <div class="flex flex-col text-sm min-w-0">
+                <div
+                  class="flex items-center gap-1.5 text-gray-900 mb-0.5 min-w-0"
+                >
                   <ng-icon
                     name="bootstrapEnvelope"
-                    class="text-gray-400"
+                    class="text-gray-400 shrink-0"
                   ></ng-icon>
                   <span
-                    class="truncate max-w-50 xl:max-w-xs"
+                    class="truncate max-w-full"
                     title="{{ client.email }}"
                     >{{ client.email }}</span
                   >
                 </div>
-                <div class="flex items-center gap-1.5 text-gray-900 text-xs">
+                <div
+                  class="flex items-center gap-1.5 text-gray-900 text-xs min-w-0"
+                >
                   <ng-icon
                     name="bootstrapTelephone"
-                    class="text-gray-400"
+                    class="text-gray-400 shrink-0"
                   ></ng-icon>
-                  <span>{{ client.phone }}</span>
+                  <span class="truncate">{{ client.phone }}</span>
                 </div>
               </div>
             </td>

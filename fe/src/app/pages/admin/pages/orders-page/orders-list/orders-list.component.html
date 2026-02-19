@@ -3,7 +3,7 @@
 >
   <div class="w-full overflow-x-auto">
     <table
-      class="w-full text-left text-sm text-gray-500 border-separate border-spacing-0"
+      class="w-full text-left text-sm text-gray-500 border-separate border-spacing-0 table-fixed"
     >
       <thead class="hidden lg:table-header-group bg-[#3d4494] text-white">
         <tr>
@@ -15,17 +15,19 @@
           <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[20%]">
             Cliente
           </th>
-          <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[15%]">
+          <th
+            class="px-6 py-4 font-semibold truncate uppercase tracking-wider w-[22%]"
+          >
             Método Entrega
           </th>
-          <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[15%]">
+          <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[20%]">
             Estado
           </th>
           <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[15%]">
             Total
           </th>
           <th
-            class="px-6 py-4 font-semibold uppercase tracking-wider w-[15%] text-center"
+            class="px-6 py-4 font-semibold uppercase tracking-wider w-[13%] text-center"
           >
             Acciones
           </th>
@@ -35,7 +37,7 @@
       <tbody class="block lg:table-row-group">
         @for (order of orders(); track order.id; let isLast = $last) {
           <tr
-            class="flex flex-col relative lg:static bg-white rounded-xl shadow border border-gray-200 mb-4 mx-4 mt-4 lg:mx-0 lg:mt-0 lg:mb-0 lg:table-row lg:shadow-none lg:border-0 lg:rounded-none transition-hover duration-200 hover:bg-gray-50 hover:z-10"
+            class="flex flex-col relative lg:static bg-white rounded-xl shadow border border-gray-200 mb-4 mx-4 mt-4 lg:mx-0 lg:mt-0 lg:mb-0 lg:table-row lg:shadow-none lg:border-0 lg:rounded-none hover:bg-gray-50 transition-colors"
           >
             <!-- ID Column -->
             <td
@@ -56,10 +58,15 @@
                 class="font-bold uppercase text-gray-400 block mb-1 lg:hidden text-xs"
                 >Cliente:</span
               >
-              <div class="text-gray-900 font-semibold">
+              <div class="text-gray-900 font-semibold truncate">
                 {{ order.client.name }} {{ order.client.lastName }}
               </div>
-              <div class="text-xs text-gray-500">{{ order.client.email }}</div>
+              <div
+                class="text-xs text-gray-500 truncate max-w-50 xl:max-w-xs"
+                title="{{ order.client.email }}"
+              >
+                {{ order.client.email }}
+              </div>
             </td>
 
             <!-- Delivery Method Column -->
@@ -85,7 +92,7 @@
                     order.deliveryMethod === DeliveryMethod.RetiroSucursal
                   "
                 ></ng-icon>
-                <div class="font-medium text-gray-700">
+                <div class="font-medium text-gray-700 truncate">
                   {{ order.deliveryMethod }}
                 </div>
 

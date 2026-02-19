@@ -2,10 +2,12 @@
   class="w-full bg-gray-50 lg:bg-white lg:rounded-lg lg:shadow-md lg:border lg:border-gray-200"
 >
   <div class="w-full">
-    <table class="w-full text-left text-sm text-gray-500 border-collapse">
+    <table
+      class="w-full text-left text-sm text-gray-500 border-collapse table-fixed"
+    >
       <thead class="hidden lg:table-header-group bg-[#3d4494] text-white">
         <tr>
-          <th class="px-6 py-4 w-[1%] rounded-tl-lg">
+          <th class="px-6 py-4 w-[8%] rounded-tl-lg">
             <div class="relative flex items-center justify-center">
               <input
                 type="checkbox"
@@ -21,30 +23,30 @@
             </div>
           </th>
           <th
-            class="pl-1 pr-6 py-4 font-semibold uppercase tracking-wider w-auto"
+            class="pl-1 pr-6 py-4 font-semibold uppercase tracking-wider w-[23%]"
           >
             Producto
           </th>
-          <th class="px-6 py-4 font-semibold uppercase tracking-wider w-1/4">
+          <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[15%]">
             Categoría
           </th>
           <th
-            class="pl-10 pr-6 py-4 text-left font-semibold uppercase tracking-wider whitespace-nowrap w-[1%]"
+            class="pl-10 pr-6 py-4 text-left font-semibold uppercase tracking-wider whitespace-nowrap w-[15%]"
           >
             Precio
           </th>
           <th
-            class="px-6 py-4 text-center font-semibold uppercase tracking-wider whitespace-nowrap w-[1%]"
+            class="px-6 py-4 text-center font-semibold uppercase tracking-wider whitespace-nowrap w-[14%]"
           >
             Stock
           </th>
           <th
-            class="px-6 py-4 text-center font-semibold uppercase tracking-wider whitespace-nowrap w-32"
+            class="px-6 py-4 text-center font-semibold uppercase tracking-wider whitespace-nowrap w-[12%]"
           >
             Estado
           </th>
           <th
-            class="px-6 py-4 text-center font-semibold uppercase tracking-wider whitespace-nowrap w-[1%] rounded-tr-lg"
+            class="px-6 py-4 text-center font-semibold uppercase tracking-wider whitespace-nowrap w-[13%] rounded-tr-lg"
           >
             Acciones
           </th>
@@ -86,7 +88,7 @@
               [class.lg:rounded-bl-lg]="isLast"
               [class.lg:border-b-0]="isLast"
             >
-              <div class="relative flex items-center justify-center">
+              <div class="relative flex items-center justify-center shrink-0">
                 <input
                   type="checkbox"
                   [attr.aria-label]="'Seleccionar ' + product.name"
@@ -128,7 +130,7 @@
               <!-- Este Checkbox es para la version CARD -->
               <div class="flex items-center gap-4 px-4 pb-4 pt-1 lg:p-0">
                 <div
-                  class="relative flex items-center justify-center lg:hidden"
+                  class="relative flex items-center justify-center shrink-0 lg:hidden"
                 >
                   <input
                     type="checkbox"
@@ -153,7 +155,7 @@
 
                 <div
                   (click)="onEdit.emit(product)"
-                  class="font-semibold text-gray-900 text-base lg:text-sm cursor-pointer hover:underline line-clamp-2"
+                  class="font-semibold text-gray-900 text-base lg:text-sm cursor-pointer hover:underline truncate"
                   title="{{ product.name }}"
                 >
                   {{ product.name }}
@@ -205,7 +207,7 @@
                   >Stock:</span
                 >
                 <span
-                  class="w-28 h-7 inline-flex items-center justify-center rounded-md text-xs font-medium border whitespace-nowrap"
+                  class="w-28 shrink-0 h-7 inline-flex items-center justify-center rounded-md text-xs font-medium border whitespace-nowrap"
                   [class.bg-red-50]="product.stock === 0"
                   [class.text-red-700]="product.stock === 0"
                   [class.border-red-100]="product.stock === 0"
