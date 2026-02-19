@@ -9,6 +9,7 @@ import { ProductPhoto } from '../../photo/productPhoto/productPhoto.entity.js';
 import { Currency } from '../enums/currency.enum.js';
 import { orm } from './orm.js';
 import { EntityManager } from '@mikro-orm/core';
+import { CategoryState, ProductState } from '../../shared/enums/state.enum.js';
 
 // --- DATOS CONSTANTES (Configuración) ---
 
@@ -52,13 +53,48 @@ const CLIENTS_DATA = [
     city: 'Rosario',
     province: 'Santa Fe',
     postalCode: '2000'
+  },
+  {
+    name: 'Carlos',
+    lastName: 'Tevez',
+    dni: '55555555',
+    email: 'monotributo@laelsi.com',
+    phone: '3413333333',
+    username: 'monotributo',
+    password: 'password123',
+    role: UserRole.Client,
+    cuit: '20555555559',
+    fiscalCondition: FiscalCondition.Monotributista,
+    street: 'Av. Corrientes',
+    streetNumber: 1234,
+    city: 'Rosario',
+    province: 'Santa Fe',
+    postalCode: '2000'
+  },
+  {
+    name: 'Asociacion',
+    lastName: 'Civil',
+    dni: '66666666',
+    email: 'exento@laelsi.com',
+    phone: '3414444444',
+    username: 'exento',
+    password: 'password123',
+    role: UserRole.Client,
+    cuit: '30666666669',
+    fiscalCondition: FiscalCondition.Exento,
+    street: 'Bv. 27 de Febrero',
+    streetNumber: 2500,
+    city: 'Rosario',
+    province: 'Santa Fe',
+    postalCode: '2000'
   }
 ];
 
 const CATEGORIES_DATA = [
-  { name: 'Libreria', description: 'Productos de Libreria' },
-  { name: 'Jugueteria', description: 'Productos de Jugueteria' },
-  { name: 'Tecnologia', description: 'Productos de Tecnologia' }
+  { name: 'Libreria', description: 'Productos de Libreria', state: CategoryState.Activo },
+  { name: 'Jugueteria', description: 'Productos de Jugueteria', state: CategoryState.Activo },
+  { name: 'Tecnologia', description: 'Productos de Tecnologia', state: CategoryState.Activo },
+  { name: 'Indumentaria', description: 'Productos de Indumentaria', state: CategoryState.Inactivo }
 ];
 
 interface IProductSeed {
@@ -70,9 +106,11 @@ interface IProductSeed {
   price: number;
   totalSold?: number;
   photos: { fileName: string; mimeType: string }[];
+  state?: ProductState;
 }
 
 const PRODUCTS_DATA: IProductSeed[] = [
+  // --- LIBRERIA ---
   {
     name: 'Lápiz HB Classic',
     description: 'Lápiz de grafito HB para escritura graduada y dibujo artístico',
@@ -81,22 +119,24 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Libreria',
     price: 350,
     totalSold: 85,
+    state: ProductState.Activo,
     photos: [
-      { fileName: 'lapiz.jpg', mimeType: 'image/jpeg' },
-      { fileName: 'lapiz2.jpg', mimeType: 'image/jpeg' }
+      { fileName: 'lapiz-hb-classic.jpg', mimeType: 'image/jpeg' },
+      { fileName: 'lapiz-hb-classic-2.jpg', mimeType: 'image/jpeg' }
     ]
   },
   {
     name: 'Cuaderno Universitario Éxito',
     description: 'Cuaderno rayado de 100 hojas tamaño A4 con espiral reforzado',
     brand: 'Éxito',
-    stock: 45,
+    stock: 5,
     categoryName: 'Libreria',
     price: 4800,
     totalSold: 32,
+    state: ProductState.Activo,
     photos: [
-      { fileName: 'cuaderno.jpg', mimeType: 'image/jpeg' },
-      { fileName: 'cuaderno-a4.jpg', mimeType: 'image/jpeg' }
+      { fileName: 'cuaderno-universitario-exito.jpg', mimeType: 'image/jpeg' },
+      { fileName: 'cuaderno-universitario-exito-2.jpg', mimeType: 'image/jpeg' }
     ]
   },
   {
@@ -107,27 +147,29 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Libreria',
     price: 450,
     totalSold: 150,
-    photos: [{ fileName: 'goma-de-borrar.png', mimeType: 'image/png' }]
+    state: ProductState.Activo,
+    photos: [{ fileName: 'goma-de-borrar-dos-banderas.png', mimeType: 'image/png' }]
   },
   {
     name: 'Set de Reglas Pizzini',
     description: 'Regla de 30cm técnica de alta precisión, fabricada en poliestireno cristal',
     brand: 'Pizzini',
-    stock: 15,
+    stock: 0,
     categoryName: 'Libreria',
     price: 1500,
     totalSold: 210,
+    state: ProductState.Inactivo,
     photos: [
-      { fileName: 'regla.webp', mimeType: 'image/webp' },
-      { fileName: 'regla0.webp', mimeType: 'image/webp' },
-      { fileName: 'regla1.webp', mimeType: 'image/webp' },
-      { fileName: 'regla2.png', mimeType: 'image/png' },
-      { fileName: 'regla3.webp', mimeType: 'image/webp' },
-      { fileName: 'regla4.webp', mimeType: 'image/webp' },
-      { fileName: 'regla5.jpg', mimeType: 'image/jpeg' },
-      { fileName: 'regla6.png', mimeType: 'image/png' },
-      { fileName: 'regla7.png', mimeType: 'image/png' },
-      { fileName: 'regla8.png', mimeType: 'image/png' }
+      { fileName: 'set-de-reglas-pizzini.webp', mimeType: 'image/webp' },
+      { fileName: 'set-de-reglas-pizzini-2.webp', mimeType: 'image/webp' },
+      { fileName: 'set-de-reglas-pizzini-3.webp', mimeType: 'image/webp' },
+      { fileName: 'set-de-reglas-pizzini-4.png', mimeType: 'image/png' },
+      { fileName: 'set-de-reglas-pizzini-5.webp', mimeType: 'image/webp' },
+      { fileName: 'set-de-reglas-pizzini-6.webp', mimeType: 'image/webp' },
+      { fileName: 'set-de-reglas-pizzini-7.jpg', mimeType: 'image/jpeg' },
+      { fileName: 'set-de-reglas-pizzini-8.png', mimeType: 'image/png' },
+      { fileName: 'set-de-reglas-pizzini-9.png', mimeType: 'image/png' },
+      { fileName: 'set-de-reglas-pizzini-10.png', mimeType: 'image/png' }
     ]
   },
   {
@@ -138,12 +180,477 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Libreria',
     price: 12500,
     totalSold: 18,
+    state: ProductState.Activo,
     photos: [
-      { fileName: 'remeras1.jpeg', mimeType: 'image/jpeg' },
-      { fileName: 'remeras2.jpeg', mimeType: 'image/jpeg' },
-      { fileName: 'remeras3.jpeg', mimeType: 'image/jpeg' },
-      { fileName: 'remeras4.jpeg', mimeType: 'image/jpeg' }
+      { fileName: 'remera-algodon-premium-1.jpeg', mimeType: 'image/jpeg' },
+      { fileName: 'remera-algodon-premium-2.jpeg', mimeType: 'image/jpeg' },
+      { fileName: 'remera-algodon-premium-3.jpeg', mimeType: 'image/jpeg' },
+      { fileName: 'remera-algodon-premium-4.jpeg', mimeType: 'image/jpeg' }
     ]
+  },
+  {
+    name: 'Resma A4 75g',
+    description: 'Resma de papel blanco alcalino de 75gr, ideal para impresiones diarias',
+    brand: 'Autor',
+    stock: 500,
+    categoryName: 'Libreria',
+    price: 5000,
+    state: ProductState.Activo,
+    photos: [{ fileName: 'resma-a4-75g.jpg', mimeType: 'image/jpeg' }]
+  },
+  {
+    name: 'Bolígrafos Azul x10',
+    description: 'Caja de bolígrafos tinta azul trazo fino',
+    brand: 'Bic',
+    stock: 8,
+    categoryName: 'Libreria',
+    price: 2000,
+    state: ProductState.Activo,
+    photos: [{ fileName: 'boligrafos-azul-x10.jpg', mimeType: 'image/jpeg' }]
+  },
+  {
+    name: 'Carpeta N3',
+    description: 'Carpeta escolar N3 con 3 anillos redondos',
+    brand: 'Rivadavia',
+    stock: 100,
+    categoryName: 'Libreria',
+    price: 3500,
+    state: ProductState.Activo,
+    photos: [{ fileName: 'carpeta-n3.jpg', mimeType: 'image/jpeg' }]
+  },
+  {
+    name: 'Folios x100',
+    description: 'Paquete de folios transparentes tamaño A4 reforzados',
+    brand: 'Laprida',
+    stock: 0,
+    categoryName: 'Libreria',
+    price: 1500,
+    state: ProductState.Inactivo,
+    photos: [{ fileName: 'folios-x100.jpg', mimeType: 'image/jpeg' }]
+  },
+  {
+    name: 'Resaltadores Pastel x4',
+    description: 'Set de 4 resaltadores colores pastel',
+    brand: 'Trabi',
+    stock: 80,
+    categoryName: 'Libreria',
+    price: 2200,
+    state: ProductState.Activo,
+    photos: [{ fileName: 'resaltadores-pastel-x4.jpg', mimeType: 'image/jpeg' }]
+  },
+  {
+    name: 'Tijera Escolar',
+    description: 'Tijera escolar punta redonda 13cm',
+    brand: 'Maped',
+    stock: 120,
+    categoryName: 'Libreria',
+    price: 900,
+    state: ProductState.Activo,
+    photos: [{ fileName: 'tijera-escolar.jpg', mimeType: 'image/jpeg' }]
+  },
+  {
+    name: 'Adhesivo Sintético 30ml',
+    description: 'Adhesivo escolar lavable',
+    brand: 'Voligoma',
+    stock: 300,
+    categoryName: 'Libreria',
+    price: 800,
+    state: ProductState.Activo,
+    photos: [{ fileName: 'adhesivo-sintetico-30ml.jpg', mimeType: 'image/jpeg' }]
+  },
+  {
+    name: 'Cartuchera 2 Pisos',
+    description: 'Cartuchera rígida con dos compartimentos y elásticos',
+    brand: 'Canopla',
+    stock: 3,
+    categoryName: 'Libreria',
+    price: 4500,
+    state: ProductState.Activo,
+    photos: [{ fileName: 'cartuchera-2-pisos.jpg', mimeType: 'image/jpeg' }]
+  },
+  {
+    name: 'Mochila Espalda 18p',
+    description: 'Mochila reforzada lisa ideal secundaria',
+    brand: 'Jansport',
+    stock: 25,
+    categoryName: 'Libreria',
+    price: 25000,
+    state: ProductState.Activo,
+    photos: [{ fileName: 'mochila-espalda-18p.jpg', mimeType: 'image/jpeg' }]
+  },
+  {
+    name: 'Agenda 2025',
+    description: 'Agenda diaria tapa dura diseño clásico',
+    brand: 'Rivadavia',
+    stock: 40,
+    categoryName: 'Libreria',
+    price: 8000,
+    state: ProductState.Activo,
+    photos: [{ fileName: 'agenda-2025.jpg', mimeType: 'image/jpeg' }]
+  },
+  {
+    name: 'Calculadora Científica',
+    description: 'Calculadora con 240 funciones y pantalla de 2 líneas',
+    brand: 'Casio',
+    stock: 0,
+    categoryName: 'Libreria',
+    price: 12000,
+    state: ProductState.Inactivo,
+    photos: [{ fileName: 'calculadora-cientifica.jpg', mimeType: 'image/jpeg' }]
+  },
+  {
+    name: 'Abrochadora Mediana',
+    description: 'Abrochadora metálica para ganchos nro 10',
+    brand: 'Pizzini',
+    stock: 90,
+    categoryName: 'Libreria',
+    price: 3000,
+    state: ProductState.Activo,
+    photos: [{ fileName: 'abrochadora-mediana.jpg', mimeType: 'image/jpeg' }]
+  },
+
+  // --- JUGUETERÍA ---
+  {
+    name: 'Pelota de Fútbol N5',
+    description: 'Pelota de fútbol tamaño oficial cosida a máquina',
+    brand: 'Adidas',
+    stock: 50,
+    categoryName: 'Jugueteria',
+    price: 15000,
+    state: ProductState.Activo,
+    photos: [{ fileName: 'pelota-de-futbol-n5.jpg', mimeType: 'image/jpeg' }]
+  },
+  {
+    name: 'Muñeca Articulada',
+    description: 'Muñeca de moda con accesorios',
+    brand: 'Barbie',
+    stock: 4,
+    categoryName: 'Jugueteria',
+    price: 12000,
+    state: ProductState.Activo,
+    photos: [{ fileName: 'muneca-articulada.jpg', mimeType: 'image/jpeg' }]
+  },
+  {
+    name: 'Auto a Control Remoto',
+    description: 'Auto deportivo escala 1:12 con control remoto',
+    brand: 'Rastar',
+    stock: 30,
+    categoryName: 'Jugueteria',
+    price: 20000,
+    state: ProductState.Activo,
+    photos: [{ fileName: 'auto-a-control-remoto.jpg', mimeType: 'image/jpeg' }]
+  },
+  {
+    name: 'Juego de Mesa Estanciero',
+    description: 'Clásico juego de compra y venta de propiedades',
+    brand: 'ToyCo',
+    stock: 60,
+    categoryName: 'Jugueteria',
+    price: 9000,
+    state: ProductState.Activo,
+    photos: [{ fileName: 'juego-de-mesa-estanciero.jpg', mimeType: 'image/jpeg' }]
+  },
+  {
+    name: 'Bloques de Construcción',
+    description: 'Caja básica de ladrillos de encastre 500 piezas',
+    brand: 'Rasti',
+    stock: 45,
+    categoryName: 'Jugueteria',
+    price: 11000,
+    state: ProductState.Activo,
+    photos: [{ fileName: 'bloques-de-construccion.jpg', mimeType: 'image/jpeg' }]
+  },
+  {
+    name: 'Peluche Oso 50cm',
+    description: 'Oso de peluche gigante extrasuave',
+    brand: 'Phi Phi Toys',
+    stock: 0,
+    categoryName: 'Jugueteria',
+    price: 8500,
+    state: ProductState.Inactivo,
+    photos: [{ fileName: 'peluche-oso-50cm.jpg', mimeType: 'image/jpeg' }]
+  },
+  {
+    name: 'Rompecabezas 1000 Piezas',
+    description: 'Puzzle paisaje montañas alta calidad',
+    brand: 'Ravensburger',
+    stock: 35,
+    categoryName: 'Jugueteria',
+    price: 7000,
+    state: ProductState.Activo,
+    photos: [{ fileName: 'rompecabezas-1000-piezas.jpg', mimeType: 'image/jpeg' }]
+  },
+  {
+    name: 'Pistola de Agua',
+    description: 'Lanzador de agua alcance 10 metros',
+    brand: 'Nerf',
+    stock: 55,
+    categoryName: 'Jugueteria',
+    price: 6500,
+    state: ProductState.Activo,
+    photos: [{ fileName: 'pistola-de-agua.jpg', mimeType: 'image/jpeg' }]
+  },
+  {
+    name: 'Set de Cocina',
+    description: 'Juego de cocina infantil con accesorios plásticos',
+    brand: 'Duravit',
+    stock: 25,
+    categoryName: 'Jugueteria',
+    price: 5000,
+    state: ProductState.Activo,
+    photos: [{ fileName: 'set-de-cocina.jpg', mimeType: 'image/jpeg' }]
+  },
+  {
+    name: 'Pista de Autos',
+    description: 'Pista de carreras con lanzador y giros',
+    brand: 'Hot Wheels',
+    stock: 8,
+    categoryName: 'Jugueteria',
+    price: 18000,
+    state: ProductState.Activo,
+    photos: [{ fileName: 'pista-de-autos.jpg', mimeType: 'image/jpeg' }]
+  },
+  {
+    name: 'Masa para Modelar x4',
+    description: 'Set de 4 potes de masa colores surtidos',
+    brand: 'Play-Doh',
+    stock: 100,
+    categoryName: 'Jugueteria',
+    price: 4000,
+    state: ProductState.Activo,
+    photos: [{ fileName: 'masa-para-modelar-x4.jpg', mimeType: 'image/jpeg' }]
+  },
+  {
+    name: 'Juego de Cartas UNO',
+    description: 'Juego de cartas familiar para todas las edades',
+    brand: 'Mattel',
+    stock: 150,
+    categoryName: 'Jugueteria',
+    price: 3500,
+    state: ProductState.Activo,
+    photos: [{ fileName: 'juego-de-cartas-uno.jpg', mimeType: 'image/jpeg' }]
+  },
+  {
+    name: 'Jenga de Madera',
+    description: 'Juego de habilidad fisica y mental',
+    brand: 'Jenga',
+    stock: 40,
+    categoryName: 'Jugueteria',
+    price: 5500,
+    state: ProductState.Activo,
+    photos: [{ fileName: 'jenga-de-madera.jpg', mimeType: 'image/jpeg' }]
+  },
+  {
+    name: 'Ajedrez Magnético',
+    description: 'Juego de ajedrez tablero plegable magnético',
+    brand: 'Generic',
+    stock: 0,
+    categoryName: 'Jugueteria',
+    price: 4500,
+    state: ProductState.Inactivo,
+    photos: [{ fileName: 'ajedrez-magnetico.jpg', mimeType: 'image/jpeg' }]
+  },
+  {
+    name: 'Cubo Mágico 3x3',
+    description: ' Cubo de velocidad sistema anti-pop',
+    brand: 'Rubik',
+    stock: 80,
+    categoryName: 'Jugueteria',
+    price: 3000,
+    state: ProductState.Activo,
+    photos: [{ fileName: 'cubo-magico-3x3.jpg', mimeType: 'image/jpeg' }]
+  },
+  {
+    name: 'Yo-Yo Profesional',
+    description: 'Yo-yo con ruleman para trucos',
+    brand: 'Duncan',
+    stock: 6,
+    categoryName: 'Jugueteria',
+    price: 2500,
+    state: ProductState.Activo,
+    photos: [{ fileName: 'yoyo-profesional.jpg', mimeType: 'image/jpeg' }]
+  },
+  {
+    name: 'Trompo Luminoso',
+    description: 'Trompo con luces led al girar',
+    brand: 'Generic',
+    stock: 120,
+    categoryName: 'Jugueteria',
+    price: 1500,
+    state: ProductState.Activo,
+    photos: [{ fileName: 'trompo-luminoso.jpg', mimeType: 'image/jpeg' }]
+  },
+
+  // --- TECNOLOGÍA ---
+  {
+    name: 'Mouse Inalámbrico',
+    description: 'Mouse óptico inalámbrico 2.4Ghz ergonómico',
+    brand: 'Logitech',
+    stock: 80,
+    categoryName: 'Tecnologia',
+    price: 9000,
+    state: ProductState.Activo,
+    photos: [{ fileName: 'mouse-inalambrico.jpg', mimeType: 'image/jpeg' }]
+  },
+  {
+    name: 'Teclado Mecánico Gamer',
+    description: 'Teclado mecánico luces RGB switches azules',
+    brand: 'Redragon',
+    stock: 40,
+    categoryName: 'Tecnologia',
+    price: 25000,
+    state: ProductState.Activo,
+    photos: [{ fileName: 'teclado-mecanico-gamer.jpg', mimeType: 'image/jpeg' }]
+  },
+  {
+    name: 'Monitor 24 FHD',
+    description: 'Monitor LED 24 pulgadas Full HD HDMI',
+    brand: 'Samsung',
+    stock: 5,
+    categoryName: 'Tecnologia',
+    price: 80000,
+    state: ProductState.Activo,
+    photos: [{ fileName: 'monitor-24-fhd.jpg', mimeType: 'image/jpeg' }]
+  },
+  {
+    name: 'Auriculares Bluetooth',
+    description: 'Auriculares supraaurales inalámbricos con micrófono',
+    brand: 'JBL',
+    stock: 50,
+    categoryName: 'Tecnologia',
+    price: 15000,
+    state: ProductState.Activo,
+    photos: [{ fileName: 'auriculares-bluetooth.jpg', mimeType: 'image/jpeg' }]
+  },
+  {
+    name: 'Pendrive 64GB 3.0',
+    description: 'Memoria USB 64GB velocidad 3.0',
+    brand: 'Kingston',
+    stock: 200,
+    categoryName: 'Tecnologia',
+    price: 4000,
+    state: ProductState.Activo,
+    photos: [{ fileName: 'pendrive-64gb-3-0.jpg', mimeType: 'image/jpeg' }]
+  },
+  {
+    name: 'Disco SSD 480GB',
+    description: 'Disco estado sólido interno SATA III',
+    brand: 'Western Digital',
+    stock: 35,
+    categoryName: 'Tecnologia',
+    price: 22000,
+    state: ProductState.Activo,
+    photos: [{ fileName: 'disco-ssd-480gb.jpg', mimeType: 'image/jpeg' }]
+  },
+  {
+    name: 'Cable HDMI 2m',
+    description: 'Cable HDMI mallado puntas doradas 4K',
+    brand: 'Noga',
+    stock: 150,
+    categoryName: 'Tecnologia',
+    price: 1500,
+    state: ProductState.Activo,
+    photos: [{ fileName: 'cable-hdmi-2m.jpg', mimeType: 'image/jpeg' }]
+  },
+  {
+    name: 'Cargador Carga Rápida',
+    description: 'Cargador de pared tipo C 25W',
+    brand: 'Samsung',
+    stock: 0,
+    categoryName: 'Tecnologia',
+    price: 8000,
+    state: ProductState.Inactivo,
+    photos: [{ fileName: 'cargador-carga-rapida.jpg', mimeType: 'image/jpeg' }]
+  },
+  {
+    name: 'Funda Notebook 15.6',
+    description: 'Funda de neoprene protectora para laptop',
+    brand: 'Case Logic',
+    stock: 60,
+    categoryName: 'Tecnologia',
+    price: 6000,
+    state: ProductState.Activo,
+    photos: [{ fileName: 'funda-notebook-15-6.jpg', mimeType: 'image/jpeg' }]
+  },
+  {
+    name: 'Soporte para Celular',
+    description: 'Soporte escritorio ajustable universal',
+    brand: 'Generic',
+    stock: 100,
+    categoryName: 'Tecnologia',
+    price: 2500,
+    state: ProductState.Activo,
+    photos: [{ fileName: 'soporte-para-celular.jpg', mimeType: 'image/jpeg' }]
+  },
+  {
+    name: 'Webcam 1080p',
+    description: 'Cámara web Full HD con micrófono incorporado',
+    brand: 'Logitech',
+    stock: 25,
+    categoryName: 'Tecnologia',
+    price: 18000,
+    state: ProductState.Inactivo,
+    photos: [{ fileName: 'webcam-1080p.jpg', mimeType: 'image/jpeg' }]
+  },
+  {
+    name: 'Parlante Portátil',
+    description: 'Parlante bluetooth resistente al agua',
+    brand: 'JBL',
+    stock: 45,
+    categoryName: 'Tecnologia',
+    price: 20000,
+    state: ProductState.Activo,
+    photos: [{ fileName: 'parlante-portatil.jpg', mimeType: 'image/jpeg' }]
+  },
+  {
+    name: 'Smartwatch Band 7',
+    description: 'Reloj inteligente monitor ritmo cardiaco',
+    brand: 'Xiaomi',
+    stock: 7,
+    categoryName: 'Tecnologia',
+    price: 12000,
+    state: ProductState.Activo,
+    photos: [{ fileName: 'smartwatch-band-7.jpg', mimeType: 'image/jpeg' }]
+  },
+  {
+    name: 'Tablet 10 Android',
+    description: 'Tablet 64GB 4GB RAM procesador Octa Core',
+    brand: 'Lenovo',
+    stock: 15,
+    categoryName: 'Tecnologia',
+    price: 90000,
+    state: ProductState.Activo,
+    photos: [{ fileName: 'tablet-10-android.jpg', mimeType: 'image/jpeg' }]
+  },
+  {
+    name: 'Power Bank 10000mAh',
+    description: 'Cargador portátil doble salida USB',
+    brand: 'Xiaomi',
+    stock: 80,
+    categoryName: 'Tecnologia',
+    price: 10000,
+    state: ProductState.Activo,
+    photos: [{ fileName: 'power-bank-10000mah.jpg', mimeType: 'image/jpeg' }]
+  },
+  {
+    name: 'Impresora Multifunción',
+    description: 'Impresora escáner copia sistema continuo',
+    brand: 'HP',
+    stock: 0,
+    categoryName: 'Tecnologia',
+    price: 60000,
+    state: ProductState.Inactivo,
+    photos: [{ fileName: 'impresora-multifuncion.jpg', mimeType: 'image/jpeg' }]
+  },
+  {
+    name: 'Router Wi-Fi 6',
+    description: 'Router doble banda gigabit alta velocidad',
+    brand: 'TP-Link',
+    stock: 22,
+    categoryName: 'Tecnologia',
+    price: 25000,
+    state: ProductState.Activo,
+    photos: [{ fileName: 'router-wi-fi-6.jpg', mimeType: 'image/jpeg' }]
   }
 ];
 
@@ -207,6 +714,7 @@ async function seedCategories(em: EntityManager): Promise<Record<string, Categor
       const category = new Category();
       category.name = catData.name;
       category.description = catData.description;
+      category.state = catData.state;
       em.persist(category);
       categoryMap[category.name] = category;
     }
@@ -227,6 +735,7 @@ function createProductEntity(data: IProductSeed, category: Category): Product {
   product.totalSold = data.totalSold || 0;
   product.stock = data.stock;
   product.category = category;
+  product.state = data.state || ProductState.Activo;
 
   // Crear Precio
   const price = new Price();
@@ -266,18 +775,19 @@ export async function seedDatabase() {
     const categoriesMap = await seedCategories(em);
 
     // 4. Productos
-    // Verificamos si la categoría 'Libreria' existe antes de intentar crear productos
-    if (categoriesMap['Libreria']) {
-      const productCount = await em.count(Product, {});
+    const existingProducts = await em.find(Product, {});
+    const existingProductNames = new Set(existingProducts.map((p) => p.name));
 
-      if (productCount === 0) {
-        for (const prodData of PRODUCTS_DATA) {
-          const category = categoriesMap[prodData.categoryName];
-          if (category) {
-            const product = createProductEntity(prodData, category);
-            em.persist(product);
-          }
-        }
+    for (const prodData of PRODUCTS_DATA) {
+      // Si el producto ya existe por nombre, lo saltamos
+      if (existingProductNames.has(prodData.name)) continue;
+
+      const category = categoriesMap[prodData.categoryName];
+      if (category) {
+        const product = createProductEntity(prodData, category);
+        em.persist(product);
+      } else {
+        console.warn(`Categoría no encontrada para el producto: ${prodData.name} (${prodData.categoryName})`);
       }
     }
 
