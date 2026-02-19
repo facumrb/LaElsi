@@ -32,7 +32,7 @@ export class CategoryController {
       {
         $or: [{ name: { $like: `%${query}%` } }, { description: { $like: `%${query}%` } }]
       },
-      { populate: ['products'] }
+      { populate: ['products.photos'] }
     );
     return res.status(200).json(ApiResponse.success('Categorías encontradas', categories));
   });
@@ -59,14 +59,14 @@ export class CategoryController {
 
   static findAll = asyncHandler(async (req: Request, res: Response) => {
     const em = orm.em;
-    const categories = await em.find(Category, {}, { populate: ['products'] });
+    const categories = await em.find(Category, {}, { populate: ['products.photos'] });
     return res.status(200).json(ApiResponse.success('Todas las Categorías fueron encontradas', categories));
   });
 
   static findOne = asyncHandler(async (req: Request, res: Response) => {
     const em = orm.em;
     const id = Number.parseInt(req.params.id);
-    const category = await em.findOne(Category, { id }, { populate: ['products'] });
+    const category = await em.findOne(Category, { id }, { populate: ['products.photos'] });
 
     if (!category) {
       throw new AppError('Categoría no encontrada', 404);
