@@ -11,6 +11,7 @@
       [ngModel]="query()"
       (ngModelChange)="onSearch($event)"
       (keyup.enter)="handleFullSearch()"
+      inputmode="search"
       placeholder="Buscar productos ..."
       autocomplete="off"
       class="flex-1 h-11 bg-transparent px-4 text-gray-800 placeholder:text-gray-400 focus:outline-none border-none text-sm min-w-0"

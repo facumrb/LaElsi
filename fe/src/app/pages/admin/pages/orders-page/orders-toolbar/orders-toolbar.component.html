@@ -15,6 +15,7 @@
         type="text"
         [ngModel]="searchQuery()"
         (ngModelChange)="searchQuery.set($event)"
+        inputmode="search"
         placeholder="Buscar por cliente o ID de orden..."
         class="block w-full rounded-lg border-0 h-10 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#3d4494] leading-6"
       />

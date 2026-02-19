@@ -83,6 +83,7 @@
                 id="phone"
                 name="phone"
                 formControlName="phone"
+                inputmode="tel"
                 [class]="{
                   'is-invalid':
                     hasErrors('phone', 'required') ||
@@ -140,6 +141,7 @@
                 id="dni"
                 name="dni"
                 formControlName="dni"
+                inputmode="numeric"
                 [class]="{
                   'is-invalid':
                     hasErrors('dni', 'required') || hasErrors('dni', 'pattern'),
@@ -164,6 +166,7 @@
                 id="email"
                 name="email"
                 formControlName="email"
+                inputmode="email"
                 [class]="{
                   'is-invalid':
                     hasErrors('email', 'required') ||
