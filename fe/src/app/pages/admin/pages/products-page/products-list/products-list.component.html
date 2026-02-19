@@ -7,12 +7,12 @@
     >
       <thead class="hidden lg:table-header-group bg-[#3d4494] text-white">
         <tr>
-          <th class="px-6 py-4 w-[8%] rounded-tl-lg">
-            <div class="relative flex items-center justify-center">
+          <th class="px-6 py-4 w-[5%] rounded-tl-lg">
+            <div class="relative flex items-center justify-center shrink-0">
               <input
                 type="checkbox"
                 aria-label="Seleccionar todos los productos"
-                class="peer appearance-none w-5 h-5 border-2 border-gray-300 rounded cursor-pointer transition-all checked:bg-[#3d4494] checked:border-white hover:border-white"
+                class="peer appearance-none w-5 h-5 shrink-0 border-2 border-gray-300 rounded cursor-pointer transition-all checked:bg-[#3d4494] checked:border-white hover:border-white"
                 [checked]="isAllSelected()"
                 (change)="toggleSelectAll()"
               />
@@ -23,7 +23,7 @@
             </div>
           </th>
           <th
-            class="pl-1 pr-6 py-4 font-semibold uppercase tracking-wider w-[23%]"
+            class="pl-1 pr-6 py-4 font-semibold uppercase tracking-wider w-[26%]"
           >
             Producto
           </th>
@@ -58,11 +58,11 @@
         <tr
           class="flex items-center bg-white border border-gray-200 shadow-sm rounded-lg mx-4 mb-4 px-4 py-3 lg:hidden"
         >
-          <div class="relative flex items-center justify-center mr-3">
+          <div class="relative flex items-center justify-center shrink-0 mr-3">
             <input
               type="checkbox"
               aria-label="Seleccionar todos los productos"
-              class="peer appearance-none w-5 h-5 border-2 border-gray-300 rounded cursor-pointer transition-all checked:border-black checked:bg-transparent"
+              class="peer appearance-none w-5 h-5 shrink-0 border-2 border-gray-300 rounded cursor-pointer transition-all checked:border-black checked:bg-transparent"
               [checked]="isAllSelected()"
               (change)="toggleSelectAll()"
             />
@@ -92,7 +92,7 @@
                 <input
                   type="checkbox"
                   [attr.aria-label]="'Seleccionar ' + product.name"
-                  class="peer appearance-none w-5 h-5 border-2 border-gray-300 rounded cursor-pointer transition-all checked:border-black checked:bg-transparent"
+                  class="peer appearance-none w-5 h-5 shrink-0 border-2 border-gray-300 rounded cursor-pointer transition-all checked:border-black checked:bg-transparent"
                   [checked]="isSelected(product.id)"
                   (change)="toggleSelect(product.id)"
                 />
@@ -135,7 +135,7 @@
                   <input
                     type="checkbox"
                     [attr.aria-label]="'Seleccionar ' + product.name"
-                    class="peer appearance-none w-5 h-5 border-2 border-gray-300 rounded cursor-pointer transition-all checked:border-black checked:bg-transparent"
+                    class="peer appearance-none w-5 h-5 shrink-0 border-2 border-gray-300 rounded cursor-pointer transition-all checked:border-black checked:bg-transparent"
                     [checked]="isSelected(product.id)"
                     (change)="toggleSelect(product.id)"
                   />
