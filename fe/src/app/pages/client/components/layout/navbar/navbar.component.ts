@@ -17,6 +17,7 @@ import {
 } from '@ng-icons/bootstrap-icons';
 import { SearchBarComponent } from './search-bar/search-bar.component';
 import { environment } from 'src/environments/environment';
+import { CartService } from '@services/cart.service';
 
 @Component({
   selector: 'app-navbar',
@@ -44,8 +45,9 @@ import { environment } from 'src/environments/environment';
 export class NavbarComponent implements OnInit {
   authService = inject(AuthService);
   private apiCategoryService = inject(ApiCategoryService);
+  private cartService = inject(CartService);
 
-  cartSignal = signal(0); // Esto debe estar conectado al servicio del carrito
+  cartSignal = this.cartService.totalItems; // Señal conectada directamente al total de items en el carrito
   showSideMenu = signal(false);
   showUserMenu = signal(false);
 

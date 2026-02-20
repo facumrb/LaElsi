@@ -5,10 +5,18 @@ import { IApiProduct } from '@models/product.model';
 import { IApiCategory } from '@models/category.model';
 import { ProductCardComponent } from '../../components/product-card/product-card.component';
 import { forkJoin, map } from 'rxjs';
+import { NgIconComponent, provideIcons } from '@ng-icons/core';
+import {
+  bootstrapChevronLeft,
+  bootstrapChevronRight,
+} from '@ng-icons/bootstrap-icons';
 
 @Component({
   selector: 'app-main-page',
-  imports: [ProductCardComponent],
+  imports: [ProductCardComponent, NgIconComponent],
+  viewProviders: [
+    provideIcons({ bootstrapChevronLeft, bootstrapChevronRight }),
+  ],
   templateUrl: './main-page.component.html',
 })
 export class MainPageComponent implements OnInit {
@@ -69,6 +77,14 @@ export class MainPageComponent implements OnInit {
         console.error('Error fetching categories', err);
         this.loading.set(false);
       },
+    });
+  }
+
+  scrollCarousel(container: HTMLElement, direction: 'left' | 'right') {
+    const scrollAmount = container.clientWidth;
+    container.scrollBy({
+      left: direction === 'left' ? -scrollAmount : scrollAmount,
+      behavior: 'smooth',
     });
   }
 }

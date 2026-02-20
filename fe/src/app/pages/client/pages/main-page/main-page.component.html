@@ -36,17 +36,43 @@
               >
                 🔥 Los Más Vendidos en General
               </h2>
+
+              <div class="hidden md:flex gap-2">
+                <button
+                  (click)="scrollCarousel(globalScroll, 'left')"
+                  aria-label="Anterior"
+                  class="h-10 w-10 rounded-full bg-white border border-gray-200 shadow-sm hover:shadow hover:bg-gray-50 flex items-center justify-center transition-all cursor-pointer"
+                >
+                  <ng-icon
+                    name="bootstrapChevronLeft"
+                    class="text-xl text-gray-600"
+                  ></ng-icon>
+                </button>
+                <button
+                  (click)="scrollCarousel(globalScroll, 'right')"
+                  aria-label="Siguiente"
+                  class="h-10 w-10 rounded-full bg-white border border-gray-200 shadow-sm hover:shadow hover:bg-gray-50 flex items-center justify-center transition-all cursor-pointer"
+                >
+                  <ng-icon
+                    name="bootstrapChevronRight"
+                    class="text-xl text-gray-600"
+                  ></ng-icon>
+                </button>
+              </div>
             </div>
 
             <div class="relative group">
               <div
-                class="flex overflow-x-auto gap-6 pb-6 scroll-smooth scrollbar-hide snap-x snap-mandatory"
+                #globalScroll
+                class="flex overflow-x-auto gap-4 md:gap-6 pb-6 scroll-smooth scrollbar-hide snap-x snap-mandatory"
               >
                 @for (product of globalBestSellers(); track $index) {
-                  <div class="flex-none w-72 snap-start">
+                  <div
+                    class="flex-none w-[80vw] sm:w-[calc(50%-0.5rem)] md:w-[calc(33.333%-1rem)] lg:w-[calc(25%-1.125rem)] xl:w-[calc(20%-1.2rem)] snap-start"
+                  >
                     <app-product-card
                       [product]="product"
-                      class="hover:scale-[1.02] transition-transform duration-300 block"
+                      class="block h-full"
                     ></app-product-card>
                   </div>
                 }
@@ -63,17 +89,43 @@
                 {{ item.category.name }} -
                 <span class="text-blue-600">Más Populares</span>
               </h2>
+
+              <div class="hidden md:flex gap-2">
+                <button
+                  (click)="scrollCarousel(catScroll, 'left')"
+                  aria-label="Anterior"
+                  class="h-10 w-10 rounded-full bg-white border border-gray-200 shadow-sm hover:shadow hover:bg-gray-50 flex items-center justify-center transition-all cursor-pointer"
+                >
+                  <ng-icon
+                    name="bootstrapChevronLeft"
+                    class="text-xl text-gray-600"
+                  ></ng-icon>
+                </button>
+                <button
+                  (click)="scrollCarousel(catScroll, 'right')"
+                  aria-label="Siguiente"
+                  class="h-10 w-10 rounded-full bg-white border border-gray-200 shadow-sm hover:shadow hover:bg-gray-50 flex items-center justify-center transition-all cursor-pointer"
+                >
+                  <ng-icon
+                    name="bootstrapChevronRight"
+                    class="text-xl text-gray-600"
+                  ></ng-icon>
+                </button>
+              </div>
             </div>
 
             <div class="relative group">
               <div
-                class="flex overflow-x-auto gap-6 pb-6 scroll-smooth scrollbar-hide snap-x snap-mandatory"
+                #catScroll
+                class="flex overflow-x-auto gap-4 md:gap-6 pb-6 scroll-smooth scrollbar-hide snap-x snap-mandatory"
               >
                 @for (product of item.products; track $index) {
-                  <div class="flex-none w-64 snap-start">
+                  <div
+                    class="flex-none w-[80vw] sm:w-[calc(50%-0.5rem)] md:w-[calc(33.333%-1rem)] lg:w-[calc(25%-1.125rem)] xl:w-[calc(20%-1.2rem)] snap-start"
+                  >
                     <app-product-card
                       [product]="product"
-                      class="hover:scale-[1.02] transition-transform duration-300 block"
+                      class="block h-full"
                     ></app-product-card>
                   </div>
                 }

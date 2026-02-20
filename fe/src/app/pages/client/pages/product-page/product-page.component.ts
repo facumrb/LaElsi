@@ -42,6 +42,7 @@ export class ProductPageComponent implements OnInit {
   product = signal<IApiProduct | undefined>(undefined);
   selectedPhotoUrl = signal<string | undefined>(undefined);
   thumbnailIndex = signal(0);
+  addedToCart = signal(false);
 
   // Computed signals for derived state
   productPrice = computed(() => {
@@ -80,6 +81,12 @@ export class ProductPageComponent implements OnInit {
     const currentProduct = this.product();
     if (currentProduct) {
       this.cartService.addToCart(currentProduct);
+
+      // Feedback visual
+      this.addedToCart.set(true);
+      setTimeout(() => {
+        this.addedToCart.set(false);
+      }, 2000);
     }
   }
 
