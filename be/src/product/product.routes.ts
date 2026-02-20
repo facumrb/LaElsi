@@ -14,6 +14,7 @@ productRouter.get('/search', ProductController.searchProductsByText);
 productRouter.get('/best-sellers', ProductController.findBestSellers);
 productRouter.get('/best-sellers/category/:categoryId', ProductController.findBestSellersByCategory);
 productRouter.get('/category/:categoryId', ProductController.findProductsByCategory);
+productRouter.get('/active/category/:categoryId', ProductController.findActiveProductsByCategory);
 productRouter.get('/:id', ProductController.findOne);
 
 // Rutas protegidas (solo Admin puede crear/editar/eliminar)

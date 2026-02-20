@@ -111,14 +111,16 @@ export class CategoryController {
     const em = orm.em;
     const categories = await em.find(
       Category,
-      { state: CategoryState.Activo },
       {
-        populate: ['products.photos', 'products.prices'] as any,
-        populateWhere: {
-          products: { state: ProductState.Activo },
-          'products.prices': { isCurrent: true }
-        } as any,
-        populateOrderBy: { 'products.photos': { order: 'ASC' } } as any
+        state: CategoryState.Activo,
+        products: {
+          state: ProductState.Activo,
+          prices: { isCurrent: true }
+        }
+      },
+      {
+        populate: ['products.photos', 'products.prices'],
+        orderBy: { products: { photos: { order: 'ASC' } } }
       }
     );
     return res.status(200).json(ApiResponse.success('Categorías activas encontradas', categories));

@@ -106,8 +106,8 @@ export class CategoryPageComponent implements OnInit {
       error: (err) => console.error('Error al obtener categoría', err),
     });
 
-    // 2. Obtener los productos de la categoría
-    this.ApiProductService.getProductsByCategory(id).subscribe({
+    // 2. Obtener los productos activos de la categoría
+    this.ApiProductService.getActiveProductsByCategory(id).subscribe({
       next: (data) => this.productsRaw.set(data),
       error: (err) => console.error('Error al obtener productos', err),
     });

@@ -22,6 +22,13 @@ export class ApiCategoryService {
       .pipe(map((response) => response.data));
   }
 
+  // Obtener todas las categorías ACTIVAS
+  getActiveCategories(): Observable<IApiCategory[]> {
+    return this._http
+      .get<{ message: string; data: IApiCategory[] }>(`${this.apiUrl}/active`)
+      .pipe(map((response) => response.data));
+  }
+
   // Obtener una categoría por ID
   getCategoryById(id: number): Observable<IApiCategory> {
     return this._http
