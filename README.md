@@ -8,7 +8,7 @@ Antes de abrir el proyecto, asegúrate de tener instalados:
 
 - **Node.js**: Versión 22 (LTS) o superior.
 - **NPM**: Versión 10 o superior.
-- **Angular CLI**: Versión 19.0.2
+- **Angular CLI**: Versión 21 o superior.
 
 ## Pasos de instalación en Windows
 
@@ -36,7 +36,7 @@ Si no tienes Node.js instalado, recomendamos usar **fnm** (Fast Node Manager) pa
 
 3.  **Instalar Angular CLI:**
     ```bash
-    npm install -g @angular/cli@19.0.2
+    npm install -g @angular/cli@latest
     ```
 
 ## Cómo abrir el proyecto
