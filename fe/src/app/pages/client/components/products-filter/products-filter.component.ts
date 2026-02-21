@@ -7,6 +7,8 @@ import {
   bootstrapX,
   bootstrapFunnel,
   bootstrapFunnelFill,
+  bootstrapChevronDown,
+  bootstrapCheckLg,
 } from '@ng-icons/bootstrap-icons';
 
 // Tipados (los mantengo igual, están bien definidos)
@@ -21,6 +23,8 @@ export type PopularityOrder = 'Defecto' | 'MasVentas' | 'MenosVentas';
     bootstrapX,
     bootstrapFunnel,
     bootstrapFunnelFill,
+    bootstrapChevronDown,
+    bootstrapCheckLg,
   }),
   templateUrl: './products-filter.component.html',
 })
@@ -35,6 +39,7 @@ export class ProductsFilterComponent {
 
   // UI State
   showFilterMenu = signal(false);
+  showBrandMenu = signal(false);
 
   isAnyFilterActive = computed(() => {
     return (
@@ -49,6 +54,12 @@ export class ProductsFilterComponent {
     this.brandFilter.set('Todas');
     this.popularityOrder.set('Defecto');
     this.showFilterMenu.set(false);
+    this.showBrandMenu.set(false);
+  }
+
+  selectBrand(brand: string) {
+    this.brandFilter.set(brand);
+    this.showBrandMenu.set(false);
   }
 
   // Métodos helper para conversión de tipos en el template
