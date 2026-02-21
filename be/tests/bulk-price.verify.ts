@@ -1,9 +1,9 @@
-import { orm } from '../shared/db/orm.js';
-import { Product } from '../product/product.entity.js';
-import { BulkProductController } from '../product/bulkProduct.controller.js';
-import { PriceChangeBatch } from '../product/price-change-batch/priceChangeBatch.entity.js';
-import { AuditLog } from '../shared/audit/auditLog.entity.js';
-import { User, UserRole } from '../user/user.entity.js';
+import { orm } from '../src/shared/db/orm.js';
+import { Product } from '../src/product/product.entity.js';
+import { BulkProductController } from '../src/product/bulkProduct.controller.js';
+import { PriceChangeBatch } from '../src/product/price-change-batch/priceChangeBatch.entity.js';
+import { AuditLog } from '../src/shared/audit/auditLog.entity.js';
+import { User, UserRole } from '../src/user/user.entity.js';
 
 // Script de Verificación Integral de Lógica de Precios Masivos
 async function runFullVerification() {
