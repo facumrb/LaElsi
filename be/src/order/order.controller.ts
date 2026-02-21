@@ -107,7 +107,7 @@ export class OrderController {
       Order,
       {},
       {
-        populate: ['client', 'items', 'items.product']
+        populate: ['client', 'items', 'items.product', 'items.product.photos']
       }
     );
 
@@ -123,7 +123,7 @@ export class OrderController {
       Order,
       { id },
       {
-        populate: ['client', 'items', 'items.product']
+        populate: ['client', 'items', 'items.product', 'items.product.photos']
       }
     );
 
@@ -143,7 +143,7 @@ export class OrderController {
       Order,
       { client: { id: clientId } },
       {
-        populate: ['items', 'items.product'],
+        populate: ['items', 'items.product', 'items.product.photos'],
         orderBy: { createdAt: 'DESC' }
       }
     );
@@ -211,7 +211,7 @@ export class OrderController {
     const id = Number(req.params.id);
     if (isNaN(id)) throw new AppError('ID de orden inválido', 400);
 
-    const order = await em.findOne(Order, { id }, { populate: ['items', 'items.product'] });
+    const order = await em.findOne(Order, { id }, { populate: ['items', 'items.product', 'items.product.photos'] });
 
     if (!order) {
       throw new AppError('Orden no encontrada', 404);

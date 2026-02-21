@@ -28,6 +28,7 @@ export interface IApiOrderLine {
     id: number;
     name: string;
     brand: string;
+    photos?: { fileName: string }[];
   };
 }
 

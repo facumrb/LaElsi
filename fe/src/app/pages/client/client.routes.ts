@@ -87,6 +87,29 @@ export const clientRoutes: Routes = [
             (m) => m.ProfilePageComponent,
           ),
         canActivate: [authGuard],
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./pages/profile-page/components/profile-details/profile-details.component').then(
+                (m) => m.ProfileDetailsComponent,
+              ),
+          },
+          {
+            path: 'account',
+            loadComponent: () =>
+              import('./pages/profile-page/components/profile-user/profile-user.component').then(
+                (m) => m.ProfileUserComponent,
+              ),
+          },
+          {
+            path: 'orders',
+            loadComponent: () =>
+              import('./pages/profile-page/components/profile-orders/profile-orders.component').then(
+                (m) => m.ProfileOrdersComponent,
+              ),
+          },
+        ],
       },
       { path: '**', redirectTo: '' },
     ],

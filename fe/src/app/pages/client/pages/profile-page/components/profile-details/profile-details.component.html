@@ -1,0 +1,357 @@
+<div class="animate-in fade-in slide-in-from-bottom-4 duration-500">
+  <form [formGroup]="formPerfil" (ngSubmit)="onSubmit()" class="space-y-6">
+    <!-- Personales -->
+    <div
+      class="bg-white/80 backdrop-blur-xl p-6 md:p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-white/50 relative z-30 group"
+    >
+      <div class="flex items-center gap-3 mb-8">
+        <div
+          class="w-12 h-12 rounded-2xl bg-teal-50 border border-teal-100 flex items-center justify-center text-teal-600"
+        >
+          <ng-icon
+            name="bootstrapPerson"
+            class="text-2xl text-[#037971]"
+          ></ng-icon>
+        </div>
+        <div>
+          <h2
+            class="text-xl md:text-2xl font-bold text-gray-800 tracking-tight"
+          >
+            Datos Personales
+          </h2>
+          <p class="text-xs md:text-sm font-medium text-gray-400">
+            Tu información básica y de contacto
+          </p>
+        </div>
+      </div>
+
+      <div
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative"
+      >
+        <div>
+          <label
+            for="name"
+            class="block text-xs font-black text-gray-500 uppercase tracking-widest pl-1 mb-2 cursor-pointer"
+            >Nombre</label
+          >
+          <input
+            type="text"
+            id="name"
+            formControlName="name"
+            class="w-full p-3.5 bg-gray-50 border border-gray-200 text-gray-800 rounded-xl focus:ring-4 focus:ring-teal-500/20 focus:border-teal-500 focus:bg-white outline-none transition-all font-medium"
+          />
+        </div>
+        <div>
+          <label
+            for="lastName"
+            class="block text-xs font-black text-gray-500 uppercase tracking-widest pl-1 mb-2 cursor-pointer"
+            >Apellido</label
+          >
+          <input
+            type="text"
+            id="lastName"
+            formControlName="lastName"
+            class="w-full p-3.5 bg-gray-50 border border-gray-200 text-gray-800 rounded-xl focus:ring-4 focus:ring-teal-500/20 focus:border-teal-500 focus:bg-white outline-none transition-all font-medium"
+          />
+        </div>
+        <div>
+          <label
+            for="dni"
+            class="block text-xs font-black text-gray-500 uppercase tracking-widest pl-1 mb-2 cursor-pointer"
+            >DNI</label
+          >
+          <input
+            type="text"
+            id="dni"
+            formControlName="dni"
+            inputmode="numeric"
+            appNumericInput
+            class="w-full p-3.5 bg-gray-50 border border-gray-200 text-gray-800 rounded-xl focus:ring-4 focus:ring-teal-500/20 focus:border-teal-500 focus:bg-white outline-none transition-all font-medium"
+          />
+        </div>
+        <div>
+          <label
+            for="email"
+            class="block text-xs font-black text-gray-500 uppercase tracking-widest pl-1 mb-2 cursor-pointer"
+            >Email</label
+          >
+          <input
+            type="email"
+            id="email"
+            formControlName="email"
+            inputmode="email"
+            class="w-full p-3.5 bg-gray-50 border border-gray-200 text-gray-800 rounded-xl focus:ring-4 focus:ring-teal-500/20 focus:border-teal-500 focus:bg-white outline-none transition-all font-medium"
+          />
+        </div>
+        <div>
+          <label
+            for="phone"
+            class="block text-xs font-black text-gray-500 uppercase tracking-widest pl-1 mb-2 cursor-pointer"
+            >Teléfono</label
+          >
+          <input
+            type="text"
+            id="phone"
+            formControlName="phone"
+            inputmode="tel"
+            appPhoneInput
+            class="w-full p-3.5 bg-gray-50 border border-gray-200 text-gray-800 rounded-xl focus:ring-4 focus:ring-teal-500/20 focus:border-teal-500 focus:bg-white outline-none transition-all font-medium"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Facturación -->
+    <div
+      class="bg-white/80 backdrop-blur-xl p-6 md:p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-white/50 relative z-20 group"
+    >
+      <div class="flex items-center gap-3 mb-8">
+        <div
+          class="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600"
+        >
+          <ng-icon
+            name="bootstrapReceipt"
+            class="text-2xl text-[#3d4494]"
+          ></ng-icon>
+        </div>
+        <div>
+          <h2
+            class="text-xl md:text-2xl font-bold text-gray-800 tracking-tight"
+          >
+            Información Fiscal
+          </h2>
+          <p class="text-xs md:text-sm font-medium text-gray-400">
+            Datos para facturación de tus compras
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 relative">
+        <div>
+          <label
+            for="cuit"
+            class="block text-xs font-black text-gray-500 uppercase tracking-widest pl-1 mb-2 cursor-pointer"
+            >CUIT / CUIL</label
+          >
+          <input
+            type="text"
+            id="cuit"
+            formControlName="cuit"
+            inputmode="numeric"
+            appNumericInput
+            placeholder="Ej: 20123456789"
+            class="w-full p-3.5 bg-gray-50 border border-gray-200 text-gray-800 rounded-xl focus:ring-4 focus:ring-[#3d4494]/20 focus:border-[#3d4494] focus:bg-white outline-none transition-all font-medium"
+          />
+        </div>
+
+        <div class="relative" (clickOutside)="isFiscalMenuOpen.set(false)">
+          <label
+            for="fiscalConditionBtn"
+            class="block text-xs font-black text-gray-500 uppercase tracking-widest pl-1 mb-2 cursor-pointer"
+          >
+            Condición Fiscal
+          </label>
+
+          <button
+            type="button"
+            id="fiscalConditionBtn"
+            (click)="toggleFiscalMenu()"
+            class="relative w-full cursor-pointer bg-gray-50 rounded-xl border border-gray-200 p-3.5 text-left transition-all font-medium text-gray-800 hover:bg-gray-100 focus:outline-none focus:ring-4 focus:ring-[#3d4494]/20 focus:border-[#3d4494] focus:bg-white"
+          >
+            <span class="block truncate">
+              {{
+                formPerfil.get("fiscalCondition")?.value ||
+                  "Seleccione una condición"
+              }}
+            </span>
+
+            <span
+              class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3"
+            >
+              <ng-icon
+                name="bootstrapChevronDown"
+                class="text-gray-400 text-sm transition-transform duration-200"
+                [class.rotate-180]="isFiscalMenuOpen()"
+              ></ng-icon>
+            </span>
+          </button>
+
+          @if (isFiscalMenuOpen()) {
+            <ul
+              class="absolute z-50 mt-2 w-full max-h-60 overflow-y-auto rounded-xl bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm animate-in fade-in zoom-in-95 duration-100 border border-gray-100"
+            >
+              @for (condition of fiscalConditions; track condition) {
+                <li
+                  (click)="selectFiscalCondition(condition)"
+                  class="relative cursor-pointer select-none py-3 pl-4 pr-9 hover:bg-gray-50 text-gray-800 font-medium transition-colors"
+                >
+                  <div class="flex items-center">
+                    <span
+                      class="block truncate"
+                      [class.font-bold]="
+                        formPerfil.get('fiscalCondition')?.value === condition
+                      "
+                    >
+                      {{ condition }}
+                    </span>
+                  </div>
+
+                  @if (formPerfil.get("fiscalCondition")?.value === condition) {
+                    <span
+                      class="absolute inset-y-0 right-0 flex items-center pr-4 text-[#3d4494]"
+                    >
+                      <ng-icon
+                        name="bootstrapCheckLg"
+                        class="text-xl"
+                      ></ng-icon>
+                    </span>
+                  }
+                </li>
+              }
+            </ul>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Dirección -->
+    <div
+      class="bg-white/80 backdrop-blur-xl p-6 md:p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-white/50 relative z-10 group"
+    >
+      <div class="flex items-center gap-3 mb-8">
+        <div
+          class="w-12 h-12 rounded-2xl bg-purple-50 border border-purple-100 flex items-center justify-center text-purple-600"
+        >
+          <ng-icon
+            name="bootstrapGeoAlt"
+            class="text-2xl text-purple-600"
+          ></ng-icon>
+        </div>
+        <div>
+          <h2
+            class="text-xl md:text-2xl font-bold text-gray-800 tracking-tight"
+          >
+            Dirección de Entrega
+          </h2>
+          <p class="text-xs md:text-sm font-medium text-gray-400">
+            A dónde enviaremos tus pedidos
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 relative">
+        <div class="md:col-span-3">
+          <label
+            for="street"
+            class="block text-xs font-black text-gray-500 uppercase tracking-widest pl-1 mb-2 cursor-pointer"
+            >Calle</label
+          >
+          <input
+            type="text"
+            id="street"
+            formControlName="street"
+            class="w-full p-3.5 bg-gray-50 border border-gray-200 text-gray-800 rounded-xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 focus:bg-white outline-none transition-all font-medium"
+          />
+        </div>
+        <div>
+          <label
+            for="streetNumber"
+            class="block text-xs font-black text-gray-500 uppercase tracking-widest pl-1 mb-2 cursor-pointer"
+            >Número</label
+          >
+          <input
+            type="number"
+            id="streetNumber"
+            formControlName="streetNumber"
+            inputmode="numeric"
+            appNumericInput
+            class="w-full p-3.5 bg-gray-50 border border-gray-200 text-gray-800 rounded-xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 focus:bg-white outline-none transition-all font-medium"
+          />
+        </div>
+        <div>
+          <label
+            for="floor"
+            class="block text-xs font-black text-gray-500 uppercase tracking-widest pl-1 mb-2 cursor-pointer"
+            >Piso</label
+          >
+          <input
+            type="text"
+            id="floor"
+            formControlName="floor"
+            class="w-full p-3.5 bg-gray-50 border border-gray-200 text-gray-800 rounded-xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 focus:bg-white outline-none transition-all font-medium"
+          />
+        </div>
+        <div>
+          <label
+            for="apartment"
+            class="block text-xs font-black text-gray-500 uppercase tracking-widest pl-1 mb-2 cursor-pointer"
+            >Depto</label
+          >
+          <input
+            type="text"
+            id="apartment"
+            formControlName="apartment"
+            class="w-full p-3.5 bg-gray-50 border border-gray-200 text-gray-800 rounded-xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 focus:bg-white outline-none transition-all font-medium"
+          />
+        </div>
+        <div class="md:col-span-2">
+          <label
+            for="city"
+            class="block text-xs font-black text-gray-500 uppercase tracking-widest pl-1 mb-2 cursor-pointer"
+            >Ciudad</label
+          >
+          <input
+            type="text"
+            id="city"
+            formControlName="city"
+            class="w-full p-3.5 bg-gray-50 border border-gray-200 text-gray-800 rounded-xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 focus:bg-white outline-none transition-all font-medium"
+          />
+        </div>
+        <div>
+          <label
+            for="province"
+            class="block text-xs font-black text-gray-500 uppercase tracking-widest pl-1 mb-2 cursor-pointer"
+            >Provincia</label
+          >
+          <input
+            type="text"
+            id="province"
+            formControlName="province"
+            class="w-full p-3.5 bg-gray-50 border border-gray-200 text-gray-800 rounded-xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 focus:bg-white outline-none transition-all font-medium"
+          />
+        </div>
+        <div>
+          <label
+            for="postalCode"
+            class="block text-xs font-black text-gray-500 uppercase tracking-widest pl-1 mb-2 cursor-pointer"
+            >CP</label
+          >
+          <input
+            type="text"
+            id="postalCode"
+            formControlName="postalCode"
+            inputmode="numeric"
+            class="w-full p-3.5 bg-gray-50 border border-gray-200 text-gray-800 rounded-xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 focus:bg-white outline-none transition-all font-medium"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="flex justify-end pt-2">
+      <button
+        type="submit"
+        [disabled]="saving() || formPerfil.invalid"
+        class="bg-[#3d4494] text-white px-10 py-4 rounded-xl font-bold shadow-xl shadow-[#3d4494]/30 hover:bg-[#2d336b] hover:-translate-y-1 transition-all duration-300 disabled:opacity-50 disabled:hover:translate-y-0 disabled:cursor-not-allowed flex items-center gap-3 active:scale-95 cursor-pointer"
+      >
+        @if (saving()) {
+          <span
+            class="animate-spin rounded-full h-5 w-5 border-b-2 border-white"
+          ></span>
+          Guardando...
+        } @else {
+          Guardar Información
+        }
+      </button>
+    </div>
+  </form>
+</div>

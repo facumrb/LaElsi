@@ -1,352 +1,61 @@
-<div class="container mx-auto p-6 max-w-4xl min-h-screen">
-  <div class="mb-8">
-    <h1 class="text-3xl font-bold text-[#3d4494] uppercase tracking-wide">
-      Mi Perfil
-    </h1>
-    <p class="text-gray-500">
-      Gestiona tus datos personales, de facturación y envío.
-    </p>
-  </div>
-
-  @if (loading()) {
-    <div class="flex justify-center py-12">
-      <div
-        class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#3d4494]"
-      ></div>
-    </div>
-  } @else {
-    <form [formGroup]="formPerfil" (ngSubmit)="onSubmit()" class="space-y-8">
-      <!-- Sección: Datos Personales (Ahora Editables) -->
-      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-        <h2
-          class="text-xl font-semibold mb-6 flex items-center gap-2 text-gray-800"
+<div class="animate-fadeIn min-h-screen pb-12 pt-8">
+  <div class="container mx-auto max-w-6xl px-4 md:px-6 relative z-20">
+    <div class="flex flex-col lg:flex-row gap-8">
+      <!-- Navegación Lateral (Sidebar / Navbar Móvil) -->
+      <aside class="w-full lg:w-70 shrink-0">
+        <div
+          class="bg-white/90 backdrop-blur-xl rounded-2xl md:rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-white/60 p-3 md:p-6 relative z-30"
         >
-          <ng-icon
-            name="bootstrapPerson"
-            class="text-2xl text-[#037971]"
-          ></ng-icon>
-          Datos Personales
-        </h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div>
-            <label
-              for="name"
-              class="block text-xs font-bold text-gray-500 uppercase mb-1"
-              >Nombre</label
+          <div class="flex flex-col gap-2 md:gap-3">
+            <a
+              [routerLink]="['/profile']"
+              [routerLinkActiveOptions]="{ exact: true }"
+              routerLinkActive="bg-violet-600/10 text-violet-700 shadow-sm border-violet-600/20"
+              class="w-full text-left px-5 py-4 rounded-xl md:rounded-2xl transition-all duration-200 font-bold flex items-center gap-4 border border-transparent text-gray-500 hover:bg-gray-50 hover:text-gray-800"
             >
-            <input
-              type="text"
-              id="name"
-              formControlName="name"
-              class="w-full p-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-[#049A8F] focus:outline-none transition-all"
-            />
-          </div>
-          <div>
-            <label
-              for="lastName"
-              class="block text-xs font-bold text-gray-500 uppercase mb-1"
-              >Apellido</label
+              <ng-icon name="bootstrapFilePerson" class="text-2xl"></ng-icon>
+              <span>Datos Personales</span>
+            </a>
+
+            <a
+              [routerLink]="['/profile/account']"
+              routerLinkActive="bg-violet-600/10 text-violet-700 shadow-sm border-violet-600/20"
+              class="w-full text-left px-5 py-4 rounded-xl md:rounded-2xl transition-all duration-200 font-bold flex items-center gap-4 border border-transparent text-gray-500 hover:bg-gray-50 hover:text-gray-800"
             >
-            <input
-              type="text"
-              id="lastName"
-              formControlName="lastName"
-              class="w-full p-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-[#049A8F] focus:outline-none transition-all"
-            />
-          </div>
-          <div>
-            <label
-              for="dni"
-              class="block text-xs font-bold text-gray-500 uppercase mb-1"
-              >DNI</label
+              <ng-icon name="bootstrapShieldLock" class="text-2xl"></ng-icon>
+              <span>Datos de Usuario</span>
+            </a>
+
+            <a
+              [routerLink]="['/profile/orders']"
+              routerLinkActive="bg-violet-600/10 text-violet-700 shadow-sm border-violet-600/20"
+              class="w-full text-left px-5 py-4 rounded-xl md:rounded-2xl transition-all duration-200 font-bold flex items-center gap-4 border border-transparent text-gray-500 hover:bg-gray-50 hover:text-gray-800"
             >
-            <input
-              type="text"
-              id="dni"
-              formControlName="dni"
-              inputmode="numeric"
-              class="w-full p-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-[#049A8F] focus:outline-none transition-all"
-            />
-          </div>
-          <div>
-            <label
-              for="email"
-              class="block text-xs font-bold text-gray-500 uppercase mb-1"
-              >Email</label
-            >
-            <input
-              type="email"
-              id="email"
-              formControlName="email"
-              inputmode="email"
-              class="w-full p-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-[#049A8F] focus:outline-none transition-all"
-            />
-          </div>
-          <div>
-            <label
-              for="phone"
-              class="block text-xs font-bold text-gray-500 uppercase mb-1"
-              >Teléfono</label
-            >
-            <input
-              type="text"
-              id="phone"
-              formControlName="phone"
-              inputmode="tel"
-              class="w-full p-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-[#049A8F] focus:outline-none transition-all"
-            />
+              <ng-icon name="bootstrapBoxSeam" class="text-2xl"></ng-icon>
+              <span>Mis Pedidos</span>
+            </a>
           </div>
         </div>
-      </div>
+      </aside>
 
-      <!-- Sección: Facturación -->
-      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-        <h2
-          class="text-xl font-semibold mb-6 flex items-center gap-2 text-gray-800"
-        >
-          <ng-icon
-            name="bootstrapReceipt"
-            class="text-2xl text-[#037971]"
-          ></ng-icon>
-          Información Fiscal
-        </h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label
-              for="cuit"
-              class="block text-xs font-bold text-gray-500 uppercase mb-1"
-              >CUIT / CUIL</label
-            >
-            <input
-              type="text"
-              id="cuit"
-              formControlName="cuit"
-              inputmode="numeric"
-              placeholder="Ej: 20123456789"
-              class="w-full p-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-[#049A8F] focus:outline-none transition-all"
-            />
-          </div>
-          <div>
-            <label
-              for="fiscalCondition"
-              class="block text-xs font-bold text-gray-500 uppercase mb-1"
-              >Condición Fiscal</label
-            >
-            <select
-              id="fiscalCondition"
-              formControlName="fiscalCondition"
-              class="w-full p-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-[#049A8F] focus:outline-none transition-all bg-white"
-            >
-              @for (condition of fiscalConditions; track condition) {
-                <option [value]="condition">{{ condition }}</option>
-              }
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <!-- Sección: Dirección de Envío -->
-      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-        <h2
-          class="text-xl font-semibold mb-6 flex items-center gap-2 text-gray-800"
-        >
-          <ng-icon
-            name="bootstrapGeoAlt"
-            class="text-2xl text-[#037971]"
-          ></ng-icon>
-          Dirección de Entrega
-        </h2>
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div class="md:col-span-3">
-            <label
-              for="street"
-              class="block text-xs font-bold text-gray-500 uppercase mb-1"
-              >Calle</label
-            >
-            <input
-              type="text"
-              id="street"
-              formControlName="street"
-              class="w-full p-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-[#049A8F] focus:outline-none transition-all"
-            />
-          </div>
-          <div>
-            <label
-              for="streetNumber"
-              class="block text-xs font-bold text-gray-500 uppercase mb-1"
-              >Número</label
-            >
-            <input
-              type="number"
-              id="streetNumber"
-              formControlName="streetNumber"
-              inputmode="numeric"
-              class="w-full p-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-[#049A8F] focus:outline-none transition-all"
-            />
-          </div>
-          <div>
-            <label
-              for="floor"
-              class="block text-xs font-bold text-gray-500 uppercase mb-1"
-              >Piso</label
-            >
-            <input
-              type="text"
-              id="floor"
-              formControlName="floor"
-              class="w-full p-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-[#049A8F] focus:outline-none transition-all"
-            />
-          </div>
-          <div>
-            <label
-              for="apartment"
-              class="block text-xs font-bold text-gray-500 uppercase mb-1"
-              >Depto</label
-            >
-            <input
-              type="text"
-              id="apartment"
-              formControlName="apartment"
-              class="w-full p-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-[#049A8F] focus:outline-none transition-all"
-            />
-          </div>
-          <div class="md:col-span-2">
-            <label
-              for="city"
-              class="block text-xs font-bold text-gray-500 uppercase mb-1"
-              >Ciudad</label
-            >
-            <input
-              type="text"
-              id="city"
-              formControlName="city"
-              class="w-full p-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-[#049A8F] focus:outline-none transition-all"
-            />
-          </div>
-          <div>
-            <label
-              for="province"
-              class="block text-xs font-bold text-gray-500 uppercase mb-1"
-              >Provincia</label
-            >
-            <input
-              type="text"
-              id="province"
-              formControlName="province"
-              class="w-full p-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-[#049A8F] focus:outline-none transition-all"
-            />
-          </div>
-          <div>
-            <label
-              for="postalCode"
-              class="block text-xs font-bold text-gray-500 uppercase mb-1"
-              >CP</label
-            >
-            <input
-              type="text"
-              id="postalCode"
-              formControlName="postalCode"
-              inputmode="numeric"
-              class="w-full p-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-[#049A8F] focus:outline-none transition-all"
-            />
-          </div>
-        </div>
-      </div>
-
-      <div class="flex justify-end pt-4">
-        <button
-          type="submit"
-          [disabled]="saving() || formPerfil.invalid"
-          class="bg-[#3d4494] text-white px-10 py-4 rounded-xl font-bold shadow-lg hover:bg-[#2d336b] transition-all disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2 active:scale-95"
-        >
-          @if (saving()) {
-            <span
-              class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"
-            ></span>
-          }
-          Guardar Cambios
-        </button>
-      </div>
-    </form>
-
-    <!-- Sección: Mis Pedidos (Tracking) -->
-    <div class="mt-12">
-      <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-        <ng-icon name="bootstrapBoxSeam" class="text-[#3d4494]"></ng-icon>
-        Mis Pedidos
-      </h2>
-
-      <div class="space-y-4">
-        @if (misPedidos().length === 0) {
+      <!-- Panel de Contenido Principal -->
+      <div class="flex-1 w-full lg:w-auto mt-2 lg:mt-0 lg:pl-4 min-w-0">
+        @if (loading()) {
           <div
-            class="bg-white p-12 rounded-2xl border border-dashed border-gray-300 text-center"
+            class="flex justify-center items-center py-20 bg-white/50 backdrop-blur-xl rounded-3xl border border-white/40 shadow-sm min-h-100"
           >
-            <p class="text-gray-400">Todavía no has realizado ningún pedido.</p>
+            <div
+              class="animate-spin rounded-full h-12 w-12 border-b-4 border-[#3d4494]"
+            ></div>
           </div>
         } @else {
-          @for (pedido of misPedidos(); track $index) {
-            <div
-              class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:shadow-md transition-shadow"
-            >
-              <div class="flex items-center gap-4">
-                <div
-                  class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center"
-                >
-                  <ng-icon
-                    name="bootstrapClockHistory"
-                    class="text-[#3d4494] text-xl"
-                  ></ng-icon>
-                </div>
-                <div>
-                  <p
-                    class="text-xs font-bold text-gray-400 uppercase tracking-wider"
-                  >
-                    Orden #{{ pedido.id }}
-                  </p>
-                  <p class="font-bold text-gray-800">
-                    {{ pedido.createdAt | date: "dd/MM/yyyy HH:mm" }}
-                  </p>
-                </div>
-              </div>
-
-              <div class="flex items-center gap-2">
-                <span
-                  [class]="{
-                    'bg-yellow-100 text-yellow-700':
-                      pedido.status === 'Pendiente',
-                    'bg-blue-100 text-blue-700': pedido.status === 'Pagado',
-                    'bg-green-100 text-green-700':
-                      pedido.status === 'Entregado',
-                    'bg-red-100 text-red-700': pedido.status === 'Cancelado',
-                  }"
-                  class="px-3 py-1 rounded-full text-sm font-bold flex items-center gap-2"
-                >
-                  @if (pedido.status === "Pendiente") {
-                    <ng-icon name="bootstrapClockHistory"></ng-icon>
-                  }
-                  @if (pedido.status === "Pagado") {
-                    <ng-icon name="bootstrapBoxSeam"></ng-icon>
-                  }
-                  @if (pedido.status === "Entregado") {
-                    <ng-icon name="bootstrapCheckCircle"></ng-icon>
-                  }
-                  @if (pedido.status === "Cancelado") {
-                    <ng-icon name="bootstrapXCircle"></ng-icon>
-                  }
-                  {{ pedido.status }}
-                </span>
-              </div>
-
-              <div class="text-right">
-                <p class="text-xs font-bold text-gray-400 uppercase">Total</p>
-                <p class="text-xl font-black text-[#3d4494]">
-                  {{ pedido.totalAmount | currency: "ARS" }}
-                </p>
-              </div>
-            </div>
-          }
+          <!-- Rutas Hijas -->
+          <router-outlet
+            (activate)="onActivate($event)"
+            (deactivate)="loading.set(false)"
+          />
         }
       </div>
     </div>
-  }
+  </div>
 </div>

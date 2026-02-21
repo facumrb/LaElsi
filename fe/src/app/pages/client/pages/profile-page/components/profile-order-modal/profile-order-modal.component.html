@@ -1,0 +1,116 @@
+<div
+  class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-100 flex items-center justify-center p-4 md:p-6 animate-in fade-in duration-300"
+  (click)="onClose()"
+>
+  <!-- Modal Content -->
+  <div
+    clickOutside
+    class="bg-white rounded-3xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-300"
+    (click)="$event.stopPropagation()"
+    (clickOutside)="onClose()"
+  >
+    <!-- Modal Header -->
+    <div
+      class="px-6 py-5 border-b border-gray-100 flex items-center justify-between bg-gray-50/50 shrink-0"
+    >
+      <div>
+        <h3 class="text-xl font-bold text-gray-800">
+          Detalle del Pedido #{{ order().id }}
+        </h3>
+        <p class="text-sm font-medium text-gray-500 mt-1">
+          Realizado el {{ order().createdAt | date: "dd 'de' MMMM, yyyy" }}
+        </p>
+      </div>
+      <button
+        (click)="onClose()"
+        class="cursor-pointer w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-[#3d4494]"
+      >
+        <ng-icon name="bootstrapXLg" class="text-lg"></ng-icon>
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="p-6 overflow-y-auto grow custom-scrollbar">
+      <h4 class="text-sm font-bold text-gray-800 mb-4 tracking-wide uppercase">
+        Productos Adquiridos
+      </h4>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        @for (item of order().items; track item.id) {
+          <div
+            class="flex items-center gap-4 p-4 rounded-2xl border border-gray-100 bg-white hover:bg-gray-50/50 transition-colors"
+          >
+            <div
+              class="w-20 h-20 shrink-0 bg-gray-50 rounded-xl overflow-hidden border border-gray-200/60 flex items-center justify-center p-1"
+            >
+              @if (
+                $any(item.product).photos &&
+                $any(item.product).photos.length > 0
+              ) {
+                <img
+                  [src]="
+                    productImagesUrl + $any(item.product).photos[0].fileName
+                  "
+                  [alt]="item.product.name"
+                  class="w-full h-full object-cover mix-blend-multiply rounded-lg"
+                />
+              } @else {
+                <img
+                  src="assets/Webp/no-image.webp"
+                  alt="Sin imagen"
+                  class="w-full h-full object-cover mix-blend-multiply rounded-lg opacity-50"
+                />
+              }
+            </div>
+
+            <div class="grow min-w-0">
+              <h5
+                class="font-bold text-gray-800 text-base leading-snug truncate mb-1"
+                [title]="item.product.name"
+              >
+                {{ item.product.name }}
+              </h5>
+              <p class="text-xs text-gray-500 font-medium mb-2">
+                {{ item.product.brand }}
+              </p>
+
+              <div class="flex items-center justify-between mt-auto">
+                <span
+                  class="bg-gray-100 text-gray-600 text-[11px] font-black px-2 py-1 rounded-md uppercase tracking-wider"
+                >
+                  Cant: {{ item.quantity }}
+                </span>
+                <span class="font-bold text-[#037971]">
+                  {{ item.price | currency: "ARS" : "symbol-narrow" : "1.0-0" }}
+                </span>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+
+      <div
+        class="mt-8 pt-6 border-t border-gray-100 flex items-center justify-between"
+      >
+        <span class="text-gray-500 font-medium tracking-wide"
+          >Estado:
+          <span class="text-gray-800 font-bold ml-1 uppercase">{{
+            order().status
+          }}</span></span
+        >
+        <div class="text-right">
+          <p
+            class="text-xs font-black text-gray-400 uppercase tracking-widest mb-1"
+          >
+            Costo Total
+          </p>
+          <p class="text-2xl font-black text-[#3d4494]">
+            {{
+              order().totalAmount | currency: "ARS" : "symbol-narrow" : "1.0-0"
+            }}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
