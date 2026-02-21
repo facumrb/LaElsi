@@ -11,12 +11,10 @@
     "start:dev:fe": "npm start --prefix ./fe"
   },
   "dependencies": {
-    "rxjs": "^7.8.0",
-    "zone.js": "~0.15.0"
+    "rxjs": "^7.8.0"
   },
   "overrides": {
-    "rxjs": "^7.8.0",
-    "zone.js": "~0.15.0"
+    "rxjs": "^7.8.0"
   },
   "devDependencies": {
     "concurrently": "^9.2.1"

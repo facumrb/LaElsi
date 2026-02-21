@@ -1,5 +1,5 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { IApiOrder, OrderState, DeliveryMethod } from '@models/order.model';
 import { ApiOrderService } from '@services/api-order.service';
 import { AlertService } from '@shared/alert.service';
@@ -9,7 +9,7 @@ import { OrdersToolbarComponent } from './orders-toolbar/orders-toolbar.componen
 
 @Component({
   selector: 'app-orders-page',
-  imports: [CommonModule, OrdersListComponent, OrdersToolbarComponent],
+  imports: [OrdersListComponent, OrdersToolbarComponent],
   templateUrl: './orders-page.component.html',
 })
 export class OrdersPageComponent implements OnInit {

@@ -1,17 +1,11 @@
-import {
-  Directive,
-  ElementRef,
-  Output,
-  EventEmitter,
-  HostListener,
-} from '@angular/core';
+import { Directive, ElementRef, output, HostListener } from '@angular/core';
 
 @Directive({
   selector: '[clickOutside]',
 })
 export class ClickOutsideDirective {
   // Este evento se emitirá cuando el usuario haga clic fuera del menu
-  @Output() clickOutside = new EventEmitter<void>();
+  clickOutside = output<void>();
 
   constructor(private elementRef: ElementRef) {}
 
