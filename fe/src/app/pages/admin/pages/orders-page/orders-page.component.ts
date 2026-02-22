@@ -33,7 +33,8 @@ export class OrdersPageComponent implements OnInit {
         return (
           clientName.includes(query) ||
           order.id.toString().includes(query) ||
-          order.status.toLowerCase().includes(query)
+          order.status.toLowerCase().includes(query) ||
+          order.paymentMethod.toLowerCase().includes(query)
         );
       })
       .sort((a, b) => b.id - a.id);

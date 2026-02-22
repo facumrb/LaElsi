@@ -114,6 +114,9 @@ export class OrderController {
     em.persist(order);
     await em.flush();
 
+    // Poblar relaciones antes de retornar
+    await em.populate(order, ['client', 'items', 'items.product', 'items.product.photos']);
+
     return res.status(201).json(ApiResponse.created('Orden creada exitosamente', order));
   });
 
@@ -159,7 +162,7 @@ export class OrderController {
       Order,
       { client: { id: clientId } },
       {
-        populate: ['items', 'items.product', 'items.product.photos'],
+        populate: ['client', 'items', 'items.product', 'items.product.photos'],
         orderBy: { createdAt: 'DESC' }
       }
     );
@@ -192,6 +195,9 @@ export class OrderController {
 
     await em.flush();
 
+    // Poblar relaciones antes de retornar
+    await em.populate(order, ['client', 'items', 'items.product', 'items.product.photos']);
+
     return res.status(200).json(ApiResponse.success('Estado de la orden actualizado', order));
   });
 
@@ -218,6 +224,9 @@ export class OrderController {
 
     order.deliveryMethod = deliveryMethod;
     await em.flush();
+
+    // Poblar relaciones antes de retornar
+    await em.populate(order, ['client', 'items', 'items.product', 'items.product.photos']);
 
     return res.status(200).json(ApiResponse.success('Método de entrega actualizado', order));
   });
@@ -255,6 +264,9 @@ export class OrderController {
     }
 
     await em.flush();
+
+    // Poblar relaciones antes de retornar (ya estaban pobladas algunas en el findOne, pero aseguramos todas)
+    await em.populate(order, ['client', 'items', 'items.product', 'items.product.photos']);
 
     return res.status(200).json(ApiResponse.success('Orden cancelada correctamente', order));
   });

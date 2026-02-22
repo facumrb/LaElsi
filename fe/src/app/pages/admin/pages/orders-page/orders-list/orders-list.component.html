@@ -8,22 +8,25 @@
       <thead class="hidden lg:table-header-group bg-[#3d4494] text-white">
         <tr>
           <th
-            class="px-6 py-4 font-semibold uppercase tracking-wider w-[10%] rounded-tl-lg"
+            class="px-6 py-4 font-semibold uppercase tracking-wider w-[8%] rounded-tl-lg"
           >
             ID
           </th>
-          <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[20%]">
+          <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[18%]">
             Cliente
           </th>
           <th
-            class="px-6 py-4 font-semibold truncate uppercase tracking-wider w-[22%]"
+            class="px-6 py-4 font-semibold truncate uppercase tracking-wider w-[18%]"
           >
-            Método Entrega
+            Entrega
           </th>
-          <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[20%]">
+          <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[16%]">
             Estado
           </th>
-          <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[15%]">
+          <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[14%]">
+            Pago
+          </th>
+          <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[13%]">
             Total
           </th>
           <th
@@ -130,6 +133,19 @@
               >
                 <ng-icon [name]="getStatusIcon(order.status)"></ng-icon>
                 {{ order.status }}
+              </div>
+            </td>
+
+            <!-- Payment Method Column -->
+            <td
+              class="px-5 py-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle"
+            >
+              <span
+                class="font-bold uppercase text-gray-400 block mb-1 lg:hidden text-xs"
+                >Pago:</span
+              >
+              <div class="font-medium text-gray-700 truncate">
+                {{ order.paymentMethod }}
               </div>
             </td>
 
