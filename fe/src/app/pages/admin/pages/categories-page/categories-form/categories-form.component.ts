@@ -3,7 +3,8 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location, DatePipe } from '@angular/common'; // Importamos DatePipe
 import { ApiCategoryService } from '@services/api-category.service';
-import { ICreateCategory, CategoryState } from '@models/category.model';
+import { ICreateCategory, CategoryState, IApiCategory } from '@models/category.model';
+import { ProductDraftService } from '@services/product-draft.service';
 import { AlertService } from '@shared/alert.service';
 import { FormUtils } from '@shared/form-utils';
 import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
@@ -41,6 +42,7 @@ export class CategoriesFormComponent implements OnInit {
   private categoryService = inject(ApiCategoryService);
   private alertService = inject(AlertService);
   private datePipe = inject(DatePipe);
+  private draftService = inject(ProductDraftService);
 
   formUtils = FormUtils;
 
@@ -160,11 +162,21 @@ export class CategoriesFormComponent implements OnInit {
     }
 
     request$.subscribe({
-      next: () => {
+      next: (response: IApiCategory) => {
         this.alertService.toast(
           this.isEditMode() ? 'Categoría actualizada' : 'Categoría creada',
           'success',
         );
+
+        // Si venimos de la creación de producto, volvemos allí usando la returnUrl
+        const fromProduct = this.routeActive.snapshot.queryParamMap.get('fromProduct');
+        const draft = this.draftService.getDraft();
+
+        if (fromProduct === 'true' && draft && !this.isEditMode()) {
+          this.router.navigateByUrl(`${draft.returnUrl}?newCategoryId=${response.id}`);
+          return;
+        }
+
         this.router.navigate(['/admin/categories']);
       },
       error: (err) => {

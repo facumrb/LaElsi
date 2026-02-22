@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { DatePipe, Location } from '@angular/common';
 import { ApiCategoryService } from '@services/api-category.service';
 import { IApiCategory } from '@models/category.model';
+import { ProductDraftService } from '@services/product-draft.service';
 import { FormUtils } from '@shared/form-utils';
 import { ApiProductService } from '@services/api-product.service';
 import { AlertService } from '@shared/alert.service';
@@ -49,6 +50,7 @@ export class ProductsFormComponent implements OnInit {
   private productService = inject(ApiProductService);
   private alertService = inject(AlertService);
   private datePipe = inject(DatePipe);
+  private draftService = inject(ProductDraftService);
 
   formUtils = FormUtils;
 
@@ -125,12 +127,49 @@ export class ProductsFormComponent implements OnInit {
   ngOnInit() {
     this.loadCategories();
     this.checkEditMode();
+    this.restoreDraftIfAny();
+  }
+
+  restoreDraftIfAny() {
+    if (this.draftService.hasDraft()) {
+      const draft = this.draftService.getDraft()!;
+      this.isEditMode.set(draft.isEditMode);
+      this.productId.set(draft.productId);
+      this.formProduct.patchValue(draft.formValue);
+
+      // Restaurar fotos después de que el componente hijo esté disponible
+      setTimeout(() => {
+        if (this.photoManager) {
+          this.photoManager.restoreState({
+            gallery: draft.photos,
+            photosToDeleteIds: draft.photosToDeleteIds,
+          });
+        }
+      }, 0);
+
+      this.draftService.clearDraft();
+    }
   }
 
   // 1. Cargar categorías para el desplegable
   loadCategories() {
     this.categoryService.getAllCategories().subscribe((data) => {
       this.categories.set(data);
+
+      // Verificamos si hay una nueva categoría para seleccionar automáticamente
+      const newCatId = this.routeActive.snapshot.queryParamMap.get('newCategoryId');
+      if (newCatId) {
+        const cat = data.find((c) => c.id === +newCatId);
+        if (cat) {
+          this.formProduct.patchValue({ category: cat });
+          this.alertService.toast(`Categoría "${cat.name}" seleccionada`, 'success');
+        }
+        // Limpiar el query param para que no se seleccione de nuevo al recargar
+        this.router.navigate([], {
+          queryParams: { newCategoryId: null },
+          queryParamsHandling: 'merge',
+        });
+      }
     });
   }
 
@@ -203,6 +242,24 @@ export class ProductsFormComponent implements OnInit {
 
   goBack() {
     this.location.back();
+  }
+
+  goToCreateCategory() {
+    // Guardar borrador
+    const photoState = this.photoManager.getCurrentState();
+    this.draftService.setDraft({
+      formValue: this.formProduct.getRawValue(),
+      isEditMode: this.isEditMode(),
+      productId: this.productId(),
+      photos: photoState.gallery,
+      photosToDeleteIds: photoState.photosToDeleteIds,
+      returnUrl: this.router.url,
+    });
+
+    // Navegar con query param para saber que venimos de producto
+    this.router.navigate(['/admin/categories/create'], {
+      queryParams: { fromProduct: 'true' },
+    });
   }
 
   get hasRealChanges(): boolean {

@@ -161,6 +161,19 @@ export class PhotoManagerComponent {
     return false;
   });
 
+  // --- LÓGICA DE PERSISTENCIA TEMPORAL ---
+  getCurrentState() {
+    return {
+      gallery: this.gallery(),
+      photosToDeleteIds: [...this.photosToDeleteIds],
+    };
+  }
+
+  restoreState(state: { gallery: IUiPhoto[]; photosToDeleteIds: number[] }) {
+    this.gallery.set(state.gallery);
+    this.photosToDeleteIds = state.photosToDeleteIds;
+  }
+
   // --- LÓGICA DE GUARDADO (Llamada por el Padre) ---
   saveChanges(productId: number): Observable<any> {
     const tasks: Observable<any>[] = [];
