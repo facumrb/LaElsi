@@ -8,5 +8,15 @@
     (onUpdateStatus)="handleUpdateStatus($event)"
     (onUpdateDelivery)="handleUpdateDelivery($event)"
     (onCancel)="handleCancel($event)"
+    (onViewDetails)="openOrderDetail($event)"
   />
 </div>
+
+@if (selectedOrderForModal()) {
+  <app-order-detail-modal
+    [order]="selectedOrderForModal()!"
+    [showClientInfo]="true"
+    (close)="closeOrderDetail()"
+  >
+  </app-order-detail-modal>
+}

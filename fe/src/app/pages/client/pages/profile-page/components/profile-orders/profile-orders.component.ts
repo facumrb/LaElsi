@@ -9,7 +9,7 @@ import {
 } from '@ng-icons/bootstrap-icons';
 import { IApiOrder, OrderState } from '@models/order.model';
 import { environment } from 'src/environments/environment';
-import { ProfileOrderModalComponent } from '../profile-order-modal/profile-order-modal.component';
+import { OrderDetailModalComponent } from '@shared/components/order-detail-modal/order-detail-modal.component';
 
 @Component({
   selector: 'app-profile-orders',
@@ -17,7 +17,7 @@ import { ProfileOrderModalComponent } from '../profile-order-modal/profile-order
     NgIconComponent,
     CurrencyPipe,
     DatePipe,
-    ProfileOrderModalComponent,
+    OrderDetailModalComponent,
   ],
   viewProviders: [
     provideIcons({

@@ -114,6 +114,6 @@
 
 <!-- Renderizar modal de detalle solo si hay un pedido seleccionado -->
 @if (selectedOrder()) {
-  <app-profile-order-modal [order]="selectedOrder()!" (close)="closeModal()">
-  </app-profile-order-modal>
+  <app-order-detail-modal [order]="selectedOrder()!" (close)="closeModal()">
+  </app-order-detail-modal>
 }

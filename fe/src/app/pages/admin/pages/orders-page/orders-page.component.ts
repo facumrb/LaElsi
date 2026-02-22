@@ -6,10 +6,11 @@ import { AlertService } from '@shared/alert.service';
 import { ApiErrorService } from '@shared/api-error.service';
 import { OrdersListComponent } from './orders-list/orders-list.component';
 import { OrdersToolbarComponent } from './orders-toolbar/orders-toolbar.component';
+import { OrderDetailModalComponent } from '@shared/components/order-detail-modal/order-detail-modal.component';
 
 @Component({
   selector: 'app-orders-page',
-  imports: [OrdersListComponent, OrdersToolbarComponent],
+  imports: [OrdersListComponent, OrdersToolbarComponent, OrderDetailModalComponent],
   templateUrl: './orders-page.component.html',
 })
 export class OrdersPageComponent implements OnInit {
@@ -19,6 +20,7 @@ export class OrdersPageComponent implements OnInit {
 
   private ordersRaw = signal<IApiOrder[]>([]);
   searchQuery = signal<string>('');
+  selectedOrderForModal = signal<IApiOrder | null>(null);
 
   ordersFiltered = computed(() => {
     const query = this.searchQuery().toLowerCase().trim();
@@ -43,7 +45,6 @@ export class OrdersPageComponent implements OnInit {
   ngOnInit() {
     this.loadOrders();
   }
-
   loadOrders() {
     this._orderService.getAllOrders().subscribe({
       next: (data) => {
@@ -53,6 +54,14 @@ export class OrdersPageComponent implements OnInit {
         this._errorService.handle(err, 'cargar las órdenes');
       },
     });
+  }
+
+  openOrderDetail(order: IApiOrder) {
+    this.selectedOrderForModal.set(order);
+  }
+
+  closeOrderDetail() {
+    this.selectedOrderForModal.set(null);
   }
 
   handleUpdateStatus(event: { id: number; status: OrderState }) {

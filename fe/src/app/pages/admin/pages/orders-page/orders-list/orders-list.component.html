@@ -44,7 +44,8 @@
           >
             <!-- ID Column -->
             <td
-              class="px-5 pt-6 pb-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle font-bold text-[#3d4494]"
+              class="px-5 pt-6 pb-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle font-bold text-[#3d4494] cursor-pointer hover:underline"
+              (click)="onViewDetails.emit(order)"
             >
               <span
                 class="font-bold uppercase text-gray-400 mb-2 block lg:hidden text-xs"
@@ -55,13 +56,14 @@
 
             <!-- Client Column -->
             <td
-              class="px-5 py-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle"
+              class="px-5 py-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle cursor-pointer group"
+              (click)="onViewDetails.emit(order)"
             >
               <span
                 class="font-bold uppercase text-gray-400 block mb-1 lg:hidden text-xs"
                 >Cliente:</span
               >
-              <div class="text-gray-900 font-semibold truncate">
+              <div class="text-gray-900 font-semibold truncate group-hover:text-[#3d4494] group-hover:underline">
                 {{ order.client.name }} {{ order.client.lastName }}
               </div>
               <div
@@ -173,6 +175,16 @@
                   class="font-bold uppercase text-gray-400 lg:hidden text-xs w-full mb-2"
                   >Acciones:</span
                 >
+
+                <!-- Ver Detalle Button -->
+                <button
+                  (click)="onViewDetails.emit(order)"
+                  class="cursor-pointer bg-gray-100 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-gray-200 transition-colors flex items-center gap-1"
+                  title="Ver detalle completo"
+                >
+                  <ng-icon name="bootstrapEye"></ng-icon>
+                  Detalle
+                </button>
 
                 <!-- Next Status Buttons -->
                 @for (nextState of getNextStates(order); track nextState) {

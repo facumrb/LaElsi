@@ -12,6 +12,7 @@ import {
   bootstrapClock,
   bootstrapCheck2All,
   bootstrapArrowRight,
+  bootstrapEye,
 } from '@ng-icons/bootstrap-icons';
 
 @Component({
@@ -27,6 +28,7 @@ import {
     bootstrapClock,
     bootstrapCheck2All,
     bootstrapArrowRight,
+    bootstrapEye,
   }),
   templateUrl: './orders-list.component.html',
 })
@@ -37,6 +39,7 @@ export class OrdersListComponent {
   onUpdateStatus = output<{ id: number; status: OrderState }>();
   onUpdateDelivery = output<{ id: number; method: DeliveryMethod }>();
   onCancel = output<number>();
+  onViewDetails = output<IApiOrder>();
 
   OrderState = OrderState;
   DeliveryMethod = DeliveryMethod;
