@@ -45,3 +45,28 @@ export type ICreateProduct = Omit<
 };
 
 export type IUpdateProduct = Partial<ICreateProduct>;
+
+// Las siguientes son interfaces para almacenar el estado de un producto en edición
+export interface IProductDraftForm {
+  name?: string | null;
+  description?: string | null;
+  price?: number | null;
+  brand?: string | null;
+  totalSold?: number | null;
+  stock?: number | null;
+  state?: ProductState | null;
+  category?: IApiCategory | null;
+  photos?: any[] | null;
+  createdAt?: string | null;
+  updatedAt?: string | null;
+  deletedAt?: string | null;
+}
+
+export interface IProductDraft {
+  formValue: IProductDraftForm;
+  isEditMode: boolean;
+  productId: number | null;
+  photos: IApiProductPhoto[] | any[];
+  photosToDeleteIds: number[];
+  returnUrl: string;
+}

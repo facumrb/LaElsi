@@ -127,7 +127,6 @@ export class BulkPriceModalComponent implements OnDestroy {
 
   setAdjustmentType(type: 'percentage' | 'fixed') {
     this.adjustmentType.set(type);
-    // El effect se encargará de refrescar
   }
 
   onValueInput(event: Event) {
@@ -140,12 +139,8 @@ export class BulkPriceModalComponent implements OnDestroy {
   selectRoundingRule(rule: string) {
     this.roundingRule.set(rule);
     this.showRoundingOptions.set(false);
-    // El effect se encargará de refrescar
   }
 
-  // --- API CALLS ---
-
-  // Ahora acepta parámetros para ser llamado desde el effect
   private getPreview(ids: number[], type: string, val: number, rule: string) {
     this.loadingPreview.set(true);
     this._apiService.previewBulkPriceChange(ids, type, val, rule).subscribe({
@@ -162,8 +157,6 @@ export class BulkPriceModalComponent implements OnDestroy {
 
   onApply() {
     if (this.allInvalid()) return;
-
-    // YA NO HAY CONFIRMACIÓN, se ejecuta directo
     this.loadingApply.set(true);
 
     this._apiService

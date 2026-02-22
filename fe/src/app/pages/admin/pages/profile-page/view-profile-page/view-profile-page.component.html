@@ -1,112 +1,162 @@
-<div class="animate-in fade-in slide-in-from-bottom-4 duration-500 overflow-hidden">
+<div class="animate-fadeIn container mx-auto">
   <!-- Header Card -->
   <div
-    class="bg-white/80 backdrop-blur-xl p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-white/50 relative mb-8 overflow-hidden group"
+    class="bg-white p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-100 relative mb-8 overflow-hidden group flex flex-col md:flex-row items-center gap-8 text-center md:text-left z-10"
   >
-    <div class="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 transition-transform duration-700">
-      <ng-icon name="bootstrapShieldCheck" class="text-9xl text-[#3d4494]"></ng-icon>
+    <!-- Profile Picture -->
+    <div class="relative">
+      <div
+        class="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-xl bg-white flex items-center justify-center"
+      >
+        @if (admin()?.photo) {
+          <img
+            [src]="imageBaseUrl + admin()?.photo?.fileName"
+            [alt]="admin()?.name"
+            class="w-full h-full object-cover"
+          />
+        } @else {
+          <div
+            class="bg-[#3d4494]/10 text-[#3d4494] w-full h-full flex items-center justify-center text-4xl font-black tracking-widest"
+          >
+            {{ getInitials() }}
+          </div>
+        }
+      </div>
     </div>
 
-    <div class="flex flex-col md:flex-row items-center gap-8 relative z-10 text-center md:text-left">
-      <!-- Profile Picture -->
-      <div class="relative">
-        <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-xl bg-gray-50 flex items-center justify-center group-hover:rotate-3 transition-transform duration-500">
-          @if (admin()?.photo) {
-            <img
-              [src]="imageBaseUrl + admin()?.photo?.fileName"
-              [alt]="admin()?.name"
-              class="w-full h-full object-cover"
-            />
-          } @else {
-            <div class="bg-[#3d4494]/10 text-[#3d4494] w-full h-full flex items-center justify-center capitalize text-5xl font-bold">
-              {{ admin()?.name?.charAt(0) }}
-            </div>
-          }
-        </div>
-        <div class="absolute -bottom-2 -right-2 bg-emerald-500 text-white p-2 rounded-full shadow-lg border-2 border-white animate-bounce-subtle">
-          <ng-icon name="bootstrapShieldCheck" class="text-lg"></ng-icon>
-        </div>
-      </div>
-
-      <div class="grow">
-        <h1 class="text-3xl font-black text-gray-900 tracking-tight leading-tight mb-2 capitalize">
-          {{ admin()?.name }} {{ admin()?.lastName }}
-        </h1>
-        <div class="flex flex-wrap items-center justify-center md:justify-start gap-4">
-          <span class="px-4 py-1.5 rounded-full bg-[#3d4494] text-white text-xs font-black uppercase tracking-widest shadow-lg shadow-[#3d4494]/20 flex items-center gap-2">
-            Administrador
-          </span>
-          <span class="flex items-center gap-1.5 text-gray-400 font-medium text-sm">
-            <ng-icon name="bootstrapShieldCheck" class="text-emerald-500"></ng-icon>
-            Acceso Total
-          </span>
-        </div>
-      </div>
-
-      <div class="flex gap-3">
-        <button
-          (click)="editarPerfil()"
-          class="cursor-pointer px-6 py-3 rounded-2xl bg-white border border-gray-200 text-[#3d4494] font-bold text-sm hover:bg-gray-50 hover:border-[#3d4494]/30 hover:-translate-y-1 transition-all duration-300 shadow-sm flex items-center gap-2"
+    <div class="grow">
+      <h1
+        class="text-3xl font-black text-gray-900 tracking-tight leading-tight mb-2 capitalize"
+      >
+        {{ admin()?.name }} {{ admin()?.lastName }}
+      </h1>
+      <div
+        class="flex flex-wrap items-center justify-center md:justify-start gap-4"
+      >
+        <span
+          class="px-4 py-1.5 rounded-full bg-[#3d4494] text-white text-xs font-black uppercase tracking-widest flex items-center gap-2"
         >
-          <ng-icon name="bootstrapPencil"></ng-icon>
-          Editar Perfil
-        </button>
+          Administrador
+        </span>
+        <span
+          class="flex items-center gap-1.5 text-gray-500 font-medium text-sm"
+        >
+          <ng-icon
+            name="bootstrapShieldCheck"
+            class="text-emerald-500"
+          ></ng-icon>
+          Acceso Total
+        </span>
       </div>
+    </div>
+
+    <div class="flex gap-3">
+      <button
+        (click)="editarPerfil()"
+        class="cursor-pointer px-6 py-3 rounded-2xl bg-white border border-gray-100 text-[#3d4494] font-bold text-sm hover:bg-gray-50 hover:border-[#3d4494]/30 hover:-translate-y-1 transition-all duration-300 shadow-sm flex items-center gap-2"
+      >
+        <ng-icon name="bootstrapPencil"></ng-icon>
+        Editar Perfil
+      </button>
     </div>
   </div>
 
   <!-- Detail Grid -->
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
     <!-- Main Info -->
-    <div class="lg:col-span-2 space-y-8">
-      <div class="bg-white p-8 rounded-3xl shadow-[0_4px_20px_rgb(0,0,0,0.06)] border border-gray-100">
-        <h2 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-8 flex items-center gap-2">
+    <div class="lg:col-span-2 h-full">
+      <div
+        class="bg-white p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-100 h-full"
+      >
+        <h2
+          class="text-xs font-black text-gray-500 uppercase tracking-widest mb-8 flex items-center gap-2"
+        >
           <span class="w-8 h-px bg-gray-200"></span>
           Información Personal
         </h2>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-y-8 gap-x-12">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 relative">
           <!-- Item -->
-          <div class="flex items-start gap-4 group">
-            <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300">
+          <div
+            class="flex items-start gap-4 p-5 bg-gray-50/50 rounded-2xl border border-gray-100"
+          >
+            <div
+              class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 shadow-sm"
+            >
               <ng-icon name="bootstrapPerson" class="text-xl"></ng-icon>
             </div>
             <div>
-              <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5">Nombre Completo</p>
-              <p class="text-gray-800 font-bold text-lg capitalize">{{ admin()?.name }} {{ admin()?.lastName }}</p>
+              <p
+                class="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1.5"
+              >
+                Nombre Completo
+              </p>
+              <p class="text-gray-800 font-bold text-lg capitalize">
+                {{ admin()?.name }} {{ admin()?.lastName }}
+              </p>
             </div>
           </div>
 
           <!-- Item -->
-          <div class="flex items-start gap-4 group">
-            <div class="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300">
+          <div
+            class="flex items-start gap-4 p-5 bg-gray-50/50 rounded-2xl border border-gray-100"
+          >
+            <div
+              class="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0 shadow-sm"
+            >
               <ng-icon name="bootstrapPersonVcard" class="text-xl"></ng-icon>
             </div>
             <div>
-              <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5">DNI / Identificación</p>
-              <p class="text-gray-800 font-bold text-lg tracking-wider">{{ admin()?.dni || '---' }}</p>
+              <p
+                class="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1.5"
+              >
+                DNI
+              </p>
+              <p class="text-gray-800 font-bold text-lg tracking-wider">
+                {{ admin()?.dni }}
+              </p>
             </div>
           </div>
 
           <!-- Item -->
-          <div class="flex items-start gap-4 group">
-            <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300">
+          <div
+            class="flex items-start gap-4 p-5 bg-gray-50/50 rounded-2xl border border-gray-100"
+          >
+            <div
+              class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 shadow-sm"
+            >
               <ng-icon name="bootstrapPhone" class="text-xl"></ng-icon>
             </div>
             <div>
-              <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5">Teléfono Movil</p>
-              <p class="text-gray-800 font-bold text-lg tracking-tight">{{ admin()?.phone || '---' }}</p>
+              <p
+                class="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1.5"
+              >
+                Teléfono Movil
+              </p>
+              <p class="text-gray-800 font-bold text-lg tracking-tight">
+                {{ admin()?.phone }}
+              </p>
             </div>
           </div>
 
           <!-- Item -->
-          <div class="flex items-start gap-4 group">
-            <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300">
+          <div
+            class="flex items-start gap-4 p-5 bg-gray-50/50 rounded-2xl border border-gray-100"
+          >
+            <div
+              class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 shadow-sm"
+            >
               <ng-icon name="bootstrapEnvelope" class="text-xl"></ng-icon>
             </div>
             <div>
-              <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5">Correo Electrónico</p>
-              <p class="text-gray-800 font-bold text-lg break-all">{{ admin()?.email }}</p>
+              <p
+                class="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1.5"
+              >
+                Correo Electrónico
+              </p>
+              <p class="text-gray-800 font-bold text-lg break-all">
+                {{ admin()?.email }}
+              </p>
             </div>
           </div>
         </div>
@@ -114,35 +164,64 @@
     </div>
 
     <!-- Side View / Quick actions -->
-    <div class="space-y-6">
-      <div class="bg-[#3d4494] p-8 rounded-3xl shadow-xl shadow-[#3d4494]/20 relative overflow-hidden group">
-        <div class="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-1000"></div>
+    <div class="h-full">
+      <div
+        class="bg-white p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-100 relative overflow-hidden h-full"
+      >
+        <h3
+          class="text-xs font-black text-gray-500 uppercase tracking-widest mb-8 flex items-center gap-2 relative z-10"
+        >
+          <span class="w-8 h-px bg-gray-200"></span>
+          Cuenta de Acceso
+        </h3>
 
-        <h3 class="text-white font-black text-xs uppercase tracking-widest mb-6 relative z-10">Cuenta de Acceso</h3>
-
-        <div class="space-y-4 relative z-10">
-          <div class="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/10">
-            <p class="text-white/60 text-[10px] font-black uppercase tracking-widest mb-1">Nombre de Usuario</p>
-            <p class="text-white font-bold text-lg tracking-wide">{{ admin()?.username }}</p>
+        <div class="space-y-6 relative z-10">
+          <div
+            class="flex items-start gap-4 p-5 bg-gray-50/50 rounded-2xl border border-gray-100"
+          >
+            <div
+              class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 shadow-sm"
+            >
+              <ng-icon name="bootstrapPerson" class="text-xl"></ng-icon>
+            </div>
+            <div>
+              <p
+                class="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1.5"
+              >
+                Nombre de Usuario
+              </p>
+              <p class="text-gray-800 font-bold text-lg tracking-wide">
+                {{ admin()?.username }}
+              </p>
+            </div>
           </div>
 
-          <div class="p-4 rounded-2xl border border-white/10 flex items-center justify-between">
-            <p class="text-white/60 text-[10px] font-black uppercase tracking-widest">Estado</p>
-            <span class="flex items-center gap-2 text-emerald-300 text-xs font-bold">
-              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              Activo
-            </span>
+          <div
+            class="flex items-start gap-4 p-5 bg-gray-50/50 rounded-2xl border border-gray-100 relative"
+          >
+            <div
+              class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 shadow-sm"
+            >
+              <ng-icon name="bootstrapShieldCheck" class="text-xl"></ng-icon>
+            </div>
+            <div>
+              <p
+                class="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1.5"
+              >
+                Estado
+              </p>
+              <span
+                class="flex items-center gap-2 text-emerald-600 text-sm font-bold mt-1"
+              >
+                <span
+                  class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"
+                ></span>
+                Activo
+              </span>
+            </div>
           </div>
         </div>
       </div>
-
-      <button
-        (click)="goBack()"
-        class="cursor-pointer w-full py-4 rounded-2xl bg-gray-100/80 text-gray-600 font-bold text-sm hover:bg-gray-200 transition-all flex items-center justify-center gap-2 border border-transparent hover:border-gray-300"
-      >
-        <ng-icon name="bootstrapArrowLeft"></ng-icon>
-        Volver al Dashboard
-      </button>
     </div>
   </div>
 </div>

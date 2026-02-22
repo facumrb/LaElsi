@@ -83,7 +83,11 @@
             for="order"
             class="block text-sm font-medium text-gray-700 mb-1"
           >
-            Orden de Visualización <span class="text-red-500">*</span>
+            Orden de Visualización
+            <span class="text-xs font-normal text-gray-500"
+              >(Máx: {{ maxOrder() }})</span
+            >
+            <span class="text-red-500">*</span>
           </label>
           <input
             type="number"
@@ -91,6 +95,8 @@
             name="order"
             formControlName="order"
             min="0"
+            [max]="maxOrder()"
+            inputmode="numeric"
             placeholder="Ej: 0, 1, 2..."
             class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm sm:text-sm"
           />

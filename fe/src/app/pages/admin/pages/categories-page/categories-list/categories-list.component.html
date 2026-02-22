@@ -8,14 +8,12 @@
       <thead class="hidden lg:table-header-group bg-[#3d4494] text-white">
         <tr>
           <th
-            class="px-6 py-4 font-semibold uppercase tracking-wider w-[25%] rounded-tl-lg"
-          >
-            Nombre
-          </th>
-          <th
-            class="px-6 py-4 text-center font-semibold uppercase tracking-wider whitespace-nowrap w-[10%]"
+            class="px-6 py-4 text-center font-semibold uppercase tracking-wider whitespace-nowrap w-[8%] rounded-tl-lg"
           >
             Orden
+          </th>
+          <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[27%]">
+            Nombre
           </th>
           <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[32%]">
             Descripción
@@ -44,12 +42,12 @@
             class="flex flex-col relative lg:static bg-white rounded-xl shadow border border-gray-200 mb-4 mx-4 mt-4 lg:mx-0 lg:mt-0 lg:mb-0 lg:table-row lg:shadow-none lg:border-0 lg:rounded-none hover:bg-gray-50 transition-colors"
           >
             <td
-              class="px-5 pt-6 pb-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-top"
+              class="px-5 pt-6 pb-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle relative"
               [class.lg:rounded-bl-lg]="isLast"
               [class.lg:border-b-0]="isLast"
             >
               <span
-                class="absolute top-3 right-3 lg:hidden inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border"
+                class="absolute top-4 right-4 lg:hidden inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border"
                 [class]="
                   category.state === 'Activo'
                     ? 'bg-green-50 text-green-700 border-green-200'
@@ -66,6 +64,18 @@
               </span>
 
               <span class="font-bold uppercase text-gray-500 mr-2 lg:hidden"
+                >Orden:</span
+              >
+              <span class="text-gray-900 font-medium lg:text-center">{{
+                category.order
+              }}</span>
+            </td>
+
+            <td
+              class="px-5 py-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle"
+              [class.lg:border-b-0]="isLast"
+            >
+              <span class="font-bold uppercase text-gray-500 mr-2 lg:hidden"
                 >Nombre:</span
               >
               <span
@@ -77,19 +87,7 @@
             </td>
 
             <td
-              class="px-5 py-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-top"
-              [class.lg:border-b-0]="isLast"
-            >
-              <span class="font-bold uppercase text-gray-500 mr-2 lg:hidden"
-                >Orden:</span
-              >
-              <span class="text-gray-900 font-medium lg:text-center block">{{
-                category.order
-              }}</span>
-            </td>
-
-            <td
-              class="px-5 py-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-top"
+              class="px-5 py-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle"
               [class.lg:border-b-0]="isLast"
             >
               <span

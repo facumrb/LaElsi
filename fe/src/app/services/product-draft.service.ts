@@ -1,13 +1,5 @@
 import { Injectable } from '@angular/core';
-
-export interface IProductDraft {
-  formValue: any;
-  isEditMode: boolean;
-  productId: number | null;
-  photos: any[];
-  photosToDeleteIds: number[];
-  returnUrl: string;
-}
+import { IProductDraft } from '@models/product.model';
 
 @Injectable({
   providedIn: 'root',

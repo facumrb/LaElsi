@@ -13,12 +13,7 @@ import { OrderDetailModalComponent } from '@shared/components/order-detail-modal
 
 @Component({
   selector: 'app-profile-orders',
-  imports: [
-    NgIconComponent,
-    CurrencyPipe,
-    DatePipe,
-    OrderDetailModalComponent,
-  ],
+  imports: [NgIconComponent, CurrencyPipe, DatePipe, OrderDetailModalComponent],
   viewProviders: [
     provideIcons({
       bootstrapClockHistory,
