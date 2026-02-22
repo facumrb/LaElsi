@@ -4,6 +4,7 @@ import { Client } from '../user/client/client.entity.js';
 import { OrderLine } from './order-line.entity.js';
 import { OrderState } from '../shared/enums/state.enum.js';
 import { DeliveryMethod } from '../shared/enums/delivery-method.enum.js';
+import { PaymentMethod } from '../shared/enums/payment-method.enum.js';
 import { Product } from '../product/product.entity.js';
 
 @Entity()
@@ -19,6 +20,9 @@ export class Order extends CustomBaseEntity {
 
   @Enum(() => DeliveryMethod)
   deliveryMethod: DeliveryMethod = DeliveryMethod.RetiroSucursal;
+  
+  @Enum(() => PaymentMethod)
+  paymentMethod: PaymentMethod = PaymentMethod.Transferencia;
 
   @Property({ nullable: false, type: 'decimal', precision: 10, scale: 2 })
   totalAmount: number = 0;

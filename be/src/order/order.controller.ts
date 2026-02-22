@@ -8,11 +8,13 @@ import { DeliveryMethod } from '../shared/enums/delivery-method.enum.js';
 import { asyncHandler } from '../shared/errors/asyncHandler.js';
 import { AppError } from '../shared/errors/appError.js';
 import { ApiResponse } from '../shared/utils/apiResponse.js';
+import { PaymentMethod } from '../shared/enums/payment-method.enum.js';
 
 // --- DTOs ---
 interface CreateOrderDto {
   clientId: number;
   deliveryMethod?: DeliveryMethod;
+  paymentMethod: PaymentMethod;
   items: {
     productId: number;
     quantity: number;
@@ -25,11 +27,12 @@ interface UpdateOrderStatusDto {
 
 const VALID_ORDER_STATES = Object.values(OrderState);
 const VALID_DELIVERY_METHODS = Object.values(DeliveryMethod);
+const VALID_PAYMENT_METHODS = Object.values(PaymentMethod);
 
 export class OrderController {
   static create = asyncHandler(async (req: Request, res: Response) => {
     const em = orm.em;
-    const { clientId, items, deliveryMethod } = req.body;
+    const { clientId, items, deliveryMethod, paymentMethod } = req.body;
 
     // Validar clientId
     if (clientId === undefined || clientId === null || isNaN(Number(clientId))) {
@@ -56,6 +59,18 @@ export class OrderController {
       throw new AppError(`Método de entrega inválido. Los métodos válidos son: ${VALID_DELIVERY_METHODS.join(', ')}`, 400);
     }
 
+    // Validar paymentMethod
+    if (!paymentMethod || !VALID_PAYMENT_METHODS.includes(paymentMethod)) {
+      throw new AppError(`Método de pago inválido o no proporcionado. Los métodos válidos son: ${VALID_PAYMENT_METHODS.join(', ')}`, 400);
+    }
+
+    // Validar compatibilidad entre método de entrega y de pago
+    // REGLA: Pago Local (Efectivo/Tarjeta en persona) solo es válido para retiro en sucursal
+    const finalDeliveryMethod = deliveryMethod || DeliveryMethod.RetiroSucursal;
+    if (paymentMethod === PaymentMethod.Local && finalDeliveryMethod === DeliveryMethod.Envio) {
+      throw new AppError('El pago en el local no está disponible para envíos a domicilio. Por favor, seleccione Transferencia.', 400);
+    }
+
     // Validar cliente
     const client = await em.findOne(Client, { id: Number(clientId) });
     if (!client) {
@@ -64,7 +79,8 @@ export class OrderController {
 
     const order = new Order();
     order.client = client;
-    order.deliveryMethod = deliveryMethod || DeliveryMethod.RetiroSucursal;
+    order.deliveryMethod = finalDeliveryMethod;
+    order.paymentMethod = paymentMethod;
 
     // items is array of { productId, quantity }
     for (const item of items) {

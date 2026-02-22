@@ -72,6 +72,7 @@ CREATE TYPE fiscal_condition AS ENUM ('ConsumidorFinal', 'ResponsableInscripto',
 CREATE TYPE currency AS ENUM ('ARS', 'USD');
 CREATE TYPE photo_type AS ENUM ('product_photo', 'user_photo');
 CREATE TYPE adjustment_type AS ENUM ('fixed', 'percentage');
+CREATE TYPE payment_method AS ENUM ('Transferencia', 'Local');
 
 -- TABLA: USER
 CREATE TABLE "user" (
@@ -167,6 +168,7 @@ CREATE TABLE "order" (
   client_id       INTEGER NOT NULL REFERENCES "user"(id),
   status          order_state DEFAULT 'Pendiente',
   delivery_method delivery_method DEFAULT 'RetiroSucursal',
+  payment_method  payment_method DEFAULT 'Transferencia',
   total_amount    NUMERIC(10,2) DEFAULT 0,
   date_time       TIMESTAMPTZ DEFAULT NOW(),
   created_at      TIMESTAMPTZ DEFAULT NOW(),
@@ -346,6 +348,7 @@ Implementar en PostgreSQL para ser llamada vía `rpc`:
 CREATE OR REPLACE FUNCTION create_order(
   p_client_id INTEGER,
   p_delivery_method delivery_method,
+  p_payment_method payment_method,
   p_items JSONB
 ) RETURNS INTEGER AS $$
 DECLARE
@@ -354,7 +357,8 @@ DECLARE
   v_product RECORD;
   v_current_price NUMERIC;
 BEGIN
-  INSERT INTO "order" (client_id, delivery_method) VALUES (p_client_id, p_delivery_method)
+  INSERT INTO "order" (client_id, delivery_method, payment_method) 
+  VALUES (p_client_id, p_delivery_method, p_payment_method)
   RETURNING id INTO v_order_id;
 
   FOR v_item IN SELECT * FROM jsonb_array_elements(p_items) LOOP

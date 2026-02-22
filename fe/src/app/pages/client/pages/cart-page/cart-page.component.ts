@@ -114,6 +114,7 @@ export class CartPageComponent {
     const orderData = {
       clientId: user.id,
       deliveryMethod: this.shippingMethod(),
+      paymentMethod: this.paymentMethod(),
       items: this.items().map((item) => ({
         productId: item.product.id,
         quantity: item.quantity,

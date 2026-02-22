@@ -7,6 +7,7 @@ import {
     ICreateOrder,
     OrderState,
     DeliveryMethod,
+    PaymentMethod,
 } from '@models/order.model';
 
 @Injectable({

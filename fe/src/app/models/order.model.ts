@@ -36,6 +36,7 @@ export interface IApiOrder {
   id: number;
   status: OrderState;
   deliveryMethod: DeliveryMethod;
+  paymentMethod: PaymentMethod;
   totalAmount: number;
   dateTime: string;
   client: {
@@ -62,6 +63,7 @@ export interface ICreateOrderItem {
 export interface ICreateOrder {
   clientId: number;
   deliveryMethod?: DeliveryMethod;
+  paymentMethod: PaymentMethod;
   items: ICreateOrderItem[];
 }
 
