@@ -1,204 +1,213 @@
-<div class="container mt-5">
-  @if (loading) {
-    <h5 class="text-center">Loading...</h5>
-  } @else {
-    <div class="card">
-      <div class="card-body">
-        @if (errorMessage) {
-          <div class="alert alert-danger text-center">
-            {{ errorMessage }}
-          </div>
-        }
-        <form
-          [formGroup]="formEditProfile"
-          class="needs-validation"
-          novalidate
-          (ngSubmit)="guardarCambios($event)"
-        >
-          <div class="row">
-            <!-- Nombre -->
-            <div class="col-md-6 mb-3">
-              <label for="name" class="form-label">Nombre</label>
-              <input
-                type="text"
-                class="form-control"
-                id="name"
-                formControlName="name"
-                name="name"
-                [class]="{
-                  'is-invalid':
-                    hasErrors('name', 'required') ||
-                    hasErrors('name', 'pattern'),
-                }"
-              />
-              <!-- Contenedor de mensajes de error -->
-              <div class="error-container">
-                @if (hasErrors("name", "required")) {
-                  <div class="text-danger">El nombre es obligatorio.</div>
-                }
-                @if (hasErrors("name", "pattern")) {
-                  <div class="text-danger">
-                    El formato del nombre es inválido.
-                  </div>
-                }
-              </div>
-            </div>
-
-            <!-- Apellido -->
-            <div class="col-md-6 mb-3">
-              <label for="lastName" class="form-label">Apellido</label>
-              <input
-                type="text"
-                class="form-control"
-                id="lastName"
-                name="lastName"
-                formControlName="lastName"
-                [class]="{
-                  'is-invalid':
-                    hasErrors('lastName', 'required') ||
-                    hasErrors('lastName', 'pattern'),
-                }"
-              />
-              <!-- Contenedor de mensajes de error -->
-              <div class="error-container">
-                @if (hasErrors("lastName", "required")) {
-                  <div class="text-danger">El apellido es obligatorio.</div>
-                }
-                @if (hasErrors("lastName", "pattern")) {
-                  <div class="text-danger">
-                    El formato del apellido es inválido.
-                  </div>
-                }
-              </div>
-            </div>
-          </div>
-
-          <div class="row">
-            <!-- Teléfono -->
-            <div class="col-md-6 mb-3">
-              <label for="phone" class="form-label">Teléfono</label>
-              <input
-                type="text"
-                class="form-control"
-                id="phone"
-                name="phone"
-                formControlName="phone"
-                inputmode="tel"
-                [class]="{
-                  'is-invalid':
-                    hasErrors('phone', 'required') ||
-                    hasErrors('phone', 'pattern'),
-                }"
-              />
-              <!-- Contenedor de mensajes de error -->
-              <div class="error-container">
-                @if (hasErrors("phone", "required")) {
-                  <div class="text-danger">El teléfono es obligatorio.</div>
-                }
-                @if (hasErrors("phone", "pattern")) {
-                  <div class="text-danger">
-                    El formato del teléfono es inválido.
-                  </div>
-                }
-              </div>
-            </div>
-
-            <!-- Usuario -->
-            <div class="col-md-6 mb-3">
-              <label for="username" class="form-label">Usuario</label>
-              <input
-                type="text"
-                class="form-control"
-                id="username"
-                name="username"
-                formControlName="username"
-                [class]="{
-                  'is-invalid':
-                    hasErrors('username', 'required') ||
-                    hasErrors('username', 'pattern'),
-                }"
-              />
-              <div class="error-container">
-                @if (hasErrors("username", "required")) {
-                  <div class="text-danger">El usuario es obligatorio.</div>
-                }
-                @if (hasErrors("username", "pattern")) {
-                  <div class="text-danger">
-                    El formato del usuario es inválido.
-                  </div>
-                }
-              </div>
-            </div>
-          </div>
-
-          <div class="row">
-            <!-- DNI -->
-            <div class="col-md-6 mb-3">
-              <label for="dni" class="form-label">DNI</label>
-              <input
-                type="text"
-                class="form-control"
-                id="dni"
-                name="dni"
-                formControlName="dni"
-                inputmode="numeric"
-                [class]="{
-                  'is-invalid':
-                    hasErrors('dni', 'required') || hasErrors('dni', 'pattern'),
-                }"
-              />
-              <div class="error-container">
-                @if (hasErrors("dni", "required")) {
-                  <div class="text-danger">El DNI es obligatorio.</div>
-                }
-                @if (hasErrors("dni", "pattern")) {
-                  <div class="text-danger">El formato del DNI es inválido.</div>
-                }
-              </div>
-            </div>
-
-            <!-- Email -->
-            <div class="col-md-6 mb-3">
-              <label for="email" class="form-label">Email</label>
-              <input
-                type="email"
-                class="form-control"
-                id="email"
-                name="email"
-                formControlName="email"
-                inputmode="email"
-                [class]="{
-                  'is-invalid':
-                    hasErrors('email', 'required') ||
-                    hasErrors('email', 'email'),
-                }"
-              />
-              <div class="error-container">
-                @if (hasErrors("email", "required")) {
-                  <div class="text-danger">El correo es obligatorio.</div>
-                }
-                @if (hasErrors("email", "email")) {
-                  <div class="text-danger">
-                    El formato del correo es inválido.
-                  </div>
-                }
-              </div>
-            </div>
-          </div>
-
-          <!-- Botones -->
-          <div class="d-flex justify-content-between">
-            <button type="submit" class="btn btn-primary">Guardar</button>
-            <button
-              type="button"
-              class="btn btn-secondary"
-              (click)="volverAtras()"
-            >
-              Cancelar
-            </button>
-          </div>
-        </form>
+<div class="animate-fadeIn max-w-4xl mx-auto">
+  <!-- Header -->
+  <div class="mb-8 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-12 h-12 rounded-2xl bg-[#3d4494] text-white flex items-center justify-center shadow-lg shadow-[#3d4494]/20 uppercase">
+        <ng-icon name="bootstrapSave" class="text-2xl"></ng-icon>
+      </div>
+      <div>
+        <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-0.5">Configuración de Cuenta</span>
+        <h1 class="text-2xl font-black text-gray-900 tracking-tight">Editar Mi Perfil</h1>
       </div>
     </div>
-  }
+
+    <button
+      (click)="goBack()"
+      class="cursor-pointer inline-flex items-center gap-2 rounded-2xl bg-white px-5 py-2.5 text-sm font-bold text-gray-600 shadow-sm border border-gray-100 hover:bg-gray-50 hover:border-gray-200 transition-all duration-300"
+    >
+      <ng-icon name="bootstrapArrowLeft" class="text-lg"></ng-icon>
+      Cancelar
+    </button>
+  </div>
+
+  <div class="bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-gray-100 overflow-hidden">
+    <form [formGroup]="formEditProfile" (ngSubmit)="onSubmit()" class="p-8 md:p-10">
+
+      <!-- Photo Selection (Main Position) -->
+      <div class="mb-12 pb-10 border-b border-gray-50">
+        <h2 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-6 flex items-center gap-2">
+          Foto de Perfil
+        </h2>
+        <div class="flex flex-col md:flex-row items-center gap-10">
+          <div class="w-full md:w-auto">
+            <app-photo-manager
+              [currentPhoto]="currentPhoto()"
+              [userFullName]="formEditProfile.get('name')?.value + ' ' + formEditProfile.get('lastName')?.value"
+            ></app-photo-manager>
+          </div>
+          <div class="grow max-w-md">
+            <p class="text-gray-500 text-sm leading-relaxed">
+              Sube una imagen cuadrada profesional para tu cuenta. Esta foto será visible en el panel lateral y en tus registros administrativos.
+            </p>
+            <p class="text-[11px] font-bold text-blue-600 mt-2 flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+              Formatos recomendados: JPG, PNG, WEBP.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-6">
+        <!-- Personal Data Section -->
+        <div class="md:col-span-2">
+          <h2 class="text-xs font-black text-[#3d4494] uppercase tracking-widest mb-6 mt-2 flex items-center gap-2">
+            Información de Contacto
+          </h2>
+        </div>
+
+        <!-- Name -->
+        <div class="group">
+          <label for="name" class="block text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2 px-1 transition-colors group-focus-within:text-[#3d4494]">
+            Nombre <span class="text-red-500 font-bold ml-0.5">*</span>
+          </label>
+          <div class="relative">
+            <input
+              type="text"
+              id="name"
+              formControlName="name"
+              class="block w-full rounded-2xl border-gray-100 border-2 bg-gray-50/30 p-3.5 text-gray-900 text-sm font-semibold focus:border-[#3d4494]/30 focus:bg-white focus:outline-none transition-all"
+              placeholder="Tu nombre"
+            />
+          </div>
+          <div class="mt-1.5 px-1 min-h-5 text-[11px] font-bold text-red-500">
+            @if (formUtils.isValidField(formEditProfile, "name")) {
+              <span>{{ formUtils.getFieldError(formEditProfile, "name") }}</span>
+            }
+          </div>
+        </div>
+
+        <!-- Last Name -->
+        <div class="group">
+          <label for="lastName" class="block text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2 px-1 transition-colors group-focus-within:text-[#3d4494]">
+            Apellido <span class="text-red-500 font-bold ml-0.5">*</span>
+          </label>
+          <input
+            type="text"
+            id="lastName"
+            formControlName="lastName"
+            class="block w-full rounded-2xl border-gray-100 border-2 bg-gray-50/30 p-3.5 text-gray-900 text-sm font-semibold focus:border-[#3d4494]/30 focus:bg-white focus:outline-none transition-all"
+            placeholder="Tu apellido"
+          />
+          <div class="mt-1.5 px-1 min-h-5 text-[11px] font-bold text-red-500">
+            @if (formUtils.isValidField(formEditProfile, "lastName")) {
+              <span>{{ formUtils.getFieldError(formEditProfile, "lastName") }}</span>
+            }
+          </div>
+        </div>
+
+        <!-- DNI -->
+        <div class="group">
+          <label for="dni" class="block text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2 px-1 transition-colors group-focus-within:text-[#3d4494]">
+            DNI <span class="text-red-500 font-bold ml-0.5">*</span>
+          </label>
+          <input
+            type="text"
+            id="dni"
+            formControlName="dni"
+            inputmode="numeric"
+            appNumericInput
+            class="block w-full rounded-2xl border-gray-100 border-2 bg-gray-50/30 p-3.5 text-gray-900 text-sm font-semibold focus:border-[#3d4494]/30 focus:bg-white focus:outline-none transition-all"
+            placeholder="Documento Nacional de Identidad"
+          />
+          <div class="mt-1.5 px-1 min-h-5 text-[11px] font-bold text-red-500">
+            @if (formUtils.isValidField(formEditProfile, "dni")) {
+              <span>{{ formUtils.getFieldError(formEditProfile, "dni") }}</span>
+            }
+          </div>
+        </div>
+
+        <!-- Phone -->
+        <div class="group">
+          <label for="phone" class="block text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2 px-1 transition-colors group-focus-within:text-[#3d4494]">
+            Teléfono <span class="text-red-500 font-bold ml-0.5">*</span>
+          </label>
+          <input
+            type="text"
+            id="phone"
+            formControlName="phone"
+            inputmode="tel"
+            appPhoneInput
+            class="block w-full rounded-2xl border-gray-100 border-2 bg-gray-50/30 p-3.5 text-gray-900 text-sm font-semibold focus:border-[#3d4494]/30 focus:bg-white focus:outline-none transition-all"
+            placeholder="Ej: 3415555555"
+          />
+          <div class="mt-1.5 px-1 min-h-5 text-[11px] font-bold text-red-500">
+            @if (formUtils.isValidField(formEditProfile, "phone")) {
+              <span>{{ formUtils.getFieldError(formEditProfile, "phone") }}</span>
+            }
+          </div>
+        </div>
+
+        <div class="md:col-span-2">
+          <h2 class="text-xs font-black text-[#3d4494] uppercase tracking-widest mb-6 mt-6 flex items-center gap-2">
+            Credenciales de Acceso
+          </h2>
+        </div>
+
+        <!-- Username -->
+        <div class="group">
+          <label for="username" class="block text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2 px-1 transition-colors group-focus-within:text-[#3d4494]">
+            Nombre de Usuario <span class="text-red-500 font-bold ml-0.5">*</span>
+          </label>
+          <input
+            type="text"
+            id="username"
+            formControlName="username"
+            class="block w-full rounded-2xl border-gray-100 border-2 bg-gray-50/30 p-3.5 text-gray-900 text-sm font-semibold focus:border-[#3d4494]/30 focus:bg-white focus:outline-none transition-all disabled:opacity-50"
+            placeholder="Tu usuario"
+          />
+          <div class="mt-1.5 px-1 min-h-5 text-[11px] font-bold text-red-500">
+            @if (formUtils.isValidField(formEditProfile, "username")) {
+              <span>{{ formUtils.getFieldError(formEditProfile, "username") }}</span>
+            }
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="group">
+          <label for="email" class="block text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2 px-1 transition-colors group-focus-within:text-[#3d4494]">
+            Correo Electrónico <span class="text-red-500 font-bold ml-0.5">*</span>
+          </label>
+          <input
+            type="email"
+            id="email"
+            formControlName="email"
+            inputmode="email"
+            class="block w-full rounded-2xl border-gray-100 border-2 bg-gray-50/30 p-3.5 text-gray-900 text-sm font-semibold focus:border-[#3d4494]/30 focus:bg-white focus:outline-none transition-all"
+            placeholder="nombre@ejemplo.com"
+          />
+          <div class="mt-1.5 px-1 min-h-5 text-[11px] font-bold text-red-500">
+            @if (formUtils.isValidField(formEditProfile, "email")) {
+              <span>{{ formUtils.getFieldError(formEditProfile, "email") }}</span>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Footer -->
+      <div class="mt-12 pt-8 border-t border-gray-50 flex items-center justify-between">
+        <p class="text-xs font-bold text-gray-400">
+          <span class="text-red-500">*</span> Campos obligatorios
+        </p>
+
+        <div class="flex items-center gap-4">
+          <button
+            type="button"
+            (click)="goBack()"
+            class="cursor-pointer px-6 py-3 rounded-2xl text-sm font-bold text-gray-500 hover:text-gray-800 hover:bg-gray-100 transition-all"
+          >
+            Descartar
+          </button>
+
+          <button
+            type="submit"
+            [disabled]="formEditProfile.invalid || !hasRealChanges"
+            class="cursor-pointer px-10 py-3.5 rounded-2xl bg-[#3d4494] text-white text-sm font-black uppercase tracking-widest shadow-xl shadow-[#3d4494]/30 hover:bg-[#2e3474] hover:shadow-2xl hover:-translate-y-0.5 disabled:opacity-30 disabled:translate-y-0 disabled:shadow-none transition-all flex items-center gap-2"
+          >
+            <ng-icon name="bootstrapSave" class="text-lg"></ng-icon>
+            Actualizar Perfil
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
 </div>
