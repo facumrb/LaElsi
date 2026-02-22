@@ -70,6 +70,7 @@ export class CategoriesFormComponent implements OnInit {
       [Validators.maxLength(1000), FormUtils.notOnlyWhiteSpace],
     ],
     state: [CategoryState.Activo, [Validators.required]],
+    order: [0, [Validators.required, Validators.min(0), Validators.pattern('^[0-9]*$')]],
 
     // CAMPOS AUDITORÍA
     createdAt: [{ value: '', disabled: true }],
@@ -99,6 +100,7 @@ export class CategoriesFormComponent implements OnInit {
           name: category.name,
           description: category.description || '',
           state: category.state,
+          order: category.order || 0,
           createdAt: this.datePipe.transform(category.createdAt, dateFormat),
           updatedAt: this.datePipe.transform(category.updatedAt, dateFormat),
           deletedAt: category.deletedAt
@@ -149,6 +151,7 @@ export class CategoriesFormComponent implements OnInit {
       name: formValue.name!,
       description: formValue.description || null,
       state: formValue.state!,
+      order: Number(formValue.order) || 0,
     };
 
     let request$;

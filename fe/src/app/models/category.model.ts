@@ -9,6 +9,7 @@ export interface IApiCategory {
   id: number;
   name: string;
   description?: string | null;
+  order: number;
   state: CategoryState;
   products?: IApiProduct[];
   createdAt: string;

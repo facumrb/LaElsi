@@ -11,6 +11,9 @@ export class Category extends CustomBaseEntity {
   @Property({ nullable: true, length: 1000 })
   description!: string;
 
+  @Property({ index: true, default: 0 })
+  order: number = 0;
+
   @Enum(() => CategoryState)
   state: CategoryState = CategoryState.Activo;
 

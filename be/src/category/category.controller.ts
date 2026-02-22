@@ -10,6 +10,7 @@ function sanitizeCategoryInput(req: Request, res: Response, next: NextFunction) 
   req.body.sanitizedInput = {
     name: req.body.name,
     description: req.body.description,
+    order: req.body.order,
     state: req.body.state,
     products: req.body.products
   };
@@ -48,6 +49,7 @@ export class CategoryController {
     const categoryData = {
       name,
       description,
+      order: req.body.sanitizedInput.order || 0,
       state: req.body.sanitizedInput.state || CategoryState.Activo
     };
 
@@ -59,7 +61,7 @@ export class CategoryController {
 
   static findAll = asyncHandler(async (req: Request, res: Response) => {
     const em = orm.em;
-    const categories = await em.find(Category, {}, { populate: ['products.photos'] });
+    const categories = await em.find(Category, {}, { populate: ['products.photos'], orderBy: { order: 'ASC', name: 'ASC' } });
     return res.status(200).json(ApiResponse.success('Todas las Categorías fueron encontradas', categories));
   });
 
@@ -120,7 +122,7 @@ export class CategoryController {
       },
       {
         populate: ['products.photos', 'products.prices'],
-        orderBy: { products: { photos: { order: 'ASC' } } }
+        orderBy: { order: 'ASC', name: 'ASC', products: { photos: { order: 'ASC' } } }
       }
     );
     return res.status(200).json(ApiResponse.success('Categorías activas encontradas', categories));
