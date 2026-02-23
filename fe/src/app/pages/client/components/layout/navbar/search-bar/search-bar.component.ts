@@ -11,6 +11,7 @@ import {
   catchError,
   debounceTime,
   distinctUntilChanged,
+  filter,
   of,
   Subject,
   switchMap,
@@ -28,39 +29,60 @@ import { ClickOutsideDirective } from '@shared/directives/click-outside.directiv
   templateUrl: './search-bar.component.html',
 })
 export class SearchBarComponent {
-  private router = inject(Router);
-  private destroyRef = inject(DestroyRef);
-  ApiProductService = inject(ApiProductService);
+  private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly apiProductService = inject(ApiProductService);
 
   query = signal('');
-  results = signal<IApiProduct[]>([]); // Resultados rápidos (limitados a 5 o 6)
+  results = signal<IApiProduct[]>([]);
   showResults = signal(false);
   isLoading = signal(false);
 
-  // Lógica para evitar peticiones excesivas
-  private searchSubject = new Subject<string>();
+  // Subject auxiliar para controlar el flujo asíncrono de petición de resultados
+  private readonly searchSubject = new Subject<string>();
+
+  // URL base para conformar las rutas de las imágenes
+  private readonly imageBaseUrl = environment.productImagesUrl;
 
   constructor() {
-    // Escuchamos el Subject y solo buscamos cuando el usuario deja de escribir
+    this.initSearchFlow();
+  }
+
+  /*
+   Inicializa el flujo reactivo de búsqueda.
+   - debounceTime: Espera 300ms cuando el usuario deja de escribir.
+   - filter: Solo dispara peticiones para cadenas largas (más de 2 caracteres).
+  */
+  private initSearchFlow(): void {
     this.searchSubject
       .pipe(
-        debounceTime(200),
-        distinctUntilChanged(), // Solo busca si el texto cambió
-        tap(() => this.isLoading.set(true)),
+        debounceTime(300),
+        distinctUntilChanged(),
+        tap((term) => {
+          // Gestor de visualización
+          if (term.length > 2) {
+            this.isLoading.set(true);
+          } else {
+            // Limpia si se vació el input o tiene muy pocos caracteres
+            this.isLoading.set(false);
+            this.showResults.set(false);
+            this.results.set([]);
+          }
+        }),
+        filter((term) => term.length > 2),
         switchMap((term) =>
-          this.ApiProductService.searchProducts(term).pipe(
-            // Aseguramos que si falla o termina, quitamos el loading
+          this.apiProductService.searchProducts(term).pipe(
             catchError((err) => {
-              console.error(err);
-              return of([]); // Retorna array vacío si falla
+              console.error('Error al realizar búsqueda rápida:', err);
+              return of([]);
             }),
           ),
         ),
-        takeUntilDestroyed(this.destroyRef), // Limpieza automática
+        takeUntilDestroyed(this.destroyRef),
       )
       .subscribe({
         next: (products) => {
-          this.results.set(products.slice(0, 6)); // Guardamos solo las 6 mejores coincidencias
+          this.results.set(products.slice(0, 6)); // Top 6 matches recomendados
           this.showResults.set(products.length > 0);
           this.isLoading.set(false);
         },
@@ -70,51 +92,44 @@ export class SearchBarComponent {
       });
   }
 
-  private readonly imageBaseUrl = environment.productImagesUrl;
-
+  // Arma la URL completa de la imagen del producto.
   buildUrl(fileName: string): string {
     return `${this.imageBaseUrl}${fileName}`;
   }
 
+  // Extrae del producto el monto del precio marcado como 'actual'.
   getProductPrice(product: IApiProduct): number {
     const currentPrice = product.prices?.find((p) => p.isCurrent);
     return currentPrice ? currentPrice.amount : 0;
   }
 
+  // Extrae la denominación (USD, ARS, etc) del precio activo del producto.
   getProductCurrency(product: IApiProduct): string {
     const currentPrice = product.prices?.find((p) => p.isCurrent);
     return currentPrice ? currentPrice.currency : 'ARS';
   }
 
-  // Simulación de búsqueda mientras escribe
-  onSearch(term: string) {
+  // Registra cada tipeo del usuario y lo inserta en el flujo reactivo de búsqueda.
+  onSearch(term: string): void {
     this.query.set(term);
-    if (term.length > 2) {
-      this.isLoading.set(true);
-      this.searchSubject.next(term); // Enviamos al flujo de RxJS
-    } else {
-      this.showResults.set(false);
-      this.results.set([]);
-      this.isLoading.set(false);
-    }
+    this.searchSubject.next(term);
   }
 
-  // Escenario 1: Click en producto específico
-  goToProduct(productId: number) {
+  goToProduct(productId: number): void {
     this.showResults.set(false);
     this.query.set('');
     this.router.navigate(['/product', productId]);
   }
 
-  // Escenario 2: Enter o Click en botón Lupa
-  handleFullSearch() {
-    if (this.query().trim()) {
+  handleFullSearch(): void {
+    const currentQuery = this.query().trim();
+    if (currentQuery) {
       this.showResults.set(false);
-      this.router.navigate(['/search'], { queryParams: { q: this.query() } });
+      this.router.navigate(['/search'], { queryParams: { q: currentQuery } });
     }
   }
 
-  clearSearch() {
+  clearSearch(): void {
     this.query.set('');
     this.results.set([]);
     this.showResults.set(false);
