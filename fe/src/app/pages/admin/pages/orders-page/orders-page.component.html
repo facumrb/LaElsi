@@ -1,10 +1,14 @@
 <div class="animate-fadeIn container mx-auto">
-  <app-orders-toolbar [(searchQuery)]="searchQuery" />
+  <app-orders-toolbar
+    [(searchQuery)]="searchQuery"
+    [(statusFilter)]="statusFilter"
+    [(deliveryMethodFilter)]="deliveryMethodFilter"
+  />
 
   <app-orders-list
     class="mt-6 block"
     [orders]="ordersFiltered()"
-    [isFilterActive]="searchQuery().length > 0"
+    [isFilterActive]="filtersActive()"
     (onUpdateStatus)="handleUpdateStatus($event)"
     (onUpdateDelivery)="handleUpdateDelivery($event)"
     (onCancel)="handleCancel($event)"

@@ -5,12 +5,20 @@ import { ApiOrderService } from '@services/api-order.service';
 import { AlertService } from '@shared/alert.service';
 import { ApiErrorService } from '@shared/api-error.service';
 import { OrdersListComponent } from './orders-list/orders-list.component';
-import { OrdersToolbarComponent } from './orders-toolbar/orders-toolbar.component';
+import {
+  OrdersToolbarComponent,
+  OrderStatusFilter,
+  DeliveryMethodFilter,
+} from './orders-toolbar/orders-toolbar.component';
 import { OrderDetailModalComponent } from '@shared/components/order-detail-modal/order-detail-modal.component';
 
 @Component({
   selector: 'app-orders-page',
-  imports: [OrdersListComponent, OrdersToolbarComponent, OrderDetailModalComponent],
+  imports: [
+    OrdersListComponent,
+    OrdersToolbarComponent,
+    OrderDetailModalComponent,
+  ],
   templateUrl: './orders-page.component.html',
 })
 export class OrdersPageComponent implements OnInit {
@@ -20,26 +28,49 @@ export class OrdersPageComponent implements OnInit {
 
   private ordersRaw = signal<IApiOrder[]>([]);
   searchQuery = signal<string>('');
+  statusFilter = signal<OrderStatusFilter>('Todos');
+  deliveryMethodFilter = signal<DeliveryMethodFilter>('Todos');
   selectedOrderForModal = signal<IApiOrder | null>(null);
+
+  filtersActive = computed(() => {
+    return (
+      this.searchQuery() !== '' ||
+      this.statusFilter() !== 'Todos' ||
+      this.deliveryMethodFilter() !== 'Todos'
+    );
+  });
 
   ordersFiltered = computed(() => {
     const query = this.searchQuery().toLowerCase().trim();
+    const status = this.statusFilter();
+    const delivery = this.deliveryMethodFilter();
     const orders = this.ordersRaw();
 
-    if (!query) return orders.sort((a, b) => b.id - a.id);
-
-    return orders
-      .filter((order) => {
+    let filtered = orders.filter((order) => {
+      // Filtro de Búsqueda
+      let matchesSearch = true;
+      if (query) {
         const clientName =
           `${order.client.name} ${order.client.lastName}`.toLowerCase();
-        return (
+        matchesSearch =
           clientName.includes(query) ||
           order.id.toString().includes(query) ||
           order.status.toLowerCase().includes(query) ||
-          order.paymentMethod.toLowerCase().includes(query)
-        );
-      })
-      .sort((a, b) => b.id - a.id);
+          order.paymentMethod.toLowerCase().includes(query);
+      }
+
+      // Filtro de Estado
+      const matchesStatus = status === 'Todos' || order.status === status;
+
+      // Filtro de Delivery
+      const matchesDelivery =
+        delivery === 'Todos' || order.deliveryMethod === delivery;
+
+      return matchesSearch && matchesStatus && matchesDelivery;
+    });
+
+    // Ordenamiento por defecto: más recientes primero
+    return filtered.sort((a, b) => b.id - a.id);
   });
 
   ngOnInit() {
