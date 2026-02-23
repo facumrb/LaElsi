@@ -2,7 +2,6 @@ import { Directive, ElementRef, HostListener, inject } from '@angular/core';
 
 @Directive({
   selector: '[appPriceAdjustmentInput]',
-  standalone: true,
 })
 export class PriceAdjustmentInputDirective {
   private el = inject(ElementRef);

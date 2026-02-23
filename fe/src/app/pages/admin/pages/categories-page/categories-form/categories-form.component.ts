@@ -1,9 +1,13 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Location, DatePipe } from '@angular/common'; // Importamos DatePipe
+import { Location, DatePipe } from '@angular/common';
 import { ApiCategoryService } from '@services/api-category.service';
-import { ICreateCategory, CategoryState, IApiCategory } from '@models/category.model';
+import {
+  ICreateCategory,
+  CategoryState,
+  IApiCategory,
+} from '@models/category.model';
 import { ProductDraftService } from '@services/product-draft.service';
 import { AlertService } from '@shared/alert.service';
 import { FormUtils } from '@shared/form-utils';
@@ -51,6 +55,13 @@ export class CategoriesFormComponent implements OnInit {
   categoryId = signal<number | null>(null);
   initialFormValue = signal<string>(''); // Para hasRealChanges
 
+  categoriesCount = signal<number>(0);
+  maxOrder = computed(() =>
+    this.isEditMode()
+      ? Math.max(0, this.categoriesCount() - 1)
+      : this.categoriesCount(),
+  );
+
   // UI State
   showStateMenu = signal(false);
 
@@ -70,7 +81,14 @@ export class CategoriesFormComponent implements OnInit {
       [Validators.maxLength(1000), FormUtils.notOnlyWhiteSpace],
     ],
     state: [CategoryState.Activo, [Validators.required]],
-    order: [0, [Validators.required, Validators.min(0), Validators.pattern('^[0-9]*$')]],
+    order: [
+      0,
+      [
+        Validators.required,
+        Validators.min(0),
+        Validators.pattern(FormUtils.numberPattern),
+      ],
+    ],
 
     // CAMPOS AUDITORÍA
     createdAt: [{ value: '', disabled: true }],
@@ -80,6 +98,24 @@ export class CategoriesFormComponent implements OnInit {
 
   ngOnInit() {
     this.checkEditMode();
+    this.loadCategoriesCount();
+  }
+
+  loadCategoriesCount() {
+    this.categoryService.getAllCategories().subscribe({
+      next: (categories) => {
+        this.categoriesCount.set(categories.length);
+
+        const orderControl = this.formCategory.get('order');
+        orderControl?.setValidators([
+          Validators.required,
+          Validators.min(0),
+          Validators.max(this.maxOrder()),
+          Validators.pattern(FormUtils.numberPattern),
+        ]);
+        orderControl?.updateValueAndValidity();
+      },
+    });
   }
 
   checkEditMode() {
@@ -172,11 +208,14 @@ export class CategoriesFormComponent implements OnInit {
         );
 
         // Si venimos de la creación de producto, volvemos allí usando la returnUrl
-        const fromProduct = this.routeActive.snapshot.queryParamMap.get('fromProduct');
+        const fromProduct =
+          this.routeActive.snapshot.queryParamMap.get('fromProduct');
         const draft = this.draftService.getDraft();
 
         if (fromProduct === 'true' && draft && !this.isEditMode()) {
-          this.router.navigateByUrl(`${draft.returnUrl}?newCategoryId=${response.id}`);
+          this.router.navigateByUrl(
+            `${draft.returnUrl}?newCategoryId=${response.id}`,
+          );
           return;
         }
 

@@ -133,14 +133,20 @@ export class CartPageComponent {
       if (result.isConfirmed) {
         this.apiOrderService.createOrder(orderData).subscribe({
           next: () => {
+            const isTransfer =
+              this.paymentMethod() === PaymentMethod.Transferencia;
+            const successText = isTransfer
+              ? `Tu pedido ha sido creado correctamente. Realiza el pago al alias ${this.mpAlias}. Recuerda enviar el comprobante a nuestro Whatsapp: +54 9 3417121860`
+              : 'Tu pedido ha sido creado correctamente.';
+
             Swal.fire({
               title: '¡Pedido realizado!',
-              text: 'Tu pedido ha sido creado correctamente. Por favor, realiza el pago usando el alias proporcionado.',
+              text: successText,
               icon: 'success',
               confirmButtonColor: '#3d4494',
             });
             this.cartService.clearCart();
-            this.router.navigate(['/client/profile']); // O a una página de mis pedidos si existiera
+            this.router.navigate(['/client/profile/orders']);
           },
           error: (err) => {
             Swal.fire(

@@ -8,25 +8,25 @@
       <thead class="hidden lg:table-header-group bg-[#3d4494] text-white">
         <tr>
           <th
-            class="px-6 py-4 font-semibold uppercase tracking-wider w-[8%] rounded-tl-lg"
+            class="px-6 py-4 font-semibold uppercase tracking-wider w-[6%] rounded-tl-lg"
           >
             ID
           </th>
-          <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[18%]">
+          <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[15%]">
             Cliente
           </th>
           <th
-            class="px-6 py-4 font-semibold truncate uppercase tracking-wider w-[18%]"
+            class="px-6 py-4 font-semibold truncate uppercase tracking-wider w-[24%]"
           >
             Entrega
           </th>
-          <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[16%]">
+          <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[15%]">
             Estado
           </th>
-          <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[14%]">
+          <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[15%]">
             Pago
           </th>
-          <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[13%]">
+          <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[12%]">
             Total
           </th>
           <th
@@ -44,28 +44,34 @@
           >
             <!-- ID Column -->
             <td
-              class="px-5 pt-6 pb-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle font-bold text-[#3d4494] cursor-pointer hover:underline"
-              (click)="onViewDetails.emit(order)"
+              class="px-5 pt-6 pb-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle font-bold"
             >
               <span
-                class="font-bold uppercase text-gray-400 mb-2 block lg:hidden text-xs"
+                class="font-bold uppercase text-gray-500 mb-2 block lg:hidden text-xs"
                 >ID Orden:</span
               >
-              #{{ order.id }}
+              <span
+                class="cursor-pointer text-gray-900 hover:underline"
+                (click)="onViewDetails.emit(order)"
+              >
+                #{{ order.id }}
+              </span>
             </td>
 
             <!-- Client Column -->
             <td
-              class="px-5 py-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle cursor-pointer group"
-              (click)="onViewDetails.emit(order)"
+              class="px-5 py-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle group"
             >
               <span
-                class="font-bold uppercase text-gray-400 block mb-1 lg:hidden text-xs"
+                class="font-bold uppercase text-gray-500 block mb-1 lg:hidden text-xs"
                 >Cliente:</span
               >
-              <div class="text-gray-900 font-semibold truncate group-hover:text-[#3d4494] group-hover:underline">
+              <a
+                [routerLink]="['/admin/clients/edit', order.client.id]"
+                class="inline-block text-gray-900 font-semibold truncate hover:underline"
+              >
                 {{ order.client.name }} {{ order.client.lastName }}
-              </div>
+              </a>
               <div
                 class="text-xs text-gray-500 truncate max-w-50 xl:max-w-xs"
                 title="{{ order.client.email }}"
@@ -79,7 +85,7 @@
               class="px-5 py-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle"
             >
               <span
-                class="font-bold uppercase text-gray-400 block mb-1 lg:hidden text-xs"
+                class="font-bold uppercase text-gray-500 block mb-1 lg:hidden text-xs"
                 >Método:</span
               >
               <div class="flex items-center gap-2">
@@ -89,7 +95,7 @@
                       ? 'bootstrapTruck'
                       : 'bootstrapShop'
                   "
-                  class="text-lg"
+                  class="text-lg shrink-0"
                   [class.text-indigo-600]="
                     order.deliveryMethod === DeliveryMethod.Envio
                   "
@@ -98,7 +104,11 @@
                   "
                 ></ng-icon>
                 <div class="font-medium text-gray-700 truncate">
-                  {{ order.deliveryMethod }}
+                  {{
+                    order.deliveryMethod === DeliveryMethod.RetiroSucursal
+                      ? "Sucursal"
+                      : order.deliveryMethod
+                  }}
                 </div>
 
                 @if (canTranslateDelivery(order)) {
@@ -112,10 +122,10 @@
                             : DeliveryMethod.Envio,
                       })
                     "
-                    class="ml-2 text-xs text-blue-600 hover:underline cursor-pointer"
-                    title="Cambiar método"
+                    class="ml-2 flex items-center px-2 py-1 bg-white border border-gray-200 text-gray-600 rounded-md text-xs font-semibold hover:bg-gray-50 hover:text-[#3d4494] hover:border-[#3d4494]/30 transition-all shadow-sm cursor-pointer whitespace-nowrap"
+                    title="Cambiar método de entrega"
                   >
-                    (Cambiar)
+                    Cambiar
                   </button>
                 }
               </div>
@@ -126,7 +136,7 @@
               class="px-5 py-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle"
             >
               <span
-                class="font-bold uppercase text-gray-400 block mb-1 lg:hidden text-xs"
+                class="font-bold uppercase text-gray-500 block mb-1 lg:hidden text-xs"
                 >Estado:</span
               >
               <div
@@ -143,7 +153,7 @@
               class="px-5 py-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle"
             >
               <span
-                class="font-bold uppercase text-gray-400 block mb-1 lg:hidden text-xs"
+                class="font-bold uppercase text-gray-500 block mb-1 lg:hidden text-xs"
                 >Pago:</span
               >
               <div class="font-medium text-gray-700 truncate">
@@ -156,7 +166,7 @@
               class="px-5 py-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle"
             >
               <span
-                class="font-bold uppercase text-gray-400 block mb-1 lg:hidden text-xs"
+                class="font-bold uppercase text-gray-500 block mb-1 lg:hidden text-xs"
                 >Total:</span
               >
               <span class="text-gray-900 font-bold text-lg lg:text-sm">
@@ -172,17 +182,16 @@
                 class="flex flex-wrap items-center justify-start lg:justify-center gap-2"
               >
                 <span
-                  class="font-bold uppercase text-gray-400 lg:hidden text-xs w-full mb-2"
+                  class="font-bold uppercase text-gray-500 lg:hidden text-xs w-full mb-2"
                   >Acciones:</span
                 >
 
                 <!-- Ver Detalle Button -->
                 <button
                   (click)="onViewDetails.emit(order)"
-                  class="cursor-pointer bg-gray-100 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-gray-200 transition-colors flex items-center gap-1"
-                  title="Ver detalle completo"
+                  class="cursor-pointer w-32 h-8 flex items-center justify-center border border-gray-300 bg-gray-100 text-gray-700 rounded-lg text-xs font-semibold hover:bg-gray-200 transition-colors shadow-sm truncate"
+                  title="Ver detalle del pedido"
                 >
-                  <ng-icon name="bootstrapEye"></ng-icon>
                   Detalle
                 </button>
 
@@ -192,10 +201,12 @@
                     (click)="
                       onUpdateStatus.emit({ id: order.id, status: nextState })
                     "
-                    class="cursor-pointer bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-blue-700 transition-colors flex items-center gap-1"
+                    [class]="
+                      getActionColor(nextState) +
+                      ' cursor-pointer w-32 h-8 flex items-center justify-center gap-1 border border-solid rounded-lg text-xs font-semibold transition-colors shadow-sm'
+                    "
                   >
-                    <ng-icon name="bootstrapArrowRight"></ng-icon>
-                    A {{ nextState }}
+                    {{ nextState }}
                   </button>
                 }
 
@@ -206,22 +217,21 @@
                 ) {
                   <button
                     (click)="onCancel.emit(order.id)"
-                    class="cursor-pointer border border-rose-300 text-rose-600 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-rose-50 transition-colors flex items-center gap-1"
+                    class="cursor-pointer w-32 h-8 flex items-center justify-center gap-1 border border-rose-300 text-rose-600 rounded-lg text-xs font-semibold hover:bg-rose-50 transition-colors"
                   >
-                    <ng-icon name="bootstrapXCircle"></ng-icon>
                     Cancelar
                   </button>
                 } @else if (order.status === OrderState.Delivered) {
                   <span
-                    class="text-xs text-emerald-600 font-semibold italic flex items-center gap-1"
+                    class="w-32 h-8 flex items-center justify-center gap-1 text-xs text-emerald-600 border border-emerald-300 rounded-lg font-semibold bg-emerald-50"
                   >
-                    <ng-icon name="bootstrapCheck2All"></ng-icon> Finalizada
+                    Finalizada
                   </span>
                 } @else {
                   <span
-                    class="text-xs text-rose-600 font-semibold italic flex items-center gap-1"
+                    class="w-32 h-8 flex items-center justify-center gap-1 text-xs text-rose-600 border border-rose-300 rounded-lg font-semibold bg-rose-50"
                   >
-                    <ng-icon name="bootstrapXCircle"></ng-icon> Anulada
+                    Anulada
                   </span>
                 }
               </div>
@@ -247,7 +257,7 @@
                     name="bootstrapInbox"
                     class="text-4xl text-gray-200 mb-2"
                   ></ng-icon>
-                  <p class="text-gray-400 font-medium">
+                  <p class="text-gray-500 font-medium">
                     Todavía no hay órdenes registradas
                   </p>
                 }

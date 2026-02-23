@@ -10,12 +10,12 @@
           <ng-icon name="bootstrapShieldLock" class="text-2xl"></ng-icon>
         </div>
         <div>
-          <h2
+          <h1
             class="text-xl md:text-2xl font-bold text-gray-800 tracking-tight"
           >
             Datos de Autenticación
-          </h2>
-          <p class="text-xs md:text-sm font-medium text-gray-400">
+          </h1>
+          <p class="text-xs md:text-sm font-medium text-gray-500">
             Gestiona tus credenciales de acceso
           </p>
         </div>
@@ -25,11 +25,11 @@
       <div
         class="mb-10 p-6 bg-gray-50/50 rounded-2xl border border-gray-100 relative z-10 flex flex-col items-center justify-center text-center"
       >
-        <h3
+        <h2
           class="text-sm font-bold text-gray-700 mb-4 tracking-wide uppercase"
         >
           Foto de Perfil
-        </h3>
+        </h2>
         <app-photo-manager
           [currentPhoto]="profile()?.photo || null"
           [userFullName]="

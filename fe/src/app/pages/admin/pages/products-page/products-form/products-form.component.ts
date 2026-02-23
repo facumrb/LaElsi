@@ -135,13 +135,15 @@ export class ProductsFormComponent implements OnInit {
       const draft = this.draftService.getDraft()!;
       this.isEditMode.set(draft.isEditMode);
       this.productId.set(draft.productId);
-      this.formProduct.patchValue(draft.formValue);
+
+      const { photos, ...formValueWithoutPhotos } = draft.formValue;
+      this.formProduct.patchValue(formValueWithoutPhotos);
 
       // Restaurar fotos después de que el componente hijo esté disponible
       setTimeout(() => {
         if (this.photoManager) {
           this.photoManager.restoreState({
-            gallery: draft.photos,
+            gallery: draft.photos as any[],
             photosToDeleteIds: draft.photosToDeleteIds,
           });
         }
@@ -157,12 +159,16 @@ export class ProductsFormComponent implements OnInit {
       this.categories.set(data);
 
       // Verificamos si hay una nueva categoría para seleccionar automáticamente
-      const newCatId = this.routeActive.snapshot.queryParamMap.get('newCategoryId');
+      const newCatId =
+        this.routeActive.snapshot.queryParamMap.get('newCategoryId');
       if (newCatId) {
         const cat = data.find((c) => c.id === +newCatId);
         if (cat) {
           this.formProduct.patchValue({ category: cat });
-          this.alertService.toast(`Categoría "${cat.name}" seleccionada`, 'success');
+          this.alertService.toast(
+            `Categoría "${cat.name}" seleccionada`,
+            'success',
+          );
         }
         // Limpiar el query param para que no se seleccione de nuevo al recargar
         this.router.navigate([], {

@@ -22,7 +22,7 @@ import { switchMap } from 'rxjs';
   selector: 'app-profile-user',
   imports: [ReactiveFormsModule, NgIconComponent, PhotoManagerComponent],
   viewProviders: [provideIcons({ bootstrapShieldLock })],
-  templateUrl: './profile-user.component.html',
+  templateUrl: './profile-userData.component.html',
 })
 export class ProfileUserComponent implements OnInit {
   private fb = inject(FormBuilder);

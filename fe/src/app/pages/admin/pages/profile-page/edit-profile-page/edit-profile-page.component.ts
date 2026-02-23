@@ -1,9 +1,5 @@
 import { Component, inject, OnInit, signal, ViewChild } from '@angular/core';
-import {
-  FormBuilder,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiAdminService } from '@services/api-admin.service';
 import { IApiAdmin, ICreateAdmin, UserRole } from '@models/user.model';
@@ -23,7 +19,6 @@ import { uniqueFieldValidator } from '@shared/validators/unique.validator';
 
 @Component({
   selector: 'app-edit-profile-page',
-  standalone: true,
   imports: [
     ReactiveFormsModule,
     NgIconComponent,
@@ -156,7 +151,9 @@ export class EditProfilePageComponent implements OnInit {
         this.formEditProfile.controls.username.setAsyncValidators(uniqueFieldValidator('Admin', 'username', this._http, id));
         this.formEditProfile.controls.email.setAsyncValidators(uniqueFieldValidator('Admin', 'email', this._http, id));
 
-        this.initialFormValue.set(JSON.stringify(this.formEditProfile.getRawValue()));
+        this.initialFormValue.set(
+          JSON.stringify(this.formEditProfile.getRawValue()),
+        );
         this.loading.set(false);
       },
       error: (err) => {
@@ -195,11 +192,12 @@ export class EditProfilePageComponent implements OnInit {
     // We don't want to send an empty password to the update
     delete (adminData as any).password;
 
-    this._apiService.updateAdmin(this.adminId()!, adminData)
+    this._apiService
+      .updateAdmin(this.adminId()!, adminData)
       .pipe(
         switchMap((res: any) => {
           return this.photoManager.saveChanges(this.adminId()!);
-        })
+        }),
       )
       .subscribe({
         next: (photoResponse: any) => {

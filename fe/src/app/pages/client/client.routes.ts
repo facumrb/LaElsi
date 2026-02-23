@@ -96,9 +96,9 @@ export const clientRoutes: Routes = [
               ),
           },
           {
-            path: 'account',
+            path: 'userData',
             loadComponent: () =>
-              import('./pages/profile-page/components/profile-user/profile-user.component').then(
+              import('./pages/profile-page/components/profile-userData/profile-userData.component').then(
                 (m) => m.ProfileUserComponent,
               ),
           },

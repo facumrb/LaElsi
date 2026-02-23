@@ -1,5 +1,6 @@
 import { Component, input, output } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { IApiOrder, OrderState, DeliveryMethod } from '@models/order.model';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
@@ -12,12 +13,11 @@ import {
   bootstrapClock,
   bootstrapCheck2All,
   bootstrapArrowRight,
-  bootstrapEye,
 } from '@ng-icons/bootstrap-icons';
 
 @Component({
   selector: 'app-orders-list',
-  imports: [CurrencyPipe, NgIconComponent],
+  imports: [CurrencyPipe, NgIconComponent, RouterLink],
   viewProviders: provideIcons({
     bootstrapSearch,
     bootstrapInbox,
@@ -28,7 +28,6 @@ import {
     bootstrapClock,
     bootstrapCheck2All,
     bootstrapArrowRight,
-    bootstrapEye,
   }),
   templateUrl: './orders-list.component.html',
 })
@@ -58,6 +57,19 @@ export class OrdersListComponent {
         return 'bg-rose-100 text-rose-700 border-rose-200';
       default:
         return 'bg-gray-100 text-gray-700 border-gray-200';
+    }
+  }
+
+  getActionColor(status: OrderState): string {
+    switch (status) {
+      case OrderState.Paid:
+        return 'bg-blue-600 text-white hover:bg-blue-700 border-transparent';
+      case OrderState.Shipped:
+        return 'bg-indigo-600 text-white hover:bg-indigo-700 border-transparent';
+      case OrderState.Delivered:
+        return 'bg-emerald-600 text-white hover:bg-emerald-700 border-transparent';
+      default:
+        return 'bg-gray-600 text-white hover:bg-gray-700 border-transparent';
     }
   }
 
