@@ -146,8 +146,7 @@
             class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm text-sm"
             placeholder="Ej: 12345678"
           />
-<<<<<<< HEAD
-          <div class="mt-1 min-h-5 text-xs text-red-600">
+          <div class="mt-1 min-h-5 text-xs">
             @if (isPending("dni")) {
               <span class="text-gray-500 flex items-center gap-1">
                 <ng-icon name="bootstrapArrowClockwise" class="animate-spin"></ng-icon>
@@ -165,11 +164,6 @@
                 }
                 {{ formUtils.getFieldError(formEditProfile, "dni") }}
               </span>
-=======
-          <div class="mt-1 min-h-5 text-xs text-red-600">
-            @if (formUtils.isValidField(formEditProfile, "dni")) {
-              <span>{{ formUtils.getFieldError(formEditProfile, "dni") }}</span>
->>>>>>> bf70eefb47eb05dee32f11f67d0acc9f5284c28e
             }
           </div>
         </div>
@@ -229,8 +223,7 @@
             class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm text-sm disabled:opacity-50"
             placeholder="Ej: jperez"
           />
-<<<<<<< HEAD
-          <div class="mt-1 min-h-5 text-xs text-red-600">
+          <div class="mt-1 min-h-5 text-xs">
             @if (isPending("username")) {
               <span class="text-gray-500 flex items-center gap-1">
                 <ng-icon name="bootstrapArrowClockwise" class="animate-spin"></ng-icon>
@@ -248,13 +241,6 @@
                 }
                 {{ formUtils.getFieldError(formEditProfile, "username") }}
               </span>
-=======
-          <div class="mt-1 min-h-5 text-xs text-red-600">
-            @if (formUtils.isValidField(formEditProfile, "username")) {
-              <span>{{
-                formUtils.getFieldError(formEditProfile, "username")
-              }}</span>
->>>>>>> bf70eefb47eb05dee32f11f67d0acc9f5284c28e
             }
           </div>
         </div>
@@ -277,8 +263,7 @@
             class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm text-sm"
             placeholder="Ej: juan@ejemplo.com"
           />
-<<<<<<< HEAD
-          <div class="mt-1 min-h-5 text-xs text-red-600">
+          <div class="mt-1 min-h-5 text-xs">
             @if (isPending("email")) {
               <span class="text-gray-500 flex items-center gap-1">
                 <ng-icon name="bootstrapArrowClockwise" class="animate-spin"></ng-icon>
@@ -296,13 +281,6 @@
                 }
                 {{ formUtils.getFieldError(formEditProfile, "email") }}
               </span>
-=======
-          <div class="mt-1 min-h-5 text-xs text-red-600">
-            @if (formUtils.isValidField(formEditProfile, "email")) {
-              <span>{{
-                formUtils.getFieldError(formEditProfile, "email")
-              }}</span>
->>>>>>> bf70eefb47eb05dee32f11f67d0acc9f5284c28e
             }
           </div>
         </div>
