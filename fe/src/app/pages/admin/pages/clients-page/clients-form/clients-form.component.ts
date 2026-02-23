@@ -7,12 +7,17 @@ import { ApiClientService } from '@services/api-client.service';
 import { AuthService } from '@services/auth.service';
 import { ICreateClient, UserRole, FiscalCondition } from '@models/user.model';
 import { IApiUserPhoto } from '@models/photo.model';
+import { HttpClient } from '@angular/common/http';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
   bootstrapArrowLeft,
   bootstrapChevronDown,
   bootstrapCheckLg,
+  bootstrapArrowClockwise,
+  bootstrapCheckCircleFill,
+  bootstrapXCircleFill,
 } from '@ng-icons/bootstrap-icons';
+import { uniqueFieldValidator } from '@shared/validators/unique.validator';
 import { PhotoManagerComponent } from '@shared/components/photo-manager/photo-manager.component';
 import { AlertService } from '@shared/alert.service';
 import { FormUtils } from '@shared/form-utils';
@@ -37,6 +42,9 @@ import { PhoneInputDirective } from '@shared/directives/phone-input.directive';
       bootstrapArrowLeft,
       bootstrapChevronDown,
       bootstrapCheckLg,
+      bootstrapArrowClockwise,
+      bootstrapCheckCircleFill,
+      bootstrapXCircleFill,
     }),
   ],
   providers: [DatePipe],
@@ -51,6 +59,7 @@ export class ClientsFormComponent implements OnInit {
   private authService = inject(AuthService);
   private alertService = inject(AlertService);
   private datePipe = inject(DatePipe);
+  private http = inject(HttpClient);
 
   formUtils = FormUtils;
 
@@ -169,6 +178,19 @@ export class ClientsFormComponent implements OnInit {
     deletedAt: [{ value: '', disabled: true }],
   });
 
+  isPending(field: string) {
+    return this.formClient.get(field)?.pending;
+  }
+
+  isValid(field: string) {
+    const control = this.formClient.get(field);
+    return control?.valid && control?.value && !control.pristine;
+  }
+
+  get formPending() {
+    return this.formClient.pending;
+  }
+
   ngOnInit() {
     this.checkEditMode();
     if (!this.isEditMode()) {
@@ -180,6 +202,13 @@ export class ClientsFormComponent implements OnInit {
     const id = this.routeActive.snapshot.paramMap.get('id');
     if (id) {
       this.loadClientData(+id);
+    } else {
+      // Configurar validadores asíncronos para creación
+      this.formClient.controls.dni.addAsyncValidators(uniqueFieldValidator('Client', 'dni', this.http));
+      this.formClient.controls.username.addAsyncValidators(uniqueFieldValidator('Client', 'username', this.http));
+      this.formClient.controls.email.addAsyncValidators(uniqueFieldValidator('Client', 'email', this.http));
+      this.formClient.controls.cuit.addAsyncValidators(uniqueFieldValidator('Client', 'cuit', this.http));
+      this.formClient.get('password')?.addValidators(Validators.required);
     }
   }
 
@@ -223,6 +252,12 @@ export class ClientsFormComponent implements OnInit {
 
         this.formClient.get('password')?.removeValidators(Validators.required);
         this.formClient.get('password')?.updateValueAndValidity();
+
+        // Configurar validadores asíncronos para edición
+        this.formClient.controls.dni.setAsyncValidators(uniqueFieldValidator('Client', 'dni', this.http, id));
+        this.formClient.controls.username.setAsyncValidators(uniqueFieldValidator('Client', 'username', this.http, id));
+        this.formClient.controls.email.setAsyncValidators(uniqueFieldValidator('Client', 'email', this.http, id));
+        this.formClient.controls.cuit.setAsyncValidators(uniqueFieldValidator('Client', 'cuit', this.http, id));
 
         const formSnapshot = this.formClient.getRawValue();
         this.initialFormValue.set(JSON.stringify(formSnapshot));

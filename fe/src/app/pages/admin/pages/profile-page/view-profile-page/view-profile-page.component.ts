@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ApiAdminService } from '@services/api-admin.service';
 import { IApiAdmin } from '@models/user.model';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
@@ -18,7 +18,7 @@ import { ApiErrorService } from '@shared/api-error.service';
 @Component({
   selector: 'app-view-profile-page',
   standalone: true,
-  imports: [NgIconComponent, RouterLink],
+  imports: [NgIconComponent],
   viewProviders: [
     provideIcons({
       bootstrapArrowLeft,

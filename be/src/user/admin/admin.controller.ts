@@ -96,21 +96,6 @@ export class AdminController {
       throw new AppError(`La contraseña debe tener al menos ${MIN_PASSWORD_LENGTH} caracteres`, 400);
     }
 
-    const existingByEmail = await em.findOne(Admin, { email });
-    if (existingByEmail) {
-      throw new AppError('El correo electrónico ya está registrado', 400);
-    }
-
-    const existingByUsername = await em.findOne(Admin, { username });
-    if (existingByUsername) {
-      throw new AppError('El nombre de usuario ya está en uso', 400);
-    }
-
-    const existingByDni = await em.findOne(Admin, { dni });
-    if (existingByDni) {
-      throw new AppError('El DNI ya está registrado', 400);
-    }
-
     const admin = new Admin();
     admin.email = email;
     await admin.setPassword(password);

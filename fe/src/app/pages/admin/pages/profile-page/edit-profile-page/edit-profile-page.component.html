@@ -109,9 +109,24 @@
             class="block w-full rounded-2xl border-gray-100 border-2 bg-gray-50/30 p-3.5 text-gray-900 text-sm font-semibold focus:border-[#3d4494]/30 focus:bg-white focus:outline-none transition-all"
             placeholder="Documento Nacional de Identidad"
           />
-          <div class="mt-1.5 px-1 min-h-5 text-[11px] font-bold text-red-500">
-            @if (formUtils.isValidField(formEditProfile, "dni")) {
-              <span>{{ formUtils.getFieldError(formEditProfile, "dni") }}</span>
+          <div class="mt-1.5 px-1 min-h-5 text-[11px] font-bold">
+            @if (isPending("dni")) {
+              <span class="text-gray-500 flex items-center gap-1">
+                <ng-icon name="bootstrapArrowClockwise" class="animate-spin"></ng-icon>
+                Verificando...
+              </span>
+            } @else if (isValid("dni")) {
+              <span class="text-emerald-600 flex items-center gap-1">
+                <ng-icon name="bootstrapCheckCircleFill"></ng-icon>
+                DNI disponible
+              </span>
+            } @else if (formUtils.isValidField(formEditProfile, "dni")) {
+              <span class="text-red-500 flex items-center gap-1">
+                @if (formEditProfile.get("dni")?.hasError("dniTaken")) {
+                  <ng-icon name="bootstrapXCircleFill"></ng-icon>
+                }
+                {{ formUtils.getFieldError(formEditProfile, "dni") }}
+              </span>
             }
           </div>
         </div>
@@ -155,9 +170,24 @@
             class="block w-full rounded-2xl border-gray-100 border-2 bg-gray-50/30 p-3.5 text-gray-900 text-sm font-semibold focus:border-[#3d4494]/30 focus:bg-white focus:outline-none transition-all disabled:opacity-50"
             placeholder="Tu usuario"
           />
-          <div class="mt-1.5 px-1 min-h-5 text-[11px] font-bold text-red-500">
-            @if (formUtils.isValidField(formEditProfile, "username")) {
-              <span>{{ formUtils.getFieldError(formEditProfile, "username") }}</span>
+          <div class="mt-1.5 px-1 min-h-5 text-[11px] font-bold">
+            @if (isPending("username")) {
+              <span class="text-gray-500 flex items-center gap-1">
+                <ng-icon name="bootstrapArrowClockwise" class="animate-spin"></ng-icon>
+                Verificando...
+              </span>
+            } @else if (isValid("username")) {
+              <span class="text-emerald-600 flex items-center gap-1">
+                <ng-icon name="bootstrapCheckCircleFill"></ng-icon>
+                Usuario disponible
+              </span>
+            } @else if (formUtils.isValidField(formEditProfile, "username")) {
+              <span class="text-red-500 flex items-center gap-1">
+                @if (formEditProfile.get("username")?.hasError("usernameTaken")) {
+                  <ng-icon name="bootstrapXCircleFill"></ng-icon>
+                }
+                {{ formUtils.getFieldError(formEditProfile, "username") }}
+              </span>
             }
           </div>
         </div>
@@ -175,9 +205,24 @@
             class="block w-full rounded-2xl border-gray-100 border-2 bg-gray-50/30 p-3.5 text-gray-900 text-sm font-semibold focus:border-[#3d4494]/30 focus:bg-white focus:outline-none transition-all"
             placeholder="nombre@ejemplo.com"
           />
-          <div class="mt-1.5 px-1 min-h-5 text-[11px] font-bold text-red-500">
-            @if (formUtils.isValidField(formEditProfile, "email")) {
-              <span>{{ formUtils.getFieldError(formEditProfile, "email") }}</span>
+          <div class="mt-1.5 px-1 min-h-5 text-[11px] font-bold">
+            @if (isPending("email")) {
+              <span class="text-gray-500 flex items-center gap-1">
+                <ng-icon name="bootstrapArrowClockwise" class="animate-spin"></ng-icon>
+                Verificando...
+              </span>
+            } @else if (isValid("email")) {
+              <span class="text-emerald-600 flex items-center gap-1">
+                <ng-icon name="bootstrapCheckCircleFill"></ng-icon>
+                Email disponible
+              </span>
+            } @else if (formUtils.isValidField(formEditProfile, "email")) {
+              <span class="text-red-500 flex items-center gap-1">
+                @if (formEditProfile.get("email")?.hasError("emailTaken")) {
+                  <ng-icon name="bootstrapXCircleFill"></ng-icon>
+                }
+                {{ formUtils.getFieldError(formEditProfile, "email") }}
+              </span>
             }
           </div>
         </div>
@@ -200,10 +245,14 @@
 
           <button
             type="submit"
-            [disabled]="formEditProfile.invalid || !hasRealChanges"
+            [disabled]="formEditProfile.invalid || !hasRealChanges || formPending"
             class="cursor-pointer px-10 py-3.5 rounded-2xl bg-[#3d4494] text-white text-sm font-black uppercase tracking-widest shadow-xl shadow-[#3d4494]/30 hover:bg-[#2e3474] hover:shadow-2xl hover:-translate-y-0.5 disabled:opacity-30 disabled:translate-y-0 disabled:shadow-none transition-all flex items-center gap-2"
           >
-            <ng-icon name="bootstrapSave" class="text-lg"></ng-icon>
+            @if (formPending) {
+              <ng-icon name="bootstrapArrowClockwise" class="text-lg animate-spin"></ng-icon>
+            } @else {
+              <ng-icon name="bootstrapSave" class="text-lg"></ng-icon>
+            }
             Actualizar Perfil
           </button>
         </div>

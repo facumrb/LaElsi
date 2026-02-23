@@ -120,21 +120,6 @@ export class ClientController {
       throw new AppError(`La contraseña debe tener al menos ${MIN_PASSWORD_LENGTH} caracteres`, 400);
     }
 
-    const existingByEmail = await em.findOne(Client, { email });
-    if (existingByEmail) {
-      throw new AppError('El correo electrónico ya está registrado', 400);
-    }
-
-    const existingByUsername = await em.findOne(Client, { username });
-    if (existingByUsername) {
-      throw new AppError('El nombre de usuario ya está en uso', 400);
-    }
-
-    const existingByDni = await em.findOne(Client, { dni });
-    if (existingByDni) {
-      throw new AppError('El DNI ya está registrado', 400);
-    }
-
     const client = new Client();
     client.email = email;
     await client.setPassword(password);

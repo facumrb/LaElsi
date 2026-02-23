@@ -77,15 +77,34 @@
             placeholder="Ej: 12345678"
             class="block w-full rounded-md border p-2.5 text-gray-900 shadow-sm focus:outline-none focus:ring-2 sm:text-sm border-gray-300 focus:border-[#049A8F] focus:ring-[#049A8F]"
             [class.border-red-500]="
-              hasErrors('dni', 'required') || hasErrors('dni', 'pattern')
+              hasErrors('dni', 'required') ||
+              hasErrors('dni', 'pattern') ||
+              hasErrors('dni', 'dniTaken')
             "
           />
-          <div class="mt-1 min-h-5 text-xs text-red-600">
-            @if (hasErrors("dni", "required")) {
-              <span>Obligatorio</span>
-            }
-            @if (hasErrors("dni", "pattern")) {
-              <span>Formato inválido (7-8 números)</span>
+          <div class="mt-1 min-h-5 text-xs">
+            @if (isPending("dni")) {
+              <span class="text-gray-500 flex items-center gap-1">
+                <ng-icon
+                  name="bootstrapArrowClockwise"
+                  class="animate-spin"
+                ></ng-icon>
+                Verificando...
+              </span>
+            } @else if (isValid("dni")) {
+              <span class="text-emerald-600 flex items-center gap-1">
+                <ng-icon name="bootstrapCheckCircleFill"></ng-icon>
+                Disponible
+              </span>
+            } @else if (hasErrors("dni", "required")) {
+              <span class="text-red-600">Obligatorio</span>
+            } @else if (hasErrors("dni", "pattern")) {
+              <span class="text-red-600">Formato inválido (7-8 números)</span>
+            } @else if (hasErrors("dni", "dniTaken")) {
+              <span class="text-red-600 flex items-center gap-1">
+                <ng-icon name="bootstrapXCircleFill"></ng-icon>
+                Este DNI ya está registrado
+              </span>
             }
           </div>
         </div>
@@ -126,11 +145,32 @@
             name="username"
             formControlName="username"
             class="block w-full rounded-md border p-2.5 text-gray-900 shadow-sm focus:outline-none focus:ring-2 sm:text-sm border-gray-300 focus:border-[#049A8F] focus:ring-[#049A8F]"
-            [class.border-red-500]="hasErrors('username', 'required')"
+            [class.border-red-500]="
+              hasErrors('username', 'required') ||
+              hasErrors('username', 'usernameTaken')
+            "
           />
-          <div class="mt-1 min-h-5 text-xs text-red-600">
-            @if (hasErrors("username", "required")) {
-              <span>Obligatorio</span>
+          <div class="mt-1 min-h-5 text-xs">
+            @if (isPending("username")) {
+              <span class="text-gray-500 flex items-center gap-1">
+                <ng-icon
+                  name="bootstrapArrowClockwise"
+                  class="animate-spin"
+                ></ng-icon>
+                Verificando...
+              </span>
+            } @else if (isValid("username")) {
+              <span class="text-emerald-600 flex items-center gap-1">
+                <ng-icon name="bootstrapCheckCircleFill"></ng-icon>
+                Disponible
+              </span>
+            } @else if (hasErrors("username", "required")) {
+              <span class="text-red-600">Obligatorio</span>
+            } @else if (hasErrors("username", "usernameTaken")) {
+              <span class="text-red-600 flex items-center gap-1">
+                <ng-icon name="bootstrapXCircleFill"></ng-icon>
+                Este usuario ya está en uso
+              </span>
             }
           </div>
         </div>
@@ -150,15 +190,34 @@
             inputmode="email"
             class="block w-full rounded-md border p-2.5 text-gray-900 shadow-sm focus:outline-none focus:ring-2 sm:text-sm border-gray-300 focus:border-[#049A8F] focus:ring-[#049A8F]"
             [class.border-red-500]="
-              hasErrors('email', 'required') || hasErrors('email', 'email')
+              hasErrors('email', 'required') ||
+              hasErrors('email', 'email') ||
+              hasErrors('email', 'emailTaken')
             "
           />
-          <div class="mt-1 min-h-5 text-xs text-red-600">
-            @if (hasErrors("email", "required")) {
-              <span>Obligatorio</span>
-            }
-            @if (hasErrors("email", "email")) {
-              <span>Formato inválido</span>
+          <div class="mt-1 min-h-5 text-xs">
+            @if (isPending("email")) {
+              <span class="text-gray-500 flex items-center gap-1">
+                <ng-icon
+                  name="bootstrapArrowClockwise"
+                  class="animate-spin"
+                ></ng-icon>
+                Verificando...
+              </span>
+            } @else if (isValid("email")) {
+              <span class="text-emerald-600 flex items-center gap-1">
+                <ng-icon name="bootstrapCheckCircleFill"></ng-icon>
+                Email disponible
+              </span>
+            } @else if (hasErrors("email", "required")) {
+              <span class="text-red-600">Obligatorio</span>
+            } @else if (hasErrors("email", "email")) {
+              <span class="text-red-600">Formato inválido</span>
+            } @else if (hasErrors("email", "emailTaken")) {
+              <span class="text-red-600 flex items-center gap-1">
+                <ng-icon name="bootstrapXCircleFill"></ng-icon>
+                Este email ya está registrado
+              </span>
             }
           </div>
         </div>
@@ -195,10 +254,10 @@
       <div>
         <button
           type="submit"
-          [disabled]="loading()"
+          [disabled]="loading() || formPending"
           class="cursor-pointer flex w-full justify-center rounded-md bg-[#037971] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#049A8F] focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-[#037971] disabled:cursor-not-allowed disabled:bg-gray-400 items-center"
         >
-          @if (loading()) {
+          @if (loading() || formPending) {
             <ng-icon
               name="bootstrapArrowClockwise"
               class="animate-spin text-xl mr-2"

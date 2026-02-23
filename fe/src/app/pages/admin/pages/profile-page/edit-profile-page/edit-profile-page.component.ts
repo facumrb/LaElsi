@@ -12,12 +12,14 @@ import { AlertService } from '@shared/alert.service';
 import { ApiErrorService } from '@shared/api-error.service';
 import { FormUtils } from '@shared/form-utils';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { bootstrapArrowLeft, bootstrapSave } from '@ng-icons/bootstrap-icons';
 import { PhotoManagerComponent } from '@shared/components/photo-manager/photo-manager.component';
 import { NumericInputDirective } from '@shared/directives/numeric-input.directive';
 import { PhoneInputDirective } from '@shared/directives/phone-input.directive';
 import { switchMap } from 'rxjs';
 import { IApiUserPhoto } from '@models/photo.model';
+import { HttpClient } from '@angular/common/http';
+import { bootstrapArrowLeft, bootstrapSave, bootstrapArrowClockwise, bootstrapCheckCircleFill, bootstrapXCircleFill } from '@ng-icons/bootstrap-icons';
+import { uniqueFieldValidator } from '@shared/validators/unique.validator';
 
 @Component({
   selector: 'app-edit-profile-page',
@@ -33,6 +35,9 @@ import { IApiUserPhoto } from '@models/photo.model';
     provideIcons({
       bootstrapArrowLeft,
       bootstrapSave,
+      bootstrapArrowClockwise,
+      bootstrapCheckCircleFill,
+      bootstrapXCircleFill,
     }),
   ],
   templateUrl: './edit-profile-page.component.html',
@@ -45,6 +50,7 @@ export class EditProfilePageComponent implements OnInit {
   private _authService = inject(AuthService);
   private _alertService = inject(AlertService);
   private _errorService = inject(ApiErrorService);
+  private _http = inject(HttpClient);
 
   @ViewChild(PhotoManagerComponent) photoManager!: PhotoManagerComponent;
 
@@ -111,6 +117,19 @@ export class EditProfilePageComponent implements OnInit {
     ],
   });
 
+  isPending(field: string) {
+    return this.formEditProfile.get(field)?.pending;
+  }
+
+  isValid(field: string) {
+    const control = this.formEditProfile.get(field);
+    return control?.valid && control?.value && !control.pristine;
+  }
+
+  get formPending() {
+    return this.formEditProfile.pending;
+  }
+
   ngOnInit(): void {
     const id = this._route.snapshot.paramMap.get('id');
     if (id) {
@@ -131,6 +150,12 @@ export class EditProfilePageComponent implements OnInit {
           username: data.username,
           email: data.email,
         });
+
+        // Configurar validadores asíncronos para edición
+        this.formEditProfile.controls.dni.setAsyncValidators(uniqueFieldValidator('Admin', 'dni', this._http, id));
+        this.formEditProfile.controls.username.setAsyncValidators(uniqueFieldValidator('Admin', 'username', this._http, id));
+        this.formEditProfile.controls.email.setAsyncValidators(uniqueFieldValidator('Admin', 'email', this._http, id));
+
         this.initialFormValue.set(JSON.stringify(this.formEditProfile.getRawValue()));
         this.loading.set(false);
       },

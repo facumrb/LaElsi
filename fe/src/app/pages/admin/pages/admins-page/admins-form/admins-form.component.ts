@@ -3,10 +3,12 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DatePipe, Location } from '@angular/common';
 import { switchMap } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { bootstrapArrowLeft } from '@ng-icons/bootstrap-icons';
+import { bootstrapArrowLeft, bootstrapArrowClockwise, bootstrapCheckCircleFill, bootstrapXCircleFill } from '@ng-icons/bootstrap-icons';
 import { ApiAdminService } from '@services/api-admin.service';
 import { AuthService } from '@services/auth.service';
+import { uniqueFieldValidator } from '@shared/validators/unique.validator';
 import { ICreateAdmin, UserRole } from '@models/user.model';
 import { IApiUserPhoto } from '@models/photo.model';
 import { AlertService } from '@shared/alert.service';
@@ -29,6 +31,9 @@ import { PhoneInputDirective } from '@shared/directives/phone-input.directive';
   viewProviders: [
     provideIcons({
       bootstrapArrowLeft,
+      bootstrapArrowClockwise,
+      bootstrapCheckCircleFill,
+      bootstrapXCircleFill,
     }),
   ],
   providers: [DatePipe],
@@ -43,6 +48,7 @@ export class AdminsFormComponent implements OnInit {
   private authService = inject(AuthService);
   private alertService = inject(AlertService);
   private datePipe = inject(DatePipe);
+  private http = inject(HttpClient);
 
   formUtils = FormUtils;
 
@@ -127,6 +133,19 @@ export class AdminsFormComponent implements OnInit {
     deletedAt: [{ value: '', disabled: true }],
   });
 
+  isPending(field: string) {
+    return this.formAdmin.get(field)?.pending;
+  }
+
+  isValid(field: string) {
+    const control = this.formAdmin.get(field);
+    return control?.valid && control?.value && !control.pristine;
+  }
+
+  get formPending() {
+    return this.formAdmin.pending;
+  }
+
   ngOnInit() {
     this.checkEditMode();
     if (!this.isEditMode()) {
@@ -138,6 +157,12 @@ export class AdminsFormComponent implements OnInit {
     const id = this.routeActive.snapshot.paramMap.get('id');
     if (id) {
       this.loadAdminData(+id);
+    } else {
+      // Configurar validadores asíncronos para creación
+      this.formAdmin.controls.dni.addAsyncValidators(uniqueFieldValidator('Admin', 'dni', this.http));
+      this.formAdmin.controls.username.addAsyncValidators(uniqueFieldValidator('Admin', 'username', this.http));
+      this.formAdmin.controls.email.addAsyncValidators(uniqueFieldValidator('Admin', 'email', this.http));
+      this.formAdmin.get('password')?.addValidators(Validators.required);
     }
   }
 
@@ -166,6 +191,11 @@ export class AdminsFormComponent implements OnInit {
 
         this.formAdmin.get('password')?.removeValidators(Validators.required);
         this.formAdmin.get('password')?.updateValueAndValidity();
+
+        // Configurar validadores asíncronos para edición
+        this.formAdmin.controls.dni.setAsyncValidators(uniqueFieldValidator('Admin', 'dni', this.http, id));
+        this.formAdmin.controls.username.setAsyncValidators(uniqueFieldValidator('Admin', 'username', this.http, id));
+        this.formAdmin.controls.email.setAsyncValidators(uniqueFieldValidator('Admin', 'email', this.http, id));
 
         const formSnapshot = this.formAdmin.getRawValue();
         this.initialFormValue.set(JSON.stringify(formSnapshot));

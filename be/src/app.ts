@@ -10,6 +10,7 @@ import { productRouter } from './product/product.routes.js';
 import { photoRouter } from './photo/photo.routes.js';
 import { userRouter } from './user/user.routes.js';
 import { orderRouter } from './order/order.routes.js';
+import { validationRouter } from './shared/validation/validation.routes.js';
 import { orm, syncSchema } from './shared/db/orm.js';
 import { seedDatabase } from './shared/db/seed.js';
 
@@ -32,6 +33,7 @@ app.use('/api/clients', clientRouter);
 app.use('/api/photos', photoRouter);
 app.use('/api/users', userRouter);
 app.use('/api/orders', orderRouter);
+app.use('/api/validate-unique', validationRouter);
 
 // Rutas de Fotos de Productos
 // Ejemplo URL: http://localhost:3000/uploads/products/foto.jpg

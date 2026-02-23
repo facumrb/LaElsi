@@ -54,7 +54,14 @@ export class CategoryController {
     };
 
     const category = em.create(Category, categoryData as any);
-    await em.flush();
+    try {
+      await em.flush();
+    } catch (error: any) {
+      if (error.message?.includes('unique') || error.message?.includes('duplicate') || error.code === 'ER_DUP_ENTRY' || error.code === '23505') {
+        throw new AppError('Ya existe una categoría con este nombre', 409);
+      }
+      throw error;
+    }
 
     return res.status(201).json(ApiResponse.created('Categoría creada', category));
   });
@@ -87,7 +94,14 @@ export class CategoryController {
     }
 
     em.assign(category, req.body.sanitizedInput);
-    await em.flush();
+    try {
+      await em.flush();
+    } catch (error: any) {
+      if (error.message?.includes('unique') || error.message?.includes('duplicate') || error.code === 'ER_DUP_ENTRY' || error.code === '23505') {
+        throw new AppError('Ya existe una categoría con este nombre', 409);
+      }
+      throw error;
+    }
     return res.status(200).json(ApiResponse.success('Categoría actualizada', category));
   });
 

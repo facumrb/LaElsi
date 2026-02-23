@@ -38,7 +38,19 @@ export class FormUtils {
           return `El campo no puede contener solo espacios en blanco.`;
 
         case 'emailTaken':
-          return `El correo electronico ya esta siendo usado por otro usuario.`;
+          return `El correo electrónico ya está registrado.`;
+
+        case 'usernameTaken':
+          return `El nombre de usuario ya está en uso.`;
+
+        case 'dniTaken':
+          return `El DNI ya está registrado.`;
+
+        case 'cuitTaken':
+          return `El CUIT ya está registrado.`;
+
+        case 'nameTaken':
+          return `Este nombre ya está en uso.`;
 
         case 'mustMatch':
           return `Las contraseñas no coinciden.`;
