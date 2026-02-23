@@ -1,13 +1,14 @@
 <div class="animate-fadeIn container mx-auto">
   <app-clients-toolbar
     [(searchQuery)]="searchQuery"
+    [(fiscalFilter)]="fiscalFilter"
     (onAdd)="handleNavigateToCreate()"
   />
 
   <app-clients-list
     class="mt-6 block"
     [clients]="clientsFiltered()"
-    [isFilterActive]="searchQuery().length > 0"
+    [isFilterActive]="filtersActive()"
     (onEdit)="handleNavigateToEdit($event)"
     (onDelete)="handleDelete($event)"
   />

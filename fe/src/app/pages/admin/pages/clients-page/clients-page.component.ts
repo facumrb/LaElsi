@@ -4,7 +4,10 @@ import { IApiClient } from '@models/user.model';
 import { ApiClientService } from '@services/api-client.service';
 import { AlertService } from '@shared/alert.service';
 import { ApiErrorService } from '@shared/api-error.service';
-import { ClientsToolbarComponent } from './clients-toolbar/clients-toolbar.component';
+import {
+  ClientsToolbarComponent,
+  FiscalConditionFilter,
+} from './clients-toolbar/clients-toolbar.component';
 import { ClientsListComponent } from './clients-list/clients-list.component';
 
 @Component({
@@ -21,23 +24,34 @@ export class ClientsPageComponent implements OnInit {
   private clientsRaw = signal<IApiClient[]>([]);
 
   searchQuery = signal<string>('');
+  fiscalFilter = signal<FiscalConditionFilter>('Todos');
+
+  filtersActive = computed(() => {
+    return this.searchQuery() !== '' || this.fiscalFilter() !== 'Todos';
+  });
 
   clientsFiltered = computed(() => {
     const query = this.searchQuery().toLowerCase().trim();
+    const fiscalContext = this.fiscalFilter();
     const clients = this.clientsRaw();
 
-    // Filtrado de la barra de busqueda
     const filtered = clients.filter((client) => {
-      // Si no hay búsqueda, devolvemos todo
-      if (!query) return true;
+      // Filtro de la barra de Búsqueda
+      let matchesSearch = true;
+      if (query) {
+        matchesSearch =
+          client.name.toLowerCase().includes(query) ||
+          client.lastName.toLowerCase().includes(query) ||
+          client.username.toLowerCase().includes(query) ||
+          client.dni.includes(query);
+      }
 
-      // Buscamos por nombre, apellido, username o dni
-      return (
-        client.name.toLowerCase().includes(query) ||
-        client.lastName.toLowerCase().includes(query) ||
-        client.username.toLowerCase().includes(query) ||
-        client.dni.includes(query)
-      );
+      // Filtro de Condicion Fiscal
+      const clientFiscal = client.fiscalCondition || 'Consumidor Final';
+      const matchesFiscal =
+        fiscalContext === 'Todos' || clientFiscal === fiscalContext;
+
+      return matchesSearch && matchesFiscal;
     });
 
     return filtered.sort((a, b) => a.id - b.id);
