@@ -33,6 +33,39 @@
 
     <!-- Modal Body -->
     <div class="p-6 overflow-y-auto grow custom-scrollbar">
+      <!-- Info de Transferencia (Solo si esta Pendiente y es Transferencia) -->
+      @if (
+        order().status === OrderState.Pending &&
+        order().paymentMethod === PaymentMethod.Transferencia &&
+        !showClientInfo()
+      ) {
+        <div
+          class="mb-6 p-4 bg-blue-50 rounded-2xl border border-blue-200 flex flex-col items-center text-center gap-2 relative overflow-hidden"
+        >
+          <div
+            class="absolute -right-4 -top-4 w-24 h-24 bg-blue-100/50 rounded-full blur-2xl"
+          ></div>
+          <div
+            class="absolute -left-4 -bottom-4 w-16 h-16 bg-blue-200/30 rounded-full blur-xl"
+          ></div>
+
+          <h3
+            class="text-sm font-bold text-blue-800 uppercase tracking-widest relative z-10 flex items-center gap-2"
+          >
+            Información de Pago
+          </h3>
+          <p class="text-blue-700 font-medium text-sm relative z-10 max-w-lg">
+            Realiza el pago al alias
+            <strong class="bg-blue-100 px-2 py-0.5 rounded">{{
+              mpAlias
+            }}</strong>
+            <br />
+            Recuerda enviar el comprobante a nuestro Whatsapp:
+            <strong>+54 9 3417121860</strong>
+          </p>
+        </div>
+      }
+
       <!-- Info del Cliente (Opcional, para admin) -->
       @if (showClientInfo()) {
         <div
@@ -159,6 +192,25 @@
             }}
           </p>
         </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="mt-6 flex justify-end gap-3">
+        @if (order().status === OrderState.Pending) {
+          <button
+            (click)="onCancel.emit(order().id)"
+            class="px-5 py-2.5 rounded-xl border border-rose-200 text-rose-600 font-bold hover:bg-rose-50 transition-colors cursor-pointer mr-auto"
+          >
+            Cancelar pedido
+          </button>
+        }
+
+        <button
+          (click)="onClose()"
+          class="px-5 py-2.5 rounded-xl bg-gray-100 text-gray-700 font-bold hover:bg-gray-200 transition-colors cursor-pointer"
+        >
+          Cerrar
+        </button>
       </div>
     </div>
   </div>

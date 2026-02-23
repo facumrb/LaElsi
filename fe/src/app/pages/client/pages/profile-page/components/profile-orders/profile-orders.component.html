@@ -65,7 +65,7 @@
               <span
                 [class]="
                   getStatusClass(pedido.status) +
-                  ' px-3.5 py-1.5 rounded-lg border text-sm font-bold flex items-center gap-2 shadow-sm'
+                  ' w-32 justify-center px-3.5 py-1.5 rounded-lg border text-sm font-bold flex items-center gap-2 shadow-sm'
                 "
               >
                 <ng-icon
@@ -116,5 +116,9 @@
 
 <!-- Renderizar modal de detalle solo si hay un pedido seleccionado -->
 @if (selectedOrder()) {
-  <app-order-detail-modal [order]="selectedOrder()!" (close)="closeModal()" />
+  <app-order-detail-modal
+    [order]="selectedOrder()!"
+    (close)="closeModal()"
+    (onCancel)="handleCancel($event)"
+  />
 }

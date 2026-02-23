@@ -14,7 +14,7 @@ import {
   bootstrapEnvelope,
   bootstrapPhone,
 } from '@ng-icons/bootstrap-icons';
-import { IApiOrder } from '@models/order.model';
+import { IApiOrder, OrderState, PaymentMethod } from '@models/order.model';
 import { environment } from 'src/environments/environment';
 import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
 
@@ -35,6 +35,11 @@ export class OrderDetailModalComponent implements OnInit, OnDestroy {
   order = input.required<IApiOrder>();
   showClientInfo = input<boolean>(false); // Opcional: mostrar info de contacto del cliente
   close = output<void>();
+  onCancel = output<number>(); // Emite el ID de la orden a cancelar
+
+  mpAlias = 'laelsi.libreria.mp';
+  OrderState = OrderState;
+  PaymentMethod = PaymentMethod;
 
   private document = inject(DOCUMENT);
   productImagesUrl = environment.productImagesUrl;
