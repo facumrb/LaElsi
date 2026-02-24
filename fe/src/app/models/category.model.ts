@@ -11,6 +11,10 @@ export interface IApiCategory {
   description?: string | null;
   order: number;
   state: CategoryState;
+  parentId?: number | null;
+  parent?: IApiCategory | null;
+  children?: IApiCategory[];
+  depth?: number;
   products?: IApiProduct[];
   createdAt: string;
   updatedAt: string;
@@ -20,8 +24,10 @@ export interface IApiCategory {
 // Para CREAR
 export type ICreateCategory = Omit<
   IApiCategory,
-  'id' | 'products' | 'createdAt' | 'updatedAt' | 'deletedAt'
->;
+  'id' | 'products' | 'createdAt' | 'updatedAt' | 'deletedAt' | 'parent' | 'children' | 'depth'
+> & {
+  parentId?: number | null;
+};
 
 // Para EDITAR
 export type IUpdateCategory = Partial<ICreateCategory>;

@@ -8,6 +8,8 @@ export const categoryRouter = Router();
 // Rutas públicas (cualquier usuario puede ver categorías)
 categoryRouter.get('/search', CategoryController.searchCategoriesByText);
 categoryRouter.get('/active', CategoryController.findAllActive);
+categoryRouter.get('/tree', CategoryController.getTree);
+categoryRouter.get('/:id/children', CategoryController.getChildren);
 categoryRouter.get('/', CategoryController.findAll);
 categoryRouter.get('/:id', CategoryController.findOne);
 
