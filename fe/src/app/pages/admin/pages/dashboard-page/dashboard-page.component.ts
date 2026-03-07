@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -16,12 +16,19 @@ import {
 import { ApiOrderService } from '@services/api-order.service';
 import { ApiProductService } from '@services/api-product.service';
 import { ApiClientService } from '@services/api-client.service';
-import { OrderState } from '@models/order.model';
+import { OrderState, IApiOrder } from '@models/order.model';
 import { environment } from 'src/environments/environment';
+import { OrderDetailModalComponent } from '@shared/components/order-detail-modal/order-detail-modal.component';
 
 @Component({
   selector: 'app-dashboard-page',
-  imports: [RouterModule, NgIconComponent, CurrencyPipe, DatePipe],
+  imports: [
+    RouterModule,
+    NgIconComponent,
+    CurrencyPipe,
+    DatePipe,
+    OrderDetailModalComponent,
+  ],
   viewProviders: [
     provideIcons({
       bootstrapBoxSeam,
@@ -59,6 +66,16 @@ export class DashboardPageComponent {
   recentOrders = computed(() => {
     return [...this.orders()].sort((a, b) => b.id - a.id).slice(0, 5);
   });
+
+  selectedOrder = signal<IApiOrder | null>(null);
+
+  openOrderModal(order: IApiOrder) {
+    this.selectedOrder.set(order);
+  }
+
+  closeOrderModal() {
+    this.selectedOrder.set(null);
+  }
 
   bestSellingProducts = computed(() => {
     return [...this.products()]

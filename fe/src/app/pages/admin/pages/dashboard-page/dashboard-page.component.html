@@ -113,7 +113,8 @@
           <div class="divide-y divide-gray-100">
             @for (order of recentOrders(); track order.id) {
               <div
-                class="flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-colors"
+                (click)="openOrderModal(order)"
+                class="flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-colors cursor-pointer"
               >
                 <div class="flex flex-col gap-1 min-w-0">
                   <span class="font-bold text-gray-900 truncate"
@@ -254,3 +255,11 @@
     </div>
   </div>
 </div>
+
+@if (selectedOrder(); as order) {
+  <app-order-detail-modal
+    [order]="order"
+    [showClientInfo]="true"
+    (close)="closeOrderModal()"
+  />
+}
