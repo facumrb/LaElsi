@@ -71,29 +71,62 @@
         <div
           class="mb-6 p-4 bg-blue-50/30 rounded-2xl border border-blue-100/50"
         >
-          <h3
-            class="text-xs font-black text-[#3d4494] uppercase tracking-widest mb-3"
-          >
-            Información del Cliente
-          </h3>
+          <div class="flex items-center justify-between mb-3">
+            <h3
+              class="text-xs font-black text-[#3d4494] uppercase tracking-widest block"
+            >
+              Información del Cliente
+            </h3>
+            <a
+              [routerLink]="['/admin/clients/edit', order().client.id]"
+              (click)="onClose()"
+              class="text-xs font-semibold text-[#3d4494] hover:text-[#2a2f63] hover:underline cursor-pointer"
+            >
+              Ver perfil completo
+            </a>
+          </div>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="flex items-center md:justify-start gap-2">
-              <ng-icon name="bootstrapPerson" class="text-blue-600"></ng-icon>
+              <ng-icon name="bootstrapPerson" class="shrink-0"></ng-icon>
               <span class="text-sm font-bold text-gray-800">
                 {{ order().client.name }} {{ order().client.lastName }}
               </span>
             </div>
-            <div class="flex items-center md:justify-center gap-2">
-              <ng-icon name="bootstrapEnvelope" class="text-blue-600"></ng-icon>
-              <span class="text-sm font-medium text-gray-600 truncate">
-                {{ order().client.email }}
-              </span>
+            <div class="flex items-center md:justify-center">
+              <a
+                [href]="'mailto:' + order().client.email"
+                class="inline-flex items-center gap-2 group cursor-pointer"
+                title="Enviar correo"
+              >
+                <ng-icon
+                  name="bootstrapEnvelope"
+                  class="text-gray-600 shrink-0"
+                ></ng-icon>
+                <span
+                  class="text-sm font-medium text-gray-600 group-hover:underline group-hover:text-gray-800 transition-colors truncate max-w-50"
+                >
+                  {{ order().client.email }}
+                </span>
+              </a>
             </div>
-            <div class="flex items-center md:justify-end gap-2">
-              <ng-icon name="bootstrapPhone" class="text-blue-600"></ng-icon>
-              <span class="text-sm font-medium text-gray-600">
-                {{ order().client.phone }}
-              </span>
+            <div class="flex items-center md:justify-end">
+              <a
+                [href]="getWhatsappLink(order().client.phone)"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-2 group cursor-pointer"
+                title="Enviar WhatsApp"
+              >
+                <ng-icon
+                  name="bootstrapWhatsapp"
+                  class="text-gray-600 shrink-0"
+                ></ng-icon>
+                <span
+                  class="text-sm font-medium text-gray-600 group-hover:underline group-hover:text-gray-800 transition-colors truncate max-w-50"
+                >
+                  {{ order().client.phone }}
+                </span>
+              </a>
             </div>
           </div>
         </div>

@@ -7,12 +7,13 @@ import {
   inject,
 } from '@angular/core';
 import { CurrencyPipe, DatePipe, DOCUMENT } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
   bootstrapX,
   bootstrapPerson,
   bootstrapEnvelope,
-  bootstrapPhone,
+  bootstrapWhatsapp,
 } from '@ng-icons/bootstrap-icons';
 import { IApiOrder, OrderState, PaymentMethod } from '@models/order.model';
 import { environment } from 'src/environments/environment';
@@ -20,13 +21,19 @@ import { ClickOutsideDirective } from '@shared/directives/click-outside.directiv
 
 @Component({
   selector: 'app-order-detail-modal',
-  imports: [NgIconComponent, CurrencyPipe, DatePipe, ClickOutsideDirective],
+  imports: [
+    NgIconComponent,
+    CurrencyPipe,
+    DatePipe,
+    ClickOutsideDirective,
+    RouterModule,
+  ],
   viewProviders: [
     provideIcons({
       bootstrapX,
       bootstrapPerson,
       bootstrapEnvelope,
-      bootstrapPhone,
+      bootstrapWhatsapp,
     }),
   ],
   templateUrl: './order-detail-modal.component.html',
@@ -54,5 +61,10 @@ export class OrderDetailModalComponent implements OnInit, OnDestroy {
 
   onClose() {
     this.close.emit();
+  }
+
+  getWhatsappLink(phone: string): string {
+    const cleanPhone = phone.replace(/\D/g, '');
+    return `https://wa.me/${cleanPhone}`;
   }
 }
