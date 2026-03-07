@@ -34,7 +34,10 @@ function sanitizeClientInput(req: Request, res: Response, next: NextFunction) {
   };
 
   Object.keys(req.body.sanitizedInput).forEach((key) => {
-    if (req.body.sanitizedInput[key] === undefined) {
+    if (
+      req.body.sanitizedInput[key] === undefined ||
+      (key === 'cuit' && req.body.sanitizedInput[key] === '')
+    ) {
       delete req.body.sanitizedInput[key];
     }
   });

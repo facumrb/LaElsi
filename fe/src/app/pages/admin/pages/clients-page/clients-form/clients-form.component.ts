@@ -8,6 +8,7 @@ import { AuthService } from '@services/auth.service';
 import { ICreateClient, UserRole, FiscalCondition } from '@models/user.model';
 import { IApiUserPhoto } from '@models/photo.model';
 import { HttpClient } from '@angular/common/http';
+import { of } from 'rxjs';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
   bootstrapArrowLeft,
@@ -204,10 +205,18 @@ export class ClientsFormComponent implements OnInit {
       this.loadClientData(+id);
     } else {
       // Configurar validadores asíncronos para creación
-      this.formClient.controls.dni.addAsyncValidators(uniqueFieldValidator('Client', 'dni', this.http));
-      this.formClient.controls.username.addAsyncValidators(uniqueFieldValidator('Client', 'username', this.http));
-      this.formClient.controls.email.addAsyncValidators(uniqueFieldValidator('Client', 'email', this.http));
-      this.formClient.controls.cuit.addAsyncValidators(uniqueFieldValidator('Client', 'cuit', this.http));
+      this.formClient.controls.dni.addAsyncValidators(
+        uniqueFieldValidator('Client', 'dni', this.http),
+      );
+      this.formClient.controls.username.addAsyncValidators(
+        uniqueFieldValidator('Client', 'username', this.http),
+      );
+      this.formClient.controls.email.addAsyncValidators(
+        uniqueFieldValidator('Client', 'email', this.http),
+      );
+      this.formClient.controls.cuit.addAsyncValidators(
+        uniqueFieldValidator('Client', 'cuit', this.http),
+      );
       this.formClient.get('password')?.addValidators(Validators.required);
     }
   }
@@ -254,10 +263,18 @@ export class ClientsFormComponent implements OnInit {
         this.formClient.get('password')?.updateValueAndValidity();
 
         // Configurar validadores asíncronos para edición
-        this.formClient.controls.dni.setAsyncValidators(uniqueFieldValidator('Client', 'dni', this.http, id));
-        this.formClient.controls.username.setAsyncValidators(uniqueFieldValidator('Client', 'username', this.http, id));
-        this.formClient.controls.email.setAsyncValidators(uniqueFieldValidator('Client', 'email', this.http, id));
-        this.formClient.controls.cuit.setAsyncValidators(uniqueFieldValidator('Client', 'cuit', this.http, id));
+        this.formClient.controls.dni.setAsyncValidators(
+          uniqueFieldValidator('Client', 'dni', this.http, id),
+        );
+        this.formClient.controls.username.setAsyncValidators(
+          uniqueFieldValidator('Client', 'username', this.http, id),
+        );
+        this.formClient.controls.email.setAsyncValidators(
+          uniqueFieldValidator('Client', 'email', this.http, id),
+        );
+        this.formClient.controls.cuit.setAsyncValidators(
+          uniqueFieldValidator('Client', 'cuit', this.http, id),
+        );
 
         const formSnapshot = this.formClient.getRawValue();
         this.initialFormValue.set(JSON.stringify(formSnapshot));
@@ -344,24 +361,26 @@ export class ClientsFormComponent implements OnInit {
         switchMap((res: any) => {
           const userId = this.isEditMode()
             ? this.clientId()!
-            : res.id || res.data?.id;
+            : res.user?.id || res.id;
 
           if (!userId) {
             console.error(
               'No se pudo obtener el ID del usuario para subir la foto',
+              res,
             );
-            return [];
+            return of(null);
           }
-          return this.photoManager.saveChanges(userId);
+
+          if (this.photoManager?.hasChanges()) {
+            return this.photoManager.saveChanges(userId);
+          }
+
+          return of(null);
         }),
       )
       .subscribe({
-        next: (photoResponse: any) => {
+        next: () => {
           this.alertService.toast('Guardado exitosamente', 'success');
-          const currentUserId = this.authService.currentUser()?.id;
-          if (this.clientId() === currentUserId) {
-          }
-
           this.router.navigate(['/admin/clients']); // Redirección al listado de clientes
         },
         error: (err) => {
