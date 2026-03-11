@@ -2,23 +2,20 @@ import { Component, model, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
-  bootstrapSearch,
-  bootstrapX,
   bootstrapFunnel,
   bootstrapFunnelFill,
 } from '@ng-icons/bootstrap-icons';
 import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
 import { OrderState, DeliveryMethod } from '@models/order.model';
+import { SearchInputComponent } from '@shared/components/inputs/search-input/search-input.component';
 
 export type OrderStatusFilter = OrderState | 'Todos';
 export type DeliveryMethodFilter = DeliveryMethod | 'Todos';
 
 @Component({
   selector: 'app-orders-toolbar',
-  imports: [NgIconComponent, FormsModule, ClickOutsideDirective],
+  imports: [NgIconComponent, FormsModule, ClickOutsideDirective, SearchInputComponent],
   viewProviders: provideIcons({
-    bootstrapSearch,
-    bootstrapX,
     bootstrapFunnel,
     bootstrapFunnelFill,
   }),

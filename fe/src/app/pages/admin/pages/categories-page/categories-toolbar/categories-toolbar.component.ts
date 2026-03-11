@@ -3,12 +3,11 @@ import { FormsModule } from '@angular/forms';
 import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
-  bootstrapSearch,
-  bootstrapX,
   bootstrapFunnel,
   bootstrapFunnelFill,
   bootstrapPlusLg,
 } from '@ng-icons/bootstrap-icons';
+import { SearchInputComponent } from '@shared/components/inputs/search-input/search-input.component';
 
 export type StockFilter =
   | 'Todos'
@@ -21,10 +20,8 @@ export type StatusFilter = 'Todos' | 'Activo' | 'Inactivo';
 
 @Component({
   selector: 'app-categories-toolbar',
-  imports: [FormsModule, ClickOutsideDirective, NgIconComponent],
+  imports: [FormsModule, ClickOutsideDirective, NgIconComponent, SearchInputComponent],
   viewProviders: provideIcons({
-    bootstrapSearch,
-    bootstrapX,
     bootstrapFunnel,
     bootstrapFunnelFill,
     bootstrapPlusLg,

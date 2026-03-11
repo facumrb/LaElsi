@@ -3,17 +3,14 @@ import { FormsModule } from '@angular/forms';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
   bootstrapPlusLg,
-  bootstrapSearch,
-  bootstrapX,
 } from '@ng-icons/bootstrap-icons';
+import { SearchInputComponent } from '@shared/components/inputs/search-input/search-input.component';
 
 @Component({
   selector: 'app-admins-toolbar',
-  imports: [NgIconComponent, FormsModule],
+  imports: [NgIconComponent, FormsModule, SearchInputComponent],
   viewProviders: provideIcons({
     bootstrapPlusLg,
-    bootstrapSearch,
-    bootstrapX,
   }),
   templateUrl: './admins-toolbar.component.html',
 })
