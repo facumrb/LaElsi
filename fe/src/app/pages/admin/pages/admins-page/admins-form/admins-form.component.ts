@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DatePipe, Location } from '@angular/common';
 import { switchMap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
@@ -21,7 +21,6 @@ import { NumericInputDirective } from '@shared/directives/numeric-input.directiv
 import { PhotoManagerComponent } from '@shared/components/photo-manager/photo-manager.component';
 import { AuditInfoComponent } from '@shared/components/audit-info/audit-info.component';
 import { PhoneInputDirective } from '@shared/directives/phone-input.directive';
-
 import { GoBackButtonComponent } from '@shared/components/buttons/go-back-button/go-back-button.component';
 
 @Component({
@@ -34,6 +33,7 @@ import { GoBackButtonComponent } from '@shared/components/buttons/go-back-button
     PhotoManagerComponent,
     AuditInfoComponent,
     GoBackButtonComponent,
+    RouterLink,
   ],
   viewProviders: [
     provideIcons({

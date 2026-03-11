@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DatePipe, Location } from '@angular/common';
 import { GoBackButtonComponent } from '@shared/components/buttons/go-back-button/go-back-button.component';
 import { ApiCategoryService } from '@services/api-category.service';
@@ -31,6 +31,7 @@ import { AuditInfoComponent } from '@shared/components/audit-info/audit-info.com
     NgIconComponent,
     AuditInfoComponent,
     GoBackButtonComponent,
+    RouterLink,
   ],
   viewProviders: [
     provideIcons({

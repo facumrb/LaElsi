@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DatePipe, Location } from '@angular/common';
 import { GoBackButtonComponent } from '@shared/components/buttons/go-back-button/go-back-button.component';
 import { switchMap } from 'rxjs';
@@ -38,6 +38,7 @@ import { PhoneInputDirective } from '@shared/directives/phone-input.directive';
     ClickOutsideDirective,
     AuditInfoComponent,
     GoBackButtonComponent,
+    RouterLink,
   ],
   viewProviders: [
     provideIcons({
