@@ -270,14 +270,12 @@
         }
       </div>
 
-      <button
-        (click)="onAdd.emit()"
-        class="cursor-pointer col-span-1 sm:w-auto bg-[#3d4494] text-white px-4 h-10 rounded-lg hover:bg-[#2a2f63] transition-colors flex justify-center items-center gap-2 whitespace-nowrap"
-      >
-        <ng-icon name="bootstrapPlusLg" class="text-xl"></ng-icon>
-        <span>Agregar</span>
-        <span class="hidden sm:inline">Producto</span>
-      </button>
+      <div class="col-span-1 sm:w-auto">
+        <app-create-entity-button
+          label="Producto"
+          (clicked)="onAdd.emit()"
+        ></app-create-entity-button>
+      </div>
     </div>
   </div>
 </div>

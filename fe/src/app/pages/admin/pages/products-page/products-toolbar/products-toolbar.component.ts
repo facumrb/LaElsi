@@ -10,13 +10,13 @@ import { FormsModule } from '@angular/forms';
 import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
-  bootstrapPlusLg,
   bootstrapCurrencyDollar,
   bootstrapChevronDown,
   bootstrapCheckLg,
 } from '@ng-icons/bootstrap-icons';
 import { SearchInputComponent } from '@shared/components/inputs/search-input/search-input.component';
 import { FilterButtonComponent } from '@shared/components/buttons/filter-button/filter-button.component';
+import { CreateEntityButtonComponent } from '@shared/components/buttons/create-entity-button/create-entity-button.component';
 
 export type StockFilter =
   | 'Todos'
@@ -35,9 +35,8 @@ export interface SimpleCategory {
 
 @Component({
   selector: 'app-products-toolbar',
-  imports: [FormsModule, ClickOutsideDirective, NgIconComponent, SearchInputComponent, FilterButtonComponent],
+  imports: [FormsModule, ClickOutsideDirective, NgIconComponent, SearchInputComponent, FilterButtonComponent, CreateEntityButtonComponent],
   viewProviders: provideIcons({
-    bootstrapPlusLg,
     bootstrapCurrencyDollar,
     bootstrapChevronDown,
     bootstrapCheckLg,

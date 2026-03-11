@@ -156,14 +156,12 @@
         }
       </div>
 
-      <button
-        (click)="onAdd.emit()"
-        class="cursor-pointer col-span-1 lg:w-auto bg-[#3d4494] text-white px-4 h-10 rounded-lg hover:bg-[#2a2f63] transition-colors flex justify-center items-center gap-2 shadow-sm whitespace-nowrap"
-      >
-        <ng-icon name="bootstrapPlusLg" class="text-xl shrink-0"></ng-icon>
-        <span>Agregar</span>
-        <span class="hidden sm:inline">Categoría</span>
-      </button>
+      <div class="col-span-1 lg:w-auto">
+        <app-create-entity-button
+          label="Categoría"
+          (clicked)="onAdd.emit()"
+        ></app-create-entity-button>
+      </div>
     </div>
   </div>
 </div>

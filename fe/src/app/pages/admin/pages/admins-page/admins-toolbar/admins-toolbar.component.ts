@@ -1,17 +1,12 @@
 import { Component, model, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import {
-  bootstrapPlusLg,
-} from '@ng-icons/bootstrap-icons';
 import { SearchInputComponent } from '@shared/components/inputs/search-input/search-input.component';
+
+import { CreateEntityButtonComponent } from '@shared/components/buttons/create-entity-button/create-entity-button.component';
 
 @Component({
   selector: 'app-admins-toolbar',
-  imports: [NgIconComponent, FormsModule, SearchInputComponent],
-  viewProviders: provideIcons({
-    bootstrapPlusLg,
-  }),
+  imports: [FormsModule, SearchInputComponent, CreateEntityButtonComponent],
   templateUrl: './admins-toolbar.component.html',
 })
 export class AdminsToolbarComponent {

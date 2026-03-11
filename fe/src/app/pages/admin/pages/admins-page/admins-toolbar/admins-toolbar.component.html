@@ -8,13 +8,9 @@
       <app-search-input [(query)]="searchQuery" placeholder="Buscar administrador..."></app-search-input>
     </div>
 
-    <button
-      (click)="onAdd.emit()"
-      class="cursor-pointer w-full lg:w-auto bg-[#3d4494] text-white px-4 h-10 rounded-lg hover:bg-[#2a2f63] transition-colors flex justify-center items-center gap-2 shadow-sm whitespace-nowrap"
-    >
-      <ng-icon name="bootstrapPlusLg" class="text-xl"></ng-icon>
-      <span>Agregar</span>
-      <span class="hidden sm:inline">Administrador</span>
-    </button>
+    <app-create-entity-button
+      label="Administrador"
+      (clicked)="onAdd.emit()"
+    ></app-create-entity-button>
   </div>
 </div>
