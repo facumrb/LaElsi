@@ -21,6 +21,8 @@ import { environment } from 'src/environments/environment';
 import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
 import { AuthService } from 'src/app/services/auth.service';
 
+import { CloseModalButtonComponent } from '@shared/components/buttons/close-modal-button/close-modal-button.component';
+
 @Component({
   selector: 'app-order-detail-modal',
   imports: [
@@ -29,6 +31,7 @@ import { AuthService } from 'src/app/services/auth.service';
     DatePipe,
     ClickOutsideDirective,
     RouterModule,
+    CloseModalButtonComponent
   ],
   viewProviders: [
     provideIcons({

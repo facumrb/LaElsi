@@ -22,13 +22,7 @@
           {{ order().createdAt | date: "dd 'de' MMMM, yyyy - HH:mm" }}
         </p>
       </div>
-      <button
-        (click)="onClose()"
-        aria-label="Cerrar modal"
-        class="cursor-pointer w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-[#3d4494]"
-      >
-        <ng-icon name="bootstrapX" class="text-3xl shrink-0"></ng-icon>
-      </button>
+      <app-close-modal-button (clicked)="onClose()"></app-close-modal-button>
     </div>
 
     <!-- Modal Body -->

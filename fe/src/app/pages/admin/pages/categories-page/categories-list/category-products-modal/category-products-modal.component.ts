@@ -12,13 +12,13 @@ import {
 } from '@ng-icons/bootstrap-icons';
 import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
 import { environment } from 'src/environments/environment';
+import { CloseModalButtonComponent } from '@shared/components/buttons/close-modal-button/close-modal-button.component';
 
 @Component({
   selector: 'app-category-products-modal',
-  imports: [FormsModule, NgIconComponent, ClickOutsideDirective],
+  imports: [FormsModule, NgIconComponent, ClickOutsideDirective, CloseModalButtonComponent],
   viewProviders: [
     provideIcons({
-      bootstrapX,
       bootstrapSearch,
       bootstrapBoxSeam,
       bootstrapPencilSquare,

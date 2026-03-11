@@ -26,6 +26,7 @@ import { AlertService } from '@shared/alert.service';
 import { ApiErrorService } from '@shared/api-error.service';
 import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
 import { PriceAdjustmentInputDirective } from '@shared/directives/price-adjustment-input.directive';
+import { CloseModalButtonComponent } from '@shared/components/buttons/close-modal-button/close-modal-button.component';
 
 @Component({
   selector: 'app-bulk-price-modal',
@@ -34,10 +35,10 @@ import { PriceAdjustmentInputDirective } from '@shared/directives/price-adjustme
     CurrencyPipe,
     ClickOutsideDirective,
     PriceAdjustmentInputDirective,
+    CloseModalButtonComponent
   ],
   viewProviders: [
     provideIcons({
-      bootstrapX,
       bootstrapEye,
       bootstrapArrowClockwise,
       bootstrapExclamationTriangle,
