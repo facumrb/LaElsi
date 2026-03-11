@@ -1,5 +1,6 @@
 import { orm } from '../shared/db/orm.js';
 import { Order } from './order.entity.js';
+import { OrderLine } from './order-line.entity.js';
 import { Client } from '../user/client/client.entity.js';
 import { Product } from '../product/product.entity.js';
 import { OrderState } from '../shared/enums/state.enum.js';
@@ -92,7 +93,14 @@ export class OrderService {
       if (product.totalSold === undefined) product.totalSold = 0;
       product.totalSold += item.quantity;
 
-      order.addItem(product, item.quantity, currentPrice);
+      const line = new OrderLine();
+      line.order = order;
+      line.product = product;
+      line.quantity = item.quantity;
+      line.price = currentPrice;
+
+      order.items.add(line);
+      order.totalAmount = Number(order.totalAmount) + Number(currentPrice) * item.quantity;
     }
 
     em.persist(order);
@@ -152,15 +160,39 @@ export class OrderService {
       throw new AppError('Orden no encontrada', 404);
     }
 
-    try {
-      order.changeStatus(status as OrderState);
-    } catch (e: any) {
-      throw new AppError(e.message, 400);
-    }
+    OrderService.validateStatusTransition(order, status as OrderState);
+
+    order.status = status as OrderState;
 
     await em.flush();
     await em.populate(order, ['client', 'items', 'items.product', 'items.product.photos']);
     return order;
+  }
+
+  private static validateStatusTransition(order: Order, newState: OrderState) {
+    const TRANSITIONS_ENVIO: Record<OrderState, OrderState[]> = {
+      [OrderState.Pending]: [OrderState.Paid, OrderState.Cancelled],
+      [OrderState.Paid]: [OrderState.Shipped, OrderState.Cancelled],
+      [OrderState.Shipped]: [OrderState.Delivered, OrderState.Cancelled],
+      [OrderState.Delivered]: [],
+      [OrderState.Cancelled]: []
+    };
+
+    const TRANSITIONS_RETIRO: Record<OrderState, OrderState[]> = {
+      [OrderState.Pending]: [OrderState.Paid, OrderState.Cancelled],
+      [OrderState.Paid]: [OrderState.Delivered, OrderState.Cancelled],
+      [OrderState.Shipped]: [],
+      [OrderState.Delivered]: [],
+      [OrderState.Cancelled]: []
+    };
+
+    const map = order.deliveryMethod === DeliveryMethod.Envio ? TRANSITIONS_ENVIO : TRANSITIONS_RETIRO;
+    const allowedTransitions = map[order.status] || [];
+
+    if (!allowedTransitions.includes(newState)) {
+      const transitionsStr = allowedTransitions.length > 0 ? allowedTransitions.join(', ') : 'ninguna (estado final)';
+      throw new AppError(`No se puede cambiar el estado de "${order.status}" a "${newState}" para una orden de tipo "${order.deliveryMethod}". Transiciones válidas: ${transitionsStr}`, 400);
+    }
   }
 
   static async updateDeliveryMethod(id: number, deliveryMethod: string) {
@@ -206,11 +238,8 @@ export class OrderService {
       }
     });
 
-    try {
-      order.changeStatus(OrderState.Cancelled);
-    } catch (e: any) {
-      throw new AppError(e.message, 400);
-    }
+    OrderService.validateStatusTransition(order, OrderState.Cancelled);
+    order.status = OrderState.Cancelled;
 
     await em.flush();
     await em.populate(order, ['client', 'items', 'items.product', 'items.product.photos']);

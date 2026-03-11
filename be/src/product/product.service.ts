@@ -1,6 +1,7 @@
 import { orm } from '../shared/db/orm.js';
 import { Product } from './product.entity.js';
 import { Category } from '../category/category.entity.js';
+import { Price } from './price/price.entity.js';
 import { ProductState, CategoryState } from '../shared/enums/state.enum.js';
 import { Currency } from '../shared/enums/currency.enum.js';
 import path from 'path';
@@ -77,7 +78,16 @@ export class ProductService {
     };
 
     const product = em.create(Product, productEntityData);
-    product.updatePrice(price, currency);
+    
+    // update price logic
+    const newPrice = em.create(Price, {
+      amount: price,
+      currency: currency || Currency.ARS,
+      product: product,
+      isCurrent: true,
+      validFrom: new Date()
+    });
+    product.prices.add(newPrice);
 
     try {
       await em.flush();
@@ -177,7 +187,19 @@ export class ProductService {
 
     const currentPrice = product.prices.getItems().find((p) => p.isCurrent);
     if (price !== undefined && price !== currentPrice?.amount) {
-      product.updatePrice(price, currency);
+      // update price logic
+      product.prices.getItems().forEach((p) => {
+        if (p.isCurrent) p.isCurrent = false;
+      });
+
+      const newPrice = em.create(Price, {
+        amount: price,
+        currency: currency || Currency.ARS,
+        product: product,
+        isCurrent: true,
+        validFrom: new Date()
+      });
+      product.prices.add(newPrice);
     }
 
     em.assign(product, updateData);

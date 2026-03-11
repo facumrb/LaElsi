@@ -5,6 +5,7 @@ import { Admin } from './admin/admin.entity.js';
 import { FiscalCondition } from '../shared/enums/fiscal-condition.enum.js';
 import { generateToken } from '../shared/auth.middleware.js';
 import { AppError } from '../shared/errors/appError.js';
+import bcrypt from 'bcrypt';
 
 export interface RegisterUserDto {
   name: string;
@@ -47,7 +48,7 @@ export class UserService {
       throw new AppError('Credenciales inválidas', 401);
     }
 
-    const isValid = await user.verifyPassword(passwordString);
+    const isValid = await bcrypt.compare(passwordString, user.password);
     if (!isValid) {
       throw new AppError('Credenciales inválidas', 401);
     }
@@ -111,7 +112,7 @@ export class UserService {
     if (addressFields.floor) newClient.floor = addressFields.floor;
     if (addressFields.apartment) newClient.apartment = addressFields.apartment;
 
-    await newClient.setPassword(password);
+    newClient.password = await bcrypt.hash(password, 10);
 
     em.persist(newClient);
     try {

@@ -4,6 +4,7 @@ import { UserRole } from '../user.entity.js';
 import { AppError } from '../../shared/errors/appError.js';
 import fs from 'fs/promises';
 import path from 'path';
+import bcrypt from 'bcrypt';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MIN_PASSWORD_LENGTH = 6;
@@ -82,7 +83,7 @@ export class AdminService {
 
     const admin = new Admin();
     admin.email = email;
-    await admin.setPassword(password);
+    admin.password = await bcrypt.hash(password, 10);
     admin.name = name;
     admin.lastName = lastName;
     admin.phone = phone;
@@ -114,8 +115,7 @@ export class AdminService {
       if (input.password.length < MIN_PASSWORD_LENGTH) {
         throw new AppError(`La contraseña debe tener al menos ${MIN_PASSWORD_LENGTH} caracteres`, 400);
       }
-      await admin.setPassword(input.password);
-      delete input.password;
+      input.password = await bcrypt.hash(input.password, 10);
     }
 
     em.assign(admin, input);

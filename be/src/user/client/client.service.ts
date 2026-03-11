@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken';
 import { AppError } from '../../shared/errors/appError.js';
 import fs from 'fs/promises';
 import path from 'path';
+import bcrypt from 'bcrypt';
 
 const USERS_PATH = path.join(process.cwd(), 'uploads', 'users');
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -116,7 +117,7 @@ export class ClientService {
 
     const client = new Client();
     client.email = email;
-    await client.setPassword(password);
+    client.password = await bcrypt.hash(password, 10);
     client.name = name;
     client.lastName = lastName;
     client.phone = phone;
@@ -161,8 +162,7 @@ export class ClientService {
       if (input.password.length < MIN_PASSWORD_LENGTH) {
         throw new AppError(`La contraseña debe tener al menos ${MIN_PASSWORD_LENGTH} caracteres`, 400);
       }
-      await client.setPassword(input.password);
-      delete input.password;
+      input.password = await bcrypt.hash(input.password, 10);
     }
 
     em.assign(client, input);
