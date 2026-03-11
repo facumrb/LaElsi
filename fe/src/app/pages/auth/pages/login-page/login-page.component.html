@@ -1,13 +1,7 @@
 <main class="flex min-h-screen items-center justify-center bg-gray-50 p-4">
   <div class="w-full max-w-lg">
     <div class="mb-4 flex justify-start">
-      <button
-        (click)="goBack()"
-        class="cursor-pointer inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-100 hover:text-[#3d4494] transition-all"
-      >
-        <ng-icon name="bootstrapArrowLeft" class="text-lg"></ng-icon>
-        Volver
-      </button>
+      <app-go-back-button></app-go-back-button>
     </div>
 
     <div class="rounded-xl bg-white p-8 shadow-xl border border-gray-100">

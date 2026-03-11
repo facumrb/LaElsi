@@ -2,6 +2,7 @@ import { Component, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DatePipe, Location } from '@angular/common';
+import { GoBackButtonComponent } from '@shared/components/buttons/go-back-button/go-back-button.component';
 import { switchMap } from 'rxjs';
 import { ApiClientService } from '@services/api-client.service';
 import { AuthService } from '@services/auth.service';
@@ -11,7 +12,6 @@ import { HttpClient } from '@angular/common/http';
 import { of } from 'rxjs';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
-  bootstrapArrowLeft,
   bootstrapChevronDown,
   bootstrapCheckLg,
   bootstrapArrowClockwise,
@@ -37,10 +37,10 @@ import { PhoneInputDirective } from '@shared/directives/phone-input.directive';
     PhotoManagerComponent,
     ClickOutsideDirective,
     AuditInfoComponent,
+    GoBackButtonComponent,
   ],
   viewProviders: [
     provideIcons({
-      bootstrapArrowLeft,
       bootstrapChevronDown,
       bootstrapCheckLg,
       bootstrapArrowClockwise,
@@ -281,7 +281,7 @@ export class ClientsFormComponent implements OnInit {
       },
       error: () => {
         this.alertService.toast('Error al cargar cliente', 'error');
-        this.goBack();
+        this.location.back();
       },
     });
   }
@@ -290,10 +290,6 @@ export class ClientsFormComponent implements OnInit {
     const name = this.formClient.get('name')?.value || '';
     const lastName = this.formClient.get('lastName')?.value || '';
     return `${name} ${lastName}`;
-  }
-
-  goBack() {
-    this.location.back();
   }
 
   get hasRealChanges(): boolean {

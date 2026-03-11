@@ -6,13 +6,7 @@
       </h1>
     </div>
 
-    <button
-      (click)="goBack()"
-      class="cursor-pointer inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition-colors"
-    >
-      <ng-icon name="bootstrapArrowLeft" class="text-lg"></ng-icon>
-      Volver
-    </button>
+    <app-go-back-button></app-go-back-button>
   </div>
 
   <div
@@ -206,7 +200,7 @@
       >
         <button
           type="button"
-          (click)="goBack()"
+          routerLink="/admin/categories"
           class="cursor-pointer rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition-colors"
         >
           Cancelar

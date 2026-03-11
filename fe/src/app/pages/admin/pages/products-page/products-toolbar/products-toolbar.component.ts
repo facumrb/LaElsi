@@ -35,7 +35,14 @@ export interface SimpleCategory {
 
 @Component({
   selector: 'app-products-toolbar',
-  imports: [FormsModule, ClickOutsideDirective, NgIconComponent, SearchInputComponent, FilterButtonComponent, CreateEntityButtonComponent],
+  imports: [
+    FormsModule,
+    ClickOutsideDirective,
+    NgIconComponent,
+    SearchInputComponent,
+    FilterButtonComponent,
+    CreateEntityButtonComponent,
+  ],
   viewProviders: provideIcons({
     bootstrapCurrencyDollar,
     bootstrapChevronDown,

@@ -5,7 +5,11 @@ import { DatePipe, Location } from '@angular/common';
 import { switchMap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { bootstrapArrowLeft, bootstrapArrowClockwise, bootstrapCheckCircleFill, bootstrapXCircleFill } from '@ng-icons/bootstrap-icons';
+import {
+  bootstrapArrowClockwise,
+  bootstrapCheckCircleFill,
+  bootstrapXCircleFill,
+} from '@ng-icons/bootstrap-icons';
 import { ApiAdminService } from '@services/api-admin.service';
 import { AuthService } from '@services/auth.service';
 import { uniqueFieldValidator } from '@shared/validators/unique.validator';
@@ -18,6 +22,8 @@ import { PhotoManagerComponent } from '@shared/components/photo-manager/photo-ma
 import { AuditInfoComponent } from '@shared/components/audit-info/audit-info.component';
 import { PhoneInputDirective } from '@shared/directives/phone-input.directive';
 
+import { GoBackButtonComponent } from '@shared/components/buttons/go-back-button/go-back-button.component';
+
 @Component({
   selector: 'app-admins-form',
   imports: [
@@ -27,10 +33,10 @@ import { PhoneInputDirective } from '@shared/directives/phone-input.directive';
     PhoneInputDirective,
     PhotoManagerComponent,
     AuditInfoComponent,
+    GoBackButtonComponent,
   ],
   viewProviders: [
     provideIcons({
-      bootstrapArrowLeft,
       bootstrapArrowClockwise,
       bootstrapCheckCircleFill,
       bootstrapXCircleFill,
@@ -159,9 +165,15 @@ export class AdminsFormComponent implements OnInit {
       this.loadAdminData(+id);
     } else {
       // Configurar validadores asíncronos para creación
-      this.formAdmin.controls.dni.addAsyncValidators(uniqueFieldValidator('Admin', 'dni', this.http));
-      this.formAdmin.controls.username.addAsyncValidators(uniqueFieldValidator('Admin', 'username', this.http));
-      this.formAdmin.controls.email.addAsyncValidators(uniqueFieldValidator('Admin', 'email', this.http));
+      this.formAdmin.controls.dni.addAsyncValidators(
+        uniqueFieldValidator('Admin', 'dni', this.http),
+      );
+      this.formAdmin.controls.username.addAsyncValidators(
+        uniqueFieldValidator('Admin', 'username', this.http),
+      );
+      this.formAdmin.controls.email.addAsyncValidators(
+        uniqueFieldValidator('Admin', 'email', this.http),
+      );
       this.formAdmin.get('password')?.addValidators(Validators.required);
     }
   }
@@ -193,16 +205,22 @@ export class AdminsFormComponent implements OnInit {
         this.formAdmin.get('password')?.updateValueAndValidity();
 
         // Configurar validadores asíncronos para edición
-        this.formAdmin.controls.dni.setAsyncValidators(uniqueFieldValidator('Admin', 'dni', this.http, id));
-        this.formAdmin.controls.username.setAsyncValidators(uniqueFieldValidator('Admin', 'username', this.http, id));
-        this.formAdmin.controls.email.setAsyncValidators(uniqueFieldValidator('Admin', 'email', this.http, id));
+        this.formAdmin.controls.dni.setAsyncValidators(
+          uniqueFieldValidator('Admin', 'dni', this.http, id),
+        );
+        this.formAdmin.controls.username.setAsyncValidators(
+          uniqueFieldValidator('Admin', 'username', this.http, id),
+        );
+        this.formAdmin.controls.email.setAsyncValidators(
+          uniqueFieldValidator('Admin', 'email', this.http, id),
+        );
 
         const formSnapshot = this.formAdmin.getRawValue();
         this.initialFormValue.set(JSON.stringify(formSnapshot));
       },
       error: () => {
         this.alertService.toast('Error al cargar administrador', 'error');
-        this.goBack();
+        this.location.back();
       },
     });
   }
@@ -211,10 +229,6 @@ export class AdminsFormComponent implements OnInit {
     const name = this.formAdmin.get('name')?.value || '';
     const lastName = this.formAdmin.get('lastName')?.value || '';
     return `${name} ${lastName}`;
-  }
-
-  goBack() {
-    this.location.back();
   }
 
   get hasRealChanges(): boolean {

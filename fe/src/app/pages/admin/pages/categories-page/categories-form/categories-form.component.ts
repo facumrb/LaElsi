@@ -2,6 +2,7 @@ import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location, DatePipe } from '@angular/common';
+import { GoBackButtonComponent } from '@shared/components/buttons/go-back-button/go-back-button.component';
 import { ApiCategoryService } from '@services/api-category.service';
 import {
   ICreateCategory,
@@ -14,7 +15,6 @@ import { FormUtils } from '@shared/form-utils';
 import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
-  bootstrapArrowLeft,
   bootstrapChevronDown,
   bootstrapCheckLg,
 } from '@ng-icons/bootstrap-icons';
@@ -27,10 +27,10 @@ import { AuditInfoComponent } from '@shared/components/audit-info/audit-info.com
     ClickOutsideDirective,
     NgIconComponent,
     AuditInfoComponent,
+    GoBackButtonComponent,
   ],
   viewProviders: [
     provideIcons({
-      bootstrapArrowLeft,
       bootstrapChevronDown,
       bootstrapCheckLg,
     }),
@@ -150,7 +150,7 @@ export class CategoriesFormComponent implements OnInit {
       },
       error: () => {
         this.alertService.toast('Error al cargar la categoría', 'error');
-        this.goBack();
+        this.location.back();
       },
     });
   }
@@ -170,10 +170,6 @@ export class CategoriesFormComponent implements OnInit {
   selectState(state: string) {
     this.formCategory.patchValue({ state: state as CategoryState });
     this.showStateMenu.set(false);
-  }
-
-  goBack() {
-    this.location.back();
   }
 
   onSubmit() {

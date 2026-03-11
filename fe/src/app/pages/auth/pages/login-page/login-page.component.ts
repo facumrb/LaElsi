@@ -7,22 +7,26 @@ import {
   bootstrapEye,
   bootstrapEyeSlash,
   bootstrapArrowClockwise,
-  bootstrapArrowLeft,
 } from '@ng-icons/bootstrap-icons';
 import { FormUtils } from '@shared/form-utils';
 import { AlertService } from '@shared/alert.service';
 import { ApiErrorService } from '@shared/api-error.service';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { GoBackButtonComponent } from '@shared/components/buttons/go-back-button/go-back-button.component';
 
 @Component({
   selector: 'app-login-page',
-  imports: [ReactiveFormsModule, RouterLink, NgIconComponent],
+  imports: [
+    ReactiveFormsModule,
+    RouterLink,
+    NgIconComponent,
+    GoBackButtonComponent,
+  ],
   viewProviders: [
     provideIcons({
       bootstrapEye,
       bootstrapEyeSlash,
       bootstrapArrowClockwise,
-      bootstrapArrowLeft,
     }),
   ],
   templateUrl: './login-page.component.html',
@@ -68,10 +72,6 @@ export class LoginPageComponent {
 
   togglePasswordVisibility(): void {
     this.passwordVisible.update((current) => !current);
-  }
-
-  goBack() {
-    this.router.navigate(['/']); // Navega al E-commerce
   }
 
   forgotPassword() {

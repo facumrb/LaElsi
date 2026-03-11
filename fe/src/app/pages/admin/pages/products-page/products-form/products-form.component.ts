@@ -2,6 +2,7 @@ import { Component, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DatePipe, Location } from '@angular/common';
+import { GoBackButtonComponent } from '@shared/components/buttons/go-back-button/go-back-button.component';
 import { ApiCategoryService } from '@services/api-category.service';
 import { IApiCategory } from '@models/category.model';
 import { ProductDraftService } from '@services/product-draft.service';
@@ -15,7 +16,6 @@ import { NumericInputDirective } from '@shared/directives/numeric-input.directiv
 import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
-  bootstrapArrowLeft,
   bootstrapChevronDown,
   bootstrapCheckLg,
 } from '@ng-icons/bootstrap-icons';
@@ -30,10 +30,10 @@ import { AuditInfoComponent } from '@shared/components/audit-info/audit-info.com
     PhotoManagerComponent,
     NgIconComponent,
     AuditInfoComponent,
+    GoBackButtonComponent,
   ],
   viewProviders: [
     provideIcons({
-      bootstrapArrowLeft,
       bootstrapChevronDown,
       bootstrapCheckLg,
     }),
@@ -218,7 +218,7 @@ export class ProductsFormComponent implements OnInit {
         },
         error: () => {
           this.alertService.toast('Error al cargar', 'error');
-          this.goBack();
+          this.location.back();
         },
       });
     }
@@ -244,10 +244,6 @@ export class ProductsFormComponent implements OnInit {
   selectState(state: string) {
     this.formProduct.patchValue({ state: state as ProductState });
     this.showStateMenu.set(false);
-  }
-
-  goBack() {
-    this.location.back();
   }
 
   goToCreateCategory() {
