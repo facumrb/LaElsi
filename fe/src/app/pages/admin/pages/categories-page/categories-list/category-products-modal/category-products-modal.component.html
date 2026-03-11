@@ -32,23 +32,8 @@
     </div>
 
     <div class="px-5 py-3 border-b border-gray-50">
-      <div class="relative">
-        <div
-          class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
-        >
-          <ng-icon
-            name="bootstrapSearch"
-            class="text-gray-500 text-lg"
-          ></ng-icon>
-        </div>
-        <input
-          type="text"
-          [(ngModel)]="searchQuery"
-          inputmode="search"
-          aria-label="Buscar producto en esta lista"
-          placeholder="Buscar producto en esta lista..."
-          class="block w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 outline-none transition-shadow"
-        />
+      <div class="h-10 w-full">
+        <app-search-input [(query)]="searchQuery" placeholder="Buscar producto en esta lista..."></app-search-input>
       </div>
     </div>
 

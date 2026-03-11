@@ -14,23 +14,10 @@
         class="relative w-full lg:w-auto"
         (clickOutside)="showFilterMenu.set(false)"
       >
-        <button
-          (click)="toggleMenu()"
-          class="cursor-pointer flex w-full justify-center items-center gap-2 px-4 h-10 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-all whitespace-nowrap"
-          [class.ring-2]="hayFiltrosActivos()"
-          [class.ring-[#3d4494]]="hayFiltrosActivos()"
-          [class.bg-indigo-50]="hayFiltrosActivos()"
-        >
-          @if (hayFiltrosActivos()) {
-            <ng-icon
-              name="bootstrapFunnelFill"
-              class="text-xl text-[#3d4494] shrink-0"
-            ></ng-icon>
-          } @else {
-            <ng-icon name="bootstrapFunnel" class="text-xl shrink-0"></ng-icon>
-          }
-          <span>Filtros</span>
-        </button>
+        <app-filter-button
+          [isActive]="hayFiltrosActivos()"
+          [(isOpen)]="showFilterMenu"
+        ></app-filter-button>
 
         @if (showFilterMenu()) {
           <div

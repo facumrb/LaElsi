@@ -11,7 +11,6 @@ import { CurrencyPipe, DatePipe, DOCUMENT } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
-  bootstrapX,
   bootstrapPerson,
   bootstrapEnvelope,
   bootstrapWhatsapp,
@@ -31,11 +30,10 @@ import { CloseModalButtonComponent } from '@shared/components/buttons/close-moda
     DatePipe,
     ClickOutsideDirective,
     RouterModule,
-    CloseModalButtonComponent
+    CloseModalButtonComponent,
   ],
   viewProviders: [
     provideIcons({
-      bootstrapX,
       bootstrapPerson,
       bootstrapEnvelope,
       bootstrapWhatsapp,

@@ -32,6 +32,9 @@ export class ClickOutsideDirective {
   // 2. Lógica para la tecla Escape (Teclado)
   @HostListener('document:keydown.escape')
   public onEscapeKey(): void {
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
     this.clickOutside.emit();
   }
 }

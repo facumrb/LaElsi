@@ -4,7 +4,6 @@ import { IApiCategory } from '@models/category.model';
 import { IApiProduct } from '@models/product.model';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
-  bootstrapX,
   bootstrapSearch,
   bootstrapBoxSeam,
   bootstrapPencilSquare,
@@ -13,10 +12,17 @@ import {
 import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
 import { environment } from 'src/environments/environment';
 import { CloseModalButtonComponent } from '@shared/components/buttons/close-modal-button/close-modal-button.component';
+import { SearchInputComponent } from '@shared/components/inputs/search-input/search-input.component';
 
 @Component({
   selector: 'app-category-products-modal',
-  imports: [FormsModule, NgIconComponent, ClickOutsideDirective, CloseModalButtonComponent],
+  imports: [
+    FormsModule,
+    NgIconComponent,
+    ClickOutsideDirective,
+    CloseModalButtonComponent,
+    SearchInputComponent,
+  ],
   viewProviders: [
     provideIcons({
       bootstrapSearch,

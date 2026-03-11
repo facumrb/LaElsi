@@ -5,11 +5,10 @@ import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
   bootstrapSearch,
   bootstrapX,
-  bootstrapFunnel,
-  bootstrapFunnelFill,
   bootstrapChevronDown,
   bootstrapCheckLg,
 } from '@ng-icons/bootstrap-icons';
+import { FilterButtonComponent } from '@shared/components/buttons/filter-button/filter-button.component';
 
 // Tipados (los mantengo igual, están bien definidos)
 export type PriceOrder = 'Defecto' | 'Menor' | 'Mayor';
@@ -17,12 +16,10 @@ export type PopularityOrder = 'Defecto' | 'MasVentas' | 'MenosVentas';
 
 @Component({
   selector: 'app-products-filter',
-  imports: [FormsModule, ClickOutsideDirective, NgIconComponent],
+  imports: [FormsModule, ClickOutsideDirective, NgIconComponent, FilterButtonComponent],
   viewProviders: provideIcons({
     bootstrapSearch,
     bootstrapX,
-    bootstrapFunnel,
-    bootstrapFunnelFill,
     bootstrapChevronDown,
     bootstrapCheckLg,
   }),
@@ -69,9 +66,5 @@ export class ProductsFilterComponent {
 
   setPopularityOrder(value: string) {
     this.popularityOrder.set(value as PopularityOrder);
-  }
-
-  toggleMenu() {
-    this.showFilterMenu.update((v) => !v);
   }
 }

@@ -1,0 +1,30 @@
+<button
+  type="button"
+  (click)="toggle()"
+  class="cursor-pointer flex w-full justify-center items-center gap-2 px-4 h-10 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-all whitespace-nowrap focus:outline-none focus:border-black focus:ring-1 focus:ring-black"
+  [class.ring-1]="isActive()"
+  [class.ring-black]="isActive()"
+  [class.!border-black]="isActive()"
+  [class.bg-gray-50]="isActive()"
+  [attr.aria-expanded]="isOpen()"
+  aria-haspopup="true"
+  aria-label="Mostrar opciones de filtrado y ordenamiento"
+>
+  @if (isActive()) {
+    <ng-icon
+      name="bootstrapFunnelFill"
+      class="text-xl text-black shrink-0"
+      aria-hidden="true"
+    ></ng-icon>
+  } @else {
+    <ng-icon
+      name="bootstrapFunnel"
+      class="text-xl shrink-0"
+      aria-hidden="true"
+    ></ng-icon>
+  }
+  <span>Filtros</span>
+  @if (isActive()) {
+    <span class="sr-only">(Filtros activos)</span>
+  }
+</button>

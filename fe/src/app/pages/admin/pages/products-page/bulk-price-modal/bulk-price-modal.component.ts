@@ -13,7 +13,6 @@ import { Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
-  bootstrapX,
   bootstrapEye,
   bootstrapArrowClockwise,
   bootstrapExclamationTriangle,
@@ -35,7 +34,7 @@ import { CloseModalButtonComponent } from '@shared/components/buttons/close-moda
     CurrencyPipe,
     ClickOutsideDirective,
     PriceAdjustmentInputDirective,
-    CloseModalButtonComponent
+    CloseModalButtonComponent,
   ],
   viewProviders: [
     provideIcons({

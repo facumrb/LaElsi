@@ -1,10 +1,5 @@
 import { Component, model, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import {
-  bootstrapFunnel,
-  bootstrapFunnelFill,
-} from '@ng-icons/bootstrap-icons';
 import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
 import { OrderState, DeliveryMethod } from '@models/order.model';
 import { SearchInputComponent } from '@shared/components/inputs/search-input/search-input.component';
@@ -12,13 +7,16 @@ import { SearchInputComponent } from '@shared/components/inputs/search-input/sea
 export type OrderStatusFilter = OrderState | 'Todos';
 export type DeliveryMethodFilter = DeliveryMethod | 'Todos';
 
+import { FilterButtonComponent } from '@shared/components/buttons/filter-button/filter-button.component';
+
 @Component({
   selector: 'app-orders-toolbar',
-  imports: [NgIconComponent, FormsModule, ClickOutsideDirective, SearchInputComponent],
-  viewProviders: provideIcons({
-    bootstrapFunnel,
-    bootstrapFunnelFill,
-  }),
+  imports: [
+    FormsModule,
+    ClickOutsideDirective,
+    SearchInputComponent,
+    FilterButtonComponent,
+  ],
   templateUrl: './orders-toolbar.component.html',
 })
 export class OrdersToolbarComponent {
@@ -30,10 +28,6 @@ export class OrdersToolbarComponent {
 
   readonly OrderState = OrderState;
   readonly DeliveryMethod = DeliveryMethod;
-
-  toggleMenu() {
-    this.showFilterMenu.set(!this.showFilterMenu());
-  }
 
   hayFiltrosActivos() {
     return (

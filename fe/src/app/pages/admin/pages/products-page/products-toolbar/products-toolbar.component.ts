@@ -10,14 +10,13 @@ import { FormsModule } from '@angular/forms';
 import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
-  bootstrapFunnel,
-  bootstrapFunnelFill,
   bootstrapPlusLg,
   bootstrapCurrencyDollar,
   bootstrapChevronDown,
   bootstrapCheckLg,
 } from '@ng-icons/bootstrap-icons';
 import { SearchInputComponent } from '@shared/components/inputs/search-input/search-input.component';
+import { FilterButtonComponent } from '@shared/components/buttons/filter-button/filter-button.component';
 
 export type StockFilter =
   | 'Todos'
@@ -36,10 +35,8 @@ export interface SimpleCategory {
 
 @Component({
   selector: 'app-products-toolbar',
-  imports: [FormsModule, ClickOutsideDirective, NgIconComponent, SearchInputComponent],
+  imports: [FormsModule, ClickOutsideDirective, NgIconComponent, SearchInputComponent, FilterButtonComponent],
   viewProviders: provideIcons({
-    bootstrapFunnel,
-    bootstrapFunnelFill,
     bootstrapPlusLg,
     bootstrapCurrencyDollar,
     bootstrapChevronDown,
@@ -59,9 +56,6 @@ export class ProductsToolbarComponent {
   onBulkPriceUpdate = output<void>();
 
   showFilterMenu = signal(false);
-  toggleMenu() {
-    this.showFilterMenu.set(!this.showFilterMenu());
-  }
 
   categoryFilter = model.required<number | 'Todos'>();
   categories = input.required<SimpleCategory[]>();
