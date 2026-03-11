@@ -2,6 +2,7 @@ import { Admin } from '../../user/admin/admin.entity.js';
 import { Client } from '../../user/client/client.entity.js';
 import { FiscalCondition } from '../../shared/enums/fiscal-condition.enum.js';
 import { UserRole } from '../../user/user.entity.js';
+import bcrypt from 'bcrypt';
 import { Category } from '../../category/category.entity.js';
 import { Product } from '../../product/product.entity.js';
 import { Price } from '../../product/price/price.entity.js';
@@ -669,7 +670,7 @@ async function seedAdmins(em: EntityManager) {
     admin.phone = adminData.phone;
     admin.username = adminData.username;
     admin.role = UserRole.Admin;
-    await admin.setPassword(adminData.password);
+    admin.password = await bcrypt.hash(adminData.password, 10);
 
     em.persist(admin);
   }
@@ -688,7 +689,7 @@ async function seedClients(em: EntityManager) {
     client.phone = clientData.phone;
     client.username = clientData.username;
     client.role = clientData.role;
-    await client.setPassword(clientData.password);
+    client.password = await bcrypt.hash(clientData.password, 10);
 
     client.fiscalCondition = clientData.fiscalCondition;
     client.street = clientData.street;
