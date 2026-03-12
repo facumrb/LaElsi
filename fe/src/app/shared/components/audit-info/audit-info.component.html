@@ -25,10 +25,10 @@
 
     <div class="text-left md:text-right">
       <label class="block text-xs font-bold text-gray-500 uppercase">
-        Estado del Registro
+        {{ deletedAt() ? 'Inactivo' : 'Activo' }} desde
       </label>
       <p class="mt-1 block text-gray-600 text-sm font-medium">
-        {{ deletedAt() | estado }}
+        {{ deletedAt() || createdAt() || "-" }}
       </p>
     </div>
   </div>

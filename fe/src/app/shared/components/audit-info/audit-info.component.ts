@@ -1,9 +1,8 @@
 import { Component, input } from '@angular/core';
-import { EstadoPipe } from '../../pipes/estado.pipe';
 
 @Component({
   selector: 'app-audit-info',
-  imports: [EstadoPipe],
+  imports: [],
   templateUrl: './audit-info.component.html',
 })
 export class AuditInfoComponent {
