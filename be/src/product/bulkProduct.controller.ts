@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import { orm } from '../shared/db/orm.js';
 import { Product } from './product.entity.js';
+import { Price } from './price/price.entity.js';
+import { Currency } from '../shared/enums/currency.enum.js';
 import { PriceChangeBatch } from './price-change-batch/priceChangeBatch.entity.js';
 import { AuditLog } from '../shared/audit/auditLog.entity.js';
 import { asyncHandler } from '../shared/errors/asyncHandler.js';
@@ -137,7 +139,19 @@ export class BulkProductController {
         continue;
       }
 
-      product.updatePrice(newPrice, currentPriceEntity?.currency, batch);
+      product.prices.getItems().forEach((p) => {
+        if (p.isCurrent) p.isCurrent = false;
+      });
+
+      const newPriceEntity = em.create(Price, {
+        amount: newPrice,
+        currency: currentPriceEntity?.currency || Currency.ARS,
+        product: product,
+        isCurrent: true,
+        validFrom: new Date(),
+        batch: batch
+      });
+      product.prices.add(newPriceEntity);
       updatedCount++;
     }
 

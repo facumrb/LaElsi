@@ -16,12 +16,4 @@ export class OrderLine extends CustomBaseEntity {
 
   @Property({ nullable: false, type: 'decimal', precision: 10, scale: 2 })
   price!: number; // Precio histórico al momento de la compra
-
-  constructor(order: any, product: Product, quantity: number, price: number) {
-    super();
-    this.order = order;
-    this.product = product;
-    this.quantity = quantity;
-    this.price = price;
-  }
 }

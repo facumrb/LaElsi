@@ -1,5 +1,4 @@
 import { Property, Entity, Enum, OneToOne, Rel } from '@mikro-orm/core';
-import bcrypt from 'bcrypt';
 import type { UserPhoto } from '../photo/userPhoto/userPhoto.entity.js';
 import { CustomBaseEntity } from '../shared/db/customBaseEntity.entity.js';
 
@@ -38,12 +37,4 @@ export abstract class User extends CustomBaseEntity {
 
   @OneToOne('UserPhoto', 'user', { nullable: true })
   photo?: Rel<UserPhoto>;
-
-  async setPassword(password: string) {
-    this.password = await bcrypt.hash(password, 10);
-  }
-
-  async verifyPassword(password: string): Promise<boolean> {
-    return bcrypt.compare(password, this.password);
-  }
 }

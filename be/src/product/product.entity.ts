@@ -35,24 +35,6 @@ export class Product extends CustomBaseEntity {
 
   @ManyToOne(() => Category, { nullable: false, updateRule: 'cascade' })
   category!: Rel<Category>;
-
-  updatePrice(amount: number, currency: Currency = Currency.ARS, batch?: PriceChangeBatch) {
-    // Marcamos los precios actuales como no vigentes
-    this.prices.getItems().forEach((p) => {
-      if (p.isCurrent) p.isCurrent = false;
-    });
-
-    // Creamos el nuevo precio
-    const newPrice = new Price();
-    newPrice.amount = amount;
-    newPrice.currency = currency;
-    newPrice.product = this;
-    newPrice.isCurrent = true;
-    newPrice.validFrom = new Date();
-    if (batch) newPrice.batch = batch;
-
-    this.prices.add(newPrice);
-  }
 }
 
 // @Property({ nullable: false })
