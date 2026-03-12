@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { IApiAdmin } from '@models/user.model';
 import { ApiAdminService } from '@services/api-admin.service';
 import { AlertService } from '@shared/alert.service';
-import { ApiErrorService } from '@shared/api-error.service';
 import { AdminsListComponent } from './admins-list/admins-list.component';
 import { AdminsToolbarComponent } from './admins-toolbar/admins-toolbar.component';
 
@@ -14,7 +13,6 @@ import { AdminsToolbarComponent } from './admins-toolbar/admins-toolbar.componen
 })
 export class AdminsPageComponent implements OnInit {
   private alertService = inject(AlertService);
-  private errorService = inject(ApiErrorService);
   private apiService = inject(ApiAdminService);
   private router = inject(Router);
 
@@ -52,9 +50,6 @@ export class AdminsPageComponent implements OnInit {
       next: (data) => {
         this.adminsRaw.set(data);
       },
-      error: (err) => {
-        this.errorService.handle(err, 'cargar los administradores');
-      },
     });
   }
 
@@ -84,9 +79,6 @@ export class AdminsPageComponent implements OnInit {
             this.adminsRaw.update((current) =>
               current.filter((a) => a.id !== admin.id),
             );
-          },
-          error: (err) => {
-            this.errorService.handle(err, 'eliminar el administrador');
           },
         });
       }

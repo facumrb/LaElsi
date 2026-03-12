@@ -22,7 +22,6 @@ import {
 } from '@ng-icons/bootstrap-icons';
 import { ApiProductService } from '@services/api-product.service';
 import { AlertService } from '@shared/alert.service';
-import { ApiErrorService } from '@shared/api-error.service';
 import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
 import { PriceAdjustmentInputDirective } from '@shared/directives/price-adjustment-input.directive';
 import { CloseModalButtonComponent } from '@shared/components/buttons/close-modal-button/close-modal-button.component';
@@ -51,7 +50,6 @@ import { CloseModalButtonComponent } from '@shared/components/buttons/close-moda
 export class BulkPriceModalComponent implements OnDestroy {
   private apiService = inject(ApiProductService);
   private alertService = inject(AlertService);
-  private errorService = inject(ApiErrorService);
 
   // Inputs / Outputs
   productIds = input.required<number[]>();
@@ -149,7 +147,6 @@ export class BulkPriceModalComponent implements OnDestroy {
         this.loadingPreview.set(false);
       },
       error: (err) => {
-        this.errorService.handle(err, 'generar la vista previa');
         this.loadingPreview.set(false);
       },
     });
@@ -176,7 +173,6 @@ export class BulkPriceModalComponent implements OnDestroy {
           this.success.emit();
         },
         error: (err) => {
-          this.errorService.handle(err, 'aplicar los cambios');
           this.loadingApply.set(false);
         },
       });

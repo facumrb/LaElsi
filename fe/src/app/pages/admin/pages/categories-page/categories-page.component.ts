@@ -3,7 +3,6 @@ import { ApiCategoryService } from '@services/api-category.service';
 import { IApiCategory } from '@models/category.model';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AlertService } from '@shared/alert.service';
-import { ApiErrorService } from '@shared/api-error.service';
 import { CategoriesListComponent } from './categories-list/categories-list.component';
 import {
   CategoriesToolbarComponent,
@@ -23,7 +22,6 @@ import { Router } from '@angular/router';
 })
 export class CategoriesPageComponent implements OnInit {
   private alertService = inject(AlertService);
-  private errorService = inject(ApiErrorService);
   private apiService = inject(ApiCategoryService);
   private router = inject(Router);
   private categoriesRaw = signal<IApiCategory[]>([]);
@@ -93,9 +91,6 @@ export class CategoriesPageComponent implements OnInit {
       next: (data) => {
         this.categoriesRaw.set(data);
       },
-      error: (err) => {
-        this.errorService.handle(err, 'cargar las categorías');
-      },
     });
   }
 
@@ -126,9 +121,6 @@ export class CategoriesPageComponent implements OnInit {
               cats.filter((c) => c.id !== category.id),
             );
             this.alertService.toast('Categoría eliminada', 'success');
-          },
-          error: (err) => {
-            this.errorService.handle(err, 'eliminar la categoría');
           },
         });
       }

@@ -12,7 +12,6 @@ import {
   bootstrapShieldCheck,
 } from '@ng-icons/bootstrap-icons';
 import { environment } from 'src/environments/environment';
-import { ApiErrorService } from '@shared/api-error.service';
 
 @Component({
   selector: 'app-view-profile-page',
@@ -34,7 +33,6 @@ export class ViewProfilePageComponent implements OnInit {
   private routeActive = inject(ActivatedRoute);
   private router = inject(Router);
   private apiService = inject(ApiAdminService);
-  private errorService = inject(ApiErrorService);
 
   loading = signal(true);
   admin = signal<IApiAdmin | null>(null);
@@ -55,7 +53,6 @@ export class ViewProfilePageComponent implements OnInit {
       },
       error: (err) => {
         this.loading.set(false);
-        this.errorService.handle(err, 'cargar el perfil');
       },
     });
   }

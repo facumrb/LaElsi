@@ -12,7 +12,6 @@ import { environment } from 'src/environments/environment';
 import { OrderDetailModalComponent } from '@shared/components/order-detail-modal/order-detail-modal.component';
 import { ApiOrderService } from '@services/api-order.service';
 import { AlertService } from '@shared/alert.service';
-import { ApiErrorService } from '@shared/api-error.service';
 
 @Component({
   selector: 'app-profile-orders',
@@ -32,7 +31,6 @@ export class ProfileOrdersComponent {
   productImagesUrl = environment.productImagesUrl;
   private orderService = inject(ApiOrderService);
   private alertService = inject(AlertService);
-  private errorService = inject(ApiErrorService);
   profileUpdated = output<void>();
 
   selectedOrder = signal<IApiOrder | null>(null);
@@ -73,9 +71,6 @@ export class ProfileOrdersComponent {
               );
               this.profileUpdated.emit();
               this.closeModal();
-            },
-            error: (err) => {
-              this.errorService.handle(err, 'cancelar el pedido');
             },
           });
         }

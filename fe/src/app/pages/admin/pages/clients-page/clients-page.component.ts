@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { IApiClient } from '@models/user.model';
 import { ApiClientService } from '@services/api-client.service';
 import { AlertService } from '@shared/alert.service';
-import { ApiErrorService } from '@shared/api-error.service';
 import {
   ClientsToolbarComponent,
   FiscalConditionFilter,
@@ -17,7 +16,6 @@ import { ClientsListComponent } from './clients-list/clients-list.component';
 })
 export class ClientsPageComponent implements OnInit {
   private alertService = inject(AlertService);
-  private errorService = inject(ApiErrorService);
   private apiService = inject(ApiClientService);
   private router = inject(Router);
 
@@ -66,9 +64,6 @@ export class ClientsPageComponent implements OnInit {
       next: (data) => {
         this.clientsRaw.set(data);
       },
-      error: (err) => {
-        this.errorService.handle(err, 'cargar los clientes');
-      },
     });
   }
 
@@ -89,9 +84,6 @@ export class ClientsPageComponent implements OnInit {
             this.clientsRaw.update((current) =>
               current.filter((a) => a.id !== client.id),
             );
-          },
-          error: (err) => {
-            this.errorService.handle(err, 'eliminar el cliente');
           },
         });
       }

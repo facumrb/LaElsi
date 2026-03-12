@@ -3,7 +3,6 @@ import { IApiProduct } from '@models/product.model';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ApiProductService } from '@services/api-product.service';
 import { AlertService } from '@shared/alert.service';
-import { ApiErrorService } from '@shared/api-error.service';
 import { ProductsListComponent } from './products-list/products-list.component';
 import {
   ProductsToolbarComponent,
@@ -30,7 +29,6 @@ interface SimpleCategory {
 })
 export class ProductsPageComponent implements OnInit {
   private alertService = inject(AlertService);
-  private errorService = inject(ApiErrorService);
   private apiService = inject(ApiProductService);
   private router = inject(Router);
 
@@ -143,9 +141,6 @@ export class ProductsPageComponent implements OnInit {
       next: (data) => {
         this.productsRaw.set(data);
       },
-      error: (err) => {
-        this.errorService.handle(err, 'cargar los productos');
-      },
     });
   }
 
@@ -166,9 +161,6 @@ export class ProductsPageComponent implements OnInit {
             this.productsRaw.update((currentProducts) =>
               currentProducts.filter((p) => p.id !== product.id),
             );
-          },
-          error: (err) => {
-            this.errorService.handle(err, 'eliminar el producto');
           },
         });
       }

@@ -10,7 +10,6 @@ import {
 } from '@ng-icons/bootstrap-icons';
 import { FormUtils } from '@shared/validators/form-utils';
 import { AlertService } from '@shared/alert.service';
-import { ApiErrorService } from '@shared/api-error.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { GoBackButtonComponent } from '@shared/components/buttons/go-back-button/go-back-button.component';
 import { FieldErrorComponent } from '@shared/validators/field-error/field-error.component';
@@ -39,7 +38,6 @@ export class LoginPageComponent {
   private router = inject(Router);
   private activatedroute = inject(ActivatedRoute);
   private alertService = inject(AlertService);
-  private apiErrorService = inject(ApiErrorService);
 
   formUtils = FormUtils;
 
@@ -110,7 +108,6 @@ export class LoginPageComponent {
       },
       error: (error) => {
         this.loading.set(false);
-        this.apiErrorService.handle(error, 'iniciar sesión');
       },
     });
   }

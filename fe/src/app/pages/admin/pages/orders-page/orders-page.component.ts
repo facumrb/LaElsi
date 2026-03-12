@@ -2,7 +2,6 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { IApiOrder, OrderState, DeliveryMethod } from '@models/order.model';
 import { ApiOrderService } from '@services/api-order.service';
 import { AlertService } from '@shared/alert.service';
-import { ApiErrorService } from '@shared/api-error.service';
 import { OrdersListComponent } from './orders-list/orders-list.component';
 import {
   OrdersToolbarComponent,
@@ -22,7 +21,6 @@ import { OrderDetailModalComponent } from '@shared/components/order-detail-modal
 })
 export class OrdersPageComponent implements OnInit {
   private alertService = inject(AlertService);
-  private errorService = inject(ApiErrorService);
   private orderService = inject(ApiOrderService);
 
   private ordersRaw = signal<IApiOrder[]>([]);
@@ -80,9 +78,6 @@ export class OrdersPageComponent implements OnInit {
       next: (data) => {
         this.ordersRaw.set(data);
       },
-      error: (err) => {
-        this.errorService.handle(err, 'cargar las órdenes');
-      },
     });
   }
 
@@ -103,9 +98,6 @@ export class OrdersPageComponent implements OnInit {
         );
         this.updateOrderInList(updatedOrder);
       },
-      error: (err) => {
-        this.errorService.handle(err, 'actualizar el estado de la orden');
-      },
     });
   }
 
@@ -117,9 +109,6 @@ export class OrdersPageComponent implements OnInit {
           'success',
         );
         this.updateOrderInList(updatedOrder);
-      },
-      error: (err) => {
-        this.errorService.handle(err, 'actualizar el método de entrega');
       },
     });
   }
@@ -138,9 +127,6 @@ export class OrdersPageComponent implements OnInit {
                 'success',
               );
               this.updateOrderInList(updatedOrder);
-            },
-            error: (err) => {
-              this.errorService.handle(err, 'cancelar la orden');
             },
           });
         }

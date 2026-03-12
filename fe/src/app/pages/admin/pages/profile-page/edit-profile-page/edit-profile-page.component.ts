@@ -5,7 +5,6 @@ import { ApiAdminService } from '@services/api-admin.service';
 import { IApiAdmin, ICreateAdmin, UserRole } from '@models/user.model';
 import { AuthService } from '@services/auth.service';
 import { AlertService } from '@shared/alert.service';
-import { ApiErrorService } from '@shared/api-error.service';
 import { FormUtils } from '@shared/validators/form-utils';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { PhotoManagerComponent } from '@shared/components/photo-manager/photo-manager.component';
@@ -47,7 +46,6 @@ export class EditProfilePageComponent implements OnInit {
   private apiService = inject(ApiAdminService);
   private authService = inject(AuthService);
   private alertService = inject(AlertService);
-  private errorService = inject(ApiErrorService);
   private http = inject(HttpClient);
 
   @ViewChild(PhotoManagerComponent) photoManager!: PhotoManagerComponent;
@@ -158,7 +156,6 @@ export class EditProfilePageComponent implements OnInit {
       },
       error: (err) => {
         this.loading.set(false);
-        this.errorService.handle(err, 'cargar el perfil');
         this.goBack();
       },
     });
@@ -220,9 +217,6 @@ export class EditProfilePageComponent implements OnInit {
           }
 
           this.router.navigate(['admin/view-profile', this.adminId()]);
-        },
-        error: (err) => {
-          this.errorService.handle(err, 'actualizar el perfil');
         },
       });
   }

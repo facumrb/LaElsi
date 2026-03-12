@@ -10,9 +10,9 @@ export class ApiErrorService {
   private alertService = inject(AlertService);
   private authService = inject(AuthService);
 
-  handle(err: HttpErrorResponse, accion: string = 'procesar la solicitud') {
+  handle(err: HttpErrorResponse, reqUrl: string = '') {
     let titulo = 'Error';
-    let mensaje = `Ocurrió un problema al intentar ${accion}.`;
+    let mensaje = `Ocurrió un problema al procesar la solicitud.`;
     let esCritico = false;
 
     const backendMessage = err.error?.message;
@@ -27,7 +27,8 @@ export class ApiErrorService {
         break;
 
       case 401:
-        if (backendMessage && !accion.includes('iniciar sesión')) {
+        const isLoginRequest = reqUrl.includes('/users/login');
+        if (backendMessage && !isLoginRequest) {
           // Si hay un mensaje del backend y NO estamos intentando loguearnos,
           // significa que el token es inválido o fue rechazado -> Logout forzado
           this.authService.logout();
