@@ -169,7 +169,8 @@
           <app-audit-info
             [createdAt]="formCategory.get('createdAt')?.value"
             [updatedAt]="formCategory.get('updatedAt')?.value"
-            [deletedAt]="formCategory.get('deletedAt')?.value"
+            [isActive]="initialState() === 'Activo'"
+            [statusDate]="formCategory.get('deletedAt')?.value"
           />
         }
       </div>

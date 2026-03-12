@@ -53,7 +53,8 @@ export class CategoryService {
       order: data.order || 0,
       state: data.state || CategoryState.Activo,
       depth,
-      parent
+      parent,
+      deletedAt: data.state === CategoryState.Inactivo ? new Date() : undefined
     };
 
     const category = em.create(Category, categoryData);
@@ -131,7 +132,12 @@ export class CategoryService {
 
     // Clean data object before assigning
     const { parentId, ...updateData } = data;
+    const oldState = category.state;
     em.assign(category, updateData);
+
+    if (category.state !== oldState) {
+       category.deletedAt = new Date();
+    }
     
     try {
       await em.flush();

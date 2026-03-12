@@ -323,7 +323,8 @@
         <app-audit-info
           [createdAt]="formProduct.get('createdAt')?.value"
           [updatedAt]="formProduct.get('updatedAt')?.value"
-          [deletedAt]="formProduct.get('deletedAt')?.value"
+          [isActive]="initialState() === 'Activo'"
+          [statusDate]="formProduct.get('deletedAt')?.value"
         />
       }
 

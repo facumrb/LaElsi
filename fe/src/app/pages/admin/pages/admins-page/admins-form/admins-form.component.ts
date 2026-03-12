@@ -176,7 +176,7 @@ export class AdminsFormComponent implements OnInit {
           updatedAt: this.datePipe.transform(admin.updatedAt, dateFormat),
           deletedAt: admin.deletedAt
             ? this.datePipe.transform(admin.deletedAt, dateFormat)
-            : 'No eliminado',
+            : this.datePipe.transform(admin.createdAt, dateFormat),
         });
 
         this.formAdmin.get('password')?.removeValidators(Validators.required);

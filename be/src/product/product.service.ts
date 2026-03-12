@@ -74,7 +74,8 @@ export class ProductService {
 
     const productEntityData: any = {
       ...productData,
-      category: em.getReference(Category, productData.category)
+      category: em.getReference(Category, productData.category),
+      deletedAt: productData.state === ProductState.Inactivo ? new Date() : undefined
     };
 
     const product = em.create(Product, productEntityData);
@@ -202,7 +203,12 @@ export class ProductService {
       product.prices.add(newPrice);
     }
 
+    const oldState = product.state;
     em.assign(product, updateData);
+
+    if (product.state !== oldState) {
+       product.deletedAt = new Date();
+    }
 
     try {
       await em.flush();

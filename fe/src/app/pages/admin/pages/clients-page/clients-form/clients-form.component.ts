@@ -241,7 +241,7 @@ export class ClientsFormComponent implements OnInit {
           updatedAt: this.datePipe.transform(client.updatedAt, dateFormat),
           deletedAt: client.deletedAt
             ? this.datePipe.transform(client.deletedAt, dateFormat)
-            : 'No eliminado',
+            : this.datePipe.transform(client.createdAt, dateFormat),
         });
 
         this.formClient.get('password')?.removeValidators(Validators.required);

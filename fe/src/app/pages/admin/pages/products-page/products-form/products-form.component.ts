@@ -73,6 +73,7 @@ export class ProductsFormComponent implements OnInit {
 
   // Señal para guardar el estado inicial del formulario
   initialFormValue = signal<string>('');
+  initialState = signal<string>('Activo');
 
   // Formulario
   formProduct = this.fb.group({
@@ -209,12 +210,13 @@ export class ProductsFormComponent implements OnInit {
             updatedAt: this.datePipe.transform(product.updatedAt, dateFormat),
             deletedAt: product.deletedAt
               ? this.datePipe.transform(product.deletedAt, dateFormat)
-              : 'No eliminado',
+              : this.datePipe.transform(product.createdAt, dateFormat),
           });
 
           const formSnapshot = this.formProduct.getRawValue();
 
           this.initialFormValue.set(JSON.stringify(formSnapshot));
+          this.initialState.set(product.state);
 
           // Validación async para edición
           this.formProduct.controls.name.setAsyncValidators(

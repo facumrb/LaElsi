@@ -446,7 +446,8 @@
         <app-audit-info
           [createdAt]="formClient.get('createdAt')?.value"
           [updatedAt]="formClient.get('updatedAt')?.value"
-          [deletedAt]="formClient.get('deletedAt')?.value"
+          [isActive]="true"
+          [statusDate]="formClient.get('deletedAt')?.value"
         />
       }
 

@@ -59,6 +59,7 @@ export class CategoriesFormComponent implements OnInit {
   isEditMode = signal(false);
   categoryId = signal<number | null>(null);
   initialFormValue = signal<string>(''); // Para hasRealChanges
+  initialState = signal<string>('Activo'); // Para AuditInfoComponent
 
   categoriesCount = signal<number>(0);
   maxOrder = computed(() =>
@@ -151,8 +152,10 @@ export class CategoriesFormComponent implements OnInit {
           updatedAt: this.datePipe.transform(category.updatedAt, dateFormat),
           deletedAt: category.deletedAt
             ? this.datePipe.transform(category.deletedAt, dateFormat)
-            : 'No eliminado',
+            : this.datePipe.transform(category.createdAt, dateFormat),
         });
+
+        this.initialState.set(category.state);
 
         // Snapshot para comparación
         const formSnapshot = this.formCategory.getRawValue();

@@ -201,7 +201,8 @@
         <app-audit-info
           [createdAt]="formAdmin.get('createdAt')?.value"
           [updatedAt]="formAdmin.get('updatedAt')?.value"
-          [deletedAt]="formAdmin.get('deletedAt')?.value"
+          [isActive]="true"
+          [statusDate]="formAdmin.get('deletedAt')?.value"
         />
       }
 
