@@ -12,7 +12,6 @@ import {
   bootstrapBagCheck,
   bootstrapReceipt,
 } from '@ng-icons/bootstrap-icons';
-
 import { ApiOrderService } from '@services/api-order.service';
 import { ApiProductService } from '@services/api-product.service';
 import { ApiClientService } from '@services/api-client.service';
@@ -21,7 +20,7 @@ import { environment } from 'src/environments/environment';
 import { OrderDetailModalComponent } from '@shared/components/order-detail-modal/order-detail-modal.component';
 
 @Component({
-  selector: 'app-dashboard-page',
+  selector: 'app-analytics-page',
   imports: [
     RouterModule,
     NgIconComponent,
@@ -40,9 +39,9 @@ import { OrderDetailModalComponent } from '@shared/components/order-detail-modal
       bootstrapReceipt,
     }),
   ],
-  templateUrl: './dashboard-page.component.html',
+  templateUrl: './analytics-page.component.html',
 })
-export class DashboardPageComponent {
+export class AnalyticsPageComponent {
   private orderService = inject(ApiOrderService);
   private productService = inject(ApiProductService);
   private clientService = inject(ApiClientService);

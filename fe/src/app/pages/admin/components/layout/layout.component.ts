@@ -77,8 +77,8 @@ export class LayoutComponent {
 
   menuItems: menuItems[] = [
     {
-      label: 'Dashboard',
-      route: '/admin/dashboard',
+      label: 'Analíticas',
+      route: '/admin/analytics',
       icon: 'bootstrapSpeedometer2',
     },
     {

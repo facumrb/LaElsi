@@ -8,13 +8,13 @@ export const adminRoutes: Routes = [
         (m) => m.LayoutComponent,
       ),
     children: [
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: '', redirectTo: 'analytics', pathMatch: 'full' },
 
       {
-        path: 'dashboard',
+        path: 'analytics',
         loadComponent: () =>
-          import('./pages/dashboard-page/dashboard-page.component').then(
-            (m) => m.DashboardPageComponent,
+          import('./pages/analytics-page/analytics-page.component').then(
+            (m) => m.AnalyticsPageComponent,
           ),
       },
       {
@@ -123,7 +123,7 @@ export const adminRoutes: Routes = [
           ),
       },
 
-      { path: '**', redirectTo: 'dashboard' },
+      { path: '**', redirectTo: 'analytics' },
     ],
   },
 ];
