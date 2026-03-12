@@ -8,17 +8,17 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root',
 })
 export class ApiAdminService {
-  private _http = inject(HttpClient);
+  private http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiUrl}/admins`;
 
   getAllAdmins(): Observable<IApiAdmin[]> {
-    return this._http
+    return this.http
       .get<{ message: string; data: IApiAdmin[] }>(this.apiUrl)
       .pipe(map((response) => response.data));
   }
 
   getAdminById(id: number): Observable<IApiAdmin> {
-    return this._http
+    return this.http
       .get<{ message: string; data: IApiAdmin }>(`${this.apiUrl}/${id}`)
       .pipe(map((response) => response.data));
   }
@@ -26,7 +26,7 @@ export class ApiAdminService {
   // Buscar administradores por nombre, apellido, nombre de usuario o dni
   searchAdmins(query: string): Observable<IApiAdmin[]> {
     const params = new HttpParams().set('query', query);
-    return this._http
+    return this.http
       .get<{
         message: string;
         data: IApiAdmin[];
@@ -35,13 +35,13 @@ export class ApiAdminService {
   }
 
   addAdmin(admin: ICreateAdmin): Observable<IApiAdmin> {
-    return this._http
+    return this.http
       .post<{ message: string; data: IApiAdmin }>(this.apiUrl, admin)
       .pipe(map((response) => response.data));
   }
 
   updateAdmin(id: number, admin: IUpdateAdmin): Observable<IApiAdmin> {
-    return this._http
+    return this.http
       .patch<{
         message: string;
         data: IApiAdmin;
@@ -50,7 +50,7 @@ export class ApiAdminService {
   }
 
   deleteAdmin(id: number): Observable<void> {
-    return this._http
+    return this.http
       .delete<{ message: string }>(`${this.apiUrl}/${id}`)
       .pipe(map(() => void 0));
   }

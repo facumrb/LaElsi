@@ -12,19 +12,19 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root',
 })
 export class ApiProductService {
-  private _http = inject(HttpClient);
+  private http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiUrl}/products`;
 
   // Obtener todos los productos
   getAllProducts(): Observable<IApiProduct[]> {
-    return this._http
+    return this.http
       .get<{ message: string; data: IApiProduct[] }>(this.apiUrl)
       .pipe(map((response) => response.data));
   }
 
   // Obtener todos los productos activos
   getActiveProducts(): Observable<IApiProduct[]> {
-    return this._http
+    return this.http
       .get<{ message: string; data: IApiProduct[] }>(`${this.apiUrl}/active`)
       .pipe(map((response) => response.data));
   }
@@ -44,7 +44,7 @@ export class ApiProductService {
       .set('page', page.toString())
       .set('limit', limit.toString());
 
-    return this._http
+    return this.http
       .get<{
         message: string;
         data: {
@@ -60,7 +60,7 @@ export class ApiProductService {
 
   // Obtener un producto por ID
   getProductById(id: number): Observable<IApiProduct> {
-    return this._http
+    return this.http
       .get<{ message: string; data: IApiProduct }>(`${this.apiUrl}/${id}`)
       .pipe(map((response) => response.data));
   }
@@ -68,7 +68,7 @@ export class ApiProductService {
   // Buscar productos por nombre o descripción
   searchProducts(query: string): Observable<IApiProduct[]> {
     const params = new HttpParams().set('query', query);
-    return this._http
+    return this.http
       .get<{
         message: string;
         data: IApiProduct[];
@@ -78,7 +78,7 @@ export class ApiProductService {
 
   // Obtener productos segun una categoría (todos)
   getProductsByCategory(categoryId: number): Observable<IApiProduct[]> {
-    return this._http
+    return this.http
       .get<{
         message: string;
         data: IApiProduct[];
@@ -88,7 +88,7 @@ export class ApiProductService {
 
   // Obtener productos activos segun una categoría
   getActiveProductsByCategory(categoryId: number): Observable<IApiProduct[]> {
-    return this._http
+    return this.http
       .get<{
         message: string;
         data: IApiProduct[];
@@ -98,14 +98,14 @@ export class ApiProductService {
 
   // Crea un nuevo producto (solo datos, las fotos se suben desde el api-photo.service)
   addProduct(product: ICreateProduct): Observable<IApiProduct> {
-    return this._http
+    return this.http
       .post<{ message: string; data: IApiProduct }>(this.apiUrl, product)
       .pipe(map((response) => response.data));
   }
 
   // Actualiza un producto
   updateProduct(id: number, product: IUpdateProduct): Observable<IApiProduct> {
-    return this._http
+    return this.http
       .patch<{
         message: string;
         data: IApiProduct;
@@ -115,7 +115,7 @@ export class ApiProductService {
 
   // Elimina un producto
   deleteProduct(id: number): Observable<void> {
-    return this._http
+    return this.http
       .delete<{ message: string }>(`${this.apiUrl}/${id}`)
       .pipe(map(() => void 0));
   }
@@ -127,7 +127,7 @@ export class ApiProductService {
     adjustmentValue: number,
     roundingRule?: string,
   ): Observable<any[]> {
-    return this._http
+    return this.http
       .post<{
         message: string;
         data: any[];
@@ -146,7 +146,7 @@ export class ApiProductService {
     adjustmentValue: number,
     roundingRule?: string,
   ): Observable<any> {
-    return this._http
+    return this.http
       .post<{
         message: string;
         data: any;
@@ -160,13 +160,13 @@ export class ApiProductService {
   }
 
   rollbackBulkPriceChange(batchId: number): Observable<void> {
-    return this._http
+    return this.http
       .post<{ message: string }>(`${this.apiUrl}/bulk/rollback/${batchId}`, {})
       .pipe(map(() => void 0));
   }
 
   getBulkHistory(): Observable<any[]> {
-    return this._http
+    return this.http
       .get<{ message: string; data: any[] }>(`${this.apiUrl}/bulk/history`)
       .pipe(map((res) => res.data));
   }
@@ -174,7 +174,7 @@ export class ApiProductService {
   // Obtener los más vendidos
   getBestSellers(limit: number = 10): Observable<IApiProduct[]> {
     const params = new HttpParams().set('limit', limit.toString());
-    return this._http
+    return this.http
       .get<{
         message: string;
         data: IApiProduct[];
@@ -188,7 +188,7 @@ export class ApiProductService {
     limit: number = 10,
   ): Observable<IApiProduct[]> {
     const params = new HttpParams().set('limit', limit.toString());
-    return this._http
+    return this.http
       .get<{
         message: string;
         data: IApiProduct[];

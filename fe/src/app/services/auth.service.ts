@@ -15,8 +15,8 @@ import { UserRole } from '@models/user.model';
   providedIn: 'root',
 })
 export class AuthService {
-  private _http = inject(HttpClient);
-  private _router = inject(Router);
+  private http = inject(HttpClient);
+  private router = inject(Router);
   private readonly apiUrl = `${environment.apiUrl}/users`;
   private readonly TOKEN_KEY = 'auth_token';
   private readonly USER_KEY = 'auth_user';
@@ -31,7 +31,7 @@ export class AuthService {
   }
 
   login(username: string, password: string): Observable<LoginData> {
-    return this._http
+    return this.http
       .post<IApiResponse<LoginData>>(`${this.apiUrl}/login`, {
         username,
         password,
@@ -45,7 +45,7 @@ export class AuthService {
   }
 
   register(userData: RegisterData): Observable<any> {
-    return this._http
+    return this.http
       .post<IApiResponse<any>>(`${this.apiUrl}/register`, userData)
       .pipe(map((response) => response.data));
   }
@@ -54,7 +54,7 @@ export class AuthService {
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.USER_KEY);
     this.currentUser.set(null);
-    this._router.navigate(['/']);
+    this.router.navigate(['/']);
   }
 
   // Método auxiliar para obtener el token (usado por el interceptor)

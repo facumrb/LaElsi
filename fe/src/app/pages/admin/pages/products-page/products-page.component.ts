@@ -29,10 +29,10 @@ interface SimpleCategory {
   templateUrl: './products-page.component.html',
 })
 export class ProductsPageComponent implements OnInit {
-  private _alertService = inject(AlertService);
-  private _errorService = inject(ApiErrorService);
-  private _apiService = inject(ApiProductService);
-  private _router = inject(Router);
+  private alertService = inject(AlertService);
+  private errorService = inject(ApiErrorService);
+  private apiService = inject(ApiProductService);
+  private router = inject(Router);
 
   private productsRaw = signal<IApiProduct[]>([]);
 
@@ -122,7 +122,7 @@ export class ProductsPageComponent implements OnInit {
 
   handleBulkPriceUpdate() {
     if (this.selectedIds().length === 0) {
-      this._alertService.toast('Selecciona al menos un producto', 'warning');
+      this.alertService.toast('Selecciona al menos un producto', 'warning');
       return;
     }
     this.showBulkModal.set(true);
@@ -139,36 +139,36 @@ export class ProductsPageComponent implements OnInit {
   }
 
   loadProducts() {
-    this._apiService.getAllProducts().subscribe({
+    this.apiService.getAllProducts().subscribe({
       next: (data) => {
         this.productsRaw.set(data);
       },
       error: (err) => {
-        this._errorService.handle(err, 'cargar los productos');
+        this.errorService.handle(err, 'cargar los productos');
       },
     });
   }
 
   handleNavigateToCreate() {
-    this._router.navigate(['/admin/products/create']);
+    this.router.navigate(['/admin/products/create']);
   }
 
   handleNavigateToEdit(product: IApiProduct) {
-    this._router.navigate(['/admin/products/edit', product.id]);
+    this.router.navigate(['/admin/products/edit', product.id]);
   }
 
   handleDelete(product: IApiProduct) {
-    this._alertService.confirmDelete().then((confirm) => {
+    this.alertService.confirmDelete().then((confirm) => {
       if (confirm) {
-        this._apiService.deleteProduct(product.id).subscribe({
+        this.apiService.deleteProduct(product.id).subscribe({
           next: () => {
-            this._alertService.toast('Producto eliminado', 'success');
+            this.alertService.toast('Producto eliminado', 'success');
             this.productsRaw.update((currentProducts) =>
               currentProducts.filter((p) => p.id !== product.id),
             );
           },
           error: (err) => {
-            this._errorService.handle(err, 'eliminar el producto');
+            this.errorService.handle(err, 'eliminar el producto');
           },
         });
       }

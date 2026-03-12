@@ -12,26 +12,26 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root',
 })
 export class ApiCategoryService {
-  private _http = inject(HttpClient);
+  private http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiUrl}/categories`;
 
   // Obtener todas las categorías
   getAllCategories(): Observable<IApiCategory[]> {
-    return this._http
+    return this.http
       .get<{ message: string; data: IApiCategory[] }>(this.apiUrl)
       .pipe(map((response) => response.data));
   }
 
   // Obtener todas las categorías ACTIVAS
   getActiveCategories(): Observable<IApiCategory[]> {
-    return this._http
+    return this.http
       .get<{ message: string; data: IApiCategory[] }>(`${this.apiUrl}/active`)
       .pipe(map((response) => response.data));
   }
 
   // Obtener una categoría por ID
   getCategoryById(id: number): Observable<IApiCategory> {
-    return this._http
+    return this.http
       .get<{ message: string; data: IApiCategory }>(`${this.apiUrl}/${id}`)
       .pipe(map((response) => response.data));
   }
@@ -39,7 +39,7 @@ export class ApiCategoryService {
   // Buscar categorías por nombre o descripción
   searchCategories(query: string): Observable<IApiCategory[]> {
     const params = new HttpParams().set('query', query);
-    return this._http
+    return this.http
       .get<{
         message: string;
         data: IApiCategory[];
@@ -49,7 +49,7 @@ export class ApiCategoryService {
 
   // Crea una nueva categoría
   addCategory(category: ICreateCategory): Observable<IApiCategory> {
-    return this._http
+    return this.http
       .post<{
         message: string;
         data: IApiCategory;
@@ -62,7 +62,7 @@ export class ApiCategoryService {
     id: number,
     category: IUpdateCategory,
   ): Observable<IApiCategory> {
-    return this._http
+    return this.http
       .patch<{
         message: string;
         data: IApiCategory;
@@ -72,7 +72,7 @@ export class ApiCategoryService {
 
   // Elimina una categoría
   deleteCategory(id: number): Observable<void> {
-    return this._http
+    return this.http
       .delete<{ message: string }>(`${this.apiUrl}/${id}`)
       .pipe(map(() => void 0));
   }

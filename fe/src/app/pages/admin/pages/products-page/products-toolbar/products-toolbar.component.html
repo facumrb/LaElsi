@@ -7,7 +7,10 @@
     class="flex flex-col lg:flex-row w-full lg:w-auto items-stretch lg:items-center gap-3"
   >
     <div class="w-full lg:w-72 order-1">
-      <app-search-input [(query)]="searchQuery" placeholder="Buscar producto..."></app-search-input>
+      <app-search-input
+        [(query)]="searchQuery"
+        placeholder="Buscar producto..."
+      ></app-search-input>
     </div>
 
     @if (hasSelection()) {
@@ -16,10 +19,7 @@
           (click)="onBulkPriceUpdate.emit()"
           class="animate-fadeIn w-full lg:w-auto cursor-pointer bg-white border border-gray-300 text-gray-700 px-3 h-10 rounded-lg hover:bg-green-50 hover:text-green-700 hover:border-green-200 transition-all flex justify-center items-center gap-2 whitespace-nowrap"
         >
-          <ng-icon
-            name="bootstrapCurrencyDollar"
-            class="text-lg shrink-0"
-          ></ng-icon>
+          <ng-icon name="bootstrapCurrencyDollar" class="text-lg"></ng-icon>
           <span>Actualizar Precios</span>
         </button>
       </div>

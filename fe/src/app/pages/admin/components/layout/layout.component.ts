@@ -56,13 +56,13 @@ interface menuItems {
   `,
 })
 export class LayoutComponent {
-  private _authService = inject(AuthService);
+  private authService = inject(AuthService);
 
   sidebarOpen = signal(true);
   mobileMenuOpen = signal(false);
   showUserMenu = signal(false);
 
-  currentUser = this._authService.currentUser;
+  currentUser = this.authService.currentUser;
 
   readonly imageBaseUrl = environment.userImagesUrl;
 
@@ -123,6 +123,6 @@ export class LayoutComponent {
   // Metodo para Cerrar Sesión
   handleLogout() {
     this.showUserMenu.set(false);
-    this._authService.logout();
+    this.authService.logout();
   }
 }

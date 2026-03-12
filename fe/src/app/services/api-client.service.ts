@@ -8,23 +8,23 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root',
 })
 export class ApiClientService {
-  private _http = inject(HttpClient);
+  private http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiUrl}/clients`;
 
   getAllClients(): Observable<IApiClient[]> {
-    return this._http
+    return this.http
       .get<{ message: string; data: IApiClient[] }>(this.apiUrl)
       .pipe(map((response) => response.data));
   }
 
   getClientById(id: number): Observable<IApiClient> {
-    return this._http
+    return this.http
       .get<{ message: string; data: IApiClient }>(`${this.apiUrl}/${id}`)
       .pipe(map((response) => response.data));
   }
 
   getAccountInfoById(id: number): Observable<IApiClient> {
-    return this._http
+    return this.http
       .get<{
         message: string;
         data: IApiClient;
@@ -35,7 +35,7 @@ export class ApiClientService {
   // Buscar clientes por nombre, apellido, nombre de usuario o dni
   searchClients(query: string): Observable<IApiClient[]> {
     const params = new HttpParams().set('query', query);
-    return this._http
+    return this.http
       .get<{
         message: string;
         data: IApiClient[];
@@ -44,13 +44,13 @@ export class ApiClientService {
   }
 
   addClient(client: ICreateClient): Observable<IApiClient> {
-    return this._http
+    return this.http
       .post<{ message: string; data: IApiClient }>(this.apiUrl, client)
       .pipe(map((response) => response.data));
   }
 
   updateClient(id: number, client: IUpdateClient): Observable<IApiClient> {
-    return this._http
+    return this.http
       .patch<{
         message: string;
         data: IApiClient;
@@ -59,7 +59,7 @@ export class ApiClientService {
   }
 
   deleteClient(id: number): Observable<void> {
-    return this._http
+    return this.http
       .delete<{ message: string }>(`${this.apiUrl}/${id}`)
       .pipe(map(() => void 0));
   }

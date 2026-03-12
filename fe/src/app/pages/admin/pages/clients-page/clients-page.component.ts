@@ -16,10 +16,10 @@ import { ClientsListComponent } from './clients-list/clients-list.component';
   templateUrl: './clients-page.component.html',
 })
 export class ClientsPageComponent implements OnInit {
-  private _alertService = inject(AlertService);
-  private _errorService = inject(ApiErrorService);
-  private _apiService = inject(ApiClientService);
-  private _router = inject(Router);
+  private alertService = inject(AlertService);
+  private errorService = inject(ApiErrorService);
+  private apiService = inject(ApiClientService);
+  private router = inject(Router);
 
   private clientsRaw = signal<IApiClient[]>([]);
 
@@ -62,36 +62,36 @@ export class ClientsPageComponent implements OnInit {
   }
 
   loadClients() {
-    this._apiService.getAllClients().subscribe({
+    this.apiService.getAllClients().subscribe({
       next: (data) => {
         this.clientsRaw.set(data);
       },
       error: (err) => {
-        this._errorService.handle(err, 'cargar los clientes');
+        this.errorService.handle(err, 'cargar los clientes');
       },
     });
   }
 
   handleNavigateToCreate() {
-    this._router.navigate(['/admin/clients/create']);
+    this.router.navigate(['/admin/clients/create']);
   }
 
   handleNavigateToEdit(client: IApiClient) {
-    this._router.navigate(['/admin/clients/edit', client.id]);
+    this.router.navigate(['/admin/clients/edit', client.id]);
   }
 
   handleDelete(client: IApiClient) {
-    this._alertService.confirmDelete().then((confirm) => {
+    this.alertService.confirmDelete().then((confirm) => {
       if (confirm) {
-        this._apiService.deleteClient(client.id).subscribe({
+        this.apiService.deleteClient(client.id).subscribe({
           next: () => {
-            this._alertService.toast('Cliente eliminado', 'success');
+            this.alertService.toast('Cliente eliminado', 'success');
             this.clientsRaw.update((current) =>
               current.filter((a) => a.id !== client.id),
             );
           },
           error: (err) => {
-            this._errorService.handle(err, 'eliminar el cliente');
+            this.errorService.handle(err, 'eliminar el cliente');
           },
         });
       }

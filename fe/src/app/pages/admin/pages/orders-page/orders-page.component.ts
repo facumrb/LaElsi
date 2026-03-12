@@ -21,9 +21,9 @@ import { OrderDetailModalComponent } from '@shared/components/order-detail-modal
   templateUrl: './orders-page.component.html',
 })
 export class OrdersPageComponent implements OnInit {
-  private _alertService = inject(AlertService);
-  private _errorService = inject(ApiErrorService);
-  private _orderService = inject(ApiOrderService);
+  private alertService = inject(AlertService);
+  private errorService = inject(ApiErrorService);
+  private orderService = inject(ApiOrderService);
 
   private ordersRaw = signal<IApiOrder[]>([]);
   searchQuery = signal<string>('');
@@ -76,12 +76,12 @@ export class OrdersPageComponent implements OnInit {
     this.loadOrders();
   }
   loadOrders() {
-    this._orderService.getAllOrders().subscribe({
+    this.orderService.getAllOrders().subscribe({
       next: (data) => {
         this.ordersRaw.set(data);
       },
       error: (err) => {
-        this._errorService.handle(err, 'cargar las órdenes');
+        this.errorService.handle(err, 'cargar las órdenes');
       },
     });
   }
@@ -95,52 +95,52 @@ export class OrdersPageComponent implements OnInit {
   }
 
   handleUpdateStatus(event: { id: number; status: OrderState }) {
-    this._orderService.updateStatus(event.id, event.status).subscribe({
+    this.orderService.updateStatus(event.id, event.status).subscribe({
       next: (updatedOrder) => {
-        this._alertService.toast(
+        this.alertService.toast(
           `Orden #${event.id} pasó a ${event.status}`,
           'success',
         );
         this.updateOrderInList(updatedOrder);
       },
       error: (err) => {
-        this._errorService.handle(err, 'actualizar el estado de la orden');
+        this.errorService.handle(err, 'actualizar el estado de la orden');
       },
     });
   }
 
   handleUpdateDelivery(event: { id: number; method: DeliveryMethod }) {
-    this._orderService.updateDeliveryMethod(event.id, event.method).subscribe({
+    this.orderService.updateDeliveryMethod(event.id, event.method).subscribe({
       next: (updatedOrder) => {
-        this._alertService.toast(
+        this.alertService.toast(
           `Método actualizado a "${event.method}"`,
           'success',
         );
         this.updateOrderInList(updatedOrder);
       },
       error: (err) => {
-        this._errorService.handle(err, 'actualizar el método de entrega');
+        this.errorService.handle(err, 'actualizar el método de entrega');
       },
     });
   }
 
   handleCancel(id: number) {
-    this._alertService
+    this.alertService
       .confirmDelete(
         'Esta acción cancelará la orden y restaurará el stock de los productos.',
       )
       .then((confirm) => {
         if (confirm) {
-          this._orderService.cancelOrder(id).subscribe({
+          this.orderService.cancelOrder(id).subscribe({
             next: (updatedOrder) => {
-              this._alertService.toast(
+              this.alertService.toast(
                 'Orden cancelada correctamente',
                 'success',
               );
               this.updateOrderInList(updatedOrder);
             },
             error: (err) => {
-              this._errorService.handle(err, 'cancelar la orden');
+              this.errorService.handle(err, 'cancelar la orden');
             },
           });
         }

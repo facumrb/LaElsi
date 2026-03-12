@@ -31,37 +31,37 @@ import { ApiErrorService } from '@shared/api-error.service';
   templateUrl: './view-profile-page.component.html',
 })
 export class ViewProfilePageComponent implements OnInit {
-  private _route = inject(ActivatedRoute);
-  private _router = inject(Router);
-  private _apiService = inject(ApiAdminService);
-  private _errorService = inject(ApiErrorService);
+  private routeActive = inject(ActivatedRoute);
+  private router = inject(Router);
+  private apiService = inject(ApiAdminService);
+  private errorService = inject(ApiErrorService);
 
   loading = signal(true);
   admin = signal<IApiAdmin | null>(null);
   imageBaseUrl = environment.userImagesUrl;
 
   ngOnInit(): void {
-    const adminId = this._route.snapshot.paramMap.get('id');
+    const adminId = this.routeActive.snapshot.paramMap.get('id');
     if (adminId) {
       this.fetchAdmin(+adminId);
     }
   }
 
   private fetchAdmin(id: number): void {
-    this._apiService.getAdminById(id).subscribe({
+    this.apiService.getAdminById(id).subscribe({
       next: (data: IApiAdmin) => {
         this.admin.set(data);
         this.loading.set(false);
       },
       error: (err) => {
         this.loading.set(false);
-        this._errorService.handle(err, 'cargar el perfil');
+        this.errorService.handle(err, 'cargar el perfil');
       },
     });
   }
 
   editarPerfil(): void {
-    this._router.navigate(['/admin/edit-profile', this.admin()?.id]);
+    this.router.navigate(['/admin/edit-profile', this.admin()?.id]);
   }
 
   getInitials(): string {

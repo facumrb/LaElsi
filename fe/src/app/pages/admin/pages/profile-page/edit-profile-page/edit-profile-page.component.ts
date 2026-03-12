@@ -42,13 +42,13 @@ import { FieldErrorComponent } from '@shared/validators/field-error/field-error.
 })
 export class EditProfilePageComponent implements OnInit {
   private fb = inject(FormBuilder);
-  private _route = inject(ActivatedRoute);
-  private _router = inject(Router);
-  private _apiService = inject(ApiAdminService);
-  private _authService = inject(AuthService);
-  private _alertService = inject(AlertService);
-  private _errorService = inject(ApiErrorService);
-  private _http = inject(HttpClient);
+  private routeActive = inject(ActivatedRoute);
+  private router = inject(Router);
+  private apiService = inject(ApiAdminService);
+  private authService = inject(AuthService);
+  private alertService = inject(AlertService);
+  private errorService = inject(ApiErrorService);
+  private http = inject(HttpClient);
 
   @ViewChild(PhotoManagerComponent) photoManager!: PhotoManagerComponent;
 
@@ -120,7 +120,7 @@ export class EditProfilePageComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const id = this._route.snapshot.paramMap.get('id');
+    const id = this.routeActive.snapshot.paramMap.get('id');
     if (id) {
       this.fetchAdmin(+id);
     }
@@ -128,7 +128,7 @@ export class EditProfilePageComponent implements OnInit {
 
   private fetchAdmin(id: number): void {
     this.adminId.set(id);
-    this._apiService.getAdminById(id).subscribe({
+    this.apiService.getAdminById(id).subscribe({
       next: (data: IApiAdmin) => {
         this.currentPhoto.set(data.photo);
         this.formEditProfile.patchValue({
@@ -142,13 +142,13 @@ export class EditProfilePageComponent implements OnInit {
 
         // Configurar validadores asíncronos para edición
         this.formEditProfile.controls.dni.setAsyncValidators(
-          FormUtils.uniqueFieldValidator('Admin', 'dni', this._http, id),
+          FormUtils.uniqueFieldValidator('Admin', 'dni', this.http, id),
         );
         this.formEditProfile.controls.username.setAsyncValidators(
-          FormUtils.uniqueFieldValidator('Admin', 'username', this._http, id),
+          FormUtils.uniqueFieldValidator('Admin', 'username', this.http, id),
         );
         this.formEditProfile.controls.email.setAsyncValidators(
-          FormUtils.uniqueFieldValidator('Admin', 'email', this._http, id),
+          FormUtils.uniqueFieldValidator('Admin', 'email', this.http, id),
         );
 
         this.initialFormValue.set(
@@ -158,7 +158,7 @@ export class EditProfilePageComponent implements OnInit {
       },
       error: (err) => {
         this.loading.set(false);
-        this._errorService.handle(err, 'cargar el perfil');
+        this.errorService.handle(err, 'cargar el perfil');
         this.goBack();
       },
     });
@@ -192,7 +192,7 @@ export class EditProfilePageComponent implements OnInit {
     // We don't want to send an empty password to the update
     delete (adminData as any).password;
 
-    this._apiService
+    this.apiService
       .updateAdmin(this.adminId()!, adminData)
       .pipe(
         switchMap((res: any) => {
@@ -201,10 +201,9 @@ export class EditProfilePageComponent implements OnInit {
       )
       .subscribe({
         next: (photoResponse: any) => {
-          this._alertService.toast('Perfil actualizado con éxito', 'success');
+          this.alertService.toast('Perfil actualizado con éxito', 'success');
 
-          // Sync with Local Session
-          const currentUserId = this._authService.currentUser()?.id;
+          const currentUserId = this.authService.currentUser()?.id;
           if (this.adminId() === currentUserId) {
             const sessionUpdates: any = {
               name: formValue.name,
@@ -217,18 +216,18 @@ export class EditProfilePageComponent implements OnInit {
               sessionUpdates.photo = null;
             }
 
-            this._authService.updateCurrentUser(sessionUpdates);
+            this.authService.updateCurrentUser(sessionUpdates);
           }
 
-          this._router.navigate(['admin/view-profile', this.adminId()]);
+          this.router.navigate(['admin/view-profile', this.adminId()]);
         },
         error: (err) => {
-          this._errorService.handle(err, 'actualizar el perfil');
+          this.errorService.handle(err, 'actualizar el perfil');
         },
       });
   }
 
   goBack(): void {
-    this._router.navigate(['admin/view-profile', this.adminId()]);
+    this.router.navigate(['admin/view-profile', this.adminId()]);
   }
 }

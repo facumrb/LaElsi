@@ -22,10 +22,10 @@ import { Router } from '@angular/router';
   templateUrl: './categories-page.component.html',
 })
 export class CategoriesPageComponent implements OnInit {
-  private _alertService = inject(AlertService);
-  private _errorService = inject(ApiErrorService);
-  private _apiService = inject(ApiCategoryService);
-  private _router = inject(Router);
+  private alertService = inject(AlertService);
+  private errorService = inject(ApiErrorService);
+  private apiService = inject(ApiCategoryService);
+  private router = inject(Router);
   private categoriesRaw = signal<IApiCategory[]>([]);
 
   statusFilter = signal<StatusFilter>('Todos');
@@ -89,46 +89,46 @@ export class CategoriesPageComponent implements OnInit {
   }
 
   loadCategories() {
-    this._apiService.getAllCategories().subscribe({
+    this.apiService.getAllCategories().subscribe({
       next: (data) => {
         this.categoriesRaw.set(data);
       },
       error: (err) => {
-        this._errorService.handle(err, 'cargar las categorías');
+        this.errorService.handle(err, 'cargar las categorías');
       },
     });
   }
 
   handleNavigateToCreate() {
-    this._router.navigate(['/admin/categories/create']);
+    this.router.navigate(['/admin/categories/create']);
   }
 
   handleNavigateToEdit(category: IApiCategory) {
-    this._router.navigate(['/admin/categories/edit', category.id]);
+    this.router.navigate(['/admin/categories/edit', category.id]);
   }
 
   // --- Lógica para borrar la categoria ---
   handleDelete(category: IApiCategory) {
     const cantidadProductos = category.products?.length || 0;
     if (cantidadProductos > 0) {
-      this._alertService.error(
+      this.alertService.error(
         'Acción Bloqueada',
         `No puedes eliminar la categoría <b>"${category.name}"</b> porque tiene productos asociados.<br><br>💡 Primero elimine o cambie de categoría esos productos.`,
       );
       return;
     }
 
-    this._alertService.confirmDelete().then((confirm) => {
+    this.alertService.confirmDelete().then((confirm) => {
       if (confirm) {
-        this._apiService.deleteCategory(category.id).subscribe({
+        this.apiService.deleteCategory(category.id).subscribe({
           next: () => {
             this.categoriesRaw.update((cats) =>
               cats.filter((c) => c.id !== category.id),
             );
-            this._alertService.toast('Categoría eliminada', 'success');
+            this.alertService.toast('Categoría eliminada', 'success');
           },
           error: (err) => {
-            this._errorService.handle(err, 'eliminar la categoría');
+            this.errorService.handle(err, 'eliminar la categoría');
           },
         });
       }

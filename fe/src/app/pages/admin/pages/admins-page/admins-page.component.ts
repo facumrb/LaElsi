@@ -13,10 +13,10 @@ import { AdminsToolbarComponent } from './admins-toolbar/admins-toolbar.componen
   templateUrl: './admins-page.component.html',
 })
 export class AdminsPageComponent implements OnInit {
-  private _alertService = inject(AlertService);
-  private _errorService = inject(ApiErrorService);
-  private _apiService = inject(ApiAdminService);
-  private _router = inject(Router);
+  private alertService = inject(AlertService);
+  private errorService = inject(ApiErrorService);
+  private apiService = inject(ApiAdminService);
+  private router = inject(Router);
 
   private adminsRaw = signal<IApiAdmin[]>([]);
 
@@ -48,45 +48,45 @@ export class AdminsPageComponent implements OnInit {
   }
 
   loadAdmins() {
-    this._apiService.getAllAdmins().subscribe({
+    this.apiService.getAllAdmins().subscribe({
       next: (data) => {
         this.adminsRaw.set(data);
       },
       error: (err) => {
-        this._errorService.handle(err, 'cargar los administradores');
+        this.errorService.handle(err, 'cargar los administradores');
       },
     });
   }
 
   handleNavigateToCreate() {
-    this._router.navigate(['/admin/admins/create']);
+    this.router.navigate(['/admin/admins/create']);
   }
 
   handleNavigateToEdit(admin: IApiAdmin) {
-    this._router.navigate(['/admin/admins/edit', admin.id]);
+    this.router.navigate(['/admin/admins/edit', admin.id]);
   }
 
   handleDelete(admin: IApiAdmin) {
     // Si la cantidad de admins es 1 o menos, no permitimos borrar.
     if (this.adminsRaw().length <= 1) {
-      this._alertService.toast(
+      this.alertService.toast(
         'No puedes eliminar al único administrador del sistema',
         'error',
       );
       return;
     }
 
-    this._alertService.confirmDelete().then((confirm) => {
+    this.alertService.confirmDelete().then((confirm) => {
       if (confirm) {
-        this._apiService.deleteAdmin(admin.id).subscribe({
+        this.apiService.deleteAdmin(admin.id).subscribe({
           next: () => {
-            this._alertService.toast('Administrador eliminado', 'success');
+            this.alertService.toast('Administrador eliminado', 'success');
             this.adminsRaw.update((current) =>
               current.filter((a) => a.id !== admin.id),
             );
           },
           error: (err) => {
-            this._errorService.handle(err, 'eliminar el administrador');
+            this.errorService.handle(err, 'eliminar el administrador');
           },
         });
       }

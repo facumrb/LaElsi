@@ -7,8 +7,8 @@ import { AuthService } from '@services/auth.service';
   providedIn: 'root',
 })
 export class ApiErrorService {
-  private _alertService = inject(AlertService);
-  private _authService = inject(AuthService);
+  private alertService = inject(AlertService);
+  private authService = inject(AuthService);
 
   handle(err: HttpErrorResponse, accion: string = 'procesar la solicitud') {
     let titulo = 'Error';
@@ -30,7 +30,7 @@ export class ApiErrorService {
         if (backendMessage && !accion.includes('iniciar sesión')) {
           // Si hay un mensaje del backend y NO estamos intentando loguearnos,
           // significa que el token es inválido o fue rechazado -> Logout forzado
-          this._authService.logout();
+          this.authService.logout();
           titulo = 'Sesión Inválida';
           mensaje = 'Tu sesión ya no es válida. Por favor, ingresa de nuevo.';
           esCritico = true;
@@ -39,9 +39,10 @@ export class ApiErrorService {
           titulo = 'Acceso No Autorizado';
         } else {
           // Token vencido o ausencia de token -> Logout y aviso modal
-          this._authService.logout();
+          this.authService.logout();
           titulo = 'Sesión Expirada';
-          mensaje = 'Tu sesión ha caducado. Por favor, inicia sesión nuevamente.';
+          mensaje =
+            'Tu sesión ha caducado. Por favor, inicia sesión nuevamente.';
           esCritico = true;
         }
         break;
@@ -76,9 +77,9 @@ export class ApiErrorService {
     }
 
     if (esCritico) {
-      this._alertService.modal(titulo, mensaje, 'warning');
+      this.alertService.modal(titulo, mensaje, 'warning');
     } else {
-      this._alertService.error(titulo, mensaje);
+      this.alertService.error(titulo, mensaje);
     }
   }
 }

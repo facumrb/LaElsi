@@ -49,9 +49,9 @@ import { CloseModalButtonComponent } from '@shared/components/buttons/close-moda
   templateUrl: './bulk-price-modal.component.html',
 })
 export class BulkPriceModalComponent implements OnDestroy {
-  private _apiService = inject(ApiProductService);
-  private _alertService = inject(AlertService);
-  private _errorService = inject(ApiErrorService);
+  private apiService = inject(ApiProductService);
+  private alertService = inject(AlertService);
+  private errorService = inject(ApiErrorService);
 
   // Inputs / Outputs
   productIds = input.required<number[]>();
@@ -143,13 +143,13 @@ export class BulkPriceModalComponent implements OnDestroy {
 
   private getPreview(ids: number[], type: string, val: number, rule: string) {
     this.loadingPreview.set(true);
-    this._apiService.previewBulkPriceChange(ids, type, val, rule).subscribe({
+    this.apiService.previewBulkPriceChange(ids, type, val, rule).subscribe({
       next: (data) => {
         this.previewData.set(data);
         this.loadingPreview.set(false);
       },
       error: (err) => {
-        this._errorService.handle(err, 'generar la vista previa');
+        this.errorService.handle(err, 'generar la vista previa');
         this.loadingPreview.set(false);
       },
     });
@@ -159,7 +159,7 @@ export class BulkPriceModalComponent implements OnDestroy {
     if (this.allInvalid()) return;
     this.loadingApply.set(true);
 
-    this._apiService
+    this.apiService
       .applyBulkPriceChange(
         this.productIds(),
         this.adjustmentType(),
@@ -168,7 +168,7 @@ export class BulkPriceModalComponent implements OnDestroy {
       )
       .subscribe({
         next: (res) => {
-          this._alertService.toast(
+          this.alertService.toast(
             `${res.updatedCount} productos actualizados.`,
             'success',
           );
@@ -176,7 +176,7 @@ export class BulkPriceModalComponent implements OnDestroy {
           this.success.emit();
         },
         error: (err) => {
-          this._errorService.handle(err, 'aplicar los cambios');
+          this.errorService.handle(err, 'aplicar los cambios');
           this.loadingApply.set(false);
         },
       });

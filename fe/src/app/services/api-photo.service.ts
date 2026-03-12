@@ -9,7 +9,7 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root',
 })
 export class ApiPhotoService {
-  private _http = inject(HttpClient);
+  private http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiUrl}/photos`;
 
   // Cargar las fotos de un producto
@@ -17,7 +17,7 @@ export class ApiPhotoService {
     productId: number,
     photosData: FormData,
   ): Observable<IApiProductPhoto[]> {
-    return this._http
+    return this.http
       .post<
         IApiResponse<IApiProductPhoto[]>
       >(`${this.apiUrl}/upload/productPhotos/${productId}`, photosData)
@@ -28,14 +28,14 @@ export class ApiPhotoService {
   reorderProductPhotos(
     photosOrder: { id: number; order: number }[],
   ): Observable<void> {
-    return this._http
+    return this.http
       .post<IApiResponse<null>>(`${this.apiUrl}/reorder`, { photosOrder })
       .pipe(map(() => void 0));
   }
 
   // Borrar una foto específica de un producto
   deleteProductPhoto(photoId: number): Observable<void> {
-    return this._http
+    return this.http
       .delete<IApiResponse<null>>(`${this.apiUrl}/productPhotos/${photoId}`)
       .pipe(map(() => void 0));
   }
@@ -45,7 +45,7 @@ export class ApiPhotoService {
     userId: number,
     photoData: FormData,
   ): Observable<IApiUserPhoto> {
-    return this._http
+    return this.http
       .post<
         IApiResponse<IApiUserPhoto>
       >(`${this.apiUrl}/upload/userPhoto/${userId}`, photoData)
@@ -54,7 +54,7 @@ export class ApiPhotoService {
 
   // Borrar la foto de perfil de un usuario
   deleteUserPhoto(photoId: number): Observable<void> {
-    return this._http
+    return this.http
       .delete<IApiResponse<null>>(`${this.apiUrl}/userPhoto/${photoId}`)
       .pipe(map(() => void 0));
   }

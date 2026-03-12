@@ -14,3 +14,10 @@
     opacity: 1;
   }
 }
+
+/* 3. Estilos base globales */
+@layer base {
+  ng-icon {
+    @apply shrink-0;
+  }
+}

@@ -13,23 +13,23 @@ import {
   providedIn: 'root',
 })
 export class ApiOrderService {
-  private _http = inject(HttpClient);
+  private http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiUrl}/orders`;
 
   getAllOrders(): Observable<IApiOrder[]> {
-    return this._http
+    return this.http
       .get<{ message: string; data: IApiOrder[] }>(this.apiUrl)
       .pipe(map((response) => response.data));
   }
 
   getOrderById(id: number): Observable<IApiOrder> {
-    return this._http
+    return this.http
       .get<{ message: string; data: IApiOrder }>(`${this.apiUrl}/${id}`)
       .pipe(map((response) => response.data));
   }
 
   getOrdersByClient(clientId: number): Observable<IApiOrder[]> {
-    return this._http
+    return this.http
       .get<{
         message: string;
         data: IApiOrder[];
@@ -38,13 +38,13 @@ export class ApiOrderService {
   }
 
   createOrder(order: ICreateOrder): Observable<IApiOrder> {
-    return this._http
+    return this.http
       .post<{ message: string; data: IApiOrder }>(this.apiUrl, order)
       .pipe(map((response) => response.data));
   }
 
   updateStatus(id: number, status: OrderState): Observable<IApiOrder> {
-    return this._http
+    return this.http
       .patch<{ message: string; data: IApiOrder }>(
         `${this.apiUrl}/${id}/status`,
         {
@@ -58,7 +58,7 @@ export class ApiOrderService {
     id: number,
     deliveryMethod: DeliveryMethod,
   ): Observable<IApiOrder> {
-    return this._http
+    return this.http
       .patch<{
         message: string;
         data: IApiOrder;
@@ -67,7 +67,7 @@ export class ApiOrderService {
   }
 
   cancelOrder(id: number): Observable<IApiOrder> {
-    return this._http
+    return this.http
       .patch<{
         message: string;
         data: IApiOrder;

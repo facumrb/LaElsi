@@ -27,7 +27,7 @@ import { IApiProduct } from '@models/product.model';
   templateUrl: './categories-list.component.html',
 })
 export class CategoriesListComponent {
-  private _router = inject(Router);
+  private router = inject(Router);
   categories = input.required<IApiCategory[]>();
   onEdit = output<IApiCategory>();
   onDelete = output<IApiCategory>();
@@ -49,6 +49,6 @@ export class CategoriesListComponent {
   // Método para navegar a la edición del producto
   navigateToProductEdit(product: IApiProduct) {
     this.closeProductsModal();
-    this._router.navigate(['/admin/products/edit', product.id]);
+    this.router.navigate(['/admin/products/edit', product.id]);
   }
 }
