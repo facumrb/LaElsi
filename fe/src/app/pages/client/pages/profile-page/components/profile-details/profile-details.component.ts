@@ -7,6 +7,7 @@ import {
   signal,
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
   bootstrapPerson,
@@ -21,6 +22,8 @@ import Swal from 'sweetalert2';
 import { PhoneInputDirective } from '@shared/directives/phone-input.directive';
 import { NumericInputDirective } from '@shared/directives/numeric-input.directive';
 import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
+import { FormUtils } from '@shared/validators/form-utils';
+import { FieldErrorComponent } from '@shared/validators/field-error/field-error.component';
 
 @Component({
   selector: 'app-profile-details',
@@ -30,6 +33,7 @@ import { ClickOutsideDirective } from '@shared/directives/click-outside.directiv
     PhoneInputDirective,
     NumericInputDirective,
     ClickOutsideDirective,
+    FieldErrorComponent,
   ],
   viewProviders: [
     provideIcons({
@@ -45,6 +49,7 @@ import { ClickOutsideDirective } from '@shared/directives/click-outside.directiv
 export class ProfileDetailsComponent {
   private fb = inject(FormBuilder);
   private apiClientService = inject(ApiClientService);
+  private http = inject(HttpClient);
 
   profile = input<IApiClient | null>(null);
 
@@ -56,20 +61,66 @@ export class ProfileDetailsComponent {
   isFiscalMenuOpen = signal(false);
 
   formPerfil = this.fb.nonNullable.group({
-    name: ['', Validators.required],
-    lastName: ['', Validators.required],
-    dni: ['', Validators.required],
-    email: ['', [Validators.required, Validators.email]],
-    phone: ['', Validators.required],
-    cuit: ['', [Validators.pattern('^[0-9]{11}$')]],
+    name: [
+      '',
+      [
+        Validators.required,
+        Validators.minLength(2),
+        Validators.maxLength(100),
+        FormUtils.notOnlyWhiteSpace,
+      ],
+    ],
+    lastName: [
+      '',
+      [
+        Validators.required,
+        Validators.minLength(2),
+        Validators.maxLength(100),
+        FormUtils.notOnlyWhiteSpace,
+      ],
+    ],
+    dni: [
+      '',
+      [
+        Validators.required,
+        Validators.minLength(7),
+        Validators.maxLength(15),
+        Validators.pattern(FormUtils.numberPattern),
+      ],
+    ],
+    email: [
+      '',
+      [
+        Validators.required,
+        Validators.maxLength(255),
+        Validators.pattern(FormUtils.emailPattern),
+      ],
+    ],
+    phone: [
+      '',
+      [
+        Validators.required,
+        Validators.minLength(7),
+        Validators.maxLength(20),
+        Validators.pattern(FormUtils.phonePattern),
+      ],
+    ],
+    cuit: [
+      '',
+      [
+        Validators.minLength(11),
+        Validators.maxLength(11),
+        Validators.pattern(FormUtils.cuitPattern),
+      ],
+    ],
     fiscalCondition: [FiscalCondition.ConsumidorFinal],
-    street: [''],
+    street: ['', Validators.maxLength(100)],
     streetNumber: [0],
-    city: [''],
-    province: [''],
-    postalCode: [''],
-    floor: [''],
-    apartment: [''],
+    city: ['', Validators.maxLength(100)],
+    province: ['', Validators.maxLength(100)],
+    postalCode: ['', Validators.maxLength(10)],
+    floor: ['', Validators.maxLength(5)],
+    apartment: ['', Validators.maxLength(5)],
   });
 
   ngOnInit() {
@@ -112,6 +163,18 @@ export class ProfileDetailsComponent {
       floor: fullUser.floor || '',
       apartment: fullUser.apartment || '',
     });
+
+    // Validación async para edición
+    const id = fullUser.id;
+    this.formPerfil.controls.dni.setAsyncValidators(
+      FormUtils.uniqueFieldValidator('Client', 'dni', this.http, id),
+    );
+    this.formPerfil.controls.email.setAsyncValidators(
+      FormUtils.uniqueFieldValidator('Client', 'email', this.http, id),
+    );
+    this.formPerfil.controls.cuit.setAsyncValidators(
+      FormUtils.uniqueFieldValidator('Client', 'cuit', this.http, id),
+    );
   }
 
   onSubmit() {

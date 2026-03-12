@@ -4,8 +4,12 @@ import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '@services/auth.service';
 import { HttpClient } from '@angular/common/http';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { bootstrapArrowClockwise, bootstrapCheckCircleFill, bootstrapXCircleFill } from '@ng-icons/bootstrap-icons';
-import { uniqueFieldValidator } from '@shared/validators/unique.validator';
+import {
+  bootstrapArrowClockwise,
+  bootstrapCheckCircleFill,
+  bootstrapXCircleFill,
+} from '@ng-icons/bootstrap-icons';
+import { FormUtils } from '@shared/validators/form-utils';
 
 @Component({
   selector: 'app-register-page',
@@ -34,18 +38,18 @@ export class RegisterPageComponent {
     dni: [
       '',
       [Validators.required, Validators.pattern('^[0-9]{7,8}$')],
-      [uniqueFieldValidator('Client', 'dni', this.http)],
+      [FormUtils.uniqueFieldValidator('Client', 'dni', this.http)],
     ],
     phone: ['', [Validators.required, Validators.pattern('^[0-9]{8,15}$')]],
     username: [
       '',
       [Validators.required, Validators.minLength(4)],
-      [uniqueFieldValidator('Client', 'username', this.http)],
+      [FormUtils.uniqueFieldValidator('Client', 'username', this.http)],
     ],
     email: [
       '',
       [Validators.required, Validators.email],
-      [uniqueFieldValidator('Client', 'email', this.http)],
+      [FormUtils.uniqueFieldValidator('Client', 'email', this.http)],
     ],
     password: ['', [Validators.required, Validators.minLength(6)]],
   });

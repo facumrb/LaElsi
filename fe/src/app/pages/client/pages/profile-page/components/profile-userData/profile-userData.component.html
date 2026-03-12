@@ -50,8 +50,16 @@
             <input
               type="text"
               id="username"
+              name="username"
               formControlName="username"
+              minlength="4"
+              maxlength="30"
+              placeholder="Ej: jperez"
               class="w-full p-3.5 bg-gray-50 border border-gray-200 text-gray-800 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white outline-none transition-all font-medium"
+            />
+            <app-field-error
+              [control]="formUsuario.controls.username"
+              validLabel="Usuario disponible"
             />
           </div>
         </div>
@@ -68,10 +76,13 @@
             <input
               type="password"
               id="password"
+              name="password"
               formControlName="password"
+              maxlength="100"
               placeholder="Solo si deseas cambiarla..."
               class="w-full p-3.5 bg-white border border-blue-200 text-gray-800 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all font-medium placeholder-blue-300"
             />
+            <app-field-error [control]="formUsuario.controls.password" />
             <p
               class="text-[10px] text-blue-500 font-medium pl-1 mt-1 leading-tight"
             >

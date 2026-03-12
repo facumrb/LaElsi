@@ -30,16 +30,11 @@
             placeholder="Ej: Electrónica, Ropa..."
             class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm sm:text-sm"
           />
-          <div class="flex justify-between items-start mt-1">
-            <div class="text-xs text-red-500 min-h-5">
-              @if (formUtils.isValidField(formCategory, "name")) {
-                <span>{{ formUtils.getFieldError(formCategory, "name") }}</span>
-              }
-            </div>
-            <div class="text-xs text-gray-500">
-              {{ formCategory.get("name")?.value?.length || 0 }} / 50
-            </div>
-          </div>
+          <app-field-error
+            [control]="formCategory.controls.name"
+            [maxLength]="50"
+            validLabel="Nombre disponible"
+          />
         </div>
 
         <div>
@@ -58,18 +53,10 @@
             maxlength="1000"
             class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm sm:text-sm"
           ></textarea>
-          <div class="flex justify-between items-start mt-1">
-            <div class="text-xs text-red-500 min-h-5">
-              @if (formUtils.isValidField(formCategory, "description")) {
-                <span>{{
-                  formUtils.getFieldError(formCategory, "description")
-                }}</span>
-              }
-            </div>
-            <div class="text-xs text-gray-500">
-              {{ formCategory.get("description")?.value?.length || 0 }} / 1000
-            </div>
-          </div>
+          <app-field-error
+            [control]="formCategory.controls.description"
+            [maxLength]="1000"
+          />
         </div>
 
         <div>
@@ -79,7 +66,7 @@
           >
             Orden de Visualización
             <span class="text-xs font-normal text-gray-500"
-              >(Máx: {{ maxOrder() }})</span
+              >(El orden máximo es: {{ maxOrder() }})</span
             >
             <span class="text-red-500">*</span>
           </label>
@@ -94,11 +81,7 @@
             placeholder="Ej: 0, 1, 2..."
             class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm sm:text-sm"
           />
-          <div class="mt-1 min-h-5 text-xs text-red-600">
-            @if (formUtils.isValidField(formCategory, "order")) {
-              <span>{{ formUtils.getFieldError(formCategory, "order") }}</span>
-            }
-          </div>
+          <app-field-error [control]="formCategory.controls.order" />
         </div>
 
         <div class="relative w-full" (clickOutside)="showStateMenu.set(false)">
@@ -177,11 +160,7 @@
               }
             </ul>
           }
-          <div class="mt-1 min-h-5 text-xs text-red-600">
-            @if (formUtils.isValidField(formCategory, "state")) {
-              <span>{{ formUtils.getFieldError(formCategory, "state") }}</span>
-            }
-          </div>
+          <app-field-error [control]="formCategory.controls.state" />
         </div>
       </div>
 

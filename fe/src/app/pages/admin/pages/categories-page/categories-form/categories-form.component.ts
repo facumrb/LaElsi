@@ -2,6 +2,7 @@ import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Location, DatePipe } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { GoBackButtonComponent } from '@shared/components/buttons/go-back-button/go-back-button.component';
 import { ApiCategoryService } from '@services/api-category.service';
 import {
@@ -11,7 +12,7 @@ import {
 } from '@models/category.model';
 import { ProductDraftService } from '@services/product-draft.service';
 import { AlertService } from '@shared/alert.service';
-import { FormUtils } from '@shared/form-utils';
+import { FormUtils } from '@shared/validators/form-utils';
 import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
@@ -19,6 +20,7 @@ import {
   bootstrapCheckLg,
 } from '@ng-icons/bootstrap-icons';
 import { AuditInfoComponent } from '@shared/components/audit-info/audit-info.component';
+import { FieldErrorComponent } from '@shared/validators/field-error/field-error.component';
 
 @Component({
   selector: 'app-categories-form',
@@ -28,6 +30,7 @@ import { AuditInfoComponent } from '@shared/components/audit-info/audit-info.com
     NgIconComponent,
     AuditInfoComponent,
     GoBackButtonComponent,
+    FieldErrorComponent,
     RouterLink,
   ],
   viewProviders: [
@@ -48,6 +51,7 @@ export class CategoriesFormComponent implements OnInit {
   private alertService = inject(AlertService);
   private datePipe = inject(DatePipe);
   private draftService = inject(ProductDraftService);
+  private http = inject(HttpClient);
 
   formUtils = FormUtils;
 
@@ -125,6 +129,11 @@ export class CategoriesFormComponent implements OnInit {
       this.categoryId.set(+id);
       this.isEditMode.set(true);
       this.loadCategory(+id);
+    } else {
+      // Validación async para creación
+      this.formCategory.controls.name.addAsyncValidators(
+        FormUtils.uniqueFieldValidator('Category', 'name', this.http),
+      );
     }
   }
 
@@ -148,6 +157,11 @@ export class CategoriesFormComponent implements OnInit {
         // Snapshot para comparación
         const formSnapshot = this.formCategory.getRawValue();
         this.initialFormValue.set(JSON.stringify(formSnapshot));
+
+        // Validación async para edición
+        this.formCategory.controls.name.setAsyncValidators(
+          FormUtils.uniqueFieldValidator('Category', 'name', this.http, id),
+        );
       },
       error: () => {
         this.alertService.toast('Error al cargar la categoría', 'error');

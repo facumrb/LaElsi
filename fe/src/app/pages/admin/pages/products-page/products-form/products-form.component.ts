@@ -2,11 +2,12 @@ import { Component, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DatePipe, Location } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { GoBackButtonComponent } from '@shared/components/buttons/go-back-button/go-back-button.component';
 import { ApiCategoryService } from '@services/api-category.service';
 import { IApiCategory } from '@models/category.model';
 import { ProductDraftService } from '@services/product-draft.service';
-import { FormUtils } from '@shared/form-utils';
+import { FormUtils } from '@shared/validators/form-utils';
 import { ApiProductService } from '@services/api-product.service';
 import { AlertService } from '@shared/alert.service';
 import { ICreateProduct, ProductState } from '@models/product.model';
@@ -20,6 +21,7 @@ import {
   bootstrapCheckLg,
 } from '@ng-icons/bootstrap-icons';
 import { AuditInfoComponent } from '@shared/components/audit-info/audit-info.component';
+import { FieldErrorComponent } from '@shared/validators/field-error/field-error.component';
 
 @Component({
   selector: 'app-products-form',
@@ -31,6 +33,7 @@ import { AuditInfoComponent } from '@shared/components/audit-info/audit-info.com
     NgIconComponent,
     AuditInfoComponent,
     GoBackButtonComponent,
+    FieldErrorComponent,
     RouterLink,
   ],
   viewProviders: [
@@ -52,6 +55,7 @@ export class ProductsFormComponent implements OnInit {
   private alertService = inject(AlertService);
   private datePipe = inject(DatePipe);
   private draftService = inject(ProductDraftService);
+  private http = inject(HttpClient);
 
   formUtils = FormUtils;
 
@@ -212,6 +216,11 @@ export class ProductsFormComponent implements OnInit {
 
           this.initialFormValue.set(JSON.stringify(formSnapshot));
 
+          // Validación async para edición
+          this.formProduct.controls.name.setAsyncValidators(
+            FormUtils.uniqueFieldValidator('Product', 'name', this.http, +id),
+          );
+
           // PASAMOS LAS FOTOS AL HIJO
           if (product.photos) {
             this.initialPhotos.set(product.photos);
@@ -222,6 +231,11 @@ export class ProductsFormComponent implements OnInit {
           this.location.back();
         },
       });
+    } else {
+      // Validación async para creación
+      this.formProduct.controls.name.addAsyncValidators(
+        FormUtils.uniqueFieldValidator('Product', 'name', this.http),
+      );
     }
   }
 

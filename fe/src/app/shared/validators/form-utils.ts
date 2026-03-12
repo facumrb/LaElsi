@@ -1,9 +1,14 @@
+import { HttpClient } from '@angular/common/http';
 import {
   AbstractControl,
+  AsyncValidatorFn,
   FormArray,
   FormGroup,
   ValidationErrors,
 } from '@angular/forms';
+import { Observable, of, timer } from 'rxjs';
+import { catchError, map, switchMap } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 
 export class FormUtils {
   //EXPRESIONES REGULARES
@@ -147,5 +152,48 @@ export class FormUtils {
     // Si después de quitar espacios el largo es 0, es inválido
     const isValid = !isWhitespace;
     return isValid ? null : { onlyWhitespace: true };
+  }
+
+  /**
+   * Validador asíncrono para verificar la unicidad de campos en el backend.
+   *
+   * @param entity Nombre de la entidad (ej: 'Admin', 'Client', 'Product', 'Category')
+   * @param field Nombre del campo a validar (ej: 'email', 'username', 'dni', 'cuit', 'name')
+   * @param http Instancia de HttpClient (inyectada con inject(HttpClient))
+   * @param excludeId ID opcional a excluir de la validación (útil en ediciones)
+   * @returns AsyncValidatorFn que retorna { [field + 'Taken']: true } si el valor ya existe
+   */
+  static uniqueFieldValidator(
+    entity: string,
+    field: string,
+    http: HttpClient,
+    excludeId?: number,
+  ): AsyncValidatorFn {
+    return (control: AbstractControl): Observable<ValidationErrors | null> => {
+      if (!control.value || control.pristine) {
+        return of(null);
+      }
+
+      return timer(400).pipe(
+        switchMap(() => {
+          const value = control.value;
+          const url = `${environment.apiUrl}/validate-unique`;
+          let params: Record<string, string> = { entity, field, value };
+
+          if (excludeId) {
+            params['excludeId'] = excludeId.toString();
+          }
+
+          return http
+            .get<{ data: { available: boolean } }>(url, { params })
+            .pipe(
+              map((res) =>
+                res.data.available ? null : { [`${field}Taken`]: true },
+              ),
+              catchError(() => of(null)),
+            );
+        }),
+      );
+    };
   }
 }

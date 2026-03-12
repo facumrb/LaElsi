@@ -36,11 +36,7 @@
               class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm text-sm"
               placeholder="Ej: Juan"
             />
-            <div class="mt-1 min-h-5 text-xs text-red-600">
-              @if (formUtils.isValidField(formClient, "name")) {
-                <span>{{ formUtils.getFieldError(formClient, "name") }}</span>
-              }
-            </div>
+            <app-field-error [control]="formClient.controls.name" />
           </div>
 
           <div>
@@ -60,13 +56,7 @@
               class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm text-sm"
               placeholder="Ej: Perez"
             />
-            <div class="mt-1 min-h-5 text-xs text-red-600">
-              @if (formUtils.isValidField(formClient, "lastName")) {
-                <span>{{
-                  formUtils.getFieldError(formClient, "lastName")
-                }}</span>
-              }
-            </div>
+            <app-field-error [control]="formClient.controls.lastName" />
           </div>
 
           <div>
@@ -88,26 +78,10 @@
               class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm text-sm"
               placeholder="Ej: 12345678"
             />
-            <div class="mt-1 min-h-5 text-xs">
-              @if (isPending("dni")) {
-                <span class="text-gray-500 flex items-center gap-1">
-                  <ng-icon name="bootstrapArrowClockwise" class="animate-spin"></ng-icon>
-                  Verificando...
-                </span>
-              } @else if (isValid("dni")) {
-                <span class="text-emerald-600 flex items-center gap-1">
-                  <ng-icon name="bootstrapCheckCircleFill"></ng-icon>
-                  DNI disponible
-                </span>
-              } @else if (formUtils.isValidField(formClient, "dni")) {
-                 <span class="text-red-600 flex items-center gap-1">
-                  @if (formClient.get("dni")?.hasError("dniTaken")) {
-                    <ng-icon name="bootstrapXCircleFill"></ng-icon>
-                  }
-                  {{ formUtils.getFieldError(formClient, "dni") }}
-                </span>
-              }
-            </div>
+            <app-field-error
+              [control]="formClient.controls.dni"
+              validLabel="DNI disponible"
+            />
           </div>
 
           <div>
@@ -129,11 +103,7 @@
               class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm text-sm"
               placeholder="Ej: 3415555555"
             />
-            <div class="mt-1 min-h-5 text-xs text-red-600">
-              @if (formUtils.isValidField(formClient, "phone")) {
-                <span>{{ formUtils.getFieldError(formClient, "phone") }}</span>
-              }
-            </div>
+            <app-field-error [control]="formClient.controls.phone" />
           </div>
         </div>
       </div>
@@ -161,26 +131,10 @@
               class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm text-sm"
               placeholder="Ej: jperez"
             />
-            <div class="mt-1 min-h-5 text-xs">
-              @if (isPending("username")) {
-                <span class="text-gray-500 flex items-center gap-1">
-                  <ng-icon name="bootstrapArrowClockwise" class="animate-spin"></ng-icon>
-                  Verificando...
-                </span>
-              } @else if (isValid("username")) {
-                <span class="text-emerald-600 flex items-center gap-1">
-                  <ng-icon name="bootstrapCheckCircleFill"></ng-icon>
-                  Usuario disponible
-                </span>
-              } @else if (formUtils.isValidField(formClient, "username")) {
-                <span class="text-red-600 flex items-center gap-1">
-                  @if (formClient.get("username")?.hasError("usernameTaken")) {
-                    <ng-icon name="bootstrapXCircleFill"></ng-icon>
-                  }
-                  {{ formUtils.getFieldError(formClient, "username") }}
-                </span>
-              }
-            </div>
+            <app-field-error
+              [control]="formClient.controls.username"
+              validLabel="Usuario disponible"
+            />
           </div>
 
           <div>
@@ -200,26 +154,10 @@
               class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm text-sm"
               placeholder="Ej: juan@ejemplo.com"
             />
-            <div class="mt-1 min-h-5 text-xs">
-              @if (isPending("email")) {
-                <span class="text-gray-500 flex items-center gap-1">
-                  <ng-icon name="bootstrapArrowClockwise" class="animate-spin"></ng-icon>
-                  Verificando...
-                </span>
-              } @else if (isValid("email")) {
-                <span class="text-emerald-600 flex items-center gap-1">
-                  <ng-icon name="bootstrapCheckCircleFill"></ng-icon>
-                  Email disponible
-                </span>
-              } @else if (formUtils.isValidField(formClient, "email")) {
-                 <span class="text-red-600 flex items-center gap-1">
-                  @if (formClient.get("email")?.hasError("emailTaken")) {
-                    <ng-icon name="bootstrapXCircleFill"></ng-icon>
-                  }
-                  {{ formUtils.getFieldError(formClient, "email") }}
-                </span>
-              }
-            </div>
+            <app-field-error
+              [control]="formClient.controls.email"
+              validLabel="Email disponible"
+            />
           </div>
 
           <div class="flex justify-center md:justify-start pt-2">
@@ -254,13 +192,7 @@
                   : 'Mínimo 8 caracteres, 1 letra, 1 número.'
               }}"
             />
-            <div class="mt-1 min-h-5 text-xs text-red-600">
-              @if (formUtils.isValidField(formClient, "password")) {
-                <span>{{
-                  formUtils.getFieldError(formClient, "password")
-                }}</span>
-              }
-            </div>
+            <app-field-error [control]="formClient.controls.password" />
           </div>
         </div>
       </div>
@@ -373,26 +305,10 @@
               class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm text-sm"
               placeholder="Ej: 20123456789"
             />
-            <div class="mt-1 min-h-5 text-xs">
-              @if (isPending("cuit")) {
-                <span class="text-gray-500 flex items-center gap-1">
-                  <ng-icon name="bootstrapArrowClockwise" class="animate-spin"></ng-icon>
-                  Verificando...
-                </span>
-              } @else if (isValid("cuit")) {
-                <span class="text-emerald-600 flex items-center gap-1">
-                  <ng-icon name="bootstrapCheckCircleFill"></ng-icon>
-                  CUIT disponible
-                </span>
-              } @else if (formUtils.isValidField(formClient, "cuit")) {
-                <span class="text-red-600 flex items-center gap-1">
-                  @if (formClient.get("cuit")?.hasError("cuitTaken")) {
-                    <ng-icon name="bootstrapXCircleFill"></ng-icon>
-                  }
-                  {{ formUtils.getFieldError(formClient, "cuit") }}
-                </span>
-              }
-            </div>
+            <app-field-error
+              [control]="formClient.controls.cuit"
+              validLabel="CUIT disponible"
+            />
           </div>
         </div>
       </div>

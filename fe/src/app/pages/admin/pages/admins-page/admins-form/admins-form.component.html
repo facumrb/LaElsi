@@ -36,11 +36,7 @@
               class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm text-sm"
               placeholder="Ej: Juan"
             />
-            <div class="mt-1 min-h-5 text-xs text-red-600">
-              @if (formUtils.isValidField(formAdmin, "name")) {
-                <span>{{ formUtils.getFieldError(formAdmin, "name") }}</span>
-              }
-            </div>
+            <app-field-error [control]="formAdmin.controls.name" />
           </div>
 
           <div>
@@ -60,13 +56,7 @@
               class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm text-sm"
               placeholder="Ej: Perez"
             />
-            <div class="mt-1 min-h-5 text-xs text-red-600">
-              @if (formUtils.isValidField(formAdmin, "lastName")) {
-                <span>{{
-                  formUtils.getFieldError(formAdmin, "lastName")
-                }}</span>
-              }
-            </div>
+            <app-field-error [control]="formAdmin.controls.lastName" />
           </div>
 
           <div>
@@ -88,26 +78,10 @@
               class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm text-sm"
               placeholder="Ej: 12345678"
             />
-            <div class="mt-1 min-h-5 text-xs">
-              @if (isPending("dni")) {
-                <span class="text-gray-500 flex items-center gap-1">
-                  <ng-icon name="bootstrapArrowClockwise" class="animate-spin"></ng-icon>
-                  Verificando...
-                </span>
-              } @else if (isValid("dni")) {
-                <span class="text-emerald-600 flex items-center gap-1">
-                  <ng-icon name="bootstrapCheckCircleFill"></ng-icon>
-                  DNI disponible
-                </span>
-              } @else if (formUtils.isValidField(formAdmin, "dni")) {
-                <span class="text-red-600 flex items-center gap-1">
-                  @if (formAdmin.get("dni")?.hasError("dniTaken")) {
-                    <ng-icon name="bootstrapXCircleFill"></ng-icon>
-                  }
-                  {{ formUtils.getFieldError(formAdmin, "dni") }}
-                </span>
-              }
-            </div>
+            <app-field-error
+              [control]="formAdmin.controls.dni"
+              validLabel="DNI disponible"
+            />
           </div>
 
           <div>
@@ -129,11 +103,7 @@
               class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm text-sm"
               placeholder="Ej: 3415555555"
             />
-            <div class="mt-1 min-h-5 text-xs text-red-600">
-              @if (formUtils.isValidField(formAdmin, "phone")) {
-                <span>{{ formUtils.getFieldError(formAdmin, "phone") }}</span>
-              }
-            </div>
+            <app-field-error [control]="formAdmin.controls.phone" />
           </div>
         </div>
       </div>
@@ -161,26 +131,10 @@
               class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm text-sm"
               placeholder="Ej: jperez"
             />
-            <div class="mt-1 min-h-5 text-xs">
-              @if (isPending("username")) {
-                <span class="text-gray-500 flex items-center gap-1">
-                  <ng-icon name="bootstrapArrowClockwise" class="animate-spin"></ng-icon>
-                  Verificando...
-                </span>
-              } @else if (isValid("username")) {
-                <span class="text-emerald-600 flex items-center gap-1">
-                  <ng-icon name="bootstrapCheckCircleFill"></ng-icon>
-                  Usuario disponible
-                </span>
-              } @else if (formUtils.isValidField(formAdmin, "username")) {
-                 <span class="text-red-600 flex items-center gap-1">
-                  @if (formAdmin.get("username")?.hasError("usernameTaken")) {
-                    <ng-icon name="bootstrapXCircleFill"></ng-icon>
-                  }
-                  {{ formUtils.getFieldError(formAdmin, "username") }}
-                </span>
-              }
-            </div>
+            <app-field-error
+              [control]="formAdmin.controls.username"
+              validLabel="Usuario disponible"
+            />
           </div>
 
           <div>
@@ -200,26 +154,10 @@
               class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm text-sm"
               placeholder="Ej: juan@ejemplo.com"
             />
-            <div class="mt-1 min-h-5 text-xs">
-              @if (isPending("email")) {
-                <span class="text-gray-500 flex items-center gap-1">
-                  <ng-icon name="bootstrapArrowClockwise" class="animate-spin"></ng-icon>
-                  Verificando...
-                </span>
-              } @else if (isValid("email")) {
-                <span class="text-emerald-600 flex items-center gap-1">
-                  <ng-icon name="bootstrapCheckCircleFill"></ng-icon>
-                  Email disponible
-                </span>
-              } @else if (formUtils.isValidField(formAdmin, "email")) {
-                <span class="text-red-600 flex items-center gap-1">
-                  @if (formAdmin.get("email")?.hasError("emailTaken")) {
-                    <ng-icon name="bootstrapXCircleFill"></ng-icon>
-                  }
-                  {{ formUtils.getFieldError(formAdmin, "email") }}
-                </span>
-              }
-            </div>
+            <app-field-error
+              [control]="formAdmin.controls.email"
+              validLabel="Email disponible"
+            />
           </div>
 
           <div class="flex justify-center md:justify-start pt-2">
@@ -254,13 +192,7 @@
                   : 'Mínimo 8 caracteres, 1 letra, 1 número.'
               }}"
             />
-            <div class="mt-1 min-h-5 text-xs text-red-600">
-              @if (formUtils.isValidField(formAdmin, "password")) {
-                <span>{{
-                  formUtils.getFieldError(formAdmin, "password")
-                }}</span>
-              }
-            </div>
+            <app-field-error [control]="formAdmin.controls.password" />
           </div>
         </div>
       </div>

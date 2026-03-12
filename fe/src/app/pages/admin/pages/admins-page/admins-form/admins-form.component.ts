@@ -4,43 +4,30 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DatePipe, Location } from '@angular/common';
 import { switchMap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import {
-  bootstrapArrowClockwise,
-  bootstrapCheckCircleFill,
-  bootstrapXCircleFill,
-} from '@ng-icons/bootstrap-icons';
 import { ApiAdminService } from '@services/api-admin.service';
 import { AuthService } from '@services/auth.service';
-import { uniqueFieldValidator } from '@shared/validators/unique.validator';
 import { ICreateAdmin, UserRole } from '@models/user.model';
 import { IApiUserPhoto } from '@models/photo.model';
 import { AlertService } from '@shared/alert.service';
-import { FormUtils } from '@shared/form-utils';
+import { FormUtils } from '@shared/validators/form-utils';
 import { NumericInputDirective } from '@shared/directives/numeric-input.directive';
 import { PhotoManagerComponent } from '@shared/components/photo-manager/photo-manager.component';
 import { AuditInfoComponent } from '@shared/components/audit-info/audit-info.component';
 import { PhoneInputDirective } from '@shared/directives/phone-input.directive';
 import { GoBackButtonComponent } from '@shared/components/buttons/go-back-button/go-back-button.component';
+import { FieldErrorComponent } from '@shared/validators/field-error/field-error.component';
 
 @Component({
   selector: 'app-admins-form',
   imports: [
     ReactiveFormsModule,
-    NgIconComponent,
     NumericInputDirective,
     PhoneInputDirective,
     PhotoManagerComponent,
     AuditInfoComponent,
     GoBackButtonComponent,
+    FieldErrorComponent,
     RouterLink,
-  ],
-  viewProviders: [
-    provideIcons({
-      bootstrapArrowClockwise,
-      bootstrapCheckCircleFill,
-      bootstrapXCircleFill,
-    }),
   ],
   providers: [DatePipe],
   templateUrl: './admins-form.component.html',
@@ -139,15 +126,6 @@ export class AdminsFormComponent implements OnInit {
     deletedAt: [{ value: '', disabled: true }],
   });
 
-  isPending(field: string) {
-    return this.formAdmin.get(field)?.pending;
-  }
-
-  isValid(field: string) {
-    const control = this.formAdmin.get(field);
-    return control?.valid && control?.value && !control.pristine;
-  }
-
   get formPending() {
     return this.formAdmin.pending;
   }
@@ -166,13 +144,13 @@ export class AdminsFormComponent implements OnInit {
     } else {
       // Configurar validadores asíncronos para creación
       this.formAdmin.controls.dni.addAsyncValidators(
-        uniqueFieldValidator('Admin', 'dni', this.http),
+        FormUtils.uniqueFieldValidator('Admin', 'dni', this.http),
       );
       this.formAdmin.controls.username.addAsyncValidators(
-        uniqueFieldValidator('Admin', 'username', this.http),
+        FormUtils.uniqueFieldValidator('Admin', 'username', this.http),
       );
       this.formAdmin.controls.email.addAsyncValidators(
-        uniqueFieldValidator('Admin', 'email', this.http),
+        FormUtils.uniqueFieldValidator('Admin', 'email', this.http),
       );
       this.formAdmin.get('password')?.addValidators(Validators.required);
     }
@@ -206,13 +184,13 @@ export class AdminsFormComponent implements OnInit {
 
         // Configurar validadores asíncronos para edición
         this.formAdmin.controls.dni.setAsyncValidators(
-          uniqueFieldValidator('Admin', 'dni', this.http, id),
+          FormUtils.uniqueFieldValidator('Admin', 'dni', this.http, id),
         );
         this.formAdmin.controls.username.setAsyncValidators(
-          uniqueFieldValidator('Admin', 'username', this.http, id),
+          FormUtils.uniqueFieldValidator('Admin', 'username', this.http, id),
         );
         this.formAdmin.controls.email.setAsyncValidators(
-          uniqueFieldValidator('Admin', 'email', this.http, id),
+          FormUtils.uniqueFieldValidator('Admin', 'email', this.http, id),
         );
 
         const formSnapshot = this.formAdmin.getRawValue();

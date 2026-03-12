@@ -32,71 +32,101 @@
           <label
             for="name"
             class="block text-xs font-black text-gray-500 uppercase tracking-widest pl-1 mb-2 cursor-pointer"
-            >Nombre</label
+            >Nombre <span class="text-red-500">*</span></label
           >
           <input
             type="text"
             id="name"
+            name="name"
             formControlName="name"
+            minlength="2"
+            maxlength="100"
+            placeholder="Ej: Juan"
             class="w-full p-3.5 bg-gray-50 border border-gray-200 text-gray-800 rounded-xl focus:ring-4 focus:ring-teal-500/20 focus:border-teal-500 focus:bg-white outline-none transition-all font-medium"
           />
+          <app-field-error [control]="formPerfil.controls.name" />
         </div>
         <div>
           <label
             for="lastName"
             class="block text-xs font-black text-gray-500 uppercase tracking-widest pl-1 mb-2 cursor-pointer"
-            >Apellido</label
+            >Apellido <span class="text-red-500">*</span></label
           >
           <input
             type="text"
             id="lastName"
+            name="lastName"
             formControlName="lastName"
+            minlength="2"
+            maxlength="100"
+            placeholder="Ej: Perez"
             class="w-full p-3.5 bg-gray-50 border border-gray-200 text-gray-800 rounded-xl focus:ring-4 focus:ring-teal-500/20 focus:border-teal-500 focus:bg-white outline-none transition-all font-medium"
           />
+          <app-field-error [control]="formPerfil.controls.lastName" />
         </div>
         <div>
           <label
             for="dni"
             class="block text-xs font-black text-gray-500 uppercase tracking-widest pl-1 mb-2 cursor-pointer"
-            >DNI</label
+            >DNI <span class="text-red-500">*</span></label
           >
           <input
             type="text"
             id="dni"
+            name="dni"
             formControlName="dni"
+            minlength="7"
+            maxlength="15"
             inputmode="numeric"
             appNumericInput
+            placeholder="Ej: 12345678"
             class="w-full p-3.5 bg-gray-50 border border-gray-200 text-gray-800 rounded-xl focus:ring-4 focus:ring-teal-500/20 focus:border-teal-500 focus:bg-white outline-none transition-all font-medium"
+          />
+          <app-field-error
+            [control]="formPerfil.controls.dni"
+            validLabel="DNI disponible"
           />
         </div>
         <div>
           <label
             for="email"
             class="block text-xs font-black text-gray-500 uppercase tracking-widest pl-1 mb-2 cursor-pointer"
-            >Email</label
+            >Email <span class="text-red-500">*</span></label
           >
           <input
             type="email"
             id="email"
+            name="email"
             formControlName="email"
             inputmode="email"
+            maxlength="255"
+            placeholder="Ej: juan@ejemplo.com"
             class="w-full p-3.5 bg-gray-50 border border-gray-200 text-gray-800 rounded-xl focus:ring-4 focus:ring-teal-500/20 focus:border-teal-500 focus:bg-white outline-none transition-all font-medium"
+          />
+          <app-field-error
+            [control]="formPerfil.controls.email"
+            validLabel="Email disponible"
           />
         </div>
         <div>
           <label
             for="phone"
             class="block text-xs font-black text-gray-500 uppercase tracking-widest pl-1 mb-2 cursor-pointer"
-            >Teléfono</label
+            >Teléfono <span class="text-red-500">*</span></label
           >
           <input
             type="text"
             id="phone"
+            name="phone"
             formControlName="phone"
+            minlength="7"
+            maxlength="20"
             inputmode="tel"
             appPhoneInput
+            placeholder="Ej: 3415555555"
             class="w-full p-3.5 bg-gray-50 border border-gray-200 text-gray-800 rounded-xl focus:ring-4 focus:ring-teal-500/20 focus:border-teal-500 focus:bg-white outline-none transition-all font-medium"
           />
+          <app-field-error [control]="formPerfil.controls.phone" />
         </div>
       </div>
     </div>
@@ -131,16 +161,23 @@
           <label
             for="cuit"
             class="block text-xs font-black text-gray-500 uppercase tracking-widest pl-1 mb-2 cursor-pointer"
-            >CUIT / CUIL</label
+            >CUIT / CUIL (11 números)</label
           >
           <input
             type="text"
             id="cuit"
+            name="cuit"
             formControlName="cuit"
+            minlength="11"
+            maxlength="11"
             inputmode="numeric"
             appNumericInput
             placeholder="Ej: 20123456789"
             class="w-full p-3.5 bg-gray-50 border border-gray-200 text-gray-800 rounded-xl focus:ring-4 focus:ring-[#3d4494]/20 focus:border-[#3d4494] focus:bg-white outline-none transition-all font-medium"
+          />
+          <app-field-error
+            [control]="formPerfil.controls.cuit"
+            validLabel="CUIT disponible"
           />
         </div>
 
@@ -249,7 +286,10 @@
           <input
             type="text"
             id="street"
+            name="street"
             formControlName="street"
+            maxlength="100"
+            placeholder="Ej: Av. San Martín"
             class="w-full p-3.5 bg-gray-50 border border-gray-200 text-gray-800 rounded-xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 focus:bg-white outline-none transition-all font-medium"
           />
         </div>
@@ -257,14 +297,17 @@
           <label
             for="streetNumber"
             class="block text-xs font-black text-gray-500 uppercase tracking-widest pl-1 mb-2 cursor-pointer"
-            >Número</label
+            >Altura</label
           >
           <input
-            type="number"
+            type="text"
             id="streetNumber"
+            name="streetNumber"
             formControlName="streetNumber"
+            maxlength="10"
             inputmode="numeric"
             appNumericInput
+            placeholder="Ej: 1234"
             class="w-full p-3.5 bg-gray-50 border border-gray-200 text-gray-800 rounded-xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 focus:bg-white outline-none transition-all font-medium"
           />
         </div>
@@ -277,7 +320,10 @@
           <input
             type="text"
             id="floor"
+            name="floor"
             formControlName="floor"
+            maxlength="5"
+            placeholder="Ej: 1"
             class="w-full p-3.5 bg-gray-50 border border-gray-200 text-gray-800 rounded-xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 focus:bg-white outline-none transition-all font-medium"
           />
         </div>
@@ -285,12 +331,15 @@
           <label
             for="apartment"
             class="block text-xs font-black text-gray-500 uppercase tracking-widest pl-1 mb-2 cursor-pointer"
-            >Depto</label
+            >Departamento</label
           >
           <input
             type="text"
             id="apartment"
+            name="apartment"
             formControlName="apartment"
+            maxlength="5"
+            placeholder="Ej: B"
             class="w-full p-3.5 bg-gray-50 border border-gray-200 text-gray-800 rounded-xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 focus:bg-white outline-none transition-all font-medium"
           />
         </div>
@@ -303,7 +352,10 @@
           <input
             type="text"
             id="city"
+            name="city"
             formControlName="city"
+            maxlength="100"
+            placeholder="Ej: Rosario"
             class="w-full p-3.5 bg-gray-50 border border-gray-200 text-gray-800 rounded-xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 focus:bg-white outline-none transition-all font-medium"
           />
         </div>
@@ -316,7 +368,10 @@
           <input
             type="text"
             id="province"
+            name="province"
             formControlName="province"
+            maxlength="100"
+            placeholder="Ej: Santa Fe"
             class="w-full p-3.5 bg-gray-50 border border-gray-200 text-gray-800 rounded-xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 focus:bg-white outline-none transition-all font-medium"
           />
         </div>
@@ -324,13 +379,16 @@
           <label
             for="postalCode"
             class="block text-xs font-black text-gray-500 uppercase tracking-widest pl-1 mb-2 cursor-pointer"
-            >CP</label
+            >Código Postal</label
           >
           <input
             type="text"
             id="postalCode"
+            name="postalCode"
             formControlName="postalCode"
+            maxlength="10"
             inputmode="numeric"
+            placeholder="Ej: 2000"
             class="w-full p-3.5 bg-gray-50 border border-gray-200 text-gray-800 rounded-xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 focus:bg-white outline-none transition-all font-medium"
           />
         </div>

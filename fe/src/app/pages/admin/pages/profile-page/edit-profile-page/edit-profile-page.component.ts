@@ -6,7 +6,7 @@ import { IApiAdmin, ICreateAdmin, UserRole } from '@models/user.model';
 import { AuthService } from '@services/auth.service';
 import { AlertService } from '@shared/alert.service';
 import { ApiErrorService } from '@shared/api-error.service';
-import { FormUtils } from '@shared/form-utils';
+import { FormUtils } from '@shared/validators/form-utils';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { PhotoManagerComponent } from '@shared/components/photo-manager/photo-manager.component';
 import { NumericInputDirective } from '@shared/directives/numeric-input.directive';
@@ -14,8 +14,12 @@ import { PhoneInputDirective } from '@shared/directives/phone-input.directive';
 import { switchMap } from 'rxjs';
 import { IApiUserPhoto } from '@models/photo.model';
 import { HttpClient } from '@angular/common/http';
-import { bootstrapArrowLeft, bootstrapSave, bootstrapArrowClockwise, bootstrapCheckCircleFill, bootstrapXCircleFill } from '@ng-icons/bootstrap-icons';
-import { uniqueFieldValidator } from '@shared/validators/unique.validator';
+import {
+  bootstrapArrowLeft,
+  bootstrapSave,
+  bootstrapArrowClockwise,
+} from '@ng-icons/bootstrap-icons';
+import { FieldErrorComponent } from '@shared/validators/field-error/field-error.component';
 
 @Component({
   selector: 'app-edit-profile-page',
@@ -25,14 +29,13 @@ import { uniqueFieldValidator } from '@shared/validators/unique.validator';
     PhotoManagerComponent,
     NumericInputDirective,
     PhoneInputDirective,
+    FieldErrorComponent,
   ],
   viewProviders: [
     provideIcons({
       bootstrapArrowLeft,
       bootstrapSave,
       bootstrapArrowClockwise,
-      bootstrapCheckCircleFill,
-      bootstrapXCircleFill,
     }),
   ],
   templateUrl: './edit-profile-page.component.html',
@@ -112,15 +115,6 @@ export class EditProfilePageComponent implements OnInit {
     ],
   });
 
-  isPending(field: string) {
-    return this.formEditProfile.get(field)?.pending;
-  }
-
-  isValid(field: string) {
-    const control = this.formEditProfile.get(field);
-    return control?.valid && control?.value && !control.pristine;
-  }
-
   get formPending() {
     return this.formEditProfile.pending;
   }
@@ -147,9 +141,15 @@ export class EditProfilePageComponent implements OnInit {
         });
 
         // Configurar validadores asíncronos para edición
-        this.formEditProfile.controls.dni.setAsyncValidators(uniqueFieldValidator('Admin', 'dni', this._http, id));
-        this.formEditProfile.controls.username.setAsyncValidators(uniqueFieldValidator('Admin', 'username', this._http, id));
-        this.formEditProfile.controls.email.setAsyncValidators(uniqueFieldValidator('Admin', 'email', this._http, id));
+        this.formEditProfile.controls.dni.setAsyncValidators(
+          FormUtils.uniqueFieldValidator('Admin', 'dni', this._http, id),
+        );
+        this.formEditProfile.controls.username.setAsyncValidators(
+          FormUtils.uniqueFieldValidator('Admin', 'username', this._http, id),
+        );
+        this.formEditProfile.controls.email.setAsyncValidators(
+          FormUtils.uniqueFieldValidator('Admin', 'email', this._http, id),
+        );
 
         this.initialFormValue.set(
           JSON.stringify(this.formEditProfile.getRawValue()),

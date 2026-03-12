@@ -30,16 +30,11 @@
             class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm sm:text-sm"
             placeholder="Ej: Auriculares Bluetooth Sony..."
           />
-          <div class="flex justify-between items-start mt-1">
-            <div class="text-xs text-red-500 min-h-5">
-              @if (formUtils.isValidField(formProduct, "name")) {
-                <span>{{ formUtils.getFieldError(formProduct, "name") }}</span>
-              }
-            </div>
-            <div class="text-xs text-gray-600">
-              {{ formProduct.get("name")?.value?.length || 0 }} / 50
-            </div>
-          </div>
+          <app-field-error
+            [control]="formProduct.controls.name"
+            [maxLength]="50"
+            validLabel="Nombre disponible"
+          />
         </div>
 
         <div class="md:col-span-6">
@@ -58,19 +53,10 @@
             class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm sm:text-sm"
             placeholder="Describe las características principales..."
           ></textarea>
-          <div class="mt-1 flex justify-between text-xs text-gray-600">
-            <div class="text-red-600">
-              @if (formUtils.isValidField(formProduct, "description")) {
-                <span>{{
-                  formUtils.getFieldError(formProduct, "description")
-                }}</span>
-              }
-            </div>
-            <span
-              >{{ formProduct.get("description")?.value?.length || 0 }} /
-              1000</span
-            >
-          </div>
+          <app-field-error
+            [control]="formProduct.controls.description"
+            [maxLength]="1000"
+          />
         </div>
 
         <div class="md:col-span-2">
@@ -88,11 +74,7 @@
             class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm sm:text-sm"
             placeholder="Ej: Samsung"
           />
-          <div class="mt-1 min-h-5 text-xs text-red-600">
-            @if (formUtils.isValidField(formProduct, "brand")) {
-              <span>{{ formUtils.getFieldError(formProduct, "brand") }}</span>
-            }
-          </div>
+          <app-field-error [control]="formProduct.controls.brand" />
         </div>
 
         <div
@@ -178,13 +160,7 @@
               </div>
             </div>
           }
-          <div class="mt-1 min-h-5 text-xs text-red-600">
-            @if (formUtils.isValidField(formProduct, "category")) {
-              <span>{{
-                formUtils.getFieldError(formProduct, "category")
-              }}</span>
-            }
-          </div>
+          <app-field-error [control]="formProduct.controls.category" />
         </div>
 
         <div
@@ -265,11 +241,7 @@
               }
             </ul>
           }
-          <div class="mt-1 min-h-5 text-xs text-red-600">
-            @if (formUtils.isValidField(formProduct, "state")) {
-              <span>{{ formUtils.getFieldError(formProduct, "state") }}</span>
-            }
-          </div>
+          <app-field-error [control]="formProduct.controls.state" />
         </div>
 
         <div class="md:col-span-2">
@@ -297,11 +269,7 @@
               class="block w-full rounded-lg border-gray-300 border pl-7 p-2.5 text-gray-900 shadow-sm sm:text-sm"
             />
           </div>
-          <div class="mt-1 min-h-5 text-xs text-red-600">
-            @if (formUtils.isValidField(formProduct, "price")) {
-              <span>{{ formUtils.getFieldError(formProduct, "price") }}</span>
-            }
-          </div>
+          <app-field-error [control]="formProduct.controls.price" />
         </div>
 
         <div class="md:col-span-2">
@@ -322,11 +290,7 @@
             appNumericInput
             class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm sm:text-sm"
           />
-          <div class="mt-1 min-h-5 text-xs text-red-600">
-            @if (formUtils.isValidField(formProduct, "stock")) {
-              <span>{{ formUtils.getFieldError(formProduct, "stock") }}</span>
-            }
-          </div>
+          <app-field-error [control]="formProduct.controls.stock" />
         </div>
 
         <div class="md:col-span-2">
@@ -347,13 +311,7 @@
             appNumericInput
             class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm sm:text-sm"
           />
-          <div class="mt-1 min-h-5 text-xs text-red-600">
-            @if (formUtils.isValidField(formProduct, "totalSold")) {
-              <span>{{
-                formUtils.getFieldError(formProduct, "totalSold")
-              }}</span>
-            }
-          </div>
+          <app-field-error [control]="formProduct.controls.totalSold" />
         </div>
 
         <div class="md:col-span-6 pt-4 border-t border-gray-100">

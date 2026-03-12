@@ -9,24 +9,32 @@ import {
   ViewChild,
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { bootstrapShieldLock } from '@ng-icons/bootstrap-icons';
 import { IApiClient } from '@models/user.model';
 import { ApiClientService } from '@services/api-client.service';
 import Swal from 'sweetalert2';
 import { PhotoManagerComponent } from '@shared/components/photo-manager/photo-manager.component';
-import { FormUtils } from '@shared/form-utils';
+import { FormUtils } from '@shared/validators/form-utils';
 import { switchMap } from 'rxjs';
+import { FieldErrorComponent } from '@shared/validators/field-error/field-error.component';
 
 @Component({
   selector: 'app-profile-user',
-  imports: [ReactiveFormsModule, NgIconComponent, PhotoManagerComponent],
+  imports: [
+    ReactiveFormsModule,
+    NgIconComponent,
+    PhotoManagerComponent,
+    FieldErrorComponent,
+  ],
   viewProviders: [provideIcons({ bootstrapShieldLock })],
   templateUrl: './profile-userData.component.html',
 })
 export class ProfileUserComponent implements OnInit {
   private fb = inject(FormBuilder);
   private apiClientService = inject(ApiClientService);
+  private http = inject(HttpClient);
 
   profile = input<IApiClient | null>(null);
 
@@ -71,6 +79,16 @@ export class ProfileUserComponent implements OnInit {
     this.formUsuario.patchValue({
       username: fullUser.username || '',
     });
+
+    // Validación async para edición
+    this.formUsuario.controls.username.setAsyncValidators(
+      FormUtils.uniqueFieldValidator(
+        'Client',
+        'username',
+        this.http,
+        fullUser.id,
+      ),
+    );
   }
 
   onSubmit() {

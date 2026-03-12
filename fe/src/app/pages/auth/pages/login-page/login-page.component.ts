@@ -8,11 +8,12 @@ import {
   bootstrapEyeSlash,
   bootstrapArrowClockwise,
 } from '@ng-icons/bootstrap-icons';
-import { FormUtils } from '@shared/form-utils';
+import { FormUtils } from '@shared/validators/form-utils';
 import { AlertService } from '@shared/alert.service';
 import { ApiErrorService } from '@shared/api-error.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { GoBackButtonComponent } from '@shared/components/buttons/go-back-button/go-back-button.component';
+import { FieldErrorComponent } from '@shared/validators/field-error/field-error.component';
 
 @Component({
   selector: 'app-login-page',
@@ -21,6 +22,7 @@ import { GoBackButtonComponent } from '@shared/components/buttons/go-back-button
     RouterLink,
     NgIconComponent,
     GoBackButtonComponent,
+    FieldErrorComponent,
   ],
   viewProviders: [
     provideIcons({
