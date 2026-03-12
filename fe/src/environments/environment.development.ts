@@ -1,6 +1,8 @@
+const baseUrl = 'http://localhost:3000';
+
 export const environment = {
-  baseUrl: 'http://localhost:3000',
-  apiUrl: 'http://localhost:3000/api',
-  productImagesUrl: 'http://localhost:3000/uploads/products/',
-  userImagesUrl: 'http://localhost:3000/uploads/users/',
+  baseUrl,
+  apiUrl: `${baseUrl}/api`,
+  productImagesUrl: `${baseUrl}/uploads/products/`,
+  userImagesUrl: `${baseUrl}/uploads/users/`,
 };
