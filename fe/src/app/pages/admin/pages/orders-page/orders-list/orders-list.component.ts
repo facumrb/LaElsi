@@ -13,11 +13,16 @@ import {
   bootstrapArrowRight,
 } from '@ng-icons/bootstrap-icons';
 
-import { TableEmptyStateComponent } from '@admin/components/table-empty-state/table-empty-state.component';
+import { TableEmptyStateComponent } from '@admin/components/table-components/table-empty-state/table-empty-state.component';
 
 @Component({
   selector: 'app-orders-list',
-  imports: [CurrencyPipe, NgIconComponent, RouterLink, TableEmptyStateComponent],
+  imports: [
+    CurrencyPipe,
+    NgIconComponent,
+    RouterLink,
+    TableEmptyStateComponent,
+  ],
   viewProviders: provideIcons({
     bootstrapTruck,
     bootstrapShop,

@@ -1,18 +1,22 @@
-import { TableActionsComponent } from '@admin/components/table-actions/table-actions.component';
+import { EntityStateBadgeComponent } from '@admin/components/table-components/entity-state-badge/entity-state-badge.component';
+import { TableActionsComponent } from '@admin/components/table-components/table-actions/table-actions.component';
 import { CurrencyPipe } from '@angular/common';
 import { Component, input, output, model } from '@angular/core';
 import { IApiProduct } from '@models/product.model';
 import { environment } from 'src/environments/environment';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import {
-  bootstrapCheck,
-} from '@ng-icons/bootstrap-icons';
-
-import { TableEmptyStateComponent } from '@admin/components/table-empty-state/table-empty-state.component';
+import { bootstrapCheck } from '@ng-icons/bootstrap-icons';
+import { TableEmptyStateComponent } from '@admin/components/table-components/table-empty-state/table-empty-state.component';
 
 @Component({
   selector: 'app-products-list',
-  imports: [CurrencyPipe, TableActionsComponent, NgIconComponent, TableEmptyStateComponent],
+  imports: [
+    CurrencyPipe,
+    TableActionsComponent,
+    NgIconComponent,
+    TableEmptyStateComponent,
+    EntityStateBadgeComponent,
+  ],
   viewProviders: provideIcons({
     bootstrapCheck,
   }),

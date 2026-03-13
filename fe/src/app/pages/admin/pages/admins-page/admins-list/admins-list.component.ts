@@ -1,5 +1,5 @@
 import { Component, input, output } from '@angular/core';
-import { TableActionsComponent } from '@admin/components/table-actions/table-actions.component';
+import { TableActionsComponent } from '@admin/components/table-components/table-actions/table-actions.component';
 import { IApiAdmin } from '@models/user.model';
 import { environment } from 'src/environments/environment';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
@@ -8,7 +8,7 @@ import {
   bootstrapTelephone,
 } from '@ng-icons/bootstrap-icons';
 
-import { TableEmptyStateComponent } from '@admin/components/table-empty-state/table-empty-state.component';
+import { TableEmptyStateComponent } from '@admin/components/table-components/table-empty-state/table-empty-state.component';
 
 @Component({
   selector: 'app-admins-list',

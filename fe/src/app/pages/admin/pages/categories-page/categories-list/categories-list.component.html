@@ -36,22 +36,9 @@
               [class.lg:rounded-bl-lg]="isLast"
               [class.lg:border-b-0]="isLast"
             >
-              <span
-                class="absolute top-4 right-4 lg:hidden inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border"
-                [class]="
-                  category.state === 'Activo'
-                    ? 'bg-green-50 text-green-700 border-green-200'
-                    : 'bg-red-50 text-red-700 border-red-200'
-                "
-              >
-                <span
-                  class="w-1.5 h-1.5 rounded-full mr-1.5"
-                  [class]="
-                    category.state === 'Activo' ? 'bg-green-500' : 'bg-red-500'
-                  "
-                ></span>
-                {{ category.state }}
-              </span>
+              <div class="absolute top-2 right-2 lg:hidden">
+                <app-entity-state-badge [state]="category.state" mode="card" />
+              </div>
 
               <span class="admin-table-mobile-label mr-2">Orden:</span>
               <span class="text-gray-900 font-medium lg:text-center">{{
@@ -112,22 +99,7 @@
               class="hidden lg:table-cell px-6 py-4 border-b border-gray-100 align-middle text-center"
               [class.lg:border-b-0]="isLast"
             >
-              <span
-                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border"
-                [class]="
-                  category.state === 'Activo'
-                    ? 'bg-green-50 text-green-700 border-green-200'
-                    : 'bg-red-50 text-red-700 border-red-200'
-                "
-              >
-                <span
-                  class="w-1.5 h-1.5 rounded-full mr-1.5"
-                  [class]="
-                    category.state === 'Activo' ? 'bg-green-500' : 'bg-red-500'
-                  "
-                ></span>
-                {{ category.state }}
-              </span>
+              <app-entity-state-badge [state]="category.state" mode="table" />
             </td>
 
             <td
