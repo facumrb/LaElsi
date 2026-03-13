@@ -1,13 +1,9 @@
-<div
-  class="w-full bg-gray-50 lg:bg-white lg:rounded-lg lg:shadow-md lg:border lg:border-gray-200"
->
+<div class="admin-table-container">
   <div class="w-full">
-    <table
-      class="w-full text-left text-sm text-gray-500 border-collapse table-fixed"
-    >
-      <thead class="hidden lg:table-header-group bg-[#3d4494] text-white">
+    <table class="admin-table border-collapse">
+      <thead class="admin-table-header">
         <tr>
-          <th class="px-6 py-4 w-[5%] rounded-tl-lg">
+          <th class="admin-table-header-cell w-[5%] rounded-tl-lg">
             <div class="relative flex items-center justify-center shrink-0">
               <input
                 type="checkbox"
@@ -22,38 +18,32 @@
               ></ng-icon>
             </div>
           </th>
+          <th class="admin-table-header-cell pl-1 pr-6 w-[26%]">Producto</th>
+          <th class="admin-table-header-cell w-[15%]">Categoría</th>
           <th
-            class="pl-1 pr-6 py-4 font-semibold uppercase tracking-wider w-[26%]"
-          >
-            Producto
-          </th>
-          <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[15%]">
-            Categoría
-          </th>
-          <th
-            class="pl-10 pr-6 py-4 text-left font-semibold uppercase tracking-wider whitespace-nowrap w-[15%]"
+            class="admin-table-header-cell pl-10 pr-6 text-left whitespace-nowrap w-[15%]"
           >
             Precio
           </th>
           <th
-            class="px-6 py-4 text-center font-semibold uppercase tracking-wider whitespace-nowrap w-[14%]"
+            class="admin-table-header-cell text-center whitespace-nowrap w-[14%]"
           >
             Stock
           </th>
           <th
-            class="px-6 py-4 text-center font-semibold uppercase tracking-wider whitespace-nowrap w-[12%]"
+            class="admin-table-header-cell text-center whitespace-nowrap w-[12%]"
           >
             Estado
           </th>
           <th
-            class="px-6 py-4 text-center font-semibold uppercase tracking-wider whitespace-nowrap w-[13%] rounded-tr-lg"
+            class="admin-table-header-cell text-center whitespace-nowrap w-[13%] rounded-tr-lg"
           >
             Acciones
           </th>
         </tr>
       </thead>
 
-      <tbody class="block lg:table-row-group">
+      <tbody class="admin-table-body">
         <!-- Este checkbox en el global para la CARD -->
         <tr
           class="flex items-center bg-white border border-gray-200 shadow-sm rounded-lg mx-4 mb-4 px-4 py-3 lg:hidden"
@@ -79,7 +69,7 @@
         @for (product of products(); track product.id; let isLast = $last) {
           <!-- Este checkbox es para la version de Listado -->
           <tr
-            class="flex flex-col relative lg:static bg-white rounded-xl shadow border border-gray-200 mb-4 mx-4 mt-4 lg:mx-0 lg:mt-0 lg:mb-0 lg:table-row lg:shadow-none lg:border-0 lg:rounded-none hover:bg-gray-50 transition-colors"
+            class="admin-table-row hover:bg-gray-50 transition-colors"
             [class.bg-indigo-50]="isSelected(product.id)"
             [class.lg:bg-indigo-50]="isSelected(product.id)"
           >
@@ -163,12 +153,8 @@
               </div>
             </td>
 
-            <td
-              class="px-5 py-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle"
-              [class.lg:border-b-0]="isLast"
-            >
-              <span
-                class="font-bold uppercase text-gray-500 block mb-1 lg:hidden"
+            <td class="admin-table-cell" [class.lg:border-b-0]="isLast">
+              <span class="admin-table-mobile-label block mb-1"
                 >Categoría:</span
               >
               <div class="text-gray-600 line-clamp-2 text-sm">
@@ -181,9 +167,7 @@
               [class.lg:border-b-0]="isLast"
             >
               <div class="flex items-center justify-start gap-2">
-                <span class="font-bold uppercase text-gray-500 lg:hidden"
-                  >Precio:</span
-                >
+                <span class="admin-table-mobile-label">Precio:</span>
                 <span class="text-gray-900 font-semibold">
                   {{
                     getProductPrice(product)
@@ -197,15 +181,13 @@
             </td>
 
             <td
-              class="px-5 py-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle lg:text-center"
+              class="admin-table-cell lg:text-center"
               [class.lg:border-b-0]="isLast"
             >
               <div
                 class="flex items-center justify-start lg:justify-center gap-2"
               >
-                <span class="font-bold uppercase text-gray-500 lg:hidden"
-                  >Stock:</span
-                >
+                <span class="admin-table-mobile-label">Stock:</span>
                 <span
                   class="w-28 shrink-0 h-7 inline-flex items-center justify-center rounded-md text-xs font-medium border whitespace-nowrap"
                   [class.bg-red-50]="product.stock === 0"
@@ -251,16 +233,14 @@
             </td>
 
             <td
-              class="px-5 pt-2 pb-5 lg:px-6 lg:py-4 lg:table-cell lg:align-middle lg:border-b lg:border-gray-100"
+              class="admin-table-cell-last"
               [class.lg:rounded-br-lg]="isLast"
               [class.lg:border-b-0]="isLast"
             >
               <div
                 class="flex items-center justify-start lg:justify-center gap-2"
               >
-                <span class="font-bold uppercase text-gray-500 lg:hidden"
-                  >Acciones:</span
-                >
+                <span class="admin-table-mobile-label">Acciones:</span>
                 <app-table-actions
                   [item]="product"
                   (onEdit)="onEdit.emit($event)"
@@ -270,10 +250,11 @@
             </td>
           </tr>
         } @empty {
-          <tr app-table-empty-state
-              [colspan]="7"
-              [isFilterActive]="isFilterActive()"
-              emptyMessage="Sin productos cargados"
+          <tr
+            app-table-empty-state
+            [colspan]="7"
+            [isFilterActive]="isFilterActive()"
+            emptyMessage="Sin productos cargados"
           ></tr>
         }
       </tbody>

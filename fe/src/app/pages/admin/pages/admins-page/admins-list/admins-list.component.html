@@ -1,56 +1,39 @@
-<div
-  class="w-full bg-gray-50 lg:bg-white lg:rounded-lg lg:shadow-md lg:border lg:border-gray-200"
->
+<div class="admin-table-container">
   <div class="w-full">
-    <table
-      class="w-full text-left text-sm text-gray-500 border-separate border-spacing-0 table-fixed"
-    >
-      <thead class="hidden lg:table-header-group bg-[#3d4494] text-white">
+    <table class="admin-table">
+      <thead class="admin-table-header">
         <tr>
-          <th
-            class="px-6 py-4 font-semibold uppercase tracking-wider w-[22%] rounded-tl-lg"
-          >
-            Usuario
-          </th>
+          <th class="admin-table-header-cell w-[22%] rounded-tl-lg">Usuario</th>
 
-          <th
-            class="px-6 py-4 font-semibold truncate uppercase tracking-wider w-[20%]"
-          >
+          <th class="admin-table-header-cell truncate w-[20%]">
             Nombre Completo
           </th>
 
           <th
-            class="px-6 py-4 font-semibold uppercase tracking-wider w-[24%] whitespace-nowrap text-center"
+            class="admin-table-header-cell w-[24%] whitespace-nowrap text-center"
           >
             DNI
           </th>
 
-          <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[23%]">
-            Contacto
-          </th>
+          <th class="admin-table-header-cell w-[23%]">Contacto</th>
 
           <th
-            class="px-6 py-4 text-center font-semibold uppercase tracking-wider whitespace-nowrap w-[13%] rounded-tr-lg"
+            class="admin-table-header-cell text-center whitespace-nowrap w-[13%] rounded-tr-lg"
           >
             Acciones
           </th>
         </tr>
       </thead>
 
-      <tbody class="block lg:table-row-group">
+      <tbody class="admin-table-body">
         @for (admin of admins(); track admin.id; let isLast = $last) {
-          <tr
-            class="flex flex-col relative lg:static bg-white rounded-xl shadow border border-gray-200 mb-4 mx-4 mt-4 lg:mx-0 lg:mt-0 lg:mb-0 lg:table-row lg:shadow-none lg:border-0 lg:rounded-none"
-          >
+          <tr class="admin-table-row">
             <td
-              class="px-5 pt-6 pb-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle"
+              class="admin-table-cell-first"
               [class.lg:rounded-bl-lg]="isLast"
               [class.lg:border-b-0]="isLast"
             >
-              <span
-                class="font-bold uppercase text-gray-500 mb-2 block lg:hidden"
-                >Usuario:</span
-              >
+              <span class="admin-table-mobile-label mb-2 block">Usuario:</span>
               <div class="flex items-center gap-3">
                 @if (admin.photo) {
                   <img
@@ -75,12 +58,8 @@
               </div>
             </td>
 
-            <td
-              class="px-5 py-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle"
-              [class.lg:border-b-0]="isLast"
-            >
-              <span
-                class="font-bold uppercase text-gray-500 block mb-1 lg:hidden"
+            <td class="admin-table-cell" [class.lg:border-b-0]="isLast">
+              <span class="admin-table-mobile-label block mb-1"
                 >Nombre Completo:</span
               >
               <div class="text-gray-900 truncate font-medium">
@@ -89,26 +68,17 @@
             </td>
 
             <td
-              class="px-5 py-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle lg:text-center"
+              class="admin-table-cell lg:text-center"
               [class.lg:border-b-0]="isLast"
             >
-              <span
-                class="font-bold uppercase text-gray-500 block mb-1 lg:hidden"
-                >DNI:</span
-              >
+              <span class="admin-table-mobile-label block mb-1">DNI:</span>
               <span class="text-gray-900 font-medium truncate">
                 {{ admin.dni }}
               </span>
             </td>
 
-            <td
-              class="px-5 py-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle"
-              [class.lg:border-b-0]="isLast"
-            >
-              <span
-                class="font-bold uppercase text-gray-500 block mb-1 lg:hidden"
-                >Contacto:</span
-              >
+            <td class="admin-table-cell" [class.lg:border-b-0]="isLast">
+              <span class="admin-table-mobile-label block mb-1">Contacto:</span>
               <div class="flex flex-col text-sm">
                 <div class="flex items-center gap-1.5 text-gray-900 mb-0.5">
                   <ng-icon
@@ -134,16 +104,14 @@
             </td>
 
             <td
-              class="px-5 pt-2 pb-5 lg:px-6 lg:py-4 lg:table-cell lg:align-middle lg:border-b lg:border-gray-100"
+              class="admin-table-cell-last"
               [class.lg:rounded-br-lg]="isLast"
               [class.lg:border-b-0]="isLast"
             >
               <div
                 class="flex items-center justify-start lg:justify-center gap-2"
               >
-                <span class="font-bold uppercase text-gray-500 lg:hidden">
-                  Acciones:
-                </span>
+                <span class="admin-table-mobile-label"> Acciones: </span>
 
                 <app-table-actions
                   [item]="admin"
@@ -154,10 +122,11 @@
             </td>
           </tr>
         } @empty {
-          <tr app-table-empty-state
-              [colspan]="5"
-              [isFilterActive]="isFilterActive()"
-              emptyMessage="Sin administradores cargados"
+          <tr
+            app-table-empty-state
+            [colspan]="5"
+            [isFilterActive]="isFilterActive()"
+            emptyMessage="Sin administradores cargados"
           ></tr>
         }
       </tbody>

@@ -1,53 +1,24 @@
-<div
-  class="w-full bg-gray-50 lg:bg-white lg:rounded-lg lg:shadow-md lg:border lg:border-gray-200 overflow-hidden"
->
+<div class="admin-table-container overflow-hidden">
   <div class="w-full overflow-x-auto">
-    <table
-      class="w-full text-left text-sm text-gray-500 border-separate border-spacing-0 table-fixed"
-    >
-      <thead class="hidden lg:table-header-group bg-[#3d4494] text-white">
+    <table class="admin-table">
+      <thead class="admin-table-header">
         <tr>
-          <th
-            class="px-6 py-4 font-semibold uppercase tracking-wider w-[6%] rounded-tl-lg"
-          >
-            ID
-          </th>
-          <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[15%]">
-            Cliente
-          </th>
-          <th
-            class="px-6 py-4 font-semibold truncate uppercase tracking-wider w-[24%]"
-          >
-            Entrega
-          </th>
-          <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[15%]">
-            Estado
-          </th>
-          <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[15%]">
-            Pago
-          </th>
-          <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[12%]">
-            Total
-          </th>
-          <th
-            class="px-6 py-4 font-semibold uppercase tracking-wider w-[13%] text-center"
-          >
-            Acciones
-          </th>
+          <th class="admin-table-header-cell w-[6%] rounded-tl-lg">ID</th>
+          <th class="admin-table-header-cell w-[15%]">Cliente</th>
+          <th class="admin-table-header-cell truncate w-[24%]">Entrega</th>
+          <th class="admin-table-header-cell w-[15%]">Estado</th>
+          <th class="admin-table-header-cell w-[15%]">Pago</th>
+          <th class="admin-table-header-cell w-[12%]">Total</th>
+          <th class="admin-table-header-cell w-[13%] text-center">Acciones</th>
         </tr>
       </thead>
 
-      <tbody class="block lg:table-row-group">
+      <tbody class="admin-table-body">
         @for (order of orders(); track order.id; let isLast = $last) {
-          <tr
-            class="flex flex-col relative lg:static bg-white rounded-xl shadow border border-gray-200 mb-4 mx-4 mt-4 lg:mx-0 lg:mt-0 lg:mb-0 lg:table-row lg:shadow-none lg:border-0 lg:rounded-none hover:bg-gray-50 transition-colors"
-          >
+          <tr class="admin-table-row hover:bg-gray-50 transition-colors">
             <!-- ID Column -->
-            <td
-              class="px-5 pt-6 pb-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle font-bold"
-            >
-              <span
-                class="font-bold uppercase text-gray-500 mb-2 block lg:hidden text-xs"
+            <td class="admin-table-cell-first font-bold">
+              <span class="admin-table-mobile-label mb-2 block text-xs"
                 >ID Orden:</span
               >
               <span
@@ -59,11 +30,8 @@
             </td>
 
             <!-- Client Column -->
-            <td
-              class="px-5 py-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle group"
-            >
-              <span
-                class="font-bold uppercase text-gray-500 block mb-1 lg:hidden text-xs"
+            <td class="admin-table-cell group">
+              <span class="admin-table-mobile-label block mb-1 text-xs"
                 >Cliente:</span
               >
               <a
@@ -81,11 +49,8 @@
             </td>
 
             <!-- Delivery Method Column -->
-            <td
-              class="px-5 py-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle"
-            >
-              <span
-                class="font-bold uppercase text-gray-500 block mb-1 lg:hidden text-xs"
+            <td class="admin-table-cell">
+              <span class="admin-table-mobile-label block mb-1 text-xs"
                 >Método:</span
               >
               <div class="flex items-center gap-2">
@@ -132,11 +97,8 @@
             </td>
 
             <!-- Status Column -->
-            <td
-              class="px-5 py-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle"
-            >
-              <span
-                class="font-bold uppercase text-gray-500 block mb-1 lg:hidden text-xs"
+            <td class="admin-table-cell">
+              <span class="admin-table-mobile-label block mb-1 text-xs"
                 >Estado:</span
               >
               <div
@@ -149,11 +111,8 @@
             </td>
 
             <!-- Payment Method Column -->
-            <td
-              class="px-5 py-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle"
-            >
-              <span
-                class="font-bold uppercase text-gray-500 block mb-1 lg:hidden text-xs"
+            <td class="admin-table-cell">
+              <span class="admin-table-mobile-label block mb-1 text-xs"
                 >Pago:</span
               >
               <div class="font-medium text-gray-700 truncate">
@@ -162,11 +121,8 @@
             </td>
 
             <!-- Total Column -->
-            <td
-              class="px-5 py-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle"
-            >
-              <span
-                class="font-bold uppercase text-gray-500 block mb-1 lg:hidden text-xs"
+            <td class="admin-table-cell">
+              <span class="admin-table-mobile-label block mb-1 text-xs"
                 >Total:</span
               >
               <span class="text-gray-900 font-bold text-lg lg:text-sm">
@@ -175,14 +131,11 @@
             </td>
 
             <!-- Actions Column -->
-            <td
-              class="px-5 pt-2 pb-5 lg:px-6 lg:py-4 lg:table-cell lg:align-middle lg:border-b lg:border-gray-100"
-            >
+            <td class="admin-table-cell-last">
               <div
                 class="flex flex-wrap items-center justify-start lg:justify-center gap-2"
               >
-                <span
-                  class="font-bold uppercase text-gray-500 lg:hidden text-xs w-full mb-2"
+                <span class="admin-table-mobile-label text-xs w-full mb-2"
                   >Acciones:</span
                 >
 
@@ -238,11 +191,12 @@
             </td>
           </tr>
         } @empty {
-          <tr app-table-empty-state
-              [colspan]="7"
-              [isFilterActive]="isFilterActive()"
-              emptyMessage="Todavía no hay órdenes registradas"
-              searchMessage="No se encontraron órdenes para tu búsqueda"
+          <tr
+            app-table-empty-state
+            [colspan]="7"
+            [isFilterActive]="isFilterActive()"
+            emptyMessage="Todavía no hay órdenes registradas"
+            searchMessage="No se encontraron órdenes para tu búsqueda"
           ></tr>
         }
       </tbody>
