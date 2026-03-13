@@ -8,7 +8,7 @@ export const adminGuard: CanActivateFn = (route, state) => {
 
   // Verificar si está logueado
   if (!authService.isLoggedIn()) {
-    router.navigate(['/auth/login'], { queryParams: { returnUrl: state.url } });
+    router.navigate(['/']);
     return false;
   }
 
