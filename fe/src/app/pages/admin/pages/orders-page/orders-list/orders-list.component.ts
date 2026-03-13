@@ -4,8 +4,6 @@ import { RouterLink } from '@angular/router';
 import { IApiOrder, OrderState, DeliveryMethod } from '@models/order.model';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
-  bootstrapSearch,
-  bootstrapInbox,
   bootstrapTruck,
   bootstrapShop,
   bootstrapCheckCircle,
@@ -15,12 +13,12 @@ import {
   bootstrapArrowRight,
 } from '@ng-icons/bootstrap-icons';
 
+import { TableEmptyStateComponent } from '@admin/components/table-empty-state/table-empty-state.component';
+
 @Component({
   selector: 'app-orders-list',
-  imports: [CurrencyPipe, NgIconComponent, RouterLink],
+  imports: [CurrencyPipe, NgIconComponent, RouterLink, TableEmptyStateComponent],
   viewProviders: provideIcons({
-    bootstrapSearch,
-    bootstrapInbox,
     bootstrapTruck,
     bootstrapShop,
     bootstrapCheckCircle,

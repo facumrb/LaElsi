@@ -5,17 +5,15 @@ import { IApiProduct } from '@models/product.model';
 import { environment } from 'src/environments/environment';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
-  bootstrapSearch,
-  bootstrapInbox,
   bootstrapCheck,
 } from '@ng-icons/bootstrap-icons';
 
+import { TableEmptyStateComponent } from '@admin/components/table-empty-state/table-empty-state.component';
+
 @Component({
   selector: 'app-products-list',
-  imports: [CurrencyPipe, TableActionsComponent, NgIconComponent],
+  imports: [CurrencyPipe, TableActionsComponent, NgIconComponent, TableEmptyStateComponent],
   viewProviders: provideIcons({
-    bootstrapSearch,
-    bootstrapInbox,
     bootstrapCheck,
   }),
   templateUrl: './products-list.component.html',

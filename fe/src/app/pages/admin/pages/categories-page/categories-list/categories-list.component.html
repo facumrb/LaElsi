@@ -175,28 +175,11 @@
             </td>
           </tr>
         } @empty {
-          <tr>
-            <td
-              colspan="5"
-              class="px-6 py-12 text-center bg-white lg:rounded-b-lg"
-            >
-              <div class="flex flex-col items-center justify-center">
-                @if (isFilterActive()) {
-                  <ng-icon
-                    name="bootstrapSearch"
-                    class="text-3xl text-gray-400 mb-2"
-                  ></ng-icon>
-                  <p class="text-gray-500">No se encontraron resultados</p>
-                } @else {
-                  <ng-icon
-                    name="bootstrapInbox"
-                    class="text-3xl text-gray-300 mb-2"
-                  ></ng-icon>
-                  <p class="text-gray-500">Sin categorías cargadas</p>
-                }
-              </div>
-            </td>
-          </tr>
+          <tr app-table-empty-state
+              [colspan]="6"
+              [isFilterActive]="isFilterActive()"
+              emptyMessage="Sin categorías cargadas"
+          ></tr>
         }
       </tbody>
     </table>

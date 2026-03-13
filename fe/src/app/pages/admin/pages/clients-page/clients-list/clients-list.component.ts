@@ -4,18 +4,16 @@ import { IApiClient } from '@models/user.model';
 import { environment } from 'src/environments/environment';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
-  bootstrapSearch,
-  bootstrapInbox,
   bootstrapEnvelope,
   bootstrapTelephone,
 } from '@ng-icons/bootstrap-icons';
 
+import { TableEmptyStateComponent } from '@admin/components/table-empty-state/table-empty-state.component';
+
 @Component({
   selector: 'app-clients-list',
-  imports: [TableActionsComponent, NgIconComponent],
+  imports: [TableActionsComponent, NgIconComponent, TableEmptyStateComponent],
   viewProviders: provideIcons({
-    bootstrapSearch,
-    bootstrapInbox,
     bootstrapEnvelope,
     bootstrapTelephone,
   }),
