@@ -1,7 +1,7 @@
 <div class="animate-fadeIn max-w-3xl mx-auto">
   <div class="mb-6 flex items-center justify-between">
     <div>
-      <h1 class="text-2xl font-bold text-[#3d4494]">
+      <h1 class="page-title">
         {{ isEditMode() ? "Editar Categoría" : "Nueva Categoría" }}
       </h1>
     </div>
@@ -9,15 +9,13 @@
     <app-go-back-button></app-go-back-button>
   </div>
 
-  <div
-    class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden"
-  >
-    <form [formGroup]="formCategory" (ngSubmit)="onSubmit()" class="p-6 md:p-8">
+  <div class="form-card">
+    <form [formGroup]="formCategory" (ngSubmit)="onSubmit()" class="form-body">
       <div class="grid grid-cols-1 gap-y-3">
         <div>
           <label
             for="name"
-            class="block text-sm font-medium text-gray-700 mb-1"
+            class="form-label"
           >
             Nombre de la categoría <span class="text-red-500">*</span>
           </label>
@@ -28,7 +26,7 @@
             formControlName="name"
             maxlength="50"
             placeholder="Ej: Electrónica, Ropa..."
-            class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm sm:text-sm"
+            class="form-input"
           />
           <app-field-error
             [control]="formCategory.controls.name"
@@ -40,7 +38,7 @@
         <div>
           <label
             for="description"
-            class="block text-sm font-medium text-gray-700 mb-1"
+            class="form-label"
           >
             Descripción
           </label>
@@ -51,7 +49,7 @@
             rows="4"
             placeholder="Breve descripción de la categoría..."
             maxlength="1000"
-            class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm sm:text-sm"
+            class="form-input"
           ></textarea>
           <app-field-error
             [control]="formCategory.controls.description"
@@ -62,7 +60,7 @@
         <div>
           <label
             for="order"
-            class="block text-sm font-medium text-gray-700 mb-1"
+            class="form-label"
           >
             Orden de Visualización
             <span class="text-xs font-normal text-gray-500"
@@ -79,7 +77,7 @@
             [max]="maxOrder()"
             inputmode="numeric"
             placeholder="Ej: 0, 1, 2..."
-            class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm sm:text-sm"
+            class="form-input"
           />
           <app-field-error [control]="formCategory.controls.order" />
         </div>
@@ -87,7 +85,7 @@
         <div class="relative w-full" (clickOutside)="showStateMenu.set(false)">
           <label
             for="state"
-            class="block text-sm font-medium text-gray-700 mb-1"
+            class="form-label"
           >
             Estado <span class="text-red-500">*</span>
           </label>
@@ -96,7 +94,7 @@
             type="button"
             id="state"
             (click)="toggleStateMenu()"
-            class="relative w-full cursor-pointer bg-white rounded-lg border border-gray-300 py-2.5 pl-3 pr-10 text-left shadow-sm focus:outline-none focus:ring-1 sm:text-sm"
+            class="select-trigger focus:ring-1"
           >
             <span class="flex items-center gap-3">
               <span
@@ -111,9 +109,7 @@
                 formCategory.get("state")?.value
               }}</span>
             </span>
-            <span
-              class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2"
-            >
+            <span class="select-chevron-wrapper">
               <ng-icon
                 name="bootstrapChevronDown"
                 class="text-gray-400 transition-transform duration-200"
@@ -123,13 +119,11 @@
           </button>
 
           @if (showStateMenu()) {
-            <ul
-              class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
-            >
+            <ul class="select-dropdown">
               @for (option of ["Activo", "Inactivo"]; track option) {
                 <li
                   (click)="selectState(option)"
-                  class="relative cursor-pointer select-none py-2 pl-3 pr-9 text-gray-900 hover:bg-gray-50"
+                  class="select-option hover:bg-gray-50"
                 >
                   <div class="flex items-center">
                     <span
@@ -181,14 +175,14 @@
         <button
           type="button"
           routerLink="/admin/categories"
-          class="cursor-pointer rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition-colors"
+          class="btn-secondary px-4 py-2 text-gray-700"
         >
           Cancelar
         </button>
         <button
           type="submit"
           [disabled]="formCategory.invalid || !hasRealChanges"
-          class="cursor-pointer rounded-md bg-[#3d4494] px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#2a2f63] focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-[#3d4494] disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+          class="btn-primary py-2"
         >
           {{ isEditMode() ? "Guardar Cambios" : "Crear Categoría" }}
         </button>

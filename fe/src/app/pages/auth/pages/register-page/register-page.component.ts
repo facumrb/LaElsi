@@ -4,21 +4,23 @@ import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '@services/auth.service';
 import { HttpClient } from '@angular/common/http';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import {
-  bootstrapArrowClockwise,
-  bootstrapCheckCircleFill,
-  bootstrapXCircleFill,
-} from '@ng-icons/bootstrap-icons';
+import { bootstrapArrowClockwise } from '@ng-icons/bootstrap-icons';
 import { FormUtils } from '@shared/validators/form-utils';
+import { FieldErrorComponent } from '@shared/validators/field-error/field-error.component';
+import { GoBackButtonComponent } from '@shared/components/buttons/go-back-button/go-back-button.component';
 
 @Component({
   selector: 'app-register-page',
-  imports: [ReactiveFormsModule, RouterLink, NgIconComponent],
+  imports: [
+    ReactiveFormsModule,
+    RouterLink,
+    NgIconComponent,
+    FieldErrorComponent,
+    GoBackButtonComponent,
+  ],
   viewProviders: [
     provideIcons({
       bootstrapArrowClockwise,
-      bootstrapCheckCircleFill,
-      bootstrapXCircleFill,
     }),
   ],
   templateUrl: './register-page.component.html',
@@ -53,20 +55,6 @@ export class RegisterPageComponent {
     ],
     password: ['', [Validators.required, Validators.minLength(6)]],
   });
-
-  hasErrors(field: string, type: string) {
-    const control = this.formRegister.get(field);
-    return control?.hasError(type) && control?.touched;
-  }
-
-  isPending(field: string) {
-    return this.formRegister.get(field)?.pending;
-  }
-
-  isValid(field: string) {
-    const control = this.formRegister.get(field);
-    return control?.valid && control?.value && !control.pristine;
-  }
 
   get formPending() {
     return this.formRegister.pending;
