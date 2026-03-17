@@ -87,6 +87,7 @@ export class ProfilePageComponent implements OnInit {
     this.apiClientService.getAccountInfoById(id).subscribe({
       next: (fullUser) => {
         this.fullProfile.set(fullUser);
+        this.authService.updateCurrentUser(fullUser);
         this.loading.set(false);
       },
       error: (err) => {
