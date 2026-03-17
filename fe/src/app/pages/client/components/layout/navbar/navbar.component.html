@@ -155,34 +155,80 @@
     aria-label="Categorías de productos"
   >
     @for (cat of categories(); track cat.id) {
-      <a
-        [routerLink]="['/category', cat.id]"
-        routerLinkActive="text-[#f4abac] underline decoration-2 underline-offset-4"
-        [routerLinkActiveOptions]="{ exact: true }"
-        class="text-sm font-bold text-white tracking-wide drop-shadow-sm transition-colors hover:text-[#f4abac] focus:outline-none focus:underline decoration-[#f4abac]"
-      >
-        {{ cat.name }}
-      </a>
+      <div class="group relative flex items-center">
+        <a
+          [routerLink]="['/category', cat.id]"
+          routerLinkActive="text-[#f4abac] underline decoration-2 underline-offset-4"
+          [routerLinkActiveOptions]="{ exact: true }"
+          class="navbar-link"
+        >
+          {{ cat.name }}
+          @if (cat.children && cat.children.length > 0) {
+            <ng-icon
+              name="bootstrapChevronDown"
+              class="navbar-chevron"
+              aria-hidden="true"
+            ></ng-icon>
+          }
+        </a>
+
+        @if (cat.children && cat.children.length > 0) {
+          <div class="navbar-dropdown">
+            <div class="navbar-dropdown-container">
+              @for (sub of cat.children; track sub.id) {
+                <div class="relative group/sub">
+                  <a
+                    [routerLink]="['/category', sub.id]"
+                    class="navbar-dropdown-item flex items-center justify-between gap-2"
+                  >
+                    {{ sub.name }}
+                    @if (sub.children && sub.children.length > 0) {
+                      <ng-icon
+                        name="bootstrapChevronDown"
+                        class="navbar-chevron-right"
+                        aria-hidden="true"
+                      ></ng-icon>
+                    }
+                  </a>
+
+                  @if (sub.children && sub.children.length > 0) {
+                    <div class="navbar-subdropdown">
+                      @for (subsub of sub.children; track subsub.id) {
+                        <a
+                          [routerLink]="['/category', subsub.id]"
+                          class="navbar-dropdown-item"
+                        >
+                          {{ subsub.name }}
+                        </a>
+                      }
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
     }
 
     <a
       routerLink="/impresiones"
       routerLinkActive="text-[#f4abac] underline decoration-2 underline-offset-4"
-      class="text-sm font-bold text-white tracking-wide drop-shadow-sm transition-colors hover:text-[#f4abac] focus:outline-none focus:underline decoration-[#f4abac]"
+      class="navbar-static-link"
     >
       Impresiones
     </a>
     <a
       routerLink="/disenio"
       routerLinkActive="text-[#f4abac] underline decoration-2 underline-offset-4"
-      class="text-sm font-bold text-white tracking-wide drop-shadow-sm transition-colors hover:text-[#f4abac] focus:outline-none focus:underline decoration-[#f4abac]"
+      class="navbar-static-link"
     >
       Diseño Gráfico
     </a>
     <a
       routerLink="/sellos"
       routerLinkActive="text-[#f4abac] underline decoration-2 underline-offset-4"
-      class="text-sm font-bold text-white tracking-wide drop-shadow-sm transition-colors hover:text-[#f4abac] focus:outline-none focus:underline decoration-[#f4abac]"
+      class="navbar-static-link"
     >
       Sellos
     </a>
@@ -212,13 +258,39 @@
       <div class="flex-1 overflow-y-auto py-2">
         <nav class="flex flex-col" aria-label="Menú móvil de categorías">
           @for (cat of categories(); track cat.id) {
-            <a
-              [routerLink]="['/category', cat.id]"
-              (click)="toggleMobileMenu()"
-              class="flex items-center justify-between px-6 py-3 text-gray-700 font-medium hover:bg-gray-50"
-            >
-              {{ cat.name }}
-            </a>
+            <div class="flex flex-col">
+              <a
+                [routerLink]="['/category', cat.id]"
+                (click)="toggleMobileMenu()"
+                class="navbar-mobile-item"
+              >
+                {{ cat.name }}
+              </a>
+              @if (cat.children && cat.children.length > 0) {
+                @for (sub of cat.children; track sub.id) {
+                  <a
+                    [routerLink]="['/category', sub.id]"
+                    (click)="toggleMobileMenu()"
+                    class="navbar-mobile-subitem"
+                  >
+                    <span class="text-gray-400">└─</span>
+                    {{ sub.name }}
+                  </a>
+                  @if (sub.children && sub.children.length > 0) {
+                    @for (subsub of sub.children; track subsub.id) {
+                      <a
+                        [routerLink]="['/category', subsub.id]"
+                        (click)="toggleMobileMenu()"
+                        class="navbar-mobile-subsubitem"
+                      >
+                        <span class="text-gray-400">└─</span>
+                        {{ subsub.name }}
+                      </a>
+                    }
+                  }
+                }
+              }
+            </div>
           }
           <a
             routerLink="/impresiones"

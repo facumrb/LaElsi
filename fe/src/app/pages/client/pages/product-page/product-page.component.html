@@ -1,4 +1,7 @@
 <div class="container mx-auto p-6">
+  <!-- Breadcrumbs -->
+  <app-breadcrumbs [steps]="breadcrumbSteps()" />
+
   @if (product()) {
     <div class="flex flex-col md:grid md:grid-cols-2 gap-6 md:gap-12">
       <div class="contents md:flex md:flex-col md:gap-8">

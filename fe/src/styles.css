@@ -86,7 +86,7 @@
   }
 
   .select-option {
-    @apply relative cursor-pointer select-none py-2 pl-3 pr-9 text-gray-900 hover:bg-gray-100;
+    @apply relative cursor-pointer select-none py-2 pl-3 pr-9 text-gray-900 hover:bg-gray-50;
   }
 
   .select-chevron-wrapper {
@@ -112,9 +112,138 @@
     @apply px-6 py-4 font-semibold uppercase tracking-wider;
   }
 
+  .table-cell-indented {
+    @apply flex flex-col;
+  }
+
+  .table-subcategory-indicator {
+    @apply text-gray-400 text-xs;
+  }
+
+  .table-parent-info {
+    @apply text-[10px] text-gray-400 font-medium ml-4;
+  }
+
   /* ── Toolbar ── */
   .toolbar-container {
     @apply flex flex-col lg:flex-row justify-between items-start
            lg:items-center gap-4 mb-6 mx-4 lg:mx-0;
+  }
+
+  /* ── Navbar ── */
+  .navbar-link {
+    @apply text-sm font-bold text-white tracking-wide drop-shadow-sm transition-colors
+           hover:text-[#f4abac] focus:outline-none focus:underline decoration-[#f4abac]
+           flex items-center gap-1.5;
+  }
+
+  .navbar-dropdown {
+    @apply absolute top-full left-0 mt-0 pt-2 w-52 opacity-0 invisible
+           group-hover:opacity-100 group-hover:visible transition-all duration-200
+           z-50 translate-y-2 group-hover:translate-y-0;
+  }
+
+  .navbar-dropdown-container {
+    @apply bg-white rounded-lg shadow-xl overflow-visible py-1 border border-gray-100;
+  }
+
+  .navbar-dropdown-item {
+    @apply block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50
+           hover:text-[#3d4494] font-semibold transition-colors
+           border-b border-gray-50 last:border-0;
+  }
+
+  .navbar-mobile-item {
+    @apply flex items-center justify-between px-6 py-3 text-gray-700 font-bold
+           hover:bg-gray-50 border-b border-gray-50;
+  }
+
+  .navbar-mobile-subitem {
+    @apply flex items-center gap-2 px-10 py-2.5 text-gray-600 text-sm font-semibold
+           hover:bg-gray-50 border-b border-gray-50 bg-gray-50/30;
+  }
+
+  .navbar-mobile-subsubitem {
+    @apply flex items-center gap-2 pl-16 pr-6 py-2.5 text-gray-500 text-sm
+           hover:bg-gray-50 border-b border-gray-50 bg-gray-100/30;
+  }
+
+  /* Submenu de segundo nivel (aparece a la derecha del ítem hover)
+   * Usa -ml-1 + pl-3 para crear un puente de hover invisible entre el trigger y el panel
+   */
+  .navbar-subdropdown {
+    @apply absolute left-full top-0 -ml-1 hidden group-hover/sub:block
+           w-44 bg-white rounded-xl shadow-xl border border-gray-100 py-1 z-50
+           pl-3;
+  }
+
+  /* Chevron giratorio al hacer hover sobre una categoría raíz */
+  .navbar-chevron {
+    @apply text-[10px] text-white/70 group-hover:rotate-180 transition-transform;
+  }
+
+  /* Chevron lateral (indica submenú a la derecha) */
+  .navbar-chevron-right {
+    @apply text-[10px] -rotate-90 text-gray-400;
+  }
+
+  /* Links estáticos de la barra (Impresiones, Diseño, Sellos) */
+  .navbar-static-link {
+    @apply text-sm font-bold text-white tracking-wide drop-shadow-sm transition-colors
+           hover:text-[#f4abac] focus:outline-none focus:underline decoration-[#f4abac];
+  }
+
+  /* Icono check en select de formulario */
+  .select-check-icon {
+    @apply absolute inset-y-0 right-0 flex items-center pr-4;
+  }
+
+  /* ── Breadcrumbs ── */
+  .breadcrumb-nav {
+    @apply flex mb-4 overflow-x-auto whitespace-nowrap py-1;
+  }
+
+  .breadcrumb-list {
+    @apply inline-flex items-center space-x-1 md:space-x-2;
+  }
+
+  .breadcrumb-item {
+    @apply inline-flex items-center;
+  }
+
+  .breadcrumb-link {
+    @apply inline-flex items-center text-xs md:text-sm font-medium text-gray-500
+           hover:text-[#3d4494] transition-colors;
+  }
+
+  .breadcrumb-separator {
+    @apply text-gray-400 text-[10px] mx-1;
+  }
+
+  .breadcrumb-current {
+    @apply ml-1 text-xs md:text-sm font-semibold text-[#3d4494] truncate max-w-[150px] md:max-w-none;
+  }
+
+  /* ── Layout & Sections ── */
+  .section-header {
+    @apply mb-4 border-b-2 border-[#EA6C6C] pb-4;
+  }
+
+  .section-title {
+    @apply text-3xl font-black uppercase text-gray-900;
+  }
+
+  .product-grid {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6 mt-6;
+  }
+
+  /* ── Utilities ── */
+  .scrollbar-hide {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
   }
 }

@@ -76,7 +76,25 @@ export class CategoriesPageComponent implements OnInit {
         (a, b) => (a.products?.length || 0) - (b.products?.length || 0),
       );
     } else {
-      filtered.sort((a, b) => a.order - b.order);
+      // ORDENAMIENTO JERÁRQUICO (POR DEFECTO)
+      // Si hay filtros activos (búsqueda), no podemos mantener la jerarquía estricta,
+      // pero si no hay filtros, ordenamos: Padre -> Hijos (por orden)
+      if (this.filtersActive()) {
+        filtered.sort((a, b) => a.order - b.order);
+      } else {
+        const buildTree = (
+          list: IApiCategory[],
+          parentId: number | null = null,
+        ): IApiCategory[] => {
+          return list
+            .filter((c) => (c.parentId || null) === parentId)
+            .sort((a, b) => a.order - b.order)
+            .reduce((acc: IApiCategory[], cat) => {
+              return [...acc, cat, ...buildTree(list, cat.id)];
+            }, []);
+        };
+        return buildTree(currentCategories);
+      }
     }
 
     return filtered;
@@ -117,9 +135,7 @@ export class CategoriesPageComponent implements OnInit {
       if (confirm) {
         this.apiService.deleteCategory(category.id).subscribe({
           next: () => {
-            this.categoriesRaw.update((cats) =>
-              cats.filter((c) => c.id !== category.id),
-            );
+            this.loadCategories(); // Recargar para sincronizar corrimiento de órdenes
             this.alertService.toast('Categoría eliminada', 'success');
           },
         });

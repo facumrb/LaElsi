@@ -4,28 +4,28 @@
       <thead class="table-header">
         <tr>
           <th
-            class="px-6 py-4 text-center font-semibold uppercase tracking-wider whitespace-nowrap w-[8%] rounded-tl-lg"
+            class="table-th text-center whitespace-nowrap w-[8%] rounded-tl-lg"
           >
             Orden
           </th>
-          <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[27%]">
+          <th class="table-th w-[27%]">
             Nombre
           </th>
-          <th class="px-6 py-4 font-semibold uppercase tracking-wider w-[32%]">
+          <th class="table-th w-[32%]">
             Descripción
           </th>
           <th
-            class="px-6 py-4 text-center font-semibold uppercase tracking-wider whitespace-nowrap w-[18%]"
+            class="table-th text-center whitespace-nowrap w-[18%]"
           >
             Productos
           </th>
           <th
-            class="px-6 py-4 text-center font-semibold uppercase tracking-wider whitespace-nowrap w-[12%]"
+            class="table-th text-center whitespace-nowrap w-[12%]"
           >
             Estado
           </th>
           <th
-            class="px-6 py-4 text-center font-semibold uppercase tracking-wider whitespace-nowrap w-[13%] rounded-tr-lg"
+            class="table-th text-center whitespace-nowrap w-[13%] rounded-tr-lg"
           >
             Acciones
           </th>
@@ -74,12 +74,29 @@
               <span class="font-bold uppercase text-gray-500 mr-2 lg:hidden"
                 >Nombre:</span
               >
-              <span
-                (click)="onEdit.emit(category)"
-                class="font-semibold text-gray-900 text-base lg:text-sm cursor-pointer hover:underline"
-                title="{{ category.name }}"
-                >{{ category.name }}</span
+              <div
+                class="table-cell-indented"
+                [style.padding-left.px]="
+                  !isFilterActive() ? (category.depth || 0) * 20 : 0
+                "
               >
+                <div class="flex items-center gap-2">
+                  @if (!isFilterActive() && (category.depth || 0) > 0) {
+                    <span class="table-subcategory-indicator">└─</span>
+                  }
+                  <span
+                    (click)="onEdit.emit(category)"
+                    class="font-semibold text-gray-900 text-base lg:text-sm cursor-pointer hover:underline"
+                    title="{{ category.name }}"
+                    >{{ category.name }}</span
+                  >
+                </div>
+                @if (category.parent) {
+                  <span class="table-parent-info">
+                    Sub de: {{ category.parent.name }}
+                  </span>
+                }
+              </div>
             </td>
 
             <td

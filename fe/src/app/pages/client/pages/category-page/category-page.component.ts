@@ -17,10 +17,11 @@ import {
 } from '@client/components/products-filter/products-filter.component';
 import { IApiCategory } from '@models/category.model';
 import { IApiProduct } from '@models/product.model';
+import { BreadcrumbsComponent, BreadcrumbStep } from '@shared/components/breadcrumbs/breadcrumbs.component';
 
 @Component({
   selector: 'app-category-page',
-  imports: [ProductCardComponent, ProductsFilterComponent],
+  imports: [ProductCardComponent, ProductsFilterComponent, BreadcrumbsComponent],
   templateUrl: './category-page.component.html',
 })
 export class CategoryPageComponent implements OnInit {
@@ -31,6 +32,28 @@ export class CategoryPageComponent implements OnInit {
   category = signal<IApiCategory | null>(null);
   private productsRaw = signal<IApiProduct[]>([]);
   availableBrands = signal<string[]>([]);
+
+  // Breadcrumbs
+  breadcrumbSteps = computed<BreadcrumbStep[]>(() => {
+    const cat = this.category();
+    if (!cat) return [];
+
+    const steps: BreadcrumbStep[] = [];
+    
+    // Función para construir el path hacia arriba
+    const buildPath = (current: IApiCategory) => {
+      steps.unshift({
+        label: current.name,
+        url: `/category/${current.id}`
+      });
+      if (current.parent) {
+        buildPath(current.parent);
+      }
+    };
+
+    buildPath(cat);
+    return steps;
+  });
 
   // Filtros
   priceOrder = signal<PriceOrder>('Defecto');

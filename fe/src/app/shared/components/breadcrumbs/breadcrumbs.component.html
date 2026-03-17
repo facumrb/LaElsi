@@ -1,0 +1,60 @@
+<nav class="breadcrumb-nav scrollbar-hide" aria-label="Breadcrumb">
+  <ol
+    class="breadcrumb-list"
+    itemscope
+    itemtype="https://schema.org/BreadcrumbList"
+  >
+    <li
+      class="breadcrumb-item"
+      itemprop="itemListElement"
+      itemscope
+      itemtype="https://schema.org/ListItem"
+    >
+      <a routerLink="/" class="breadcrumb-link" itemprop="item">
+        <ng-icon
+          name="bootstrapHouseDoor"
+          class="mr-2"
+          aria-hidden="true"
+        ></ng-icon>
+        <span itemprop="name">Inicio</span>
+      </a>
+      <meta itemprop="position" content="1" />
+    </li>
+
+    @for (
+      step of steps();
+      track step.label;
+      let i = $index;
+      let isLast = $last
+    ) {
+      <li
+        class="breadcrumb-item"
+        itemprop="itemListElement"
+        itemscope
+        itemtype="https://schema.org/ListItem"
+      >
+        <div class="flex items-center">
+          <ng-icon
+            name="bootstrapChevronRight"
+            class="breadcrumb-separator"
+            aria-hidden="true"
+          ></ng-icon>
+          @if (step.url && !isLast) {
+            <a [routerLink]="step.url" class="breadcrumb-link ml-1" itemprop="item">
+              <span itemprop="name">{{ step.label }}</span>
+            </a>
+          } @else {
+            <span
+              class="breadcrumb-current"
+              aria-current="page"
+              itemprop="name"
+            >
+              {{ step.label }}
+            </span>
+          }
+          <meta itemprop="position" [content]="i + 2" />
+        </div>
+      </li>
+    }
+  </ol>
+</nav>

@@ -76,4 +76,25 @@ export class ApiCategoryService {
       .delete<{ message: string }>(`${this.apiUrl}/${id}`)
       .pipe(map(() => void 0));
   }
+
+  // Obtener el árbol de categorías
+  getCategoryTree(state?: string): Observable<IApiCategory[]> {
+    let params = {};
+    if (state) {
+      params = { state };
+    }
+
+    return this.http
+      .get<{ message: string; data: IApiCategory[] }>(`${this.apiUrl}/tree`, {
+        params,
+      })
+      .pipe(map((response) => response.data));
+  }
+
+  // Obtener subcategorías de una categoría
+  getCategoryChildren(id: number): Observable<IApiCategory[]> {
+    return this.http
+      .get<{ message: string; data: IApiCategory[] }>(`${this.apiUrl}/${id}/children`)
+      .pipe(map((response) => response.data));
+  }
 }

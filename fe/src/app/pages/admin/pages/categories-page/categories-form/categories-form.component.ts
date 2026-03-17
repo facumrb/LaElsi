@@ -1,4 +1,5 @@
-import { Component, inject, OnInit, signal, computed } from '@angular/core';
+import { Component, inject, OnInit, signal, computed, DestroyRef, effect } from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Location, DatePipe } from '@angular/common';
@@ -52,6 +53,7 @@ export class CategoriesFormComponent implements OnInit {
   private datePipe = inject(DatePipe);
   private draftService = inject(ProductDraftService);
   private http = inject(HttpClient);
+  private destroyRef = inject(DestroyRef);
 
   formUtils = FormUtils;
 
@@ -62,14 +64,11 @@ export class CategoriesFormComponent implements OnInit {
   initialState = signal<string>('Activo'); // Para AuditInfoComponent
 
   categoriesCount = signal<number>(0);
-  maxOrder = computed(() =>
-    this.isEditMode()
-      ? Math.max(0, this.categoriesCount() - 1)
-      : this.categoriesCount(),
-  );
+  allCategories = signal<IApiCategory[]>([]);
 
   // UI State
   showStateMenu = signal(false);
+  showParentMenu = signal(false);
 
   formCategory = this.fb.group({
     name: [
@@ -87,11 +86,12 @@ export class CategoriesFormComponent implements OnInit {
       [Validators.maxLength(1000), FormUtils.notOnlyWhiteSpace],
     ],
     state: [CategoryState.Activo, [Validators.required]],
+    parentId: [null as number | null],
     order: [
-      0,
+      1,
       [
         Validators.required,
-        Validators.min(0),
+        Validators.min(1),
         Validators.pattern(FormUtils.numberPattern),
       ],
     ],
@@ -102,24 +102,89 @@ export class CategoriesFormComponent implements OnInit {
     deletedAt: [{ value: '', disabled: true }],
   });
 
+  // Seguimiento reactivo del parentId del formulario
+  // initialValue: null asegura que en el estado inicial (sin emisiones aún) el valor sea null (raíz)
+  currentParentId = toSignal(
+    this.formCategory.get('parentId')!.valueChanges.pipe(takeUntilDestroyed()),
+    { initialValue: null as number | null }
+  );
+
+  maxOrder = computed(() => {
+    const parentId = this.currentParentId();
+    // Peers: solo las categorías del mismo nivel (mismo parentId)
+    const peers = this.allCategories().filter(c => {
+      const cParent = c.parentId ?? null;
+      return cParent === parentId;
+    });
+
+    const count = peers.length;
+
+    if (this.isEditMode()) {
+      // Si ya pertenece a este padre, no sumamos 1 (solo ocupa uno de los N lugares)
+      const editedCat = this.allCategories().find(c => c.id === this.categoryId());
+      const isSameParent = (editedCat?.parentId ?? null) === parentId;
+      return isSameParent ? count : count + 1;
+    }
+
+    return count + 1;
+  });
+
+  // Efecto reactivo: actualiza el validador máximo cuando cambia el nivel seleccionado
+  private orderValidatorEffect = effect(() => {
+    const max = this.maxOrder();
+    const orderControl = this.formCategory.get('order');
+    if (!orderControl) return;
+    orderControl.setValidators([
+      Validators.required,
+      Validators.min(1),
+      Validators.max(max),
+      Validators.pattern(FormUtils.numberPattern),
+    ]);
+    orderControl.updateValueAndValidity({ emitEvent: false });
+  });
+
+  // Computada para categorías que pueden ser padres (evitar circulares)
+  eligibleParents = computed(() => {
+    const currentId = this.categoryId();
+    const categories = this.allCategories();
+
+    if (!currentId) return categories;
+
+    // Función recursiva para obtener todos los descendientes
+    const getDescendantIds = (catId: number): number[] => {
+      const children = categories.filter((c) => (c.parentId || null) === catId);
+      let ids = children.map((c) => c.id);
+      children.forEach((c) => {
+        ids = [...ids, ...getDescendantIds(c.id)];
+      });
+      return ids;
+    };
+
+    const descendants = getDescendantIds(currentId);
+    return categories.filter(
+      (c) => c.id !== currentId && !descendants.includes(c.id),
+    );
+  });
+
+  // Nombre del padre seleccionado (Reactivo)
+  parentName = computed(() => {
+    const parentId = this.currentParentId();
+    if (!parentId) return 'Ninguna (Categoría Raíz)';
+    const parent = this.allCategories().find((c) => c.id === parentId);
+    return parent ? parent.name : 'Ninguna (Categoría Raíz)';
+  });
+
   ngOnInit() {
     this.checkEditMode();
-    this.loadCategoriesCount();
+    this.loadAllCategories();
   }
 
-  loadCategoriesCount() {
+  loadAllCategories() {
     this.categoryService.getAllCategories().subscribe({
       next: (categories) => {
+        this.allCategories.set(categories);
         this.categoriesCount.set(categories.length);
-
-        const orderControl = this.formCategory.get('order');
-        orderControl?.setValidators([
-          Validators.required,
-          Validators.min(0),
-          Validators.max(this.maxOrder()),
-          Validators.pattern(FormUtils.numberPattern),
-        ]);
-        orderControl?.updateValueAndValidity();
+        // El efecto orderValidatorEffect se dispara solo al cambiar maxOrder
       },
     });
   }
@@ -147,7 +212,8 @@ export class CategoriesFormComponent implements OnInit {
           name: category.name,
           description: category.description || '',
           state: category.state,
-          order: category.order || 0,
+          parentId: category.parentId ?? category.parent?.id ?? null,
+          order: category.order || 1,
           createdAt: this.datePipe.transform(category.createdAt, dateFormat),
           updatedAt: this.datePipe.transform(category.updatedAt, dateFormat),
           deletedAt: category.deletedAt
@@ -190,6 +256,15 @@ export class CategoriesFormComponent implements OnInit {
     this.showStateMenu.set(false);
   }
 
+  toggleParentMenu() {
+    this.showParentMenu.update((v) => !v);
+  }
+
+  selectParent(id: number | null) {
+    this.formCategory.patchValue({ parentId: id });
+    this.showParentMenu.set(false);
+  }
+
   onSubmit() {
     if (this.formCategory.invalid) {
       this.formCategory.markAllAsTouched();
@@ -201,6 +276,7 @@ export class CategoriesFormComponent implements OnInit {
       name: formValue.name!,
       description: formValue.description || null,
       state: formValue.state!,
+      parentId: formValue.parentId || null,
       order: Number(formValue.order) || 0,
     };
 
