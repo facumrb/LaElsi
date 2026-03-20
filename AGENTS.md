@@ -1,1 +1,2 @@
-Completar
+Completar y ejecutar:
+gga install
