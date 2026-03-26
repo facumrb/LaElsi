@@ -202,9 +202,7 @@
               }}
             </span>
 
-            <span
-              class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3"
-            >
+            <span class="select-chevron-wrapper pr-3">
               <ng-icon
                 name="bootstrapChevronDown"
                 class="text-gray-500 text-sm transition-transform duration-200"
@@ -214,13 +212,11 @@
           </button>
 
           @if (isFiscalMenuOpen()) {
-            <ul
-              class="absolute z-50 mt-2 w-full max-h-60 overflow-y-auto rounded-xl bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm animate-in fade-in zoom-in-95 duration-100 border border-gray-100"
-            >
+            <ul class="select-dropdown">
               @for (condition of fiscalConditions; track condition) {
                 <li
                   (click)="selectFiscalCondition(condition)"
-                  class="relative cursor-pointer select-none py-3 pl-4 pr-9 hover:bg-gray-50 text-gray-800 font-medium transition-colors"
+                  class="select-option"
                 >
                   <div class="flex items-center">
                     <span

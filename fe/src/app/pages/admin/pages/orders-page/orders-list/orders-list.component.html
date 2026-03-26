@@ -234,11 +234,12 @@
             </td>
           </tr>
         } @empty {
-          <tr app-table-empty-state
-              [colspan]="7"
-              [isFilterActive]="isFilterActive()"
-              emptyMessage="Todavía no hay órdenes registradas"
-              searchMessage="No se encontraron órdenes para tu búsqueda"
+          <tr
+            app-table-empty-state
+            [colspan]="7"
+            [isFilterActive]="isFilterActive()"
+            emptyMessage="Todavía no hay órdenes registradas"
+            searchMessage="No se encontraron órdenes para tu búsqueda"
           ></tr>
         }
       </tbody>

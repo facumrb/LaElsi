@@ -12,16 +12,11 @@
   <div class="form-card">
     <form [formGroup]="formClient" (ngSubmit)="onSubmit()" class="form-body">
       <div class="mb-2">
-        <h2 class="form-section-title">
-          Datos Personales
-        </h2>
+        <h2 class="form-section-title">Datos Personales</h2>
 
         <div class="form-grid-2">
           <div>
-            <label
-              for="name"
-              class="form-label"
-            >
+            <label for="name" class="form-label">
               Nombre <span class="text-red-500">*</span>
             </label>
             <input
@@ -38,10 +33,7 @@
           </div>
 
           <div>
-            <label
-              for="lastName"
-              class="form-label"
-            >
+            <label for="lastName" class="form-label">
               Apellido <span class="text-red-500">*</span>
             </label>
             <input
@@ -58,10 +50,7 @@
           </div>
 
           <div>
-            <label
-              for="dni"
-              class="form-label"
-            >
+            <label for="dni" class="form-label">
               DNI <span class="text-red-500">*</span>
             </label>
             <input
@@ -83,10 +72,7 @@
           </div>
 
           <div>
-            <label
-              for="phone"
-              class="form-label"
-            >
+            <label for="phone" class="form-label">
               Teléfono <span class="text-red-500">*</span>
             </label>
             <input
@@ -107,16 +93,11 @@
       </div>
 
       <div class="mb-6">
-        <h2 class="form-section-title">
-          Cuenta de Usuario
-        </h2>
+        <h2 class="form-section-title">Cuenta de Usuario</h2>
 
         <div class="form-grid-2">
           <div>
-            <label
-              for="username"
-              class="form-label"
-            >
+            <label for="username" class="form-label">
               Nombre de Usuario <span class="text-red-500">*</span>
             </label>
             <input
@@ -136,10 +117,7 @@
           </div>
 
           <div>
-            <label
-              for="email"
-              class="form-label"
-            >
+            <label for="email" class="form-label">
               Email <span class="text-red-500">*</span>
             </label>
             <input
@@ -168,10 +146,7 @@
           </div>
 
           <div>
-            <label
-              for="password"
-              class="form-label"
-            >
+            <label for="password" class="form-label">
               Contraseña
               @if (!isEditMode()) {
                 <span class="text-red-500">*</span>
@@ -196,16 +171,11 @@
       </div>
 
       <div class="mb-3">
-        <h2 class="form-section-title">
-          Datos de Facturación
-        </h2>
+        <h2 class="form-section-title">Datos de Facturación</h2>
 
         <div class="form-grid-2">
           <div class="relative" (clickOutside)="isFiscalMenuOpen.set(false)">
-            <label
-              for="fiscalConditionBtn"
-              class="form-label"
-            >
+            <label for="fiscalConditionBtn" class="form-label">
               Condición Fiscal
             </label>
 
@@ -213,7 +183,7 @@
               type="button"
               id="fiscalConditionBtn"
               (click)="toggleFiscalMenu()"
-              class="relative w-full cursor-pointer bg-white rounded-2xl border border-gray-300 py-2.5 pl-4 pr-10 text-left shadow-sm transition-all duration-200 sm:text-sm hover:bg-gray-50 focus:outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900"
+              class="select-trigger"
             >
               <span class="block truncate text-gray-900 font-medium">
                 {{
@@ -232,13 +202,11 @@
             </button>
 
             @if (isFiscalMenuOpen()) {
-              <ul
-                class="absolute z-20 mt-2 max-h-60 w-full overflow-auto rounded-2xl bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm animate-in fade-in zoom-in-95 duration-100"
-              >
+              <ul class="select-dropdown">
                 @for (condition of fiscalConditions; track condition) {
                   <li
                     (click)="selectFiscalCondition(condition)"
-                    class="relative cursor-pointer select-none py-2.5 pl-4 pr-9 hover:bg-gray-100 text-gray-900 transition-colors"
+                    class="select-option"
                   >
                     <div class="flex items-center">
                       <span
@@ -283,10 +251,7 @@
           </div>
 
           <div>
-            <label
-              for="cuit"
-              class="form-label"
-            >
+            <label for="cuit" class="form-label">
               CUIT / CUIL (11 números)
             </label>
             <input
@@ -310,16 +275,10 @@
       </div>
 
       <div class="mb-6">
-        <h2 class="form-section-title">
-          Dirección
-        </h2>
+        <h2 class="form-section-title">Dirección</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-3">
           <div class="md:col-span-2">
-            <label
-              for="street"
-              class="form-label"
-              >Calle</label
-            >
+            <label for="street" class="form-label">Calle</label>
             <input
               type="text"
               id="street"
@@ -332,11 +291,7 @@
           </div>
 
           <div>
-            <label
-              for="streetNumber"
-              class="form-label"
-              >Altura</label
-            >
+            <label for="streetNumber" class="form-label">Altura</label>
             <input
               type="text"
               id="streetNumber"
@@ -351,11 +306,7 @@
           </div>
 
           <div>
-            <label
-              for="city"
-              class="form-label"
-              >Ciudad</label
-            >
+            <label for="city" class="form-label">Ciudad</label>
             <input
               type="text"
               id="city"
@@ -368,11 +319,7 @@
           </div>
 
           <div>
-            <label
-              for="province"
-              class="form-label"
-              >Provincia</label
-            >
+            <label for="province" class="form-label">Provincia</label>
             <input
               type="text"
               id="province"
@@ -385,11 +332,7 @@
           </div>
 
           <div>
-            <label
-              for="postalCode"
-              class="form-label"
-              >Código Postal</label
-            >
+            <label for="postalCode" class="form-label">Código Postal</label>
             <input
               type="text"
               id="postalCode"
@@ -403,11 +346,7 @@
           </div>
 
           <div>
-            <label
-              for="floor"
-              class="form-label"
-              >Piso</label
-            >
+            <label for="floor" class="form-label">Piso</label>
             <input
               type="text"
               id="floor"
@@ -420,11 +359,7 @@
           </div>
 
           <div>
-            <label
-              for="apartment"
-              class="form-label"
-              >Departamento</label
-            >
+            <label for="apartment" class="form-label">Departamento</label>
             <input
               type="text"
               id="apartment"
@@ -448,11 +383,7 @@
       }
 
       <div class="form-footer">
-        <button
-          type="button"
-          routerLink="/admin/clients"
-          class="btn-secondary"
-        >
+        <button type="button" routerLink="/admin/clients" class="btn-secondary">
           Cancelar
         </button>
 

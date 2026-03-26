@@ -13,10 +13,7 @@
     <form [formGroup]="formProduct" (ngSubmit)="onSubmit()" class="form-body">
       <div class="grid grid-cols-1 md:grid-cols-6 gap-x-6 gap-y-4">
         <div class="md:col-span-6">
-          <label
-            for="name"
-            class="form-label"
-          >
+          <label for="name" class="form-label">
             Nombre del Producto <span class="text-red-500">*</span>
           </label>
           <input
@@ -36,10 +33,7 @@
         </div>
 
         <div class="md:col-span-6">
-          <label
-            for="description"
-            class="form-label"
-          >
+          <label for="description" class="form-label">
             Descripción <span class="text-red-500">*</span>
           </label>
           <textarea
@@ -58,10 +52,7 @@
         </div>
 
         <div class="md:col-span-2">
-          <label
-            for="brand"
-            class="form-label"
-          >
+          <label for="brand" class="form-label">
             Marca <span class="text-red-500">*</span>
           </label>
           <input
@@ -79,10 +70,7 @@
           class="md:col-span-2 relative"
           (clickOutside)="showCategoryMenu.set(false)"
         >
-          <label
-            for="category"
-            class="form-label"
-          >
+          <label for="category" class="form-label">
             Categoría <span class="text-red-500">*</span>
           </label>
 
@@ -111,10 +99,7 @@
           @if (showCategoryMenu()) {
             <div class="select-dropdown">
               @for (cat of categories(); track cat.id) {
-                <div
-                  (click)="selectCategory(cat)"
-                  class="select-option"
-                >
+                <div (click)="selectCategory(cat)" class="select-option">
                   <span
                     class="block truncate font-normal"
                     [class.font-semibold]="
@@ -141,14 +126,13 @@
               }
 
               <!-- Botón para Crear Nueva Categoría -->
-              <div class="border-t border-gray-100 mt-1 pt-1">
+              <div class="border-t border-gray-100">
                 <button
                   type="button"
                   (click)="goToCreateCategory()"
-                  class="cursor-pointer flex w-full items-center gap-2 px-3 py-2 text-sm font-semibold text-[#3d4494] hover:bg-blue-50 transition-colors"
+                  class="cursor-pointer flex w-full items-center gap-2 px-3 py-3 text-sm font-semibold text-[#3d4494] hover:bg-blue-50 transition-colors"
                 >
-                  <ng-icon name="bootstrapCheckLg" class="hidden"></ng-icon>
-                  <!-- Icon placeholder space -->
+                  <ng-icon name="bootstrapPlusLg"></ng-icon>
                   Nueva Categoría
                 </button>
               </div>
@@ -161,10 +145,7 @@
           class="md:col-span-2 relative"
           (clickOutside)="showStateMenu.set(false)"
         >
-          <label
-            for="state"
-            class="form-label"
-          >
+          <label for="state" class="form-label">
             Estado <span class="text-red-500">*</span>
           </label>
           <button
@@ -198,10 +179,7 @@
           @if (showStateMenu()) {
             <ul class="select-dropdown">
               @for (option of ["Activo", "Inactivo"]; track option) {
-                <li
-                  (click)="selectState(option)"
-                  class="select-option hover:bg-gray-50"
-                >
+                <li (click)="selectState(option)" class="select-option">
                   <div class="flex items-center">
                     <span
                       class="h-2.5 w-2.5 rounded-full mr-2"
@@ -235,10 +213,7 @@
         </div>
 
         <div class="md:col-span-2">
-          <label
-            for="price"
-            class="form-label"
-          >
+          <label for="price" class="form-label">
             Precio ($) <span class="text-red-500">*</span>
           </label>
           <div class="relative rounded-md shadow-sm">
@@ -263,10 +238,7 @@
         </div>
 
         <div class="md:col-span-2">
-          <label
-            for="stock"
-            class="form-label"
-          >
+          <label for="stock" class="form-label">
             Stock <span class="text-red-500">*</span>
           </label>
           <input
@@ -284,10 +256,7 @@
         </div>
 
         <div class="md:col-span-2">
-          <label
-            for="totalSold"
-            class="form-label"
-          >
+          <label for="totalSold" class="form-label">
             Cantidad Vendida <span class="text-red-500">*</span>
           </label>
           <input

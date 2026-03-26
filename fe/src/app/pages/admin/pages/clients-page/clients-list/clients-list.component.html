@@ -181,10 +181,11 @@
             </td>
           </tr>
         } @empty {
-          <tr app-table-empty-state
-              [colspan]="6"
-              [isFilterActive]="isFilterActive()"
-              emptyMessage="Sin clientes cargados"
+          <tr
+            app-table-empty-state
+            [colspan]="6"
+            [isFilterActive]="isFilterActive()"
+            emptyMessage="Sin clientes cargados"
           ></tr>
         }
       </tbody>

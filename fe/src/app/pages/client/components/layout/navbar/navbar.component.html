@@ -19,7 +19,7 @@
           alt="La Elsi logo"
           width="128"
           height="48"
-          class="w-24 md:w-32 h-auto hover:opacity-90 transition-opacity object-contain"
+          class="w-24 md:w-32 h-auto object-contain"
         />
       </a>
     </div>
@@ -84,13 +84,13 @@
 
           @if (showUserMenu()) {
             <div
-              class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-1 origin-top-right border border-gray-100"
+              class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-2xl ring-1 ring-black border border-black/5 z-50 animate-in fade-in slide-in-from-top-1 origin-top-right overflow-hidden"
             >
               @if (authService.isAdmin()) {
                 <a
                   [routerLink]="['/admin/view-profile', currentUser()?.id]"
                   (click)="toggleMobileMenu()"
-                  class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  class="flex items-center gap-3 px-4 pt-3 pb-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
                 >
                   <ng-icon name="bootstrapPerson" class="text-xl"></ng-icon> Mi
                   Perfil
@@ -99,16 +99,17 @@
                 <a
                   routerLink="/profile"
                   (click)="showUserMenu.set(false)"
-                  class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                  ><ng-icon name="bootstrapPerson" class="text-lg"></ng-icon> Mi
-                  Perfil</a
+                  class="flex items-center gap-3 px-4 pt-3 pb-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
                 >
+                  <ng-icon name="bootstrapPerson" class="text-lg"></ng-icon> Mi
+                  Perfil
+                </a>
               }
 
-              <div class="border-t border-gray-100 my-1 hidden md:block"></div>
+              <div class="border-t border-gray-100 hidden md:block"></div>
               <button
                 (click)="handleLogout()"
-                class="cursor-pointer w-full text-left flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-gray-50 transition-colors"
+                class="cursor-pointer w-full text-left flex items-center gap-3 px-4 pt-2 pb-3 text-sm text-red-600 hover:bg-gray-100 transition-colors"
               >
                 <ng-icon
                   name="bootstrapBoxArrowRight"
@@ -158,7 +159,7 @@
       <div class="group relative flex items-center">
         <a
           [routerLink]="['/category', cat.id]"
-          routerLinkActive="text-[#f4abac] underline decoration-2 underline-offset-4"
+          routerLinkActive="text-white underline decoration-[#f4abac] decoration-2 underline-offset-4"
           [routerLinkActiveOptions]="{ exact: true }"
           class="navbar-link"
         >
@@ -213,21 +214,21 @@
 
     <a
       routerLink="/impresiones"
-      routerLinkActive="text-[#f4abac] underline decoration-2 underline-offset-4"
+      routerLinkActive="text-white underline decoration-[#f4abac] decoration-2 underline-offset-4"
       class="navbar-static-link"
     >
       Impresiones
     </a>
     <a
       routerLink="/disenio"
-      routerLinkActive="text-[#f4abac] underline decoration-2 underline-offset-4"
+      routerLinkActive="text-white underline decoration-[#f4abac] decoration-2 underline-offset-4"
       class="navbar-static-link"
     >
       Diseño Gráfico
     </a>
     <a
       routerLink="/sellos"
-      routerLinkActive="text-[#f4abac] underline decoration-2 underline-offset-4"
+      routerLinkActive="text-white underline decoration-[#f4abac] decoration-2 underline-offset-4"
       class="navbar-static-link"
     >
       Sellos
@@ -251,6 +252,8 @@
         <img
           src="assets/Webp/Logo.webp"
           alt="La Elsi"
+          width="128"
+          height="48"
           class="h-12 w-auto object-contain"
         />
       </div>
@@ -295,21 +298,21 @@
           <a
             routerLink="/impresiones"
             (click)="toggleMobileMenu()"
-            class="flex items-center gap-3 px-6 py-3 text-gray-700 font-medium hover:bg-gray-50"
+            class="flex items-center gap-3 px-6 py-3 text-gray-700 font-medium hover:bg-gray-100"
           >
             Impresiones
           </a>
           <a
             routerLink="/disenio"
             (click)="toggleMobileMenu()"
-            class="flex items-center gap-3 px-6 py-3 text-gray-700 font-medium hover:bg-gray-50"
+            class="flex items-center gap-3 px-6 py-3 text-gray-700 font-medium hover:bg-gray-100"
           >
             Diseño Gráfico
           </a>
           <a
             routerLink="/sellos"
             (click)="toggleMobileMenu()"
-            class="flex items-center gap-3 px-6 py-3 text-gray-700 font-medium hover:bg-gray-50"
+            class="flex items-center gap-3 px-6 py-3 text-gray-700 font-medium hover:bg-gray-100"
           >
             Sellos
           </a>

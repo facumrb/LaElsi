@@ -13,10 +13,7 @@
     <form [formGroup]="formCategory" (ngSubmit)="onSubmit()" class="form-body">
       <div class="grid grid-cols-1 gap-y-3">
         <div>
-          <label
-            for="name"
-            class="form-label"
-          >
+          <label for="name" class="form-label">
             Nombre de la categoría <span class="text-red-500">*</span>
           </label>
           <input
@@ -37,7 +34,7 @@
 
         <div class="relative w-full" (clickOutside)="showParentMenu.set(false)">
           <label for="parentId" class="form-label">
-            Categoría Padre (Opcional)
+            Categoría Padre (opcional)
           </label>
 
           <button
@@ -60,10 +57,7 @@
 
           @if (showParentMenu()) {
             <ul class="select-dropdown">
-              <li
-                (click)="selectParent(null)"
-                class="select-option"
-              >
+              <li (click)="selectParent(null)" class="select-option">
                 <div class="flex items-center">
                   <span
                     [class.font-semibold]="
@@ -108,15 +102,13 @@
               }
             </ul>
           }
+          <app-field-error [control]="formCategory.controls.parentId" />
         </div>
 
         <div>
-          <label
-            for="description"
-            class="form-label"
+          <label for="description" class="form-label"
+            >Descripción (opcional)</label
           >
-            Descripción
-          </label>
           <textarea
             id="description"
             name="description"
@@ -133,10 +125,7 @@
         </div>
 
         <div>
-          <label
-            for="order"
-            class="form-label"
-          >
+          <label for="order" class="form-label">
             Orden de Visualización
             <span class="text-xs font-normal text-gray-500"
               >(El orden máximo es: {{ maxOrder() }})</span
@@ -158,10 +147,7 @@
         </div>
 
         <div class="relative w-full" (clickOutside)="showStateMenu.set(false)">
-          <label
-            for="state"
-            class="form-label"
-          >
+          <label for="state" class="form-label">
             Estado <span class="text-red-500">*</span>
           </label>
 
@@ -196,10 +182,7 @@
           @if (showStateMenu()) {
             <ul class="select-dropdown">
               @for (option of ["Activo", "Inactivo"]; track option) {
-                <li
-                  (click)="selectState(option)"
-                  class="select-option"
-                >
+                <li (click)="selectState(option)" class="select-option">
                   <div class="flex items-center">
                     <span
                       class="h-2.5 w-2.5 rounded-full mr-2"

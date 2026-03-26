@@ -8,22 +8,12 @@
           >
             Orden
           </th>
-          <th class="table-th w-[27%]">
-            Nombre
-          </th>
-          <th class="table-th w-[32%]">
-            Descripción
-          </th>
-          <th
-            class="table-th text-center whitespace-nowrap w-[18%]"
-          >
+          <th class="table-th w-[27%]">Nombre</th>
+          <th class="table-th w-[32%]">Descripción</th>
+          <th class="table-th text-center whitespace-nowrap w-[18%]">
             Productos
           </th>
-          <th
-            class="table-th text-center whitespace-nowrap w-[12%]"
-          >
-            Estado
-          </th>
+          <th class="table-th text-center whitespace-nowrap w-[12%]">Estado</th>
           <th
             class="table-th text-center whitespace-nowrap w-[13%] rounded-tr-lg"
           >
@@ -188,10 +178,11 @@
             </td>
           </tr>
         } @empty {
-          <tr app-table-empty-state
-              [colspan]="6"
-              [isFilterActive]="isFilterActive()"
-              emptyMessage="Sin categorías cargadas"
+          <tr
+            app-table-empty-state
+            [colspan]="6"
+            [isFilterActive]="isFilterActive()"
+            emptyMessage="Sin categorías cargadas"
           ></tr>
         }
       </tbody>

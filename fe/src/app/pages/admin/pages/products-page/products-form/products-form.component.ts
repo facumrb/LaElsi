@@ -19,6 +19,7 @@ import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
   bootstrapChevronDown,
   bootstrapCheckLg,
+  bootstrapPlusLg,
 } from '@ng-icons/bootstrap-icons';
 import { AuditInfoComponent } from '@shared/components/audit-info/audit-info.component';
 import { FieldErrorComponent } from '@shared/validators/field-error/field-error.component';
@@ -40,6 +41,7 @@ import { FieldErrorComponent } from '@shared/validators/field-error/field-error.
     provideIcons({
       bootstrapChevronDown,
       bootstrapCheckLg,
+      bootstrapPlusLg,
     }),
   ],
   providers: [DatePipe],

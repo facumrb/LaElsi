@@ -47,6 +47,7 @@
       >
         @for (photo of gallery(); track photo.uiId; let i = $index) {
           <div
+            [style.view-transition-name]="'photo-' + photo.uiId"
             class="relative group aspect-square rounded-xl overflow-hidden border border-gray-200 shadow-sm bg-white"
           >
             <img

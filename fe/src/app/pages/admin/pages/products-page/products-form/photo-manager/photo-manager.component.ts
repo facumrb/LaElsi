@@ -100,7 +100,7 @@ export class PhotoManagerComponent {
       const reader = new FileReader();
       reader.onload = (e: any) => {
         const newPhoto: IUiPhoto = {
-          uiId: `new-${Date.now()}-${Math.random()}`,
+          uiId: `new-${Date.now()}-${Math.floor(Math.random() * 10000)}`,
           src: e.target.result,
           file: file,
           isNew: true,
@@ -115,16 +115,24 @@ export class PhotoManagerComponent {
   }
 
   movePhoto(index: number, direction: 'left' | 'right') {
-    this.gallery.update((current) => {
-      const newGallery = [...current];
-      const targetIndex = direction === 'left' ? index - 1 : index + 1;
-      if (targetIndex < 0 || targetIndex >= newGallery.length) return current;
-      [newGallery[index], newGallery[targetIndex]] = [
-        newGallery[targetIndex],
-        newGallery[index],
-      ];
-      return newGallery;
-    });
+    const updateFn = () => {
+      this.gallery.update((current) => {
+        const newGallery = [...current];
+        const targetIndex = direction === 'left' ? index - 1 : index + 1;
+        if (targetIndex < 0 || targetIndex >= newGallery.length) return current;
+        [newGallery[index], newGallery[targetIndex]] = [
+          newGallery[targetIndex],
+          newGallery[index],
+        ];
+        return newGallery;
+      });
+    };
+
+    if (!document.startViewTransition) {
+      updateFn();
+    } else {
+      document.startViewTransition(() => updateFn());
+    }
   }
 
   removePhoto(index: number) {
