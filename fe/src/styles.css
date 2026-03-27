@@ -22,6 +22,7 @@
   }
 }
 
+
 /* 4. Estilos de componentes compartidos */
 @layer components {
   .admin-table-container {
@@ -67,5 +68,245 @@
     .admin-table-mobile-label {
       display: none !important;
     }
+  }
+
+  /* ── Formularios ── */
+  .form-label {
+    @apply block text-sm font-medium text-gray-700 mb-1;
+  }
+
+  .form-input {
+    @apply block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm text-sm;
+  }
+
+  .form-card {
+    @apply bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden;
+  }
+
+  .form-body {
+    @apply p-6 md:p-8;
+  }
+
+  .form-section-title {
+    @apply text-lg font-semibold text-gray-800 mb-3 border-b pb-2;
+  }
+
+  .form-grid-2 {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3;
+  }
+
+  .form-footer {
+    @apply pt-6 flex items-center justify-end gap-x-4 border-t border-gray-100;
+  }
+
+  /* ── Botones ── */
+  .btn-primary {
+    @apply cursor-pointer rounded-md bg-[#3d4494] px-6 py-2.5 text-sm font-semibold
+           text-white shadow-sm hover:bg-[#2a2f63] transition-colors
+           focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-[#3d4494]
+           disabled:bg-gray-300 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply cursor-pointer rounded-md bg-white px-5 py-2.5 text-sm font-semibold
+           text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300
+           hover:bg-gray-50 transition-colors;
+  }
+
+  /* ── Títulos ── */
+  .page-title {
+    @apply text-2xl font-bold text-[#3d4494];
+  }
+
+  /* ── Dropdown Select ── */
+  .select-trigger {
+    @apply relative w-full cursor-pointer bg-white rounded-2xl border border-gray-300
+           py-2.5 pl-4 pr-10 text-left shadow-sm transition-all duration-200 sm:text-sm
+           hover:bg-gray-50 focus:outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900;
+  }
+
+  .select-dropdown {
+    @apply absolute z-20 mt-2 w-full max-h-70 overflow-auto rounded-2xl bg-white
+           text-base shadow-lg ring-1 ring-gray-900 focus:outline-none sm:text-sm
+           animate-fadeIn;
+  }
+
+  .select-option {
+    @apply relative cursor-pointer select-none py-2.5 pl-4 pr-9 text-gray-900 hover:bg-gray-100 transition-colors;
+  }
+
+  .select-chevron-wrapper {
+    @apply pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2;
+  }
+
+  /* ── Tablas Admin ── */
+  .table-container {
+    @apply w-full bg-gray-50 lg:bg-white lg:rounded-lg lg:shadow-md
+           lg:border lg:border-gray-200;
+  }
+
+  .table-base {
+    @apply w-full text-left text-sm text-gray-500 border-separate
+           border-spacing-0 table-fixed;
+  }
+
+  .table-header {
+    @apply hidden lg:table-header-group bg-[#3d4494] text-white;
+  }
+
+  .table-th {
+    @apply px-6 py-4 font-semibold uppercase tracking-wider;
+  }
+
+  .table-cell-indented {
+    @apply flex flex-col;
+  }
+
+  .table-subcategory-indicator {
+    @apply text-gray-400 text-xs;
+  }
+
+  .table-parent-info {
+    @apply text-[10px] text-gray-400 font-medium ml-4;
+  }
+
+  /* ── Toolbar ── */
+  .toolbar-container {
+    @apply flex flex-col lg:flex-row justify-between items-start
+           lg:items-center gap-4 mb-6 mx-4 lg:mx-0;
+  }
+
+  /* ── Navbar ── */
+  .navbar-link {
+    @apply text-sm font-bold text-white tracking-wide drop-shadow-sm transition-colors
+           hover:text-[#f4abac] focus:outline-none focus:underline decoration-[#f4abac]
+           flex items-center gap-1.5;
+  }
+
+  .navbar-dropdown {
+    @apply absolute top-full left-0 mt-0 pt-3 w-50 opacity-0 invisible
+           group-hover:opacity-100 group-hover:visible transition-all duration-200
+           z-50 translate-y-2 group-hover:translate-y-0;
+  }
+
+  .navbar-dropdown-container {
+    @apply bg-white rounded-xl shadow-xl overflow-visible border border-black/5 ring-1 ring-black;
+  }
+
+  .navbar-dropdown-item {
+    @apply relative z-10 block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100
+           hover:text-[#3d4494] font-semibold transition-colors
+           border-b border-gray-50 last:border-0;
+  }
+
+  /* Redondeo para el primer y último item para encajar con el borde del menú contenedor */
+  .navbar-dropdown-container > div:first-of-type > .navbar-dropdown-item,
+  .navbar-subdropdown > .navbar-dropdown-item:first-of-type {
+    @apply rounded-t-xl;
+  }
+
+  .navbar-dropdown-container > div:last-of-type > .navbar-dropdown-item,
+  .navbar-subdropdown > .navbar-dropdown-item:last-of-type {
+    @apply border-b-0 rounded-b-xl;
+  }
+
+  .navbar-mobile-item {
+    @apply flex items-center justify-between px-6 py-3 text-gray-700 font-bold
+           hover:bg-gray-100 border-b border-gray-50;
+  }
+
+  .navbar-mobile-subitem {
+    @apply flex items-center gap-2 px-10 py-2.5 text-gray-600 text-sm font-semibold
+           hover:bg-gray-100 border-b border-gray-50 bg-gray-50/30;
+  }
+
+  .navbar-mobile-subsubitem {
+    @apply flex items-center gap-2 pl-16 pr-6 py-2.5 text-gray-500 text-sm
+           hover:bg-gray-100 border-b border-gray-50 bg-gray-100/30;
+  }
+
+  /* Submenu de segundo nivel (aparece a la derecha del ítem hover) */
+  .navbar-subdropdown {
+    @apply absolute left-full top-0 ml-2 hidden group-hover/sub:block
+           w-44 bg-white rounded-xl shadow-xl border border-black/5 ring-1 ring-black z-50
+           before:absolute before:-left-3 before:top-0 before:h-full before:w-3;
+  }
+
+  /* Triángulo que une el menú principal con el secundario */
+  .navbar-subdropdown::after {
+    content: "";
+    /* Usamos un cuadrado rotado para que tenga borde negro a la izquierda y abajo */
+    @apply absolute top-3 -left-1.5 w-2 h-2 bg-white border-l border-b border-black rotate-45 z-0;
+  }
+
+  /* Chevron giratorio al hacer hover sobre una categoría raíz */
+  .navbar-chevron {
+    @apply text-[10px] text-white/70 group-hover:rotate-180 transition-transform;
+  }
+
+  /* Chevron lateral (indica submenú a la derecha) */
+  .navbar-chevron-right {
+    @apply text-[10px] -rotate-90 text-gray-400;
+  }
+
+  /* Links estáticos de la barra (Impresiones, Diseño, Sellos) */
+  .navbar-static-link {
+    @apply text-sm font-bold text-white tracking-wide drop-shadow-sm transition-colors
+           hover:text-[#f4abac] focus:outline-none focus:underline decoration-[#f4abac];
+  }
+
+  /* Icono check en select de formulario */
+  .select-check-icon {
+    @apply absolute inset-y-0 right-0 flex items-center pr-4;
+  }
+
+  /* ── Breadcrumbs ── */
+  .breadcrumb-nav {
+    @apply flex mb-4 overflow-x-auto whitespace-nowrap py-1;
+  }
+
+  .breadcrumb-list {
+    @apply inline-flex items-center space-x-1 md:space-x-2;
+  }
+
+  .breadcrumb-item {
+    @apply inline-flex items-center;
+  }
+
+  .breadcrumb-link {
+    @apply inline-flex items-center text-xs md:text-sm font-medium text-gray-500
+           hover:text-[#3d4494] transition-colors;
+  }
+
+  .breadcrumb-separator {
+    @apply text-gray-400 text-[10px] mx-1;
+  }
+
+  .breadcrumb-current {
+    @apply ml-1 text-xs md:text-sm font-semibold text-[#3d4494] truncate max-w-[150px] md:max-w-none;
+  }
+
+  /* ── Layout & Sections ── */
+  .section-header {
+    @apply mb-4 border-b-2 border-[#EA6C6C] pb-4;
+  }
+
+  .section-title {
+    @apply text-3xl font-black uppercase text-gray-900;
+  }
+
+  .product-grid {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6 mt-6;
+  }
+
+  /* ── Utilities ── */
+  .scrollbar-hide {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+
   }
 }

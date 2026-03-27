@@ -24,7 +24,7 @@
         <div>
           <label
             for="username"
-            class="mb-1.5 block text-sm font-semibold text-gray-700"
+            class="mb-1.5 form-label font-semibold"
           >
             Nombre de usuario
           </label>
@@ -36,7 +36,7 @@
             minlength="4"
             maxlength="30"
             autocomplete="username"
-            class="block w-full rounded-lg border-gray-300 border p-3 text-gray-900 shadow-sm focus:border-[#3d4494] focus:ring-1 focus:ring-[#3d4494] outline-none transition-all sm:text-sm"
+            class="form-input p-3 focus:border-[#3d4494] focus:ring-1 focus:ring-[#3d4494] outline-none transition-all"
           />
           <app-field-error [control]="formLogin.controls.username" />
         </div>
@@ -44,7 +44,7 @@
         <div>
           <label
             for="password"
-            class="mb-1.5 block text-sm font-semibold text-gray-700"
+            class="mb-1.5 form-label font-semibold"
           >
             Contraseña
           </label>
@@ -57,7 +57,7 @@
               formControlName="password"
               maxlength="100"
               autocomplete="current-password"
-              class="block w-full rounded-lg border-gray-300 border p-3 pr-10 text-gray-900 shadow-sm focus:border-[#3d4494] focus:ring-1 focus:ring-[#3d4494] outline-none transition-all sm:text-sm"
+              class="form-input p-3 pr-10 focus:border-[#3d4494] focus:ring-1 focus:ring-[#3d4494] outline-none transition-all"
             />
 
             @if (showEyeIcon()) {
@@ -100,7 +100,7 @@
           <button
             type="submit"
             [disabled]="loading()"
-            class="cursor-pointer w-full flex justify-center py-3 px-4 rounded-lg bg-[#3d4494] text-sm font-bold text-white shadow-md hover:bg-[#2d336b] hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3d4494] disabled:bg-gray-300 disabled:cursor-not-allowed transition-all transform active:scale-[0.98]"
+            class="btn-primary w-full flex justify-center py-3 px-4 shadow-md hover:shadow-lg focus:ring-2 focus:ring-offset-2 focus:ring-[#3d4494] transform active:scale-[0.98] font-bold"
           >
             @if (loading()) {
               <ng-icon

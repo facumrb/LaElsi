@@ -1,27 +1,20 @@
-<div class="admin-table-container">
+<div class="table-container">
   <div class="w-full">
-    <table class="admin-table">
-      <thead class="admin-table-header">
+    <table class="table-base">
+      <thead class="table-header">
         <tr>
           <th
-            class="admin-table-header-cell text-center whitespace-nowrap w-[8%] rounded-tl-lg"
+            class="table-th text-center whitespace-nowrap w-[8%] rounded-tl-lg"
           >
             Orden
           </th>
-          <th class="admin-table-header-cell w-[27%]">Nombre</th>
-          <th class="admin-table-header-cell w-[32%]">Descripción</th>
-          <th
-            class="admin-table-header-cell text-center whitespace-nowrap w-[18%]"
-          >
+          <th class="table-th w-[27%]">Nombre</th>
+          <th class="table-th w-[32%]">Descripción</th>
+          <th class="table-th text-center whitespace-nowrap w-[18%]">
             Productos
           </th>
           <th
-            class="admin-table-header-cell text-center whitespace-nowrap w-[12%]"
-          >
-            Estado
-          </th>
-          <th
-            class="admin-table-header-cell text-center whitespace-nowrap w-[13%] rounded-tr-lg"
+            class="table-th text-center whitespace-nowrap w-[13%] rounded-tr-lg"
           >
             Acciones
           </th>
@@ -46,14 +39,36 @@
               }}</span>
             </td>
 
-            <td class="admin-table-cell" [class.lg:border-b-0]="isLast">
-              <span class="admin-table-mobile-label mr-2">Nombre:</span>
-              <span
-                (click)="onEdit.emit(category)"
-                class="font-semibold text-gray-900 text-base lg:text-sm cursor-pointer hover:underline"
-                title="{{ category.name }}"
-                >{{ category.name }}</span
+            <td
+              class="px-5 py-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle"
+              [class.lg:border-b-0]="isLast"
+            >
+              <span class="font-bold uppercase text-gray-500 mr-2 lg:hidden"
+                >Nombre:</span
               >
+              <div
+                class="table-cell-indented"
+                [style.padding-left.px]="
+                  !isFilterActive() ? (category.depth || 0) * 20 : 0
+                "
+              >
+                <div class="flex items-center gap-2">
+                  @if (!isFilterActive() && (category.depth || 0) > 0) {
+                    <span class="table-subcategory-indicator">└─</span>
+                  }
+                  <span
+                    (click)="onEdit.emit(category)"
+                    class="font-semibold text-gray-900 text-base lg:text-sm cursor-pointer hover:underline"
+                    title="{{ category.name }}"
+                    >{{ category.name }}</span
+                  >
+                </div>
+                @if (category.parent) {
+                  <span class="table-parent-info">
+                    Sub de: {{ category.parent.name }}
+                  </span>
+                }
+              </div>
             </td>
 
             <td class="admin-table-cell" [class.lg:border-b-0]="isLast">

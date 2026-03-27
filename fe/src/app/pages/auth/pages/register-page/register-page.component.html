@@ -1,283 +1,187 @@
-<div class="flex min-h-screen items-center justify-center bg-gray-50 p-4">
-  <div class="w-full max-w-2xl rounded-lg bg-white p-8 shadow-lg">
-    <div class="text-center mb-8">
-      <h2
-        class="text-3xl font-bold uppercase tracking-widest text-gray-800 border-b-4 border-[#3d4494] inline-block pb-1"
-      >
-        LaElsi
-      </h2>
-      <p class="text-gray-500 mt-2">Crea tu cuenta de cliente</p>
+<main class="flex min-h-screen items-center justify-center bg-gray-50 p-4">
+  <div class="w-full max-w-2xl">
+    <div class="mb-4 flex justify-start">
+      <app-go-back-button></app-go-back-button>
     </div>
 
-    @if (errorMessage()) {
-      <div
-        class="mb-6 rounded-md bg-red-100 p-3 text-center text-sm font-medium text-red-700 border border-red-200"
+    <div class="rounded-xl bg-white p-8 shadow-xl border border-gray-100">
+      <h1
+        class="mb-2 text-center text-3xl font-bold uppercase tracking-widest text-[#3d4494]"
       >
-        {{ errorMessage() }}
-      </div>
-    }
+        LaElsi
+      </h1>
 
-    <form [formGroup]="formRegister" (ngSubmit)="onSubmit()" class="space-y-6">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- Nombre -->
-        <div>
-          <label for="name" class="mb-2 block text-sm font-medium text-gray-700"
-            >Nombre</label
-          >
-          <input
-            type="text"
-            id="name"
-            name="name"
-            formControlName="name"
-            class="block w-full rounded-md border p-2.5 text-gray-900 shadow-sm focus:outline-none focus:ring-2 sm:text-sm border-gray-300 focus:border-[#049A8F] focus:ring-[#049A8F]"
-            [class.border-red-500]="
-              hasErrors('name', 'required') || hasErrors('name', 'minlength')
-            "
-          />
-          <div class="mt-1 min-h-5 text-xs text-red-600">
-            @if (hasErrors("name", "required")) {
-              <span>Obligatorio</span>
-            }
-          </div>
-        </div>
+      <p class="mb-8 text-center text-gray-500 text-sm">
+        Crea tu cuenta de cliente
+      </p>
 
-        <!-- Apellido -->
-        <div>
-          <label
-            for="lastName"
-            class="mb-2 block text-sm font-medium text-gray-700"
-            >Apellido</label
-          >
-          <input
-            type="text"
-            id="lastName"
-            name="lastName"
-            formControlName="lastName"
-            class="block w-full rounded-md border p-2.5 text-gray-900 shadow-sm focus:outline-none focus:ring-2 sm:text-sm border-gray-300 focus:border-[#049A8F] focus:ring-[#049A8F]"
-            [class.border-red-500]="hasErrors('lastName', 'required')"
-          />
-          <div class="mt-1 min-h-5 text-xs text-red-600">
-            @if (hasErrors("lastName", "required")) {
-              <span>Obligatorio</span>
-            }
-          </div>
-        </div>
-
-        <!-- DNI -->
-        <div>
-          <label for="dni" class="mb-2 block text-sm font-medium text-gray-700"
-            >DNI</label
-          >
-          <input
-            type="text"
-            id="dni"
-            name="dni"
-            formControlName="dni"
-            inputmode="numeric"
-            placeholder="Ej: 12345678"
-            class="block w-full rounded-md border p-2.5 text-gray-900 shadow-sm focus:outline-none focus:ring-2 sm:text-sm border-gray-300 focus:border-[#049A8F] focus:ring-[#049A8F]"
-            [class.border-red-500]="
-              hasErrors('dni', 'required') ||
-              hasErrors('dni', 'pattern') ||
-              hasErrors('dni', 'dniTaken')
-            "
-          />
-          <div class="mt-1 min-h-5 text-xs">
-            @if (isPending("dni")) {
-              <span class="text-gray-500 flex items-center gap-1">
-                <ng-icon
-                  name="bootstrapArrowClockwise"
-                  class="animate-spin"
-                ></ng-icon>
-                Verificando...
-              </span>
-            } @else if (isValid("dni")) {
-              <span class="text-emerald-600 flex items-center gap-1">
-                <ng-icon name="bootstrapCheckCircleFill"></ng-icon>
-                Disponible
-              </span>
-            } @else if (hasErrors("dni", "required")) {
-              <span class="text-red-600">Obligatorio</span>
-            } @else if (hasErrors("dni", "pattern")) {
-              <span class="text-red-600">Formato inválido (7-8 números)</span>
-            } @else if (hasErrors("dni", "dniTaken")) {
-              <span class="text-red-600 flex items-center gap-1">
-                <ng-icon name="bootstrapXCircleFill"></ng-icon>
-                Este DNI ya está registrado
-              </span>
-            }
-          </div>
-        </div>
-
-        <!-- Teléfono -->
-        <div>
-          <label
-            for="phone"
-            class="mb-2 block text-sm font-medium text-gray-700"
-            >Teléfono</label
-          >
-          <input
-            type="text"
-            id="phone"
-            name="phone"
-            formControlName="phone"
-            inputmode="tel"
-            class="block w-full rounded-md border p-2.5 text-gray-900 shadow-sm focus:outline-none focus:ring-2 sm:text-sm border-gray-300 focus:border-[#049A8F] focus:ring-[#049A8F]"
-            [class.border-red-500]="hasErrors('phone', 'required')"
-          />
-          <div class="mt-1 min-h-5 text-xs text-red-600">
-            @if (hasErrors("phone", "required")) {
-              <span>Obligatorio</span>
-            }
-          </div>
-        </div>
-
-        <!-- Usuario -->
-        <div>
-          <label
-            for="username"
-            class="mb-2 block text-sm font-medium text-gray-700"
-            >Usuario</label
-          >
-          <input
-            type="text"
-            id="username"
-            name="username"
-            formControlName="username"
-            class="block w-full rounded-md border p-2.5 text-gray-900 shadow-sm focus:outline-none focus:ring-2 sm:text-sm border-gray-300 focus:border-[#049A8F] focus:ring-[#049A8F]"
-            [class.border-red-500]="
-              hasErrors('username', 'required') ||
-              hasErrors('username', 'usernameTaken')
-            "
-          />
-          <div class="mt-1 min-h-5 text-xs">
-            @if (isPending("username")) {
-              <span class="text-gray-500 flex items-center gap-1">
-                <ng-icon
-                  name="bootstrapArrowClockwise"
-                  class="animate-spin"
-                ></ng-icon>
-                Verificando...
-              </span>
-            } @else if (isValid("username")) {
-              <span class="text-emerald-600 flex items-center gap-1">
-                <ng-icon name="bootstrapCheckCircleFill"></ng-icon>
-                Disponible
-              </span>
-            } @else if (hasErrors("username", "required")) {
-              <span class="text-red-600">Obligatorio</span>
-            } @else if (hasErrors("username", "usernameTaken")) {
-              <span class="text-red-600 flex items-center gap-1">
-                <ng-icon name="bootstrapXCircleFill"></ng-icon>
-                Este usuario ya está en uso
-              </span>
-            }
-          </div>
-        </div>
-
-        <!-- Email -->
-        <div>
-          <label
-            for="email"
-            class="mb-2 block text-sm font-medium text-gray-700"
-            >Email</label
-          >
-          <input
-            type="email"
-            id="email"
-            name="email"
-            formControlName="email"
-            inputmode="email"
-            class="block w-full rounded-md border p-2.5 text-gray-900 shadow-sm focus:outline-none focus:ring-2 sm:text-sm border-gray-300 focus:border-[#049A8F] focus:ring-[#049A8F]"
-            [class.border-red-500]="
-              hasErrors('email', 'required') ||
-              hasErrors('email', 'email') ||
-              hasErrors('email', 'emailTaken')
-            "
-          />
-          <div class="mt-1 min-h-5 text-xs">
-            @if (isPending("email")) {
-              <span class="text-gray-500 flex items-center gap-1">
-                <ng-icon
-                  name="bootstrapArrowClockwise"
-                  class="animate-spin"
-                ></ng-icon>
-                Verificando...
-              </span>
-            } @else if (isValid("email")) {
-              <span class="text-emerald-600 flex items-center gap-1">
-                <ng-icon name="bootstrapCheckCircleFill"></ng-icon>
-                Email disponible
-              </span>
-            } @else if (hasErrors("email", "required")) {
-              <span class="text-red-600">Obligatorio</span>
-            } @else if (hasErrors("email", "email")) {
-              <span class="text-red-600">Formato inválido</span>
-            } @else if (hasErrors("email", "emailTaken")) {
-              <span class="text-red-600 flex items-center gap-1">
-                <ng-icon name="bootstrapXCircleFill"></ng-icon>
-                Este email ya está registrado
-              </span>
-            }
-          </div>
-        </div>
-
-        <!-- Password -->
-        <div class="md:col-span-2">
-          <label
-            for="password"
-            class="mb-2 block text-sm font-medium text-gray-700"
-            >Contraseña</label
-          >
-          <input
-            type="password"
-            id="password"
-            name="password"
-            formControlName="password"
-            class="block w-full rounded-md border p-2.5 text-gray-900 shadow-sm focus:outline-none focus:ring-2 sm:text-sm border-gray-300 focus:border-[#049A8F] focus:ring-[#049A8F]"
-            [class.border-red-500]="
-              hasErrors('password', 'required') ||
-              hasErrors('password', 'minlength')
-            "
-          />
-          <div class="mt-1 min-h-5 text-xs text-red-600">
-            @if (hasErrors("password", "required")) {
-              <span>Obligatorio</span>
-            }
-            @if (hasErrors("password", "minlength")) {
-              <span>Mínimo 6 caracteres</span>
-            }
-          </div>
-        </div>
-      </div>
-
-      <div>
-        <button
-          type="submit"
-          [disabled]="loading() || formPending"
-          class="cursor-pointer flex w-full justify-center rounded-md bg-[#037971] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#049A8F] focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-[#037971] disabled:cursor-not-allowed disabled:bg-gray-400 items-center"
+      @if (errorMessage()) {
+        <div
+          class="mb-6 rounded-md bg-red-100 p-3 text-center text-sm font-medium text-red-700 border border-red-200"
         >
-          @if (loading() || formPending) {
-            <ng-icon
-              name="bootstrapArrowClockwise"
-              class="animate-spin text-xl mr-2"
-            ></ng-icon>
-          }
-          Registrarme
-        </button>
-      </div>
+          {{ errorMessage() }}
+        </div>
+      }
 
-      <div class="text-center mt-4">
-        <p class="text-sm text-gray-600">
-          ¿Ya tienes cuenta?
+      <form
+        [formGroup]="formRegister"
+        (ngSubmit)="onSubmit()"
+        class="space-y-5"
+      >
+        <div class="form-grid-2 gap-y-1">
+          <!-- Nombre -->
+          <div>
+            <label for="name" class="form-label">Nombre <span class="text-red-500">*</span></label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              formControlName="name"
+              minlength="2"
+              maxlength="100"
+              class="form-input"
+              placeholder="Ej: Juan"
+            />
+            <app-field-error [control]="formRegister.controls.name" />
+          </div>
+
+          <!-- Apellido -->
+          <div>
+            <label for="lastName" class="form-label">Apellido <span class="text-red-500">*</span></label>
+            <input
+              type="text"
+              id="lastName"
+              name="lastName"
+              formControlName="lastName"
+              minlength="2"
+              maxlength="100"
+              class="form-input"
+              placeholder="Ej: Perez"
+            />
+            <app-field-error [control]="formRegister.controls.lastName" />
+          </div>
+
+          <!-- DNI -->
+          <div>
+            <label for="dni" class="form-label">DNI <span class="text-red-500">*</span></label>
+            <input
+              type="text"
+              id="dni"
+              name="dni"
+              formControlName="dni"
+              inputmode="numeric"
+              minlength="7"
+              maxlength="8"
+              class="form-input"
+              placeholder="Ej: 12345678"
+            />
+            <app-field-error
+              [control]="formRegister.controls.dni"
+              validLabel="DNI disponible"
+            />
+          </div>
+
+          <!-- Teléfono -->
+          <div>
+            <label for="phone" class="form-label">Teléfono <span class="text-red-500">*</span></label>
+            <input
+              type="text"
+              id="phone"
+              name="phone"
+              formControlName="phone"
+              inputmode="tel"
+              minlength="8"
+              maxlength="15"
+              class="form-input"
+              placeholder="Ej: 3415555555"
+            />
+            <app-field-error [control]="formRegister.controls.phone" />
+          </div>
+
+          <!-- Usuario -->
+          <div>
+            <label for="username" class="form-label">
+              Nombre de Usuario <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              formControlName="username"
+              minlength="4"
+              maxlength="30"
+              class="form-input"
+              placeholder="Ej: jperez"
+            />
+            <app-field-error
+              [control]="formRegister.controls.username"
+              validLabel="Usuario disponible"
+            />
+          </div>
+
+          <!-- Email -->
+          <div>
+            <label for="email" class="form-label">Email <span class="text-red-500">*</span></label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              formControlName="email"
+              inputmode="email"
+              maxlength="255"
+              class="form-input"
+              placeholder="Ej: juan@ejemplo.com"
+            />
+            <app-field-error
+              [control]="formRegister.controls.email"
+              validLabel="Email disponible"
+            />
+          </div>
+
+          <!-- Contraseña -->
+          <div class="md:col-span-2">
+            <label for="password" class="form-label">
+              Contraseña <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              formControlName="password"
+              maxlength="100"
+              class="form-input"
+              placeholder="Mínimo 6 caracteres"
+            />
+            <app-field-error [control]="formRegister.controls.password" />
+          </div>
+        </div>
+
+        <div class="pt-2">
+          <button
+            type="submit"
+            [disabled]="loading() || formPending"
+            class="btn-primary w-full flex justify-center py-3 shadow-md hover:shadow-lg transform active:scale-[0.98]"
+          >
+            @if (loading() || formPending) {
+              <ng-icon
+                name="bootstrapArrowClockwise"
+                class="animate-spin text-xl mr-2"
+              ></ng-icon>
+            }
+            Registrarme
+          </button>
+        </div>
+
+        <div class="mt-6 text-center text-sm text-gray-600">
+          ¿Ya tenés cuenta?
           <a
             routerLink="/auth/login"
-            class="font-medium text-[#3d4494] hover:text-[#2d336b] underline"
+            class="cursor-pointer font-bold text-[#3d4494] hover:text-[#2a2f63] hover:underline transition-colors ml-1"
           >
-            Inicia sesión aquí
+            Iniciar Sesión
           </a>
-        </p>
-      </div>
-    </form>
+        </div>
+      </form>
+    </div>
   </div>
-</div>
+</main>

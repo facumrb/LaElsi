@@ -16,6 +16,34 @@ export class CategoryService {
     return this.isAncestor(parent.parent.id, categoryId);
   }
 
+  /**
+   * Desplaza el orden de las categorías de un nivel a partir de una posición inicial.
+   */
+  private static async shiftPeers(parentId: number | null, fromOrder: number, delta: number) {
+    const em = orm.em;
+    const peers = await em.find(Category, {
+      parent: parentId,
+      order: { $gte: fromOrder }
+    });
+    for (const peer of peers) {
+      peer.order += delta;
+    }
+  }
+
+  /**
+   * Desplaza el orden de las categorías en un rango específico.
+   */
+  private static async shiftPeersBetween(parentId: number | null, from: number, to: number, delta: number) {
+    const em = orm.em;
+    const peers = await em.find(Category, {
+      parent: parentId,
+      order: { $gte: from, $lte: to }
+    });
+    for (const peer of peers) {
+      peer.order += delta;
+    }
+  }
+
   static async searchCategoriesByText(query: string) {
     const em = orm.em;
     return em.find(
@@ -47,10 +75,15 @@ export class CategoryService {
       }
     }
 
+    const order = data.order ?? 1;
+
+    // Abrir hueco en el nivel correspondiente
+    await this.shiftPeers(parent?.id ?? null, order, 1);
+
     const categoryData: any = {
       name: data.name,
       description: data.description,
-      order: data.order || 0,
+      order,
       state: data.state || CategoryState.Activo,
       depth,
       parent,
@@ -70,14 +103,14 @@ export class CategoryService {
   static async findAll() {
     const em = orm.em;
     return em.find(Category, {}, {
-      populate: ['children', 'products.photos'],
-      orderBy: { parent: { id: 'ASC' }, order: 'ASC', name: 'ASC' } as any
+      populate: ['children', 'parent', 'products.photos'] as any,
+      orderBy: { order: 'ASC', name: 'ASC' } as any
     });
   }
 
   static async findOne(id: number) {
     const em = orm.em;
-    const category = await em.findOne(Category, { id }, { populate: ['products.photos'] });
+    const category = await em.findOne(Category, { id }, { populate: ['products.photos', 'parent'] as any });
     if (!category) {
       throw new AppError('Categoría no encontrada', 404);
     }
@@ -86,59 +119,78 @@ export class CategoryService {
 
   static async updateCategory(id: number, data: Partial<Category> & { parentId?: number | null }) {
     const em = orm.em;
-    const category = await em.findOne(Category, { id }, { populate: ['children'] });
+    const category = await em.findOne(Category, { id }, { populate: ['children', 'parent'] as any });
 
     if (!category) {
       throw new AppError('Categoría no encontrada', 404);
     }
 
-    if (data.parentId !== undefined) {
-      const newParentId = data.parentId ? data.parentId : null;
-      const currentParentId = category.parent?.id || null;
+    const oldParentId = (category.parent as any)?.id ?? null;
+    const newParentId = data.parentId !== undefined ? (data.parentId || null) : oldParentId;
+    const oldOrder = category.order;
+    const newOrder = data.order ?? oldOrder;
 
-      if (newParentId !== currentParentId) {
-        if (newParentId === category.id) {
-          throw new AppError('Una categoría no puede ser su propio padre', 400);
+    // 1. Manejo de cambio de nivel / padre
+    if (newParentId !== oldParentId) {
+      if (newParentId === category.id) {
+        throw new AppError('Una categoría no puede ser su propio padre', 400);
+      }
+
+      let newDepth = 0;
+      let newParent = null;
+
+      if (newParentId) {
+        const cycleFound = await this.isAncestor(newParentId, category.id);
+        if (cycleFound) {
+          throw new AppError('Asignación de padre inválida: crearía un ciclo circular', 400);
         }
 
-        let newDepth = 0;
-        let newParent = null;
-
-        if (newParentId) {
-          const cycleFound = await this.isAncestor(newParentId, category.id);
-          if (cycleFound) {
-            throw new AppError('Asignación de padre inválida: crearía un ciclo circular', 400);
-          }
-
-          newParent = await em.findOne(Category, { id: newParentId });
-          if (!newParent) {
-            throw new AppError('La categoría padre especificada no existe', 404);
-          }
-          newDepth = newParent.depth + 1;
-          if (newDepth > 2) {
-            throw new AppError('Se ha excedido el límite máximo de profundidad (3 niveles)', 400);
-          }
+        newParent = await em.findOne(Category, { id: newParentId });
+        if (!newParent) {
+          throw new AppError('La categoría padre especificada no existe', 404);
         }
-
-        const depthDiff = newDepth - category.depth;
-        category.depth = newDepth;
-        category.parent = newParent as any;
-
-        if (depthDiff !== 0) {
-          await this.updateDescendantsDepth(category, depthDiff);
+        newDepth = newParent.depth + 1;
+        if (newDepth > 2) {
+          throw new AppError('Se ha excedido el límite máximo de profundidad (3 niveles)', 400);
         }
       }
+
+      // Cerrar hueco en el padre anterior (mover los de orden > oldOrder, un lugar hacia arriba)
+      await this.shiftPeers(oldParentId, oldOrder + 1, -1);
+
+      // Abrir hueco en el nuevo padre
+      await this.shiftPeers(newParentId, newOrder, 1);
+
+      const depthDiff = newDepth - category.depth;
+      category.depth = newDepth;
+      category.parent = newParent as any;
+      category.order = newOrder;
+
+      if (depthDiff !== 0) {
+        await this.updateDescendantsDepth(category, depthDiff);
+      }
+    }
+    // 2. Cambio de orden en el MISMO nivel
+    else if (newOrder !== oldOrder) {
+      if (newOrder < oldOrder) {
+        // Mover hacia arriba: desplazar intermedios hacia abajo
+        await this.shiftPeersBetween(newParentId, newOrder, oldOrder - 1, 1);
+      } else {
+        // Mover hacia abajo: desplazar intermedios hacia arriba
+        await this.shiftPeersBetween(newParentId, oldOrder + 1, newOrder, -1);
+      }
+      category.order = newOrder;
     }
 
-    // Clean data object before assigning
-    const { parentId, ...updateData } = data;
+    // Asignar el resto de los datos
+    const { parentId, order: _order, ...updateData } = data;
     const oldState = category.state;
     em.assign(category, updateData);
 
     if (category.state !== oldState) {
-       category.deletedAt = new Date();
+      category.deletedAt = category.state === CategoryState.Inactivo ? new Date() : undefined;
     }
-    
+
     try {
       await em.flush();
       return category;
@@ -162,7 +214,7 @@ export class CategoryService {
 
   static async removeCategory(id: number) {
     const em = orm.em;
-    const category = await em.findOne(Category, { id }, { populate: ['products', 'children'] });
+    const category = await em.findOne(Category, { id }, { populate: ['products', 'children', 'parent'] as any });
 
     if (!category) {
       throw new AppError('La categoría no existe', 404);
@@ -173,10 +225,17 @@ export class CategoryService {
     }
 
     if (category.products.length > 0) {
-      throw new AppError('Esta categoría tiene productos asociados.\\n\\n 💡 Consejo: Cámbia el estado a "Inactivo" en lugar de borrarla.', 400);
+      throw new AppError('Esta categoría tiene productos asociados.\n\n 💡 Consejo: Cámbia el estado a "Inactivo" en lugar de borrarla.', 400);
     }
 
+    const currentOrder = category.order;
+    const parentId = (category.parent as any)?.id ?? null;
+
     em.remove(category);
+
+    // Cerrar hueco tras la eliminación
+    await this.shiftPeers(parentId, currentOrder + 1, -1);
+
     await em.flush();
   }
 
@@ -187,15 +246,16 @@ export class CategoryService {
       filter.state = state;
     }
 
-    const populateFields = [];
-    let currentPopulate = 'children';
+    // Populate simple y recursivo para hijos de hijos
+    const populatePaths: string[] = [];
+    let path = 'children';
     for (let i = 0; i < depthLimit; i++) {
-      populateFields.push(currentPopulate);
-      currentPopulate += '.children';
+      populatePaths.push(path);
+      path += '.children';
     }
 
     return em.find(Category, filter, {
-      populate: populateFields as any,
+      populate: populatePaths as any,
       orderBy: { order: 'ASC', name: 'ASC' }
     });
   }

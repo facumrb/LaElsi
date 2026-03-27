@@ -16,9 +16,12 @@ import {
   bootstrapLightningFill,
 } from '@ng-icons/bootstrap-icons';
 
+import { BreadcrumbsComponent, BreadcrumbStep } from '@shared/components/breadcrumbs/breadcrumbs.component';
+import { IApiCategory } from '@models/category.model';
+
 @Component({
   selector: 'app-product-page',
-  imports: [CurrencyPipe, DecimalPipe, NgIconComponent],
+  imports: [CurrencyPipe, DecimalPipe, NgIconComponent, BreadcrumbsComponent],
   viewProviders: [
     provideIcons({
       bootstrapCheckLg,
@@ -43,6 +46,31 @@ export class ProductPageComponent implements OnInit {
   selectedPhotoUrl = signal<string | undefined>(undefined);
   thumbnailIndex = signal(0);
   addedToCart = signal(false);
+
+  // Breadcrumbs
+  breadcrumbSteps = computed<BreadcrumbStep[]>(() => {
+    const prod = this.product();
+    if (!prod || !prod.category) return [];
+
+    const steps: BreadcrumbStep[] = [];
+
+    const buildPath = (current: IApiCategory) => {
+      steps.unshift({
+        label: current.name,
+        url: `/category/${current.id}`
+      });
+      if (current.parent) {
+        buildPath(current.parent);
+      }
+    };
+
+    buildPath(prod.category);
+
+    // Agregamos el producto al final
+    steps.push({ label: prod.name });
+
+    return steps;
+  });
 
   // Computed signals for derived state
   productPrice = computed(() => {

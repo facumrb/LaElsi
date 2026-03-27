@@ -1,7 +1,7 @@
 <div class="animate-fadeIn max-w-5xl mx-auto">
   <div class="mb-6 flex items-center justify-between">
     <div>
-      <h1 class="text-2xl font-bold text-[#3d4494]">
+      <h1 class="page-title">
         {{ isEditMode() ? "Editar Producto" : "Nuevo Producto" }}
       </h1>
     </div>
@@ -9,16 +9,11 @@
     <app-go-back-button></app-go-back-button>
   </div>
 
-  <div
-    class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden"
-  >
-    <form [formGroup]="formProduct" (ngSubmit)="onSubmit()" class="p-6 md:p-8">
+  <div class="form-card">
+    <form [formGroup]="formProduct" (ngSubmit)="onSubmit()" class="form-body">
       <div class="grid grid-cols-1 md:grid-cols-6 gap-x-6 gap-y-4">
         <div class="md:col-span-6">
-          <label
-            for="name"
-            class="block text-sm font-medium text-gray-700 mb-1"
-          >
+          <label for="name" class="form-label">
             Nombre del Producto <span class="text-red-500">*</span>
           </label>
           <input
@@ -27,7 +22,7 @@
             name="name"
             formControlName="name"
             maxlength="50"
-            class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm sm:text-sm"
+            class="form-input"
             placeholder="Ej: Auriculares Bluetooth Sony..."
           />
           <app-field-error
@@ -38,10 +33,7 @@
         </div>
 
         <div class="md:col-span-6">
-          <label
-            for="description"
-            class="block text-sm font-medium text-gray-700 mb-1"
-          >
+          <label for="description" class="form-label">
             Descripción <span class="text-red-500">*</span>
           </label>
           <textarea
@@ -50,7 +42,7 @@
             formControlName="description"
             rows="5"
             maxlength="1000"
-            class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm sm:text-sm"
+            class="form-input"
             placeholder="Describe las características principales..."
           ></textarea>
           <app-field-error
@@ -60,10 +52,7 @@
         </div>
 
         <div class="md:col-span-2">
-          <label
-            for="brand"
-            class="block text-sm font-medium text-gray-700 mb-1"
-          >
+          <label for="brand" class="form-label">
             Marca <span class="text-red-500">*</span>
           </label>
           <input
@@ -71,7 +60,7 @@
             id="brand"
             name="brand"
             formControlName="brand"
-            class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm sm:text-sm"
+            class="form-input"
             placeholder="Ej: Samsung"
           />
           <app-field-error [control]="formProduct.controls.brand" />
@@ -81,10 +70,7 @@
           class="md:col-span-2 relative"
           (clickOutside)="showCategoryMenu.set(false)"
         >
-          <label
-            for="category"
-            class="block text-sm font-medium text-gray-700 mb-1"
-          >
+          <label for="category" class="form-label">
             Categoría <span class="text-red-500">*</span>
           </label>
 
@@ -92,7 +78,7 @@
             type="button"
             id="category"
             (click)="toggleCategoryMenu()"
-            class="relative w-full cursor-pointer bg-white rounded-lg border border-gray-300 py-2.5 pl-3 pr-10 text-left shadow-sm focus:outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 sm:text-sm"
+            class="select-trigger focus:border-gray-900 focus:ring-1 focus:ring-gray-900"
           >
             <span class="block truncate">
               @if (formProduct.get("category")?.value; as cat) {
@@ -101,9 +87,7 @@
                 <span class="text-gray-500">Seleccione una categoría</span>
               }
             </span>
-            <span
-              class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2"
-            >
+            <span class="select-chevron-wrapper">
               <ng-icon
                 name="bootstrapChevronDown"
                 class="text-sm text-gray-400 transition-transform duration-200"
@@ -113,14 +97,9 @@
           </button>
 
           @if (showCategoryMenu()) {
-            <div
-              class="absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
-            >
+            <div class="select-dropdown">
               @for (cat of categories(); track cat.id) {
-                <div
-                  (click)="selectCategory(cat)"
-                  class="relative cursor-pointer select-none py-2 pl-3 pr-9 text-gray-900 hover:bg-gray-100"
-                >
+                <div (click)="selectCategory(cat)" class="select-option">
                   <span
                     class="block truncate font-normal"
                     [class.font-semibold]="
@@ -147,14 +126,13 @@
               }
 
               <!-- Botón para Crear Nueva Categoría -->
-              <div class="border-t border-gray-100 mt-1 pt-1">
+              <div class="border-t border-gray-100">
                 <button
                   type="button"
                   (click)="goToCreateCategory()"
-                  class="cursor-pointer flex w-full items-center gap-2 px-3 py-2 text-sm font-semibold text-[#3d4494] hover:bg-blue-50 transition-colors"
+                  class="cursor-pointer flex w-full items-center gap-2 px-3 py-3 text-sm font-semibold text-[#3d4494] hover:bg-blue-50 transition-colors"
                 >
-                  <ng-icon name="bootstrapCheckLg" class="hidden"></ng-icon>
-                  <!-- Icon placeholder space -->
+                  <ng-icon name="bootstrapPlusLg"></ng-icon>
                   Nueva Categoría
                 </button>
               </div>
@@ -167,17 +145,14 @@
           class="md:col-span-2 relative"
           (clickOutside)="showStateMenu.set(false)"
         >
-          <label
-            for="state"
-            class="block text-sm font-medium text-gray-700 mb-1"
-          >
+          <label for="state" class="form-label">
             Estado <span class="text-red-500">*</span>
           </label>
           <button
             type="button"
             id="state"
             (click)="toggleStateMenu()"
-            class="relative w-full cursor-pointer bg-white rounded-lg border border-gray-300 py-2.5 pl-3 pr-10 text-left shadow-sm focus:outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 sm:text-sm"
+            class="select-trigger focus:border-gray-900 focus:ring-1 focus:ring-gray-900"
           >
             <span class="flex items-center gap-2">
               <span
@@ -192,9 +167,7 @@
                 formProduct.get("state")?.value
               }}</span>
             </span>
-            <span
-              class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2"
-            >
+            <span class="select-chevron-wrapper">
               <ng-icon
                 name="bootstrapChevronDown"
                 class="text-gray-400 transition-transform duration-200"
@@ -204,14 +177,9 @@
           </button>
 
           @if (showStateMenu()) {
-            <ul
-              class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
-            >
+            <ul class="select-dropdown">
               @for (option of ["Activo", "Inactivo"]; track option) {
-                <li
-                  (click)="selectState(option)"
-                  class="relative cursor-pointer select-none py-2 pl-3 pr-9 text-gray-900 hover:bg-gray-50"
-                >
+                <li (click)="selectState(option)" class="select-option">
                   <div class="flex items-center">
                     <span
                       class="h-2.5 w-2.5 rounded-full mr-2"
@@ -245,10 +213,7 @@
         </div>
 
         <div class="md:col-span-2">
-          <label
-            for="price"
-            class="block text-sm font-medium text-gray-700 mb-1"
-          >
+          <label for="price" class="form-label">
             Precio ($) <span class="text-red-500">*</span>
           </label>
           <div class="relative rounded-md shadow-sm">
@@ -266,17 +231,14 @@
               min="0"
               inputmode="decimal"
               appNumericInput
-              class="block w-full rounded-lg border-gray-300 border pl-7 p-2.5 text-gray-900 shadow-sm sm:text-sm"
+              class="form-input pl-7"
             />
           </div>
           <app-field-error [control]="formProduct.controls.price" />
         </div>
 
         <div class="md:col-span-2">
-          <label
-            for="stock"
-            class="block text-sm font-medium text-gray-700 mb-1"
-          >
+          <label for="stock" class="form-label">
             Stock <span class="text-red-500">*</span>
           </label>
           <input
@@ -288,16 +250,13 @@
             min="0"
             inputmode="numeric"
             appNumericInput
-            class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm sm:text-sm"
+            class="form-input"
           />
           <app-field-error [control]="formProduct.controls.stock" />
         </div>
 
         <div class="md:col-span-2">
-          <label
-            for="totalSold"
-            class="block text-sm font-medium text-gray-700 mb-1"
-          >
+          <label for="totalSold" class="form-label">
             Cantidad Vendida <span class="text-red-500">*</span>
           </label>
           <input
@@ -309,7 +268,7 @@
             min="0"
             inputmode="numeric"
             appNumericInput
-            class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm sm:text-sm"
+            class="form-input"
           />
           <app-field-error [control]="formProduct.controls.totalSold" />
         </div>
@@ -334,7 +293,7 @@
         <button
           type="button"
           routerLink="/admin/products"
-          class="cursor-pointer rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition-colors"
+          class="btn-secondary px-4 py-2"
         >
           Cancelar
         </button>
@@ -342,7 +301,7 @@
         <button
           type="submit"
           [disabled]="formProduct.invalid || !hasRealChanges"
-          class="cursor-pointer rounded-md bg-[#3d4494] px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#2a2f63] focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-[#3d4494] disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+          class="btn-primary py-2"
         >
           {{ isEditMode() ? "Guardar Cambios" : "Crear Producto" }}
         </button>

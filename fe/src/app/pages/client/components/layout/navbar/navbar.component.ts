@@ -53,30 +53,32 @@ export class NavbarComponent implements OnInit {
 
   categories = signal<IApiCategory[]>([]);
 
-  currentUser = this.authService.currentUser();
+  currentUser = this.authService.currentUser;
 
   readonly userImagesUrl = environment.userImagesUrl;
 
   // Signal computada para obtener la foto o null
   userPhotoUrl = computed(() => {
-    if (this.currentUser && this.currentUser.photo?.fileName) {
-      return `${this.userImagesUrl}${this.currentUser.photo.fileName}`;
+    const user = this.currentUser();
+    if (user && user.photo?.fileName) {
+      return `${this.userImagesUrl}${user.photo.fileName}`;
     }
     return null;
   });
 
   // Signal computada para las iniciales
   userInitials = computed(() => {
-    if (!this.currentUser) return '';
-    const first = this.currentUser.name?.charAt(0) || '';
-    const last = this.currentUser.lastName?.charAt(0) || '';
+    const user = this.currentUser();
+    if (!user) return '';
+    const first = user.name?.charAt(0) || '';
+    const last = user.lastName?.charAt(0) || '';
     return (first + last).toUpperCase();
   });
 
   ngOnInit() {
-    this.apiCategoryService.getActiveCategories().subscribe({
+    this.apiCategoryService.getCategoryTree('Activo').subscribe({
       next: (data) => this.categories.set(data),
-      error: (err) => console.error('Error al traer categorías', err),
+      error: (err) => console.error('Error al traer árbol de categorías', err),
     });
   }
 
