@@ -92,7 +92,7 @@
 
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
     <div
-      class="bg-white rounded-xl shadow border border-gray-200 overflow-hidden"
+      class="bg-white rounded-xl shadow border border-gray-200 overflow-hidden flex flex-col h-full"
     >
       <div
         class="bg-gray-50 px-6 py-4 border-b border-gray-200 flex justify-between items-center"
@@ -108,13 +108,13 @@
         >
       </div>
 
-      <div class="p-0">
+      <div class="p-0 flex-1 flex flex-col">
         @if (recentOrders().length) {
           <div class="divide-y divide-gray-100">
             @for (order of recentOrders(); track order.id) {
               <div
                 (click)="openOrderModal(order)"
-                class="flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-colors cursor-pointer"
+                class="flex items-center justify-between px-6 h-21 hover:bg-gray-50 transition-colors cursor-pointer"
               >
                 <div class="flex flex-col gap-1 min-w-0">
                   <span class="font-bold text-gray-900 truncate"
@@ -161,7 +161,7 @@
     </div>
 
     <div
-      class="bg-white rounded-xl shadow border border-gray-200 overflow-hidden"
+      class="bg-white rounded-xl shadow border border-gray-200 overflow-hidden flex flex-col h-full"
     >
       <div
         class="bg-gray-50 px-6 py-4 border-b border-gray-200 flex justify-between items-center"
@@ -177,7 +177,7 @@
         >
       </div>
 
-      <div class="p-0">
+      <div class="p-0 flex-1 flex flex-col">
         @if (
           bestSellingProducts().length > 0 &&
           bestSellingProducts()[0].totalSold > 0
@@ -191,7 +191,7 @@
               @if (product.totalSold > 0) {
                 <div
                   [routerLink]="['/admin/products/edit', product.id]"
-                  class="flex items-center gap-4 px-6 py-4 hover:bg-gray-50 transition-colors cursor-pointer group"
+                  class="flex items-center gap-4 px-6 h-21 hover:bg-gray-50 transition-colors cursor-pointer group"
                 >
                   <div
                     class="flex items-center justify-center w-6 h-6 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 font-bold text-xs shrink-0"

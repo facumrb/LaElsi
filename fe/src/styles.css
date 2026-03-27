@@ -22,7 +22,6 @@
   }
 }
 
-
 /* 4. Estilos de componentes compartidos */
 @layer components {
   .admin-table-container {
@@ -283,7 +282,7 @@
   }
 
   .breadcrumb-current {
-    @apply ml-1 text-xs md:text-sm font-semibold text-[#3d4494] truncate max-w-[150px] md:max-w-none;
+    @apply ml-1 text-xs md:text-sm font-semibold text-[#3d4494] truncate max-w-37.5 md:max-w-none;
   }
 
   /* ── Layout & Sections ── */
@@ -307,6 +306,5 @@
 
   .scrollbar-hide::-webkit-scrollbar {
     display: none; /* Chrome, Safari and Opera */
-
   }
 }
