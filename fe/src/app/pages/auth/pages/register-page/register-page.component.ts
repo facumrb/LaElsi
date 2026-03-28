@@ -8,6 +8,7 @@ import { bootstrapArrowClockwise } from '@ng-icons/bootstrap-icons';
 import { FormUtils } from '@shared/validators/form-utils';
 import { FieldErrorComponent } from '@shared/validators/field-error/field-error.component';
 import { GoBackButtonComponent } from '@shared/components/buttons/go-back-button/go-back-button.component';
+import { TrimInputDirective } from '@shared/directives/trim-input.directive';
 
 @Component({
   selector: 'app-register-page',
@@ -17,6 +18,7 @@ import { GoBackButtonComponent } from '@shared/components/buttons/go-back-button
     NgIconComponent,
     FieldErrorComponent,
     GoBackButtonComponent,
+    TrimInputDirective,
   ],
   viewProviders: [
     provideIcons({
@@ -35,8 +37,8 @@ export class RegisterPageComponent {
   errorMessage = signal('');
 
   formRegister = this.fb.nonNullable.group({
-    name: ['', [Validators.required, Validators.minLength(2)]],
-    lastName: ['', [Validators.required, Validators.minLength(2)]],
+    name: ['', [Validators.required, FormUtils.minLength(2)]],
+    lastName: ['', [Validators.required, FormUtils.minLength(2)]],
     dni: [
       '',
       [Validators.required, Validators.pattern('^[0-9]{7,8}$')],
@@ -45,7 +47,7 @@ export class RegisterPageComponent {
     phone: ['', [Validators.required, Validators.pattern('^[0-9]{8,15}$')]],
     username: [
       '',
-      [Validators.required, Validators.minLength(4)],
+      [Validators.required, FormUtils.minLength(4)],
       [FormUtils.uniqueFieldValidator('Client', 'username', this.http)],
     ],
     email: [
@@ -53,7 +55,7 @@ export class RegisterPageComponent {
       [Validators.required, Validators.email],
       [FormUtils.uniqueFieldValidator('Client', 'email', this.http)],
     ],
-    password: ['', [Validators.required, Validators.minLength(6)]],
+    password: ['', [Validators.required, FormUtils.minLength(6)]],
   });
 
   get formPending() {

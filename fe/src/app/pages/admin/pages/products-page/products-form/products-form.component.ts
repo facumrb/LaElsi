@@ -23,6 +23,7 @@ import {
 } from '@ng-icons/bootstrap-icons';
 import { AuditInfoComponent } from '@shared/components/audit-info/audit-info.component';
 import { FieldErrorComponent } from '@shared/validators/field-error/field-error.component';
+import { TrimInputDirective } from '@shared/directives/trim-input.directive';
 
 @Component({
   selector: 'app-products-form',
@@ -36,6 +37,7 @@ import { FieldErrorComponent } from '@shared/validators/field-error/field-error.
     GoBackButtonComponent,
     FieldErrorComponent,
     RouterLink,
+    TrimInputDirective,
   ],
   viewProviders: [
     provideIcons({
@@ -83,8 +85,8 @@ export class ProductsFormComponent implements OnInit {
       '',
       [
         Validators.required,
-        Validators.minLength(3),
-        Validators.maxLength(50),
+        FormUtils.minLength(3),
+        FormUtils.maxLength(50),
         Validators.pattern(FormUtils.namePattern),
         FormUtils.notOnlyWhiteSpace,
       ],
@@ -93,7 +95,7 @@ export class ProductsFormComponent implements OnInit {
       '',
       [
         Validators.required,
-        Validators.maxLength(1000),
+        FormUtils.maxLength(1000),
         FormUtils.notOnlyWhiteSpace,
       ],
     ],

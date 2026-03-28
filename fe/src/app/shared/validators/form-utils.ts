@@ -21,6 +21,27 @@ export class FormUtils {
   // Mínimo 8 caracteres y debe tener al menos 1 letra, y 1 número.
   static passwordPattern = '^(?=.*[A-Za-z])(?=.*\\d).{8,}$';
 
+  // Validadores para strings reemplazando los nativos para eliminar espacios vacios con trim
+  static minLength(minLength: number) {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control.value || typeof control.value !== 'string') return null;
+      const length = control.value.trim().replace(/\s{2,}/g, ' ').length;
+      return length < minLength && length > 0
+        ? { minlength: { requiredLength: minLength, actualLength: length } }
+        : null;
+    };
+  }
+
+  static maxLength(maxLength: number) {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control.value || typeof control.value !== 'string') return null;
+      const length = control.value.trim().replace(/\s{2,}/g, ' ').length;
+      return length > maxLength
+        ? { maxlength: { requiredLength: maxLength, actualLength: length } }
+        : null;
+    };
+  }
+
   static getTextError(
     errors: ValidationErrors,
     fieldName: string = 'campo',
@@ -61,7 +82,7 @@ export class FormUtils {
           return `Las contraseñas no coinciden.`;
 
         case 'pattern':
-          // 1. Email
+          // Email
           if (errors['pattern'].requiredPattern === this.emailPattern) {
             return 'Formato de correo no válido (ej: usuario@dominio.com).';
           }
@@ -81,17 +102,17 @@ export class FormUtils {
             return 'Solo se permiten letras, números, puntos (.) y guiones bajos (_) y guiones medios (-).';
           }
 
-          // 5. CUIT
+          // CUIT
           if (errors['pattern'].requiredPattern === this.cuitPattern) {
             return 'El CUIT debe contener exactamente 11 números (sin guiones).';
           }
 
-          // 6. Teléfono (Phone)
+          // Teléfono (Phone)
           if (errors['pattern'].requiredPattern === this.phonePattern) {
             return 'Solo se permiten números, espacios, guiones (-) y el signo más (+).';
           }
 
-          // 7. Solo Números (Number)
+          // Solo Números (Number)
           if (errors['pattern'].requiredPattern === this.numberPattern) {
             return 'Este campo solo acepta números.';
           }

@@ -22,6 +22,7 @@ import { ClickOutsideDirective } from '@shared/directives/click-outside.directiv
 import { AuditInfoComponent } from '@shared/components/audit-info/audit-info.component';
 import { PhoneInputDirective } from '@shared/directives/phone-input.directive';
 import { FieldErrorComponent } from '@shared/validators/field-error/field-error.component';
+import { TrimInputDirective } from '@shared/directives/trim-input.directive';
 
 @Component({
   selector: 'app-clients-form',
@@ -36,6 +37,7 @@ import { FieldErrorComponent } from '@shared/validators/field-error/field-error.
     GoBackButtonComponent,
     FieldErrorComponent,
     RouterLink,
+    TrimInputDirective,
   ],
   viewProviders: [
     provideIcons({
@@ -87,8 +89,8 @@ export class ClientsFormComponent implements OnInit {
       '',
       [
         Validators.required,
-        Validators.minLength(2),
-        Validators.maxLength(100),
+        FormUtils.minLength(2),
+        FormUtils.maxLength(100),
         FormUtils.notOnlyWhiteSpace,
       ],
     ],
@@ -96,8 +98,8 @@ export class ClientsFormComponent implements OnInit {
       '',
       [
         Validators.required,
-        Validators.minLength(2),
-        Validators.maxLength(100),
+        FormUtils.minLength(2),
+        FormUtils.maxLength(100),
         FormUtils.notOnlyWhiteSpace,
       ],
     ],
@@ -105,8 +107,8 @@ export class ClientsFormComponent implements OnInit {
       '',
       [
         Validators.required,
-        Validators.minLength(7),
-        Validators.maxLength(15),
+        FormUtils.minLength(7),
+        FormUtils.maxLength(15),
         Validators.pattern(FormUtils.numberPattern),
       ],
     ],
@@ -114,8 +116,8 @@ export class ClientsFormComponent implements OnInit {
       '',
       [
         Validators.required,
-        Validators.minLength(7),
-        Validators.maxLength(20),
+        FormUtils.minLength(7),
+        FormUtils.maxLength(20),
         Validators.pattern(FormUtils.phonePattern),
       ],
     ],
@@ -125,8 +127,8 @@ export class ClientsFormComponent implements OnInit {
       '',
       [
         Validators.required,
-        Validators.minLength(4),
-        Validators.maxLength(30),
+        FormUtils.minLength(4),
+        FormUtils.maxLength(30),
         Validators.pattern(FormUtils.usernamePattern),
         FormUtils.notOnlyWhiteSpace,
       ],
@@ -135,14 +137,14 @@ export class ClientsFormComponent implements OnInit {
       '',
       [
         Validators.required,
-        Validators.maxLength(255),
+        FormUtils.maxLength(255),
         Validators.pattern(FormUtils.emailPattern),
       ],
     ],
     password: [
       '',
       [
-        Validators.maxLength(100),
+        FormUtils.maxLength(100),
         Validators.pattern(FormUtils.passwordPattern),
       ],
     ],
@@ -152,20 +154,20 @@ export class ClientsFormComponent implements OnInit {
     cuit: [
       '',
       [
-        Validators.minLength(11),
-        Validators.maxLength(11),
+        FormUtils.minLength(11),
+        FormUtils.maxLength(11),
         Validators.pattern(FormUtils.cuitPattern),
       ],
     ],
 
     // --- DIRECCIÓN ---
-    street: ['', Validators.maxLength(100)],
-    streetNumber: ['', Validators.maxLength(10)],
-    city: ['', Validators.maxLength(100)],
-    province: ['', Validators.maxLength(100)],
-    postalCode: ['', Validators.maxLength(10)],
-    floor: ['', Validators.maxLength(5)],
-    apartment: ['', Validators.maxLength(5)],
+    street: ['', FormUtils.maxLength(100)],
+    streetNumber: ['', FormUtils.maxLength(10)],
+    city: ['', FormUtils.maxLength(100)],
+    province: ['', FormUtils.maxLength(100)],
+    postalCode: ['', FormUtils.maxLength(10)],
+    floor: ['', FormUtils.maxLength(5)],
+    apartment: ['', FormUtils.maxLength(5)],
 
     // --- AUDITORÍA ---
     createdAt: [{ value: '', disabled: true }],

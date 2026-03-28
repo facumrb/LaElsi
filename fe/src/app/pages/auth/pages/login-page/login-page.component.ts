@@ -13,6 +13,7 @@ import { AlertService } from '@shared/alert.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { GoBackButtonComponent } from '@shared/components/buttons/go-back-button/go-back-button.component';
 import { FieldErrorComponent } from '@shared/validators/field-error/field-error.component';
+import { TrimInputDirective } from '@shared/directives/trim-input.directive';
 
 @Component({
   selector: 'app-login-page',
@@ -22,6 +23,7 @@ import { FieldErrorComponent } from '@shared/validators/field-error/field-error.
     NgIconComponent,
     GoBackButtonComponent,
     FieldErrorComponent,
+    TrimInputDirective,
   ],
   viewProviders: [
     provideIcons({
@@ -50,13 +52,13 @@ export class LoginPageComponent {
       '',
       [
         Validators.required,
-        Validators.minLength(4),
-        Validators.maxLength(30),
+        FormUtils.minLength(4),
+        FormUtils.maxLength(30),
         Validators.pattern(FormUtils.usernamePattern),
         FormUtils.notOnlyWhiteSpace,
       ],
     ],
-    password: ['', [Validators.maxLength(100), Validators.required]],
+    password: ['', [FormUtils.maxLength(100), Validators.required]],
   });
 
   // Lógica UI para el input de contraseña
