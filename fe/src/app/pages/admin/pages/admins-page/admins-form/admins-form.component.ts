@@ -16,6 +16,7 @@ import { AuditInfoComponent } from '@shared/components/audit-info/audit-info.com
 import { PhoneInputDirective } from '@shared/directives/phone-input.directive';
 import { GoBackButtonComponent } from '@shared/components/buttons/go-back-button/go-back-button.component';
 import { FieldErrorComponent } from '@shared/validators/field-error/field-error.component';
+import { TrimInputDirective } from '@shared/directives/trim-input.directive';
 
 @Component({
   selector: 'app-admins-form',
@@ -28,6 +29,7 @@ import { FieldErrorComponent } from '@shared/validators/field-error/field-error.
     GoBackButtonComponent,
     FieldErrorComponent,
     RouterLink,
+    TrimInputDirective,
   ],
   providers: [DatePipe],
   templateUrl: './admins-form.component.html',
@@ -59,8 +61,8 @@ export class AdminsFormComponent implements OnInit {
       '',
       [
         Validators.required,
-        Validators.minLength(2),
-        Validators.maxLength(100),
+        FormUtils.minLength(2),
+        FormUtils.maxLength(100),
         FormUtils.notOnlyWhiteSpace,
       ],
     ],
@@ -68,8 +70,8 @@ export class AdminsFormComponent implements OnInit {
       '',
       [
         Validators.required,
-        Validators.minLength(2),
-        Validators.maxLength(100),
+        FormUtils.minLength(2),
+        FormUtils.maxLength(100),
         FormUtils.notOnlyWhiteSpace,
       ],
     ],
@@ -77,8 +79,8 @@ export class AdminsFormComponent implements OnInit {
       '',
       [
         Validators.required,
-        Validators.minLength(7),
-        Validators.maxLength(15),
+        FormUtils.minLength(7),
+        FormUtils.maxLength(15),
         Validators.pattern(FormUtils.numberPattern),
       ],
     ],
@@ -86,8 +88,8 @@ export class AdminsFormComponent implements OnInit {
       '',
       [
         Validators.required,
-        Validators.minLength(7),
-        Validators.maxLength(20),
+        FormUtils.minLength(7),
+        FormUtils.maxLength(20),
         Validators.pattern(FormUtils.phonePattern),
       ],
     ],
@@ -97,8 +99,8 @@ export class AdminsFormComponent implements OnInit {
       '',
       [
         Validators.required,
-        Validators.minLength(4),
-        Validators.maxLength(30),
+        FormUtils.minLength(4),
+        FormUtils.maxLength(30),
         Validators.pattern(FormUtils.usernamePattern),
         FormUtils.notOnlyWhiteSpace,
       ],
@@ -107,7 +109,7 @@ export class AdminsFormComponent implements OnInit {
       '',
       [
         Validators.required,
-        Validators.maxLength(255),
+        FormUtils.maxLength(255),
         Validators.pattern(FormUtils.emailPattern),
       ],
     ],
@@ -115,7 +117,7 @@ export class AdminsFormComponent implements OnInit {
     password: [
       '',
       [
-        Validators.maxLength(100),
+        FormUtils.maxLength(100),
         Validators.pattern(FormUtils.passwordPattern),
       ],
     ],

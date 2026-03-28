@@ -78,7 +78,6 @@ export class NavbarComponent implements OnInit {
   ngOnInit() {
     this.apiCategoryService.getCategoryTree('Activo').subscribe({
       next: (data) => this.categories.set(data),
-      error: (err) => console.error('Error al traer árbol de categorías', err),
     });
   }
 

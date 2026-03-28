@@ -1,4 +1,11 @@
-import { Component, inject, OnInit, signal, computed, DestroyRef, effect } from '@angular/core';
+import {
+  Component,
+  inject,
+  OnInit,
+  signal,
+  computed,
+  effect,
+} from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -22,12 +29,14 @@ import {
 } from '@ng-icons/bootstrap-icons';
 import { AuditInfoComponent } from '@shared/components/audit-info/audit-info.component';
 import { FieldErrorComponent } from '@shared/validators/field-error/field-error.component';
+import { TrimInputDirective } from '@shared/directives/trim-input.directive';
 
 @Component({
   selector: 'app-categories-form',
   imports: [
     ReactiveFormsModule,
     ClickOutsideDirective,
+    TrimInputDirective,
     NgIconComponent,
     AuditInfoComponent,
     GoBackButtonComponent,
@@ -53,7 +62,6 @@ export class CategoriesFormComponent implements OnInit {
   private datePipe = inject(DatePipe);
   private draftService = inject(ProductDraftService);
   private http = inject(HttpClient);
-  private destroyRef = inject(DestroyRef);
 
   formUtils = FormUtils;
 
@@ -75,16 +83,13 @@ export class CategoriesFormComponent implements OnInit {
       '',
       [
         Validators.required,
-        Validators.minLength(3),
-        Validators.maxLength(50),
+        FormUtils.minLength(3),
+        FormUtils.maxLength(50),
         Validators.pattern(FormUtils.namePattern),
         FormUtils.notOnlyWhiteSpace,
       ],
     ],
-    description: [
-      '',
-      [Validators.maxLength(1000), FormUtils.notOnlyWhiteSpace],
-    ],
+    description: ['', [FormUtils.maxLength(1000), FormUtils.notOnlyWhiteSpace]],
     state: [CategoryState.Activo, [Validators.required]],
     parentId: [null as number | null],
     order: [
@@ -106,13 +111,13 @@ export class CategoriesFormComponent implements OnInit {
   // initialValue: null asegura que en el estado inicial (sin emisiones aún) el valor sea null (raíz)
   currentParentId = toSignal(
     this.formCategory.get('parentId')!.valueChanges.pipe(takeUntilDestroyed()),
-    { initialValue: null as number | null }
+    { initialValue: null as number | null },
   );
 
   maxOrder = computed(() => {
     const parentId = this.currentParentId();
     // Peers: solo las categorías del mismo nivel (mismo parentId)
-    const peers = this.allCategories().filter(c => {
+    const peers = this.allCategories().filter((c) => {
       const cParent = c.parentId ?? null;
       return cParent === parentId;
     });
@@ -121,7 +126,9 @@ export class CategoriesFormComponent implements OnInit {
 
     if (this.isEditMode()) {
       // Si ya pertenece a este padre, no sumamos 1 (solo ocupa uno de los N lugares)
-      const editedCat = this.allCategories().find(c => c.id === this.categoryId());
+      const editedCat = this.allCategories().find(
+        (c) => c.id === this.categoryId(),
+      );
       const isSameParent = (editedCat?.parentId ?? null) === parentId;
       return isSameParent ? count : count + 1;
     }

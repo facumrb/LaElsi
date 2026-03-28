@@ -19,6 +19,7 @@ import {
   bootstrapArrowClockwise,
 } from '@ng-icons/bootstrap-icons';
 import { FieldErrorComponent } from '@shared/validators/field-error/field-error.component';
+import { TrimInputDirective } from '@shared/directives/trim-input.directive';
 
 @Component({
   selector: 'app-edit-profile-page',
@@ -29,6 +30,7 @@ import { FieldErrorComponent } from '@shared/validators/field-error/field-error.
     NumericInputDirective,
     PhoneInputDirective,
     FieldErrorComponent,
+    TrimInputDirective,
   ],
   viewProviders: [
     provideIcons({
@@ -61,8 +63,8 @@ export class EditProfilePageComponent implements OnInit {
       '',
       [
         Validators.required,
-        Validators.minLength(2),
-        Validators.maxLength(100),
+        FormUtils.minLength(2),
+        FormUtils.maxLength(100),
         FormUtils.notOnlyWhiteSpace,
       ],
     ],
@@ -70,8 +72,8 @@ export class EditProfilePageComponent implements OnInit {
       '',
       [
         Validators.required,
-        Validators.minLength(2),
-        Validators.maxLength(100),
+        FormUtils.minLength(2),
+        FormUtils.maxLength(100),
         FormUtils.notOnlyWhiteSpace,
       ],
     ],
@@ -79,8 +81,8 @@ export class EditProfilePageComponent implements OnInit {
       '',
       [
         Validators.required,
-        Validators.minLength(7),
-        Validators.maxLength(20),
+        FormUtils.minLength(7),
+        FormUtils.maxLength(20),
         Validators.pattern(FormUtils.phonePattern),
       ],
     ],
@@ -88,8 +90,8 @@ export class EditProfilePageComponent implements OnInit {
       '',
       [
         Validators.required,
-        Validators.minLength(7),
-        Validators.maxLength(15),
+        FormUtils.minLength(7),
+        FormUtils.maxLength(15),
         Validators.pattern(FormUtils.numberPattern),
       ],
     ],
@@ -97,8 +99,8 @@ export class EditProfilePageComponent implements OnInit {
       '',
       [
         Validators.required,
-        Validators.minLength(4),
-        Validators.maxLength(30),
+        FormUtils.minLength(4),
+        FormUtils.maxLength(30),
         Validators.pattern(FormUtils.usernamePattern),
         FormUtils.notOnlyWhiteSpace,
       ],
@@ -107,7 +109,7 @@ export class EditProfilePageComponent implements OnInit {
       '',
       [
         Validators.required,
-        Validators.maxLength(255),
+        FormUtils.maxLength(255),
         Validators.pattern(FormUtils.emailPattern),
       ],
     ],

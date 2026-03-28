@@ -24,6 +24,7 @@ import { NumericInputDirective } from '@shared/directives/numeric-input.directiv
 import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
 import { FormUtils } from '@shared/validators/form-utils';
 import { FieldErrorComponent } from '@shared/validators/field-error/field-error.component';
+import { TrimInputDirective } from '@shared/directives/trim-input.directive';
 
 @Component({
   selector: 'app-profile-details',
@@ -34,6 +35,7 @@ import { FieldErrorComponent } from '@shared/validators/field-error/field-error.
     NumericInputDirective,
     ClickOutsideDirective,
     FieldErrorComponent,
+    TrimInputDirective,
   ],
   viewProviders: [
     provideIcons({
@@ -65,8 +67,8 @@ export class ProfileDetailsComponent {
       '',
       [
         Validators.required,
-        Validators.minLength(2),
-        Validators.maxLength(100),
+        FormUtils.minLength(2),
+        FormUtils.maxLength(100),
         FormUtils.notOnlyWhiteSpace,
       ],
     ],
@@ -74,8 +76,8 @@ export class ProfileDetailsComponent {
       '',
       [
         Validators.required,
-        Validators.minLength(2),
-        Validators.maxLength(100),
+        FormUtils.minLength(2),
+        FormUtils.maxLength(100),
         FormUtils.notOnlyWhiteSpace,
       ],
     ],
@@ -83,8 +85,8 @@ export class ProfileDetailsComponent {
       '',
       [
         Validators.required,
-        Validators.minLength(7),
-        Validators.maxLength(15),
+        FormUtils.minLength(7),
+        FormUtils.maxLength(15),
         Validators.pattern(FormUtils.numberPattern),
       ],
     ],
@@ -92,7 +94,7 @@ export class ProfileDetailsComponent {
       '',
       [
         Validators.required,
-        Validators.maxLength(255),
+        FormUtils.maxLength(255),
         Validators.pattern(FormUtils.emailPattern),
       ],
     ],
@@ -100,27 +102,27 @@ export class ProfileDetailsComponent {
       '',
       [
         Validators.required,
-        Validators.minLength(7),
-        Validators.maxLength(20),
+        FormUtils.minLength(7),
+        FormUtils.maxLength(20),
         Validators.pattern(FormUtils.phonePattern),
       ],
     ],
     cuit: [
       '',
       [
-        Validators.minLength(11),
-        Validators.maxLength(11),
+        FormUtils.minLength(11),
+        FormUtils.maxLength(11),
         Validators.pattern(FormUtils.cuitPattern),
       ],
     ],
     fiscalCondition: [FiscalCondition.ConsumidorFinal],
-    street: ['', Validators.maxLength(100)],
+    street: ['', FormUtils.maxLength(100)],
     streetNumber: [0],
-    city: ['', Validators.maxLength(100)],
-    province: ['', Validators.maxLength(100)],
-    postalCode: ['', Validators.maxLength(10)],
-    floor: ['', Validators.maxLength(5)],
-    apartment: ['', Validators.maxLength(5)],
+    city: ['', FormUtils.maxLength(100)],
+    province: ['', FormUtils.maxLength(100)],
+    postalCode: ['', FormUtils.maxLength(10)],
+    floor: ['', FormUtils.maxLength(5)],
+    apartment: ['', FormUtils.maxLength(5)],
   });
 
   ngOnInit() {

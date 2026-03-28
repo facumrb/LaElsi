@@ -13,11 +13,15 @@ import { orderRouter } from './order/order.routes.js';
 import { validationRouter } from './shared/validation/validation.routes.js';
 import { orm, syncSchema } from './shared/db/orm.js';
 import { seedDatabase } from './shared/db/seed.js';
+import { trimMiddleware } from './shared/middlewares/trim.middleware.js';
 
 const app = express();
 
 app.use(cors({ origin: 'http://localhost:4200' }));
 app.use(express.json());
+
+// Middleware para limpiar espacios en blanco de los datos entrantes en inputs.
+app.use(trimMiddleware);
 
 //luego de los middlewares base
 app.use((req, res, next) => {
@@ -36,11 +40,11 @@ app.use('/api/orders', orderRouter);
 app.use('/api/validate-unique', validationRouter);
 
 // Rutas de Fotos de Productos
-// Ejemplo URL: http://localhost:3000/uploads/products/foto.jpg
+// Ejemplo URL: http://localhost:3000/uploads/products/foto.webp
 app.use('/uploads/products', express.static(path.join(process.cwd(), 'uploads/products')));
 
 // Rutas de Fotos de Usuarios/Perfil
-// Ejemplo URL: http://localhost:3000/uploads/users/avatar.jpg
+// Ejemplo URL: http://localhost:3000/uploads/users/avatar.webp
 app.use('/uploads/users', express.static(path.join(process.cwd(), 'uploads/users')));
 
 import { errorHandler } from './shared/errors/errorHandler.js';

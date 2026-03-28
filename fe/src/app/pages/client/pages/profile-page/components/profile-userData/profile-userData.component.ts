@@ -19,6 +19,7 @@ import { PhotoManagerComponent } from '@shared/components/photo-manager/photo-ma
 import { FormUtils } from '@shared/validators/form-utils';
 import { switchMap } from 'rxjs';
 import { FieldErrorComponent } from '@shared/validators/field-error/field-error.component';
+import { TrimInputDirective } from '@shared/directives/trim-input.directive';
 
 @Component({
   selector: 'app-profile-user',
@@ -27,6 +28,7 @@ import { FieldErrorComponent } from '@shared/validators/field-error/field-error.
     NgIconComponent,
     PhotoManagerComponent,
     FieldErrorComponent,
+    TrimInputDirective,
   ],
   viewProviders: [provideIcons({ bootstrapShieldLock })],
   templateUrl: './profile-userData.component.html',
@@ -48,8 +50,8 @@ export class ProfileUserComponent implements OnInit {
       '',
       [
         Validators.required,
-        Validators.minLength(4),
-        Validators.maxLength(30),
+        FormUtils.minLength(4),
+        FormUtils.maxLength(30),
         Validators.pattern(FormUtils.usernamePattern),
         FormUtils.notOnlyWhiteSpace,
       ],
@@ -57,7 +59,7 @@ export class ProfileUserComponent implements OnInit {
     password: [
       '',
       [
-        Validators.maxLength(100),
+        FormUtils.maxLength(100),
         Validators.pattern(FormUtils.passwordPattern),
       ],
     ],
