@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { ProductPhotoController } from './productPhoto/productPhoto.controller.js';
 import { UserPhotoController } from './userPhoto/userPhoto.controller.js';
 import { uploadProduct, uploadProfile } from './multer.config.js';
-import { verifyToken, verifyRole } from '../shared/auth.middleware.js';
+import { verifyToken, verifyRole } from '../shared/middlewares/auth.middleware.js';
 import { UserRole } from '../user/user.entity.js';
 import { optimizeImage } from './imageOptimizer.middleware.js';
 

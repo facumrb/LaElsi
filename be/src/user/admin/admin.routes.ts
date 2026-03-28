@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { AdminController, sanitizeAdminInput } from './admin.controller.js';
-import { verifyToken, verifyRole } from '../../shared/auth.middleware.js';
+import { verifyToken, verifyRole } from '../../shared/middlewares/auth.middleware.js';
 import { UserRole } from '../user.entity.js';
 
 export const adminRouter = Router();

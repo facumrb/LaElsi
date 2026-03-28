@@ -3,7 +3,7 @@ import { User, UserRole } from './user.entity.js';
 import { Client } from './client/client.entity.js';
 import { Admin } from './admin/admin.entity.js';
 import { FiscalCondition } from '../shared/enums/fiscal-condition.enum.js';
-import { generateToken } from '../shared/auth.middleware.js';
+import { generateToken } from '../shared/middlewares/auth.middleware.js';
 import { AppError } from '../shared/errors/appError.js';
 import bcrypt from 'bcrypt';
 

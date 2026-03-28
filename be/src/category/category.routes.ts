@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { CategoryController, sanitizeCategoryInput } from './category.controller.js';
-import { verifyToken, verifyRole } from '../shared/auth.middleware.js';
+import { verifyToken, verifyRole } from '../shared/middlewares/auth.middleware.js';
 import { UserRole } from '../user/user.entity.js';
 
 export const categoryRouter = Router();

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { ClientController, sanitizeClientInput } from './client.controller.js';
-import { verifyToken, verifyRole } from '../../shared/auth.middleware.js';
+import { verifyToken, verifyRole } from '../../shared/middlewares/auth.middleware.js';
 import { UserRole } from '../user.entity.js';
 
 export const clientRouter = Router();
