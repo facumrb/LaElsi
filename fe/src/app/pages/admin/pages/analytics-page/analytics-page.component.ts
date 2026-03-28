@@ -18,6 +18,7 @@ import { ApiClientService } from '@services/api-client.service';
 import { OrderState, IApiOrder } from '@models/order.model';
 import { environment } from 'src/environments/environment';
 import { OrderDetailModalComponent } from '@shared/components/order-detail-modal/order-detail-modal.component';
+import { IApiProduct } from '@models/product.model';
 
 @Component({
   selector: 'app-analytics-page',
@@ -106,7 +107,7 @@ export class AnalyticsPageComponent {
     return `${this.imageBaseUrl}${fileName}`;
   }
 
-  getProductMainImage(product: any): string {
+  getProductMainImage(product: IApiProduct): string {
     if (product.photos && product.photos.length > 0) {
       return this.getImageUrl(product.photos[0].fileName);
     }
