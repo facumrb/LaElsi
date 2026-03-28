@@ -45,6 +45,10 @@ export class CategoriesPageComponent implements OnInit {
     const status = this.statusFilter();
     const stockType = this.stockFilter();
 
+    // Helper para obtener parentId de forma consistente
+    const getParentId = (c: IApiCategory): number | null =>
+      c.parentId ?? c.parent?.id ?? null;
+
     // Aplicamos filtros (Search, Status, Stock)
     let filtered = currentCategories.filter((cat) => {
       // Filtro de Búsqueda
@@ -87,7 +91,7 @@ export class CategoriesPageComponent implements OnInit {
           parentId: number | null = null,
         ): IApiCategory[] => {
           return list
-            .filter((c) => (c.parentId || null) === parentId)
+            .filter((c) => getParentId(c) === parentId)
             .sort((a, b) => a.order - b.order)
             .reduce((acc: IApiCategory[], cat) => {
               return [...acc, cat, ...buildTree(list, cat.id)];

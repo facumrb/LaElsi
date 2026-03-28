@@ -94,10 +94,10 @@ const CLIENTS_DATA = [
 ];
 
 const CATEGORIES_DATA = [
-  { name: 'Libreria', description: 'Productos de Libreria', state: CategoryState.Activo },
-  { name: 'Jugueteria', description: 'Productos de Jugueteria', state: CategoryState.Activo },
-  { name: 'Tecnologia', description: 'Productos de Tecnologia', state: CategoryState.Activo },
-  { name: 'Indumentaria', description: 'Productos de Indumentaria', state: CategoryState.Inactivo }
+  { name: 'Libreria', description: 'Productos de Libreria', state: CategoryState.Activo, order: 1 },
+  { name: 'Jugueteria', description: 'Productos de Jugueteria', state: CategoryState.Activo, order: 2 },
+  { name: 'Tecnologia', description: 'Productos de Tecnologia', state: CategoryState.Activo, order: 3 },
+  { name: 'Indumentaria', description: 'Productos de Indumentaria', state: CategoryState.Inactivo, order: 4 }
 ];
 
 interface IProductSeed {
@@ -723,6 +723,7 @@ async function seedCategories(em: EntityManager): Promise<Record<string, Categor
       category.name = catData.name;
       category.description = catData.description;
       category.state = catData.state;
+      category.order = catData.order;
       em.persist(category);
       categoryMap[category.name] = category;
     }

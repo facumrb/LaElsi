@@ -40,13 +40,11 @@ export class MainPageComponent implements OnInit {
       error: (err) => console.error('Error fetching global best sellers', err),
     });
 
-    // 2. Obtener categorías y sus más vendidos
-    this.apiCategoryService.getAllCategories().subscribe({
+    // 2. Obtener categorías activas y sus más vendidos
+    this.apiCategoryService.getActiveCategories().subscribe({
       next: (categories) => {
-        const activeCategories = categories.filter((c) => c.state === 'Activo');
-
         // Limitamos a algunas categorías para la home
-        const topCategories = activeCategories.slice(0, 5);
+        const topCategories = categories.slice(0, 5);
 
         const requests = topCategories.map((cat) =>
           this.apiProductService

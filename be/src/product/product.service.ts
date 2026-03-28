@@ -7,6 +7,7 @@ import { Currency } from '../shared/enums/currency.enum.js';
 import path from 'path';
 import fs from 'fs/promises';
 import { AppError } from '../shared/errors/appError.js';
+import { CategoryService } from '../category/category.service.js';
 
 const PRODUCT_PATH = path.join(process.cwd(), 'uploads', 'products');
 const VALID_CURRENCIES = Object.values(Currency);
@@ -108,10 +109,14 @@ export class ProductService {
     return em.find(
       Product,
       {
+        state: ProductState.Activo,
+        category: { state: CategoryState.Activo },
         $or: [{ name: { $like: `%${query}%` } }, { description: { $like: `%${query}%` } }, { brand: { $like: `%${query}%` } }]
       },
       {
-        populate: ['category', 'photos', 'prices']
+        populate: ['category', 'photos', 'prices'],
+        populateWhere: { prices: { isCurrent: true } },
+        populateOrderBy: { photos: { order: 'ASC' } }
       }
     );
   }
@@ -160,6 +165,21 @@ export class ProductService {
     return product;
   }
 
+  static async findOneActive(id: number) {
+    const em = orm.em;
+    const product = await em.findOne(
+      Product,
+      { id, state: ProductState.Activo, category: { state: CategoryState.Activo } },
+      {
+        populate: ['category', 'photos', 'prices'],
+        populateWhere: { prices: { isCurrent: true } },
+        populateOrderBy: { photos: { order: 'ASC' } }
+      }
+    );
+    if (!product) throw new AppError('Producto no encontrado', 404);
+    return product;
+  }
+
   static async updateProduct(id: number, data: UpdateProductDto) {
     const em = orm.em;
     const product = await em.findOne(Product, { id }, { populate: ['category', 'photos', 'prices'] });
@@ -168,6 +188,7 @@ export class ProductService {
       throw new AppError('Producto no encontrado', 404);
     }
 
+    const oldCategoryId = (product.category as any)?.id ?? product.category;
     const { price, currency, ...updateData } = data;
 
     if (price !== undefined && (typeof price !== 'number' || price <= 0)) {
@@ -217,16 +238,33 @@ export class ProductService {
       throw error;
     }
 
+    // 1. Si el producto pasó a Inactivo, verificar si su categoría actual debe desactivarse
+    if (product.state === ProductState.Inactivo && oldState === ProductState.Activo) {
+      const categoryId = (product.category as any)?.id ?? product.category;
+      if (categoryId) {
+        await CategoryService.checkAndDeactivateCategory(categoryId);
+      }
+    }
+
+    // 2. Si el producto CAMBIÓ de categoría y está activo, la categoría anterior podría quedar vacía
+    if (updateData.category && oldState === ProductState.Activo && product.state === ProductState.Activo) {
+      if (oldCategoryId !== updateData.category) {
+        await CategoryService.checkAndDeactivateCategory(oldCategoryId);
+      }
+    }
+
     return product;
   }
 
   static async removeProduct(id: number) {
     const em = orm.em;
-    const product = await em.findOne(Product, { id }, { populate: ['photos'] });
+    const product = await em.findOne(Product, { id }, { populate: ['photos', 'category'] });
 
     if (!product) {
       throw new AppError('El producto no existe', 404);
     }
+
+    const categoryId = (product.category as any)?.id ?? product.category;
 
     for (const photo of product.photos) {
       const filePath = path.join(PRODUCT_PATH, photo.fileName);
@@ -238,6 +276,11 @@ export class ProductService {
     }
     em.remove(product);
     await em.flush();
+
+    // Verificar si la categoría debe desactivarse tras eliminar el producto
+    if (categoryId) {
+      await CategoryService.checkAndDeactivateCategory(categoryId);
+    }
   }
 
   static async findPage(page: number, limit: number) {

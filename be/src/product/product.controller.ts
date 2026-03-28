@@ -76,6 +76,14 @@ export class ProductController {
     return res.status(200).json(ApiResponse.success('Producto encontrado', product));
   });
 
+  static findOneActive = asyncHandler(async (req: Request, res: Response) => {
+    const id = Number.parseInt(req.params.id);
+    if (isNaN(id)) throw new AppError('ID de producto inválido', 400);
+
+    const product = await ProductService.findOneActive(id);
+    return res.status(200).json(ApiResponse.success('Producto encontrado', product));
+  });
+
   // ============================================================================
   // ACTUALIZACIÓN
   // ============================================================================

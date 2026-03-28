@@ -137,10 +137,10 @@
             id="order"
             name="order"
             formControlName="order"
-            min="0"
+            min="1"
             [max]="maxOrder()"
             inputmode="numeric"
-            placeholder="Ej: 0, 1, 2..."
+            placeholder="Ej: 1, 2, 3..."
             class="form-input"
           />
           <app-field-error [control]="formCategory.controls.order" />

@@ -1,6 +1,6 @@
 import { Category } from './category.entity.js';
 import { orm } from '../shared/db/orm.js';
-import { CategoryState } from '../shared/enums/state.enum.js';
+import { CategoryState, ProductState } from '../shared/enums/state.enum.js';
 import { AppError } from '../shared/errors/appError.js';
 
 export class CategoryService {
@@ -46,13 +46,23 @@ export class CategoryService {
 
   static async searchCategoriesByText(query: string) {
     const em = orm.em;
-    return em.find(
+    const categories = await em.find(
       Category,
       {
+        state: CategoryState.Activo,
         $or: [{ name: { $like: `%${query}%` } }, { description: { $like: `%${query}%` } }]
       },
       { populate: ['products.photos'] }
     );
+
+    // Defensa: Filtrar categorías que no tienen productos activos en su subárbol
+    const filtered: Category[] = [];
+    for (const cat of categories) {
+      if (await this.hasActiveProductsInSubtree(cat.id)) {
+        filtered.push(cat);
+      }
+    }
+    return filtered;
   }
 
   static async addCategory(data: Partial<Category> & { parentId?: number }) {
@@ -188,6 +198,12 @@ export class CategoryService {
     em.assign(category, updateData);
 
     if (category.state !== oldState) {
+      if (category.state === CategoryState.Activo) {
+        const hasActive = await this.hasActiveProductsInSubtree(category.id);
+        if (!hasActive) {
+          throw new AppError('No se puede activar una categoría que no tiene productos activos ni subcategorías con productos.', 400);
+        }
+      }
       category.deletedAt = category.state === CategoryState.Inactivo ? new Date() : undefined;
     }
 
@@ -254,10 +270,29 @@ export class CategoryService {
       path += '.children';
     }
 
-    return em.find(Category, filter, {
+    // Si se filtra por estado, filtrar también los children en cada nivel
+    const options: any = {
       populate: populatePaths as any,
       orderBy: { order: 'ASC', name: 'ASC' }
-    });
+    };
+    if (state === CategoryState.Activo) {
+      options.populateWhere = { state: CategoryState.Activo };
+    }
+
+    const categories = await em.find(Category, filter, options);
+
+    // Defensa: Filtrar categorías que no tienen productos activos en su subárbol (Opción C)
+    if (state === CategoryState.Activo) {
+      const filtered: Category[] = [];
+      for (const cat of categories) {
+        if (await this.hasActiveProductsInSubtree(cat.id)) {
+          filtered.push(cat);
+        }
+      }
+      return filtered;
+    }
+
+    return categories;
   }
 
   static async getChildren(parentId: number) {
@@ -270,7 +305,7 @@ export class CategoryService {
 
   static async findAllActive() {
     const em = orm.em;
-    return em.find(
+    const categories = await em.find(
       Category,
       {
         state: CategoryState.Activo,
@@ -278,9 +313,66 @@ export class CategoryService {
       },
       {
         populate: ['children.children', 'products.photos', 'products.prices'],
+        populateWhere: { state: CategoryState.Activo, products: { state: ProductState.Activo } },
         orderBy: { order: 'ASC', name: 'ASC', products: { photos: { order: 'ASC' } } }
       }
     );
+
+    // Defensa: Filtrar categorías que no tienen productos activos en su subárbol
+    const filtered: Category[] = [];
+    for (const cat of categories) {
+      if (await this.hasActiveProductsInSubtree(cat.id)) {
+        filtered.push(cat);
+      }
+    }
+    return filtered;
+  }
+
+  /**
+   * Verifica si una categoría (y su subárbol) tiene al menos un producto activo.
+   */
+  static async hasActiveProductsInSubtree(categoryId: number): Promise<boolean> {
+    const em = orm.em;
+    const { Product } = await import('../product/product.entity.js');
+
+    // Verificar productos directos activos
+    const directCount = await em.count(Product, {
+      category: categoryId,
+      state: ProductState.Activo
+    });
+    if (directCount > 0) return true;
+
+    // Verificar en subcategorías recursivamente
+    const children = await em.find(Category, { parent: categoryId });
+    for (const child of children) {
+      const childHas = await this.hasActiveProductsInSubtree(child.id);
+      if (childHas) return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * Desactiva una categoría si no tiene productos activos en su subárbol.
+   * Luego verifica recursivamente a los padres.
+   */
+  static async checkAndDeactivateCategory(categoryId: number) {
+    const em = orm.em;
+    const category = await em.findOne(Category, { id: categoryId }, { populate: ['parent'] as any });
+
+    if (!category || category.state === CategoryState.Inactivo) return;
+
+    const hasActive = await this.hasActiveProductsInSubtree(categoryId);
+    if (!hasActive) {
+      category.state = CategoryState.Inactivo;
+      category.deletedAt = new Date();
+      await em.flush();
+
+      // Verificar padre recursivamente
+      if (category.parent) {
+        await this.checkAndDeactivateCategory((category.parent as any).id);
+      }
+    }
   }
 
   private static handleUniqueConstraintError(error: any) {

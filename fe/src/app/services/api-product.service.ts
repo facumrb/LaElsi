@@ -65,6 +65,13 @@ export class ApiProductService {
       .pipe(map((response) => response.data));
   }
 
+  // Obtener un producto activo por ID (uso público)
+  getActiveProductById(id: number): Observable<IApiProduct> {
+    return this.http
+      .get<{ message: string; data: IApiProduct }>(`${this.apiUrl}/active/${id}`)
+      .pipe(map((response) => response.data));
+  }
+
   // Buscar productos por nombre o descripción
   searchProducts(query: string): Observable<IApiProduct[]> {
     const params = new HttpParams().set('query', query);

@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { UserRole } from '../../user/user.entity.js';
@@ -11,7 +12,16 @@ declare global {
   }
 }
 
-const SECRET = process.env.JWT_SECRET || 'secret_super_secreto_para_desarrollo';
+const SECRET = process.env.JWT_SECRET;
+const REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
+
+if (!SECRET || !REFRESH_SECRET) {
+  console.error("ERROR CRÍTICO: Las variables JWT_SECRET y JWT_REFRESH_SECRET deben estar obligatoriamente definidas en tu archivo .env");
+  process.exit(1); // Volteamos la app para evitar que arranque insegura
+}
+
+const ACCESS_TOKEN_EXPIRY = '15m';
+const REFRESH_TOKEN_EXPIRY = '7d';
 
 // Middleware para verificar si el usuario tiene un Token válido
 export const verifyToken = (req: Request, res: Response, next: NextFunction) => {
@@ -47,5 +57,14 @@ export const verifyRole = (allowedRoles: UserRole[]) => {
 };
 
 export const generateToken = (user: { id: number; role: UserRole; email: string }) => {
-  return jwt.sign(user, SECRET, { expiresIn: '8h' });
+  return jwt.sign(user, SECRET, { expiresIn: ACCESS_TOKEN_EXPIRY });
 };
+
+export const generateRefreshToken = (user: { id: number; role: UserRole; email: string }) => {
+  return jwt.sign(user, REFRESH_SECRET, { expiresIn: REFRESH_TOKEN_EXPIRY });
+};
+
+export const verifyRefreshToken = (token: string): { id: number; role: UserRole; email: string } => {
+  return jwt.verify(token, REFRESH_SECRET) as { id: number; role: UserRole; email: string };
+};
+

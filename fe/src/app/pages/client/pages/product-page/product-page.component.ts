@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ApiProductService } from '@services/api-product.service';
 import { CartService } from '@services/cart.service';
 import { IApiProduct } from '@models/product.model';
@@ -41,6 +41,7 @@ export class ProductPageComponent implements OnInit {
   private activatedRoute = inject(ActivatedRoute);
   private productService = inject(ApiProductService);
   private cartService = inject(CartService);
+  private router = inject(Router);
 
   product = signal<IApiProduct | undefined>(undefined);
   selectedPhotoUrl = signal<string | undefined>(undefined);
@@ -86,7 +87,7 @@ export class ProductPageComponent implements OnInit {
   ngOnInit(): void {
     const id = Number(this.activatedRoute.snapshot.paramMap.get('id'));
 
-    this.productService.getProductById(id).subscribe({
+    this.productService.getActiveProductById(id).subscribe({
       next: (data) => {
         this.product.set(data);
         // Al cargar, seteamos la primera foto si existe
@@ -96,7 +97,7 @@ export class ProductPageComponent implements OnInit {
           this.selectedPhotoUrl.set(this.defaultImage);
         }
       },
-      error: (err) => console.error('Error al cargar el producto', err),
+      error: () => this.router.navigate(['/']),
     });
   }
 

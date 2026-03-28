@@ -1,6 +1,6 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { map, Observable, tap } from 'rxjs';
+import { map, Observable, tap, BehaviorSubject, filter, take, switchMap, catchError, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Router } from '@angular/router';
 import {
@@ -19,7 +19,11 @@ export class AuthService {
   private router = inject(Router);
   private readonly apiUrl = `${environment.apiUrl}/users`;
   private readonly TOKEN_KEY = 'auth_token';
+  private readonly REFRESH_TOKEN_KEY = 'auth_refresh_token';
   private readonly USER_KEY = 'auth_user';
+
+  private isRefreshing = false;
+  private refreshTokenSubject = new BehaviorSubject<string | null>(null);
 
   currentUser = signal<UserSession | null>(null);
   isLoggedIn = computed(() => !!this.currentUser());
@@ -39,7 +43,7 @@ export class AuthService {
       .pipe(
         map((response) => response.data),
         tap((data) => {
-          this.saveSession(data.token, data.user);
+          this.saveSession(data.token, data.refreshToken, data.user);
         }),
       );
   }
@@ -50,8 +54,50 @@ export class AuthService {
       .pipe(map((response) => response.data));
   }
 
+  refreshToken(): Observable<any> {
+    if (this.isRefreshing) {
+      // Si ya se está refrescando, esperamos al nuevo token
+      return this.refreshTokenSubject.pipe(
+        filter((token) => token !== null),
+        take(1),
+        switchMap(() => {
+          // El token ya se actualizó en el pipe original, así que simplemente retornamos un observable "vacio" exitoso
+          // El interceptor usará el nuevo getToken()
+          return new Observable((subscriber) => {
+            subscriber.next(true);
+            subscriber.complete();
+          });
+        })
+      );
+    }
+
+    this.isRefreshing = true;
+    this.refreshTokenSubject.next(null);
+
+    const refreshToken = this.getRefreshToken();
+    return this.http
+      .post<IApiResponse<{ token: string; refreshToken: string }>>(
+        `${this.apiUrl}/refresh-token`,
+        { refreshToken }
+      )
+      .pipe(
+        map((response) => response.data),
+        tap((data) => {
+          this.isRefreshing = false;
+          this.saveTokens(data.token, data.refreshToken);
+          this.refreshTokenSubject.next(data.token);
+        }),
+        catchError((err) => {
+          this.isRefreshing = false;
+          this.logout();
+          return throwError(() => err);
+        })
+      );
+  }
+
   logout(): void {
     localStorage.removeItem(this.TOKEN_KEY);
+    localStorage.removeItem(this.REFRESH_TOKEN_KEY);
     localStorage.removeItem(this.USER_KEY);
     this.currentUser.set(null);
     this.router.navigate(['/']);
@@ -62,10 +108,19 @@ export class AuthService {
     return localStorage.getItem(this.TOKEN_KEY);
   }
 
-  private saveSession(token: string, user: UserSession): void {
-    localStorage.setItem(this.TOKEN_KEY, token);
+  getRefreshToken(): string | null {
+    return localStorage.getItem(this.REFRESH_TOKEN_KEY);
+  }
+
+  private saveSession(token: string, refreshToken: string, user: UserSession): void {
+    this.saveTokens(token, refreshToken);
     localStorage.setItem(this.USER_KEY, JSON.stringify(user));
     this.currentUser.set(user);
+  }
+
+  private saveTokens(token: string, refreshToken: string): void {
+    localStorage.setItem(this.TOKEN_KEY, token);
+    localStorage.setItem(this.REFRESH_TOKEN_KEY, refreshToken);
   }
 
   private loadSession(): void {
@@ -73,6 +128,12 @@ export class AuthService {
     const token = localStorage.getItem(this.TOKEN_KEY);
 
     if (storedUser && token) {
+      // Verificar si el token expiró antes de cargar la sesión
+      if (this.isTokenExpired(token)) {
+        this.logout();
+        return;
+      }
+
       try {
         const parsedUser = JSON.parse(storedUser);
         this.currentUser.set(parsedUser);
@@ -80,6 +141,16 @@ export class AuthService {
         // Si el JSON está corrupto, limpiamos todo
         this.logout();
       }
+    }
+  }
+
+  private isTokenExpired(token: string): boolean {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const expiry = payload.exp * 1000;
+      return Date.now() > expiry;
+    } catch (e) {
+      return true; // Si no se puede parsear, asumimos expirado por seguridad
     }
   }
 

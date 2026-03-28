@@ -57,13 +57,16 @@
                   @if (!isFilterActive() && (category.depth || 0) > 0) {
                     <span class="table-subcategory-indicator">└─</span>
                   }
-                  <span
-                    (click)="onEdit.emit(category)"
-                    class="font-semibold text-gray-900 text-base lg:text-sm cursor-pointer hover:underline"
-                    title="{{ category.name }}"
-                    >{{ category.name }}</span
-                  >
-                </div>
+                    <span
+                      (click)="onEdit.emit(category)"
+                      class="font-semibold text-gray-900 text-base lg:text-sm cursor-pointer hover:underline"
+                      title="{{ category.name }}"
+                      >{{ category.name }}</span
+                    >
+                    <span class="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded-full font-medium whitespace-nowrap">
+                      Nivel {{ (category.depth || 0) + 1 }}
+                    </span>
+                  </div>
                 @if (category.parent) {
                   <span class="table-parent-info">
                     Sub de: {{ category.parent.name }}

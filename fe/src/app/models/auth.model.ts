@@ -11,6 +11,7 @@ export interface UserSession {
 
 export interface LoginData {
   token: string;
+  refreshToken: string;
   user: UserSession;
 }
 

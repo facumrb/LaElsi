@@ -3,7 +3,7 @@ import { User, UserRole } from './user.entity.js';
 import { Client } from './client/client.entity.js';
 import { Admin } from './admin/admin.entity.js';
 import { FiscalCondition } from '../shared/enums/fiscal-condition.enum.js';
-import { generateToken } from '../shared/middlewares/auth.middleware.js';
+import { generateToken, generateRefreshToken, verifyRefreshToken } from '../shared/middlewares/auth.middleware.js';
 import { AppError } from '../shared/errors/appError.js';
 import bcrypt from 'bcrypt';
 
@@ -53,8 +53,14 @@ export class UserService {
       throw new AppError('Credenciales inválidas', 401);
     }
 
-    // Generar Token
+    // Generar Tokens
     const token = generateToken({
+      id: user.id,
+      role: user.role,
+      email: user.email
+    });
+
+    const refreshToken = generateRefreshToken({
       id: user.id,
       role: user.role,
       email: user.email
@@ -62,6 +68,7 @@ export class UserService {
 
     return {
       token,
+      refreshToken,
       user: {
         id: user.id,
         name: user.name,
@@ -75,6 +82,36 @@ export class UserService {
           : null
       }
     };
+  }
+
+  static async refreshToken(refreshTokenStr: string) {
+    if (!refreshTokenStr) {
+      throw new AppError('Refresh token requerido', 400);
+    }
+
+    try {
+      const decoded = verifyRefreshToken(refreshTokenStr);
+
+      // Generar nuevo par de tokens
+      const newToken = generateToken({
+        id: decoded.id,
+        role: decoded.role,
+        email: decoded.email
+      });
+
+      const newRefreshToken = generateRefreshToken({
+        id: decoded.id,
+        role: decoded.role,
+        email: decoded.email
+      });
+
+      return {
+        token: newToken,
+        refreshToken: newRefreshToken
+      };
+    } catch (error) {
+      throw new AppError('Refresh token inválido o expirado', 401);
+    }
   }
 
   static async register(data: RegisterUserDto) {

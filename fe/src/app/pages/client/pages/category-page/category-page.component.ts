@@ -6,7 +6,7 @@ import {
   computed,
   effect,
 } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ApiProductService } from '@services/api-product.service';
 import { ApiCategoryService } from '@services/api-category.service';
 import { ProductCardComponent } from '@client/components/product-card/product-card.component';
@@ -15,7 +15,7 @@ import {
   PriceOrder,
   PopularityOrder,
 } from '@client/components/products-filter/products-filter.component';
-import { IApiCategory } from '@models/category.model';
+import { IApiCategory, CategoryState } from '@models/category.model';
 import { IApiProduct } from '@models/product.model';
 import { BreadcrumbsComponent, BreadcrumbStep } from '@shared/components/breadcrumbs/breadcrumbs.component';
 
@@ -28,6 +28,7 @@ export class CategoryPageComponent implements OnInit {
   private ApiCategoryService = inject(ApiCategoryService);
   private ApiProductService = inject(ApiProductService);
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
 
   category = signal<IApiCategory | null>(null);
   private productsRaw = signal<IApiProduct[]>([]);
@@ -123,10 +124,16 @@ export class CategoryPageComponent implements OnInit {
   }
 
   cargarDatosDePagina(id: number) {
-    // 1. Obtener el nombre de la categoría
+    // 1. Obtener la categoría y validar que esté activa
     this.ApiCategoryService.getCategoryById(id).subscribe({
-      next: (data) => this.category.set(data),
-      error: (err) => console.error('Error al obtener categoría', err),
+      next: (data) => {
+        if (data.state !== CategoryState.Activo) {
+          this.router.navigate(['/']);
+          return;
+        }
+        this.category.set(data);
+      },
+      error: () => this.router.navigate(['/']),
     });
 
     // 2. Obtener los productos activos de la categoría

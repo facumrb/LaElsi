@@ -17,4 +17,10 @@ const register = asyncHandler(async (req: Request, res: Response) => {
   return res.status(201).json(ApiResponse.created('Usuario registrado exitosamente', result));
 });
 
-export { login, register };
+const refreshToken = asyncHandler(async (req: Request, res: Response) => {
+  const { refreshToken } = req.body;
+  const result = await UserService.refreshToken(refreshToken);
+  return res.status(200).json(ApiResponse.success('Token renovado', result));
+});
+
+export { login, register, refreshToken };
