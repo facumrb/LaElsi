@@ -11,11 +11,12 @@ import { Currency } from '../enums/currency.enum.js';
 import { orm } from './orm.js';
 import { EntityManager } from '@mikro-orm/core';
 import { CategoryState, ProductState } from '../../shared/enums/state.enum.js';
+import { UserPhoto } from '../../photo/userPhoto/userPhoto.entity.js';
 
 // --- DATOS CONSTANTES (Configuración) ---
 
 const ADMINS_DATA = [
-  { name: 'Super', lastName: 'Admin', dni: '11111111', email: 'admin@laelsi.com', phone: '123456789', username: 'admin', password: 'admin123' },
+  { name: 'Super', lastName: 'Admin', dni: '11111111', email: 'admin@laelsi.com', phone: '123456789', username: 'admin', password: 'admin123', photoFileName: 'adminprincipal.webp' },
   { name: 'Julio', lastName: 'Cezar', dni: '44222123', email: 'juliocezar@gmail.com', phone: '122345678', username: 'admin1', password: 'admin123' }
 ];
 
@@ -34,7 +35,8 @@ const CLIENTS_DATA = [
     streetNumber: 1500,
     city: 'Rosario',
     province: 'Santa Fe',
-    postalCode: '2000'
+    postalCode: '2000',
+    photoFileName: 'clienteprincipal.webp'
   },
   {
     name: 'Empresa',
@@ -106,7 +108,7 @@ interface IProductSeed {
   categoryName: string;
   price: number;
   totalSold?: number;
-  photos: { fileName: string; mimeType: string }[];
+  photos: { fileName: string }[];
   state?: ProductState;
 }
 
@@ -121,10 +123,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     price: 350,
     totalSold: 85,
     state: ProductState.Activo,
-    photos: [
-      { fileName: 'lapiz-hb-classic.jpg', mimeType: 'image/jpeg' },
-      { fileName: 'lapiz-hb-classic-2.jpg', mimeType: 'image/jpeg' }
-    ]
+    photos: [{ fileName: 'lapiz-hb-classic.jpg' }, { fileName: 'lapiz-hb-classic-2.jpg' }]
   },
   {
     name: 'Cuaderno Universitario Éxito',
@@ -135,10 +134,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     price: 4800,
     totalSold: 32,
     state: ProductState.Activo,
-    photos: [
-      { fileName: 'cuaderno-universitario-exito.jpg', mimeType: 'image/jpeg' },
-      { fileName: 'cuaderno-universitario-exito-2.jpg', mimeType: 'image/jpeg' }
-    ]
+    photos: [{ fileName: 'cuaderno-universitario-exito.jpg' }, { fileName: 'cuaderno-universitario-exito-2.jpg' }]
   },
   {
     name: 'Goma de Borrar Dos Banderas',
@@ -149,7 +145,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     price: 450,
     totalSold: 150,
     state: ProductState.Activo,
-    photos: [{ fileName: 'goma-de-borrar-dos-banderas.png', mimeType: 'image/png' }]
+    photos: [{ fileName: 'goma-de-borrar-dos-banderas.png' }]
   },
   {
     name: 'Set de Reglas Pizzini',
@@ -161,16 +157,16 @@ const PRODUCTS_DATA: IProductSeed[] = [
     totalSold: 210,
     state: ProductState.Inactivo,
     photos: [
-      { fileName: 'set-de-reglas-pizzini.webp', mimeType: 'image/webp' },
-      { fileName: 'set-de-reglas-pizzini-2.webp', mimeType: 'image/webp' },
-      { fileName: 'set-de-reglas-pizzini-3.webp', mimeType: 'image/webp' },
-      { fileName: 'set-de-reglas-pizzini-4.png', mimeType: 'image/png' },
-      { fileName: 'set-de-reglas-pizzini-5.webp', mimeType: 'image/webp' },
-      { fileName: 'set-de-reglas-pizzini-6.webp', mimeType: 'image/webp' },
-      { fileName: 'set-de-reglas-pizzini-7.jpg', mimeType: 'image/jpeg' },
-      { fileName: 'set-de-reglas-pizzini-8.png', mimeType: 'image/png' },
-      { fileName: 'set-de-reglas-pizzini-9.png', mimeType: 'image/png' },
-      { fileName: 'set-de-reglas-pizzini-10.png', mimeType: 'image/png' }
+      { fileName: 'set-de-reglas-pizzini.webp' },
+      { fileName: 'set-de-reglas-pizzini-2.webp' },
+      { fileName: 'set-de-reglas-pizzini-3.webp' },
+      { fileName: 'set-de-reglas-pizzini-4.png' },
+      { fileName: 'set-de-reglas-pizzini-5.webp' },
+      { fileName: 'set-de-reglas-pizzini-6.webp' },
+      { fileName: 'set-de-reglas-pizzini-7.jpg' },
+      { fileName: 'set-de-reglas-pizzini-8.png' },
+      { fileName: 'set-de-reglas-pizzini-9.png' },
+      { fileName: 'set-de-reglas-pizzini-10.png' }
     ]
   },
   {
@@ -182,12 +178,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     price: 12500,
     totalSold: 18,
     state: ProductState.Activo,
-    photos: [
-      { fileName: 'remera-algodon-premium-1.jpeg', mimeType: 'image/jpeg' },
-      { fileName: 'remera-algodon-premium-2.jpeg', mimeType: 'image/jpeg' },
-      { fileName: 'remera-algodon-premium-3.jpeg', mimeType: 'image/jpeg' },
-      { fileName: 'remera-algodon-premium-4.jpeg', mimeType: 'image/jpeg' }
-    ]
+    photos: [{ fileName: 'remera-algodon-premium-1.jpeg' }, { fileName: 'remera-algodon-premium-2.jpeg' }, { fileName: 'remera-algodon-premium-3.jpeg' }, { fileName: 'remera-algodon-premium-4.jpeg' }]
   },
   {
     name: 'Resma A4 75g',
@@ -197,7 +188,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Libreria',
     price: 5000,
     state: ProductState.Activo,
-    photos: [{ fileName: 'resma-a4-75g.jpg', mimeType: 'image/jpeg' }]
+    photos: [{ fileName: 'resma-a4-75g.jpg' }]
   },
   {
     name: 'Bolígrafos Azul x10',
@@ -207,7 +198,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Libreria',
     price: 2000,
     state: ProductState.Activo,
-    photos: [{ fileName: 'boligrafos-azul-x10.jpg', mimeType: 'image/jpeg' }]
+    photos: [{ fileName: 'boligrafos-azul-x10.jpg' }]
   },
   {
     name: 'Carpeta N3',
@@ -217,7 +208,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Libreria',
     price: 3500,
     state: ProductState.Activo,
-    photos: [{ fileName: 'carpeta-n3.jpg', mimeType: 'image/jpeg' }]
+    photos: [{ fileName: 'carpeta-n3.jpg' }]
   },
   {
     name: 'Folios x100',
@@ -227,7 +218,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Libreria',
     price: 1500,
     state: ProductState.Inactivo,
-    photos: [{ fileName: 'folios-x100.jpg', mimeType: 'image/jpeg' }]
+    photos: [{ fileName: 'folios-x100.jpg' }]
   },
   {
     name: 'Resaltadores Pastel x4',
@@ -237,7 +228,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Libreria',
     price: 2200,
     state: ProductState.Activo,
-    photos: [{ fileName: 'resaltadores-pastel-x4.jpg', mimeType: 'image/jpeg' }]
+    photos: [{ fileName: 'resaltadores-pastel-x4.jpg' }]
   },
   {
     name: 'Tijera Escolar',
@@ -247,7 +238,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Libreria',
     price: 900,
     state: ProductState.Activo,
-    photos: [{ fileName: 'tijera-escolar.jpg', mimeType: 'image/jpeg' }]
+    photos: [{ fileName: 'tijera-escolar.jpg' }]
   },
   {
     name: 'Adhesivo Sintético 30ml',
@@ -257,7 +248,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Libreria',
     price: 800,
     state: ProductState.Activo,
-    photos: [{ fileName: 'adhesivo-sintetico-30ml.jpg', mimeType: 'image/jpeg' }]
+    photos: [{ fileName: 'adhesivo-sintetico-30ml.jpg' }]
   },
   {
     name: 'Cartuchera 2 Pisos',
@@ -267,7 +258,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Libreria',
     price: 4500,
     state: ProductState.Activo,
-    photos: [{ fileName: 'cartuchera-2-pisos.jpg', mimeType: 'image/jpeg' }]
+    photos: [{ fileName: 'cartuchera-2-pisos.jpg' }]
   },
   {
     name: 'Mochila Espalda 18p',
@@ -277,7 +268,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Libreria',
     price: 25000,
     state: ProductState.Activo,
-    photos: [{ fileName: 'mochila-espalda-18p.jpg', mimeType: 'image/jpeg' }]
+    photos: [{ fileName: 'mochila-espalda-18p.jpg' }]
   },
   {
     name: 'Agenda 2025',
@@ -287,7 +278,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Libreria',
     price: 8000,
     state: ProductState.Activo,
-    photos: [{ fileName: 'agenda-2025.jpg', mimeType: 'image/jpeg' }]
+    photos: [{ fileName: 'agenda-2025.jpg' }]
   },
   {
     name: 'Calculadora Científica',
@@ -297,7 +288,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Libreria',
     price: 12000,
     state: ProductState.Inactivo,
-    photos: [{ fileName: 'calculadora-cientifica.jpg', mimeType: 'image/jpeg' }]
+    photos: [{ fileName: 'calculadora-cientifica.jpg' }]
   },
   {
     name: 'Abrochadora Mediana',
@@ -307,7 +298,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Libreria',
     price: 3000,
     state: ProductState.Activo,
-    photos: [{ fileName: 'abrochadora-mediana.jpg', mimeType: 'image/jpeg' }]
+    photos: [{ fileName: 'abrochadora-mediana.jpg' }]
   },
 
   // --- JUGUETERÍA ---
@@ -319,7 +310,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Jugueteria',
     price: 15000,
     state: ProductState.Activo,
-    photos: [{ fileName: 'pelota-de-futbol-n5.jpg', mimeType: 'image/jpeg' }]
+    photos: [{ fileName: 'pelota-de-futbol-n5.jpg' }]
   },
   {
     name: 'Muñeca Articulada',
@@ -329,7 +320,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Jugueteria',
     price: 12000,
     state: ProductState.Activo,
-    photos: [{ fileName: 'muneca-articulada.jpg', mimeType: 'image/jpeg' }]
+    photos: [{ fileName: 'muneca-articulada.jpg' }]
   },
   {
     name: 'Auto a Control Remoto',
@@ -339,7 +330,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Jugueteria',
     price: 20000,
     state: ProductState.Activo,
-    photos: [{ fileName: 'auto-a-control-remoto.jpg', mimeType: 'image/jpeg' }]
+    photos: [{ fileName: 'auto-a-control-remoto.jpg' }]
   },
   {
     name: 'Juego de Mesa Estanciero',
@@ -349,7 +340,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Jugueteria',
     price: 9000,
     state: ProductState.Activo,
-    photos: [{ fileName: 'juego-de-mesa-estanciero.jpg', mimeType: 'image/jpeg' }]
+    photos: [{ fileName: 'juego-de-mesa-estanciero.jpg' }]
   },
   {
     name: 'Bloques de Construcción',
@@ -359,7 +350,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Jugueteria',
     price: 11000,
     state: ProductState.Activo,
-    photos: [{ fileName: 'bloques-de-construccion.jpg', mimeType: 'image/jpeg' }]
+    photos: [{ fileName: 'bloques-de-construccion.jpg' }]
   },
   {
     name: 'Peluche Oso 50cm',
@@ -369,7 +360,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Jugueteria',
     price: 8500,
     state: ProductState.Inactivo,
-    photos: [{ fileName: 'peluche-oso-50cm.jpg', mimeType: 'image/jpeg' }]
+    photos: [{ fileName: 'peluche-oso-50cm.jpg' }]
   },
   {
     name: 'Rompecabezas 1000 Piezas',
@@ -379,7 +370,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Jugueteria',
     price: 7000,
     state: ProductState.Activo,
-    photos: [{ fileName: 'rompecabezas-1000-piezas.jpg', mimeType: 'image/jpeg' }]
+    photos: [{ fileName: 'rompecabezas-1000-piezas.jpg' }]
   },
   {
     name: 'Pistola de Agua',
@@ -389,7 +380,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Jugueteria',
     price: 6500,
     state: ProductState.Activo,
-    photos: [{ fileName: 'pistola-de-agua.jpg', mimeType: 'image/jpeg' }]
+    photos: [{ fileName: 'pistola-de-agua.jpg' }]
   },
   {
     name: 'Set de Cocina',
@@ -399,7 +390,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Jugueteria',
     price: 5000,
     state: ProductState.Activo,
-    photos: [{ fileName: 'set-de-cocina.jpg', mimeType: 'image/jpeg' }]
+    photos: [{ fileName: 'set-de-cocina.jpg' }]
   },
   {
     name: 'Pista de Autos',
@@ -409,7 +400,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Jugueteria',
     price: 18000,
     state: ProductState.Activo,
-    photos: [{ fileName: 'pista-de-autos.jpg', mimeType: 'image/jpeg' }]
+    photos: [{ fileName: 'pista-de-autos.jpg' }]
   },
   {
     name: 'Masa para Modelar x4',
@@ -419,7 +410,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Jugueteria',
     price: 4000,
     state: ProductState.Activo,
-    photos: [{ fileName: 'masa-para-modelar-x4.jpg', mimeType: 'image/jpeg' }]
+    photos: [{ fileName: 'masa-para-modelar-x4.jpg' }]
   },
   {
     name: 'Juego de Cartas UNO',
@@ -429,7 +420,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Jugueteria',
     price: 3500,
     state: ProductState.Activo,
-    photos: [{ fileName: 'juego-de-cartas-uno.jpg', mimeType: 'image/jpeg' }]
+    photos: [{ fileName: 'juego-de-cartas-uno.jpg' }]
   },
   {
     name: 'Jenga de Madera',
@@ -439,7 +430,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Jugueteria',
     price: 5500,
     state: ProductState.Activo,
-    photos: [{ fileName: 'jenga-de-madera.jpg', mimeType: 'image/jpeg' }]
+    photos: [{ fileName: 'jenga-de-madera.jpg' }]
   },
   {
     name: 'Ajedrez Magnético',
@@ -449,7 +440,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Jugueteria',
     price: 4500,
     state: ProductState.Inactivo,
-    photos: [{ fileName: 'ajedrez-magnetico.jpg', mimeType: 'image/jpeg' }]
+    photos: [{ fileName: 'ajedrez-magnetico.jpg' }]
   },
   {
     name: 'Cubo Mágico 3x3',
@@ -459,7 +450,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Jugueteria',
     price: 3000,
     state: ProductState.Activo,
-    photos: [{ fileName: 'cubo-magico-3x3.jpg', mimeType: 'image/jpeg' }]
+    photos: [{ fileName: 'cubo-magico-3x3.jpg' }]
   },
   {
     name: 'Yo-Yo Profesional',
@@ -469,7 +460,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Jugueteria',
     price: 2500,
     state: ProductState.Activo,
-    photos: [{ fileName: 'yoyo-profesional.jpg', mimeType: 'image/jpeg' }]
+    photos: [{ fileName: 'yoyo-profesional.jpg' }]
   },
   {
     name: 'Trompo Luminoso',
@@ -479,7 +470,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Jugueteria',
     price: 1500,
     state: ProductState.Activo,
-    photos: [{ fileName: 'trompo-luminoso.jpg', mimeType: 'image/jpeg' }]
+    photos: [{ fileName: 'trompo-luminoso.jpg' }]
   },
 
   // --- TECNOLOGÍA ---
@@ -491,7 +482,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Tecnologia',
     price: 9000,
     state: ProductState.Activo,
-    photos: [{ fileName: 'mouse-inalambrico.jpg', mimeType: 'image/jpeg' }]
+    photos: [{ fileName: 'mouse-inalambrico.jpg' }]
   },
   {
     name: 'Teclado Mecánico Gamer',
@@ -501,7 +492,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Tecnologia',
     price: 25000,
     state: ProductState.Activo,
-    photos: [{ fileName: 'teclado-mecanico-gamer.jpg', mimeType: 'image/jpeg' }]
+    photos: [{ fileName: 'teclado-mecanico-gamer.jpg' }]
   },
   {
     name: 'Monitor 24 FHD',
@@ -511,7 +502,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Tecnologia',
     price: 80000,
     state: ProductState.Activo,
-    photos: [{ fileName: 'monitor-24-fhd.jpg', mimeType: 'image/jpeg' }]
+    photos: [{ fileName: 'monitor-24-fhd.jpg' }]
   },
   {
     name: 'Auriculares Bluetooth',
@@ -521,7 +512,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Tecnologia',
     price: 15000,
     state: ProductState.Activo,
-    photos: [{ fileName: 'auriculares-bluetooth.jpg', mimeType: 'image/jpeg' }]
+    photos: [{ fileName: 'auriculares-bluetooth.jpg' }]
   },
   {
     name: 'Pendrive 64GB 3.0',
@@ -531,7 +522,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Tecnologia',
     price: 4000,
     state: ProductState.Activo,
-    photos: [{ fileName: 'pendrive-64gb-3-0.jpg', mimeType: 'image/jpeg' }]
+    photos: [{ fileName: 'pendrive-64gb-3-0.jpg' }]
   },
   {
     name: 'Disco SSD 480GB',
@@ -541,7 +532,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Tecnologia',
     price: 22000,
     state: ProductState.Activo,
-    photos: [{ fileName: 'disco-ssd-480gb.jpg', mimeType: 'image/jpeg' }]
+    photos: [{ fileName: 'disco-ssd-480gb.jpg' }]
   },
   {
     name: 'Cable HDMI 2m',
@@ -551,7 +542,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Tecnologia',
     price: 1500,
     state: ProductState.Activo,
-    photos: [{ fileName: 'cable-hdmi-2m.jpg', mimeType: 'image/jpeg' }]
+    photos: [{ fileName: 'cable-hdmi-2m.jpg' }]
   },
   {
     name: 'Cargador Carga Rápida',
@@ -561,7 +552,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Tecnologia',
     price: 8000,
     state: ProductState.Inactivo,
-    photos: [{ fileName: 'cargador-carga-rapida.jpg', mimeType: 'image/jpeg' }]
+    photos: [{ fileName: 'cargador-carga-rapida.jpg' }]
   },
   {
     name: 'Funda Notebook 15.6',
@@ -571,7 +562,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Tecnologia',
     price: 6000,
     state: ProductState.Activo,
-    photos: [{ fileName: 'funda-notebook-15-6.jpg', mimeType: 'image/jpeg' }]
+    photos: [{ fileName: 'funda-notebook-15-6.jpg' }]
   },
   {
     name: 'Soporte para Celular',
@@ -581,7 +572,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Tecnologia',
     price: 2500,
     state: ProductState.Activo,
-    photos: [{ fileName: 'soporte-para-celular.jpg', mimeType: 'image/jpeg' }]
+    photos: [{ fileName: 'soporte-para-celular.jpg' }]
   },
   {
     name: 'Webcam 1080p',
@@ -591,7 +582,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Tecnologia',
     price: 18000,
     state: ProductState.Inactivo,
-    photos: [{ fileName: 'webcam-1080p.jpg', mimeType: 'image/jpeg' }]
+    photos: [{ fileName: 'webcam-1080p.jpg' }]
   },
   {
     name: 'Parlante Portátil',
@@ -601,7 +592,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Tecnologia',
     price: 20000,
     state: ProductState.Activo,
-    photos: [{ fileName: 'parlante-portatil.jpg', mimeType: 'image/jpeg' }]
+    photos: [{ fileName: 'parlante-portatil.jpg' }]
   },
   {
     name: 'Smartwatch Band 7',
@@ -611,7 +602,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Tecnologia',
     price: 12000,
     state: ProductState.Activo,
-    photos: [{ fileName: 'smartwatch-band-7.jpg', mimeType: 'image/jpeg' }]
+    photos: [{ fileName: 'smartwatch-band-7.jpg' }]
   },
   {
     name: 'Tablet 10 Android',
@@ -621,7 +612,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Tecnologia',
     price: 90000,
     state: ProductState.Activo,
-    photos: [{ fileName: 'tablet-10-android.jpg', mimeType: 'image/jpeg' }]
+    photos: [{ fileName: 'tablet-10-android.jpg' }]
   },
   {
     name: 'Power Bank 10000mAh',
@@ -631,7 +622,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Tecnologia',
     price: 10000,
     state: ProductState.Activo,
-    photos: [{ fileName: 'power-bank-10000mah.jpg', mimeType: 'image/jpeg' }]
+    photos: [{ fileName: 'power-bank-10000mah.jpg' }]
   },
   {
     name: 'Impresora Multifunción',
@@ -641,7 +632,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Tecnologia',
     price: 60000,
     state: ProductState.Inactivo,
-    photos: [{ fileName: 'impresora-multifuncion.jpg', mimeType: 'image/jpeg' }]
+    photos: [{ fileName: 'impresora-multifuncion.jpg' }]
   },
   {
     name: 'Router Wi-Fi 6',
@@ -651,7 +642,7 @@ const PRODUCTS_DATA: IProductSeed[] = [
     categoryName: 'Tecnologia',
     price: 25000,
     state: ProductState.Activo,
-    photos: [{ fileName: 'router-wi-fi-6.jpg', mimeType: 'image/jpeg' }]
+    photos: [{ fileName: 'router-wi-fi-6.jpg' }]
   }
 ];
 
@@ -673,6 +664,14 @@ async function seedAdmins(em: EntityManager) {
     admin.password = await bcrypt.hash(adminData.password, 10);
 
     em.persist(admin);
+
+    if ('photoFileName' in adminData && adminData.photoFileName) {
+      const photo = new UserPhoto();
+      photo.fileName = adminData.photoFileName;
+      photo.user = admin;
+      admin.photo = photo;
+      em.persist(photo);
+    }
   }
 }
 
@@ -702,6 +701,14 @@ async function seedClients(em: EntityManager) {
     if (clientData.apartment) client.apartment = clientData.apartment;
 
     em.persist(client);
+
+    if ('photoFileName' in clientData && clientData.photoFileName) {
+      const photo = new UserPhoto();
+      photo.fileName = clientData.photoFileName;
+      photo.user = client;
+      client.photo = photo;
+      em.persist(photo);
+    }
   }
 }
 
@@ -750,8 +757,7 @@ function createProductEntity(data: IProductSeed, category: Category): Product {
     const photo = new ProductPhoto();
     photo.fileName = photoData.fileName;
     // Asumimos que el original es igual al file si no se especifica
-    photo.originalName = photoData.fileName;
-    photo.mimeType = photoData.mimeType;
+
     photo.order = index; // El orden es el índice del array
     photo.product = product;
     product.photos.add(photo);

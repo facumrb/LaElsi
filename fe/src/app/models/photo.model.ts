@@ -1,9 +1,7 @@
 // Clase abstracta 'Photo' del backend
 export interface IApiBasePhoto {
   id: number;
-  fileName: string; // Ej: "a1b2-c3d4-fdsf-sdfds.jpg"
-  originalName: string; // Ej: "foto_playa.jpg"
-  mimeType: string; // Ej: "image/jpeg"
+  fileName: string; // Ej: "a1b2-c3d4-fdsf-sdfds.webp"
 }
 
 // FOTO DE PRODUCTO

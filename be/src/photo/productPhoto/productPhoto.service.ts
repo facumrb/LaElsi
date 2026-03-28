@@ -48,8 +48,6 @@ export class ProductPhotoService {
         const file = files[i];
         const photo = new ProductPhoto();
         photo.fileName = file.filename;
-        photo.originalName = file.originalname;
-        photo.mimeType = file.mimetype;
         photo.product = product;
         if (useExplicitOrder) {
           photo.order = ordersArray[i];

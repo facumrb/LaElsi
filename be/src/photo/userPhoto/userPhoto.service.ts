@@ -47,13 +47,9 @@ export class UserPhotoService {
         }
 
         userPhoto.fileName = file.filename;
-        userPhoto.originalName = file.originalname;
-        userPhoto.mimeType = file.mimetype;
       } else {
         userPhoto = new UserPhoto();
         userPhoto.fileName = file.filename;
-        userPhoto.originalName = file.originalname;
-        userPhoto.mimeType = file.mimetype;
         userPhoto.user = user;
         em.persist(userPhoto);
       }
