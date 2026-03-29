@@ -69,6 +69,11 @@ export class ClientsFormComponent implements OnInit {
   // Signal para guardar el estado inicial del formulario
   initialFormValue = signal<string>('');
 
+  // Auditoría (signals de auditoria solo lectura)
+  auditCreatedAt = signal<string | null>(null);
+  auditUpdatedAt = signal<string | null>(null);
+  auditStatusDate = signal<string | null>(null);
+
   fiscalConditions = Object.values(FiscalCondition);
   isFiscalMenuOpen = signal(false);
 
@@ -143,10 +148,7 @@ export class ClientsFormComponent implements OnInit {
     ],
     password: [
       '',
-      [
-        FormUtils.maxLength(100),
-        Validators.pattern(FormUtils.passwordPattern),
-      ],
+      [FormUtils.maxLength(100), Validators.pattern(FormUtils.passwordPattern)],
     ],
 
     // --- DATOS DE FACTURACIÓN ---
@@ -168,11 +170,6 @@ export class ClientsFormComponent implements OnInit {
     postalCode: ['', FormUtils.maxLength(10)],
     floor: ['', FormUtils.maxLength(5)],
     apartment: ['', FormUtils.maxLength(5)],
-
-    // --- AUDITORÍA ---
-    createdAt: [{ value: '', disabled: true }],
-    updatedAt: [{ value: '', disabled: true }],
-    deletedAt: [{ value: '', disabled: true }],
   });
 
   get formPending() {
@@ -238,13 +235,20 @@ export class ClientsFormComponent implements OnInit {
           postalCode: client.postalCode || '',
           floor: client.floor || '',
           apartment: client.apartment || '',
+        });
 
-          createdAt: this.datePipe.transform(client.createdAt, dateFormat),
-          updatedAt: this.datePipe.transform(client.updatedAt, dateFormat),
-          deletedAt: client.deletedAt
+        // Auditoría → signals reactivos
+        this.auditCreatedAt.set(
+          this.datePipe.transform(client.createdAt, dateFormat),
+        );
+        this.auditUpdatedAt.set(
+          this.datePipe.transform(client.updatedAt, dateFormat),
+        );
+        this.auditStatusDate.set(
+          client.deletedAt
             ? this.datePipe.transform(client.deletedAt, dateFormat)
             : this.datePipe.transform(client.createdAt, dateFormat),
-        });
+        );
 
         this.formClient.get('password')?.removeValidators(Validators.required);
         this.formClient.get('password')?.updateValueAndValidity();

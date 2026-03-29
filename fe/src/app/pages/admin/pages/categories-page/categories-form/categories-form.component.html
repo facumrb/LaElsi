@@ -219,10 +219,10 @@
       <div class="mt-2 pt-2">
         @if (isEditMode()) {
           <app-audit-info
-            [createdAt]="formCategory.get('createdAt')?.value"
-            [updatedAt]="formCategory.get('updatedAt')?.value"
+            [createdAt]="auditCreatedAt()"
+            [updatedAt]="auditUpdatedAt()"
             [isActive]="initialState() === 'Activo'"
-            [statusDate]="formCategory.get('deletedAt')?.value"
+            [statusDate]="auditStatusDate()"
           />
         }
       </div>

@@ -56,6 +56,11 @@ export class AdminsFormComponent implements OnInit {
   // Signal para guardar el estado inicial del formulario
   initialFormValue = signal<string>('');
 
+  // Auditoría (signals de auditoria solo lectura)
+  auditCreatedAt = signal<string | null>(null);
+  auditUpdatedAt = signal<string | null>(null);
+  auditStatusDate = signal<string | null>(null);
+
   formAdmin = this.fb.group({
     name: [
       '',
@@ -116,16 +121,8 @@ export class AdminsFormComponent implements OnInit {
     // Password: Obligatorio al crear, opcional al editar
     password: [
       '',
-      [
-        FormUtils.maxLength(100),
-        Validators.pattern(FormUtils.passwordPattern),
-      ],
+      [FormUtils.maxLength(100), Validators.pattern(FormUtils.passwordPattern)],
     ],
-
-    // Campos de Auditoría (Bloqueados)
-    createdAt: [{ value: '', disabled: true }],
-    updatedAt: [{ value: '', disabled: true }],
-    deletedAt: [{ value: '', disabled: true }],
   });
 
   get formPending() {
@@ -174,12 +171,20 @@ export class AdminsFormComponent implements OnInit {
           phone: admin.phone,
           username: admin.username,
           email: admin.email,
-          createdAt: this.datePipe.transform(admin.createdAt, dateFormat),
-          updatedAt: this.datePipe.transform(admin.updatedAt, dateFormat),
-          deletedAt: admin.deletedAt
+        });
+
+        // Auditoría → signals reactivos
+        this.auditCreatedAt.set(
+          this.datePipe.transform(admin.createdAt, dateFormat),
+        );
+        this.auditUpdatedAt.set(
+          this.datePipe.transform(admin.updatedAt, dateFormat),
+        );
+        this.auditStatusDate.set(
+          admin.deletedAt
             ? this.datePipe.transform(admin.deletedAt, dateFormat)
             : this.datePipe.transform(admin.createdAt, dateFormat),
-        });
+        );
 
         this.formAdmin.get('password')?.removeValidators(Validators.required);
         this.formAdmin.get('password')?.updateValueAndValidity();

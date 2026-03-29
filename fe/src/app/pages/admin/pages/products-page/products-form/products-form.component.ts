@@ -79,6 +79,11 @@ export class ProductsFormComponent implements OnInit {
   initialFormValue = signal<string>('');
   initialState = signal<string>('Activo');
 
+  // Auditoría (signals de auditoria solo lectura)
+  auditCreatedAt = signal<string | null>(null);
+  auditUpdatedAt = signal<string | null>(null);
+  auditStatusDate = signal<string | null>(null);
+
   // Formulario
   formProduct = this.fb.group({
     name: [
@@ -127,11 +132,6 @@ export class ProductsFormComponent implements OnInit {
     state: [ProductState.Activo, [Validators.required]],
     category: [null as IApiCategory | null, [Validators.required]],
     photos: [[]], // array vacío por defecto por si no se cargan fotos
-
-    // --- AUDITORÍA ---
-    createdAt: [{ value: '', disabled: true }],
-    updatedAt: [{ value: '', disabled: true }],
-    deletedAt: [{ value: '', disabled: true }],
   });
 
   ngOnInit() {
@@ -210,12 +210,20 @@ export class ProductsFormComponent implements OnInit {
             state: product.state,
             totalSold: product.totalSold,
             category: product.category,
-            createdAt: this.datePipe.transform(product.createdAt, dateFormat),
-            updatedAt: this.datePipe.transform(product.updatedAt, dateFormat),
-            deletedAt: product.deletedAt
+          });
+
+          // Auditoría → signals reactivos
+          this.auditCreatedAt.set(
+            this.datePipe.transform(product.createdAt, dateFormat),
+          );
+          this.auditUpdatedAt.set(
+            this.datePipe.transform(product.updatedAt, dateFormat),
+          );
+          this.auditStatusDate.set(
+            product.deletedAt
               ? this.datePipe.transform(product.deletedAt, dateFormat)
               : this.datePipe.transform(product.createdAt, dateFormat),
-          });
+          );
 
           const formSnapshot = this.formProduct.getRawValue();
 

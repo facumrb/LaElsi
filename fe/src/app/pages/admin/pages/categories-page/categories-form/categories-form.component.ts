@@ -71,6 +71,11 @@ export class CategoriesFormComponent implements OnInit {
   initialFormValue = signal<string>(''); // Para hasRealChanges
   initialState = signal<string>('Activo'); // Para AuditInfoComponent
 
+  // Auditoría (signals de auditoria solo lectura)
+  auditCreatedAt = signal<string | null>(null);
+  auditUpdatedAt = signal<string | null>(null);
+  auditStatusDate = signal<string | null>(null);
+
   categoriesCount = signal<number>(0);
   allCategories = signal<IApiCategory[]>([]);
 
@@ -100,11 +105,6 @@ export class CategoriesFormComponent implements OnInit {
         Validators.pattern(FormUtils.numberPattern),
       ],
     ],
-
-    // CAMPOS AUDITORÍA
-    createdAt: [{ value: '', disabled: true }],
-    updatedAt: [{ value: '', disabled: true }],
-    deletedAt: [{ value: '', disabled: true }],
   });
 
   // Seguimiento reactivo del parentId del formulario
@@ -221,12 +221,20 @@ export class CategoriesFormComponent implements OnInit {
           state: category.state,
           parentId: category.parentId ?? category.parent?.id ?? null,
           order: category.order || 1,
-          createdAt: this.datePipe.transform(category.createdAt, dateFormat),
-          updatedAt: this.datePipe.transform(category.updatedAt, dateFormat),
-          deletedAt: category.deletedAt
+        });
+
+        // Auditoría → signals reactivos
+        this.auditCreatedAt.set(
+          this.datePipe.transform(category.createdAt, dateFormat),
+        );
+        this.auditUpdatedAt.set(
+          this.datePipe.transform(category.updatedAt, dateFormat),
+        );
+        this.auditStatusDate.set(
+          category.deletedAt
             ? this.datePipe.transform(category.deletedAt, dateFormat)
             : this.datePipe.transform(category.createdAt, dateFormat),
-        });
+        );
 
         this.initialState.set(category.state);
 

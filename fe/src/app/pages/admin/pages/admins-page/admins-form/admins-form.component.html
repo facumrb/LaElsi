@@ -197,10 +197,10 @@
 
       @if (isEditMode()) {
         <app-audit-info
-          [createdAt]="formAdmin.get('createdAt')?.value"
-          [updatedAt]="formAdmin.get('updatedAt')?.value"
+          [createdAt]="auditCreatedAt()"
+          [updatedAt]="auditUpdatedAt()"
           [isActive]="true"
-          [statusDate]="formAdmin.get('deletedAt')?.value"
+          [statusDate]="auditStatusDate()"
         />
       }
 

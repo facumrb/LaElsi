@@ -375,10 +375,10 @@
 
       @if (isEditMode()) {
         <app-audit-info
-          [createdAt]="formClient.get('createdAt')?.value"
-          [updatedAt]="formClient.get('updatedAt')?.value"
+          [createdAt]="auditCreatedAt()"
+          [updatedAt]="auditUpdatedAt()"
           [isActive]="true"
-          [statusDate]="formClient.get('deletedAt')?.value"
+          [statusDate]="auditStatusDate()"
         />
       }
 
