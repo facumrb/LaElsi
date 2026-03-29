@@ -140,8 +140,9 @@
             min="1"
             [max]="maxOrder()"
             inputmode="numeric"
-            placeholder="Ej: 1, 2, 3..."
+            appNumericInput
             class="form-input"
+            placeholder="Ej: 1, 2, 3..."
           />
           <app-field-error [control]="formCategory.controls.order" />
         </div>
@@ -216,16 +217,14 @@
         </div>
       </div>
 
-      <div class="mt-2 pt-2">
-        @if (isEditMode()) {
-          <app-audit-info
-            [createdAt]="auditCreatedAt()"
-            [updatedAt]="auditUpdatedAt()"
-            [isActive]="initialState() === 'Activo'"
-            [statusDate]="auditStatusDate()"
-          />
-        }
-      </div>
+      @if (isEditMode()) {
+        <app-audit-info
+          [createdAt]="auditCreatedAt()"
+          [updatedAt]="auditUpdatedAt()"
+          [isActive]="initialState() === 'Activo'"
+          [statusDate]="auditStatusDate()"
+        />
+      }
 
       <div class="form-footer">
         <button

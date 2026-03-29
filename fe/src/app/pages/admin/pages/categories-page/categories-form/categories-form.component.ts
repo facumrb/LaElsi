@@ -30,12 +30,14 @@ import {
 import { AuditInfoComponent } from '@shared/components/audit-info/audit-info.component';
 import { FieldErrorComponent } from '@shared/validators/field-error/field-error.component';
 import { TrimInputDirective } from '@shared/directives/trim-input.directive';
+import { NumericInputDirective } from '@shared/directives/numeric-input.directive';
 
 @Component({
   selector: 'app-categories-form',
   imports: [
     ReactiveFormsModule,
     ClickOutsideDirective,
+    NumericInputDirective,
     TrimInputDirective,
     NgIconComponent,
     AuditInfoComponent,
@@ -136,21 +138,7 @@ export class CategoriesFormComponent implements OnInit {
     return count + 1;
   });
 
-  // Efecto reactivo: actualiza el validador máximo cuando cambia el nivel seleccionado
-  private orderValidatorEffect = effect(() => {
-    const max = this.maxOrder();
-    const orderControl = this.formCategory.get('order');
-    if (!orderControl) return;
-    orderControl.setValidators([
-      Validators.required,
-      Validators.min(1),
-      Validators.max(max),
-      Validators.pattern(FormUtils.numberPattern),
-    ]);
-    orderControl.updateValueAndValidity({ emitEvent: false });
-  });
-
-  // Computada para categorías que pueden ser padres (evitar circulares)
+  // Computada para categorías que pueden ser padres
   eligibleParents = computed(() => {
     const currentId = this.categoryId();
     const categories = this.allCategories();
@@ -173,7 +161,7 @@ export class CategoriesFormComponent implements OnInit {
     );
   });
 
-  // Nombre del padre seleccionado (Reactivo)
+  // Nombre del padre seleccionado
   parentName = computed(() => {
     const parentId = this.currentParentId();
     if (!parentId) return 'Ninguna (Categoría Raíz)';
@@ -191,7 +179,6 @@ export class CategoriesFormComponent implements OnInit {
       next: (categories) => {
         this.allCategories.set(categories);
         this.categoriesCount.set(categories.length);
-        // El efecto orderValidatorEffect se dispara solo al cambiar maxOrder
       },
     });
   }
