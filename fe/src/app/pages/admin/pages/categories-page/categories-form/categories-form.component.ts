@@ -104,6 +104,7 @@ export class CategoriesFormComponent implements OnInit {
       [
         Validators.required,
         Validators.min(1),
+        Validators.max(1), // Se actualiza dinámicamente por el effect()
         Validators.pattern(FormUtils.numberPattern),
       ],
     ],
@@ -136,6 +137,19 @@ export class CategoriesFormComponent implements OnInit {
     }
 
     return count + 1;
+  });
+
+  // Actualiza Validators.max dinámicamente cuando cambia maxOrder
+  private maxOrderEffect = effect(() => {
+    const max = this.maxOrder();
+    const orderControl = this.formCategory.controls.order;
+    orderControl.setValidators([
+      Validators.required,
+      Validators.min(1),
+      Validators.max(max),
+      Validators.pattern(FormUtils.numberPattern),
+    ]);
+    orderControl.updateValueAndValidity();
   });
 
   // Computada para categorías que pueden ser padres

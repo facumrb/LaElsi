@@ -60,6 +60,9 @@ export class FormUtils {
         case 'min':
           return `El valor mínimo es ${errors['min'].min}.`;
 
+        case 'max':
+          return `El valor máximo es ${errors['max'].max}.`;
+
         case 'onlyWhitespace':
           return `El campo no puede contener solo espacios en blanco.`;
 
