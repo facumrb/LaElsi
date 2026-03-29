@@ -1,6 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { ApiAdminService } from '@services/api-admin.service';
+import { AuthService } from '@services/auth.service';
 import { IApiAdmin } from '@models/user.model';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
@@ -15,7 +16,6 @@ import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-view-profile-page',
-  standalone: true,
   imports: [NgIconComponent],
   viewProviders: [
     provideIcons({
@@ -30,18 +30,17 @@ import { environment } from 'src/environments/environment';
   templateUrl: './view-profile-page.component.html',
 })
 export class ViewProfilePageComponent implements OnInit {
-  private routeActive = inject(ActivatedRoute);
   private router = inject(Router);
   private apiService = inject(ApiAdminService);
+  private authService = inject(AuthService);
 
-  loading = signal(true);
   admin = signal<IApiAdmin | null>(null);
   imageBaseUrl = environment.userImagesUrl;
 
   ngOnInit(): void {
-    const adminId = this.routeActive.snapshot.paramMap.get('id');
-    if (adminId) {
-      this.fetchAdmin(+adminId);
+    const userId = this.authService.currentUser()?.id;
+    if (userId) {
+      this.fetchAdmin(userId);
     }
   }
 
@@ -49,16 +48,12 @@ export class ViewProfilePageComponent implements OnInit {
     this.apiService.getAdminById(id).subscribe({
       next: (data: IApiAdmin) => {
         this.admin.set(data);
-        this.loading.set(false);
-      },
-      error: (err) => {
-        this.loading.set(false);
       },
     });
   }
 
   editarPerfil(): void {
-    this.router.navigate(['/admin/edit-profile', this.admin()?.id]);
+    this.router.navigate(['/admin/edit-profile']);
   }
 
   getInitials(): string {

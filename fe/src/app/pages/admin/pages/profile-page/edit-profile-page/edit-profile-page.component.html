@@ -1,43 +1,17 @@
 <div class="animate-fadeIn max-w-4xl mx-auto">
   <!-- Header -->
-  <div class="mb-6 flex items-center justify-between">
-    <div class="flex items-center gap-3">
-      <div
-        class="w-12 h-12 rounded-2xl bg-[#3d4494] text-white flex items-center justify-center shadow-lg shadow-[#3d4494]/20 uppercase"
-      >
-        <ng-icon name="bootstrapSave" class="text-2xl"></ng-icon>
-      </div>
-      <div>
-        <span
-          class="text-[10px] font-black text-gray-500 uppercase tracking-widest block mb-0.5"
-          >Configuración de Cuenta</span
-        >
-        <h1 class="text-2xl font-black text-gray-900 tracking-tight">
-          Editar Mi Perfil
-        </h1>
-      </div>
+  <div class="mb-5 flex items-center justify-between">
+    <div>
+      <h1 class="page-title">Editar Mi Perfil</h1>
     </div>
-
-    <button
-      (click)="goBack()"
-      class="cursor-pointer inline-flex items-center gap-2 rounded-2xl bg-white px-5 py-2.5 text-sm font-bold text-gray-600 shadow-sm hover:bg-gray-50 hover:border-gray-200 transition-all duration-300"
-    >
-      <ng-icon name="bootstrapArrowLeft" class="text-lg"></ng-icon>
-      Cancelar
-    </button>
+    <app-go-back-button />
   </div>
 
-  <div
-    class="bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-gray-100 overflow-hidden"
-  >
-    <form [formGroup]="formEditProfile" (ngSubmit)="onSubmit()" class="p-8">
-      <!-- Photo Selection (Main Position) -->
+  <div class="form-card">
+    <form [formGroup]="formEditProfile" (ngSubmit)="onSubmit()" class="form-body">
+      <!-- Photo Selection -->
       <div class="mb-4 pb-6 border-b border-gray-50">
-        <h2
-          class="text-xs font-black text-gray-500 uppercase tracking-widest mb-4 flex items-center gap-2"
-        >
-          Foto de Perfil
-        </h2>
+        <h2 class="form-section-title">Foto de Perfil</h2>
         <div class="flex flex-col md:flex-row items-center gap-10">
           <div class="w-full md:w-auto">
             <app-photo-manager
@@ -55,9 +29,7 @@
               será visible en el panel lateral y en tus registros
               administrativos.
             </p>
-            <p
-              class="text-[11px] font-bold text-blue-600 mt-2 flex items-center gap-1"
-            >
+            <p class="text-[11px] font-bold text-blue-600 mt-2 flex items-center gap-1">
               <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
               Formatos recomendados: JPG, PNG, WEBP.
             </p>
@@ -65,187 +37,150 @@
         </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
-        <!-- Personal Data Section -->
-        <div class="md:col-span-2">
-          <h2
-            class="text-xs font-black text-[#3d4494] uppercase tracking-widest mb-2 mt-4 flex items-center gap-2"
-          >
-            Información de Contacto
-          </h2>
-        </div>
+      <div class="mb-2">
+        <h2 class="form-section-title">Información de Contacto</h2>
+        <div class="form-grid-2">
+          <!-- Name -->
+          <div>
+            <label for="name" class="form-label">
+              Nombre <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              formControlName="name"
+              minlength="2"
+              maxlength="100"
+              class="form-input"
+              placeholder="Ej: Juan"
+            />
+            <app-field-error [control]="formEditProfile.controls.name" />
+          </div>
 
-        <!-- Name -->
-        <div>
-          <label
-            for="name"
-            class="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Nombre <span class="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            formControlName="name"
-            minlength="2"
-            maxlength="100"
-            class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm text-sm"
-            placeholder="Ej: Juan"
-          />
-          <app-field-error [control]="formEditProfile.controls.name" />
-        </div>
+          <!-- Last Name -->
+          <div>
+            <label for="lastName" class="form-label">
+              Apellido <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              id="lastName"
+              name="lastName"
+              formControlName="lastName"
+              minlength="2"
+              maxlength="100"
+              class="form-input"
+              placeholder="Ej: Perez"
+            />
+            <app-field-error [control]="formEditProfile.controls.lastName" />
+          </div>
 
-        <!-- Last Name -->
-        <div>
-          <label
-            for="lastName"
-            class="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Apellido <span class="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            id="lastName"
-            name="lastName"
-            formControlName="lastName"
-            minlength="2"
-            maxlength="100"
-            class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm text-sm"
-            placeholder="Ej: Perez"
-          />
-          <app-field-error [control]="formEditProfile.controls.lastName" />
-        </div>
+          <!-- DNI -->
+          <div>
+            <label for="dni" class="form-label">
+              DNI <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              id="dni"
+              name="dni"
+              formControlName="dni"
+              minlength="7"
+              maxlength="15"
+              inputmode="numeric"
+              appNumericInput
+              class="form-input"
+              placeholder="Ej: 12345678"
+            />
+            <app-field-error
+              [control]="formEditProfile.controls.dni"
+              validLabel="DNI disponible"
+            />
+          </div>
 
-        <!-- DNI -->
-        <div>
-          <label for="dni" class="block text-sm font-medium text-gray-700 mb-1">
-            DNI <span class="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            id="dni"
-            name="dni"
-            formControlName="dni"
-            minlength="7"
-            maxlength="15"
-            inputmode="numeric"
-            appNumericInput
-            class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm text-sm"
-            placeholder="Ej: 12345678"
-          />
-          <app-field-error
-            [control]="formEditProfile.controls.dni"
-            validLabel="DNI disponible"
-          />
+          <!-- Phone -->
+          <div>
+            <label for="phone" class="form-label">
+              Teléfono <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              id="phone"
+              name="phone"
+              formControlName="phone"
+              minlength="7"
+              maxlength="20"
+              inputmode="tel"
+              appPhoneInput
+              class="form-input"
+              placeholder="Ej: 3415555555"
+            />
+            <app-field-error [control]="formEditProfile.controls.phone" />
+          </div>
         </div>
+      </div>
 
-        <!-- Phone -->
-        <div>
-          <label
-            for="phone"
-            class="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Teléfono <span class="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            id="phone"
-            name="phone"
-            formControlName="phone"
-            minlength="7"
-            maxlength="20"
-            inputmode="tel"
-            appPhoneInput
-            class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm text-sm"
-            placeholder="Ej: 3415555555"
-          />
-          <app-field-error [control]="formEditProfile.controls.phone" />
-        </div>
+      <div class="mb-6">
+        <h2 class="form-section-title">Credenciales de Acceso</h2>
+        <div class="form-grid-2">
+          <!-- Username -->
+          <div>
+            <label for="username" class="form-label">
+              Nombre de Usuario <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              formControlName="username"
+              minlength="4"
+              maxlength="30"
+              class="form-input"
+              placeholder="Ej: jperez"
+            />
+            <app-field-error
+              [control]="formEditProfile.controls.username"
+              validLabel="Usuario disponible"
+            />
+          </div>
 
-        <div class="md:col-span-2">
-          <h2
-            class="text-xs font-black text-[#3d4494] uppercase tracking-widest mb-2 mt-4 flex items-center gap-2"
-          >
-            Credenciales de Acceso
-          </h2>
-        </div>
-
-        <!-- Username -->
-        <div>
-          <label
-            for="username"
-            class="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Nombre de Usuario <span class="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            id="username"
-            name="username"
-            formControlName="username"
-            minlength="4"
-            maxlength="30"
-            class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm text-sm disabled:opacity-50"
-            placeholder="Ej: jperez"
-          />
-          <app-field-error
-            [control]="formEditProfile.controls.username"
-            validLabel="Usuario disponible"
-          />
-        </div>
-
-        <!-- Email -->
-        <div>
-          <label
-            for="email"
-            class="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Email <span class="text-red-500">*</span>
-          </label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            formControlName="email"
-            inputmode="email"
-            maxlength="255"
-            class="block w-full rounded-lg border-gray-300 border p-2.5 text-gray-900 shadow-sm text-sm"
-            placeholder="Ej: juan@ejemplo.com"
-          />
-          <app-field-error
-            [control]="formEditProfile.controls.email"
-            validLabel="Email disponible"
-          />
+          <!-- Email -->
+          <div>
+            <label for="email" class="form-label">
+              Email <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              formControlName="email"
+              inputmode="email"
+              maxlength="255"
+              class="form-input"
+              placeholder="Ej: juan@ejemplo.com"
+            />
+            <app-field-error
+              [control]="formEditProfile.controls.email"
+              validLabel="Email disponible"
+            />
+          </div>
         </div>
       </div>
 
       <!-- Action Footer -->
-      <div
-        class="mt-4 pt-6 border-t border-gray-50 flex items-center justify-end"
-      >
-        <div class="flex items-center gap-4">
-          <button
-            type="button"
-            (click)="goBack()"
-            class="cursor-pointer px-6 py-3 rounded-2xl text-sm font-bold text-gray-500 hover:text-gray-800 hover:bg-gray-100 transition-all"
-          >
-            Descartar
-          </button>
+      <div class="form-footer">
+        <button type="button" (click)="goBack()" class="btn-secondary">
+          Cancelar
+        </button>
 
-          <button
-            type="submit"
-            [disabled]="formEditProfile.invalid || !hasRealChanges || formPending"
-            class="cursor-pointer px-10 py-3.5 rounded-2xl bg-[#3d4494] text-white text-sm font-black uppercase tracking-widest shadow-xl shadow-[#3d4494]/30 hover:bg-[#2e3474] hover:shadow-2xl hover:-translate-y-0.5 disabled:opacity-30 disabled:translate-y-0 disabled:shadow-none transition-all flex items-center gap-2"
-          >
-            @if (formPending) {
-              <ng-icon name="bootstrapArrowClockwise" class="text-lg animate-spin"></ng-icon>
-            } @else {
-              <ng-icon name="bootstrapSave" class="text-lg"></ng-icon>
-            }
-            Actualizar Perfil
-          </button>
-        </div>
+        <button
+          type="submit"
+          [disabled]="formEditProfile.invalid || !hasRealChanges || formPending"
+          class="btn-primary px-8"
+        >
+          Actualizar Perfil
+        </button>
       </div>
     </form>
   </div>

@@ -10,7 +10,6 @@ export interface BreadcrumbStep {
 
 @Component({
   selector: 'app-breadcrumbs',
-  standalone: true,
   imports: [RouterLink, NgIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   viewProviders: [

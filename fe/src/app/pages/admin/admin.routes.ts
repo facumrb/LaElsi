@@ -109,14 +109,14 @@ export const adminRoutes: Routes = [
           ),
       },
       {
-        path: 'view-profile/:id',
+        path: 'view-profile',
         loadComponent: () =>
           import('./pages/profile-page/view-profile-page/view-profile-page.component').then(
             (m) => m.ViewProfilePageComponent,
           ),
       },
       {
-        path: 'edit-profile/:id',
+        path: 'edit-profile',
         loadComponent: () =>
           import('./pages/profile-page/edit-profile-page/edit-profile-page.component').then(
             (m) => m.EditProfilePageComponent,
