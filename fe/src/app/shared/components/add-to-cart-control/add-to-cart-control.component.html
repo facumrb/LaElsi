@@ -1,6 +1,9 @@
-<div class="elsi-add-to-cart-container" [class.full-width]="layout() === 'full'">
+<div
+  class="elsi-add-to-cart-container"
+  [class.full-width]="layout() === 'full'"
+>
   @if (currentQuantity() === 0) {
-    <!-- Initial Add Button -->
+    <!-- Boton de agregar inicial -->
     <button
       (click)="addInitial($event)"
       [disabled]="product().stock <= 0"
@@ -8,12 +11,12 @@
       class="elsi-add-initial-btn"
       [class.btn-full]="layout() === 'full'"
     >
-      @if (layout() === 'compact') {
+      @if (layout() === "compact") {
         <ng-icon name="bootstrapPlusLg" class="text-xl"></ng-icon>
       } @else {
         <span class="flex items-center gap-2">
-           <ng-icon name="bootstrapPlusLg" class="text-lg"></ng-icon>
-           AÑADIR AL CARRITO
+          <ng-icon name="bootstrapPlusLg" class="text-lg"></ng-icon>
+          AÑADIR AL CARRITO
         </span>
       }
     </button>
@@ -26,7 +29,7 @@
       <button
         (click)="decrement($event)"
         aria-label="Disminuir cantidad"
-        class="pill-btn minus"
+        class="pill-btn"
       >
         <ng-icon name="bootstrapDashLg"></ng-icon>
       </button>
@@ -39,7 +42,7 @@
         (click)="increment($event)"
         [disabled]="!canIncrease()"
         aria-label="Aumentar cantidad"
-        class="pill-btn plus"
+        class="pill-btn"
       >
         <ng-icon name="bootstrapPlusLg"></ng-icon>
       </button>

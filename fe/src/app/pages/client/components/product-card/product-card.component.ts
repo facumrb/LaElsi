@@ -1,26 +1,25 @@
-import { Component, computed, input, inject, signal } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { IApiProduct } from '@models/product.model';
 import { environment } from 'src/environments/environment';
-import { CartService } from '@services/cart.service';
 import { ProductStatusBadgeComponent } from '@shared/components/product-status-badge/product-status-badge.component';
-import { provideIcons } from '@ng-icons/core';
-import { bootstrapCartPlus, bootstrapCheckLg } from '@ng-icons/bootstrap-icons';
-
 import { AddToCartControlComponent } from '@shared/components/add-to-cart-control/add-to-cart-control.component';
 
 @Component({
   selector: 'app-product-card',
-  imports: [CurrencyPipe, RouterLink, ProductStatusBadgeComponent, AddToCartControlComponent],
-  viewProviders: [provideIcons({ bootstrapCartPlus, bootstrapCheckLg })],
+  imports: [
+    CurrencyPipe,
+    RouterLink,
+    ProductStatusBadgeComponent,
+    AddToCartControlComponent,
+  ],
   templateUrl: './product-card.component.html',
 })
 export class ProductCardComponent {
   product = input.required<IApiProduct>();
   private readonly imageBaseUrl = environment.productImagesUrl;
   private readonly defaultImage = 'assets/Webp/no-image.webp';
-  private cartService = inject(CartService);
 
   displayImageUrl = computed(() => {
     const currentProduct = this.product();
@@ -56,6 +55,4 @@ export class ProductCardComponent {
     if (imgElement.src.includes(this.defaultImage)) return;
     imgElement.src = this.defaultImage;
   }
-
-
 }

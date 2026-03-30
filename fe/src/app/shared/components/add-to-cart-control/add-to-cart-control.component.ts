@@ -1,15 +1,21 @@
-import { Component, input, inject, computed, signal } from '@angular/core';
+import { Component, input, inject, computed } from '@angular/core';
 import { CartService } from '@services/cart.service';
 import { IApiProduct } from '@models/product.model';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { bootstrapPlus, bootstrapDash, bootstrapPlusLg, bootstrapDashLg } from '@ng-icons/bootstrap-icons';
-import { CommonModule } from '@angular/common';
+import {
+  bootstrapPlusLg,
+  bootstrapDashLg,
+} from '@ng-icons/bootstrap-icons';
 
 @Component({
   selector: 'app-add-to-cart-control',
-  standalone: true,
-  imports: [CommonModule, NgIconComponent],
-  viewProviders: [provideIcons({ bootstrapPlus, bootstrapDash, bootstrapPlusLg, bootstrapDashLg })],
+  imports: [NgIconComponent],
+  viewProviders: [
+    provideIcons({
+      bootstrapPlusLg,
+      bootstrapDashLg,
+    }),
+  ],
   templateUrl: './add-to-cart-control.component.html',
 })
 export class AddToCartControlComponent {
@@ -18,13 +24,12 @@ export class AddToCartControlComponent {
 
   private cartService = inject(CartService);
 
-  // Computed signal to reactively find current quantity of THIS product in the cart
   currentQuantity = computed(() => {
     const items = this.cartService.items();
     return items.find((i) => i.product.id === this.product().id)?.quantity || 0;
   });
 
-  // Calculate if we can add more based on stock
+  // Calculo para ver si podemos agregar mas unidades basado en el stock
   canIncrease = computed(() => {
     const qty = this.currentQuantity();
     const stock = this.product().stock;
@@ -41,7 +46,10 @@ export class AddToCartControlComponent {
   increment(event: Event) {
     this.stopEvent(event);
     if (this.canIncrease()) {
-      this.cartService.updateQuantity(this.product().id, this.currentQuantity() + 1);
+      this.cartService.updateQuantity(
+        this.product().id,
+        this.currentQuantity() + 1,
+      );
     }
   }
 

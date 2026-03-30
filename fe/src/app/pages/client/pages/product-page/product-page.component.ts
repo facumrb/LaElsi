@@ -1,11 +1,16 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiProductService } from '@services/api-product.service';
-import { CartService } from '@services/cart.service';
-import { IApiProduct, ProductState } from '@models/product.model';
+import { IApiProduct } from '@models/product.model';
 import { CurrencyPipe, DecimalPipe } from '@angular/common';
 import { environment } from 'src/environments/environment';
 import { ProductStatusBadgeComponent } from '@shared/components/product-status-badge/product-status-badge.component';
+import {
+  BreadcrumbsComponent,
+  BreadcrumbStep,
+} from '@shared/components/breadcrumbs/breadcrumbs.component';
+import { IApiCategory } from '@models/category.model';
+import { AddToCartControlComponent } from '@shared/components/add-to-cart-control/add-to-cart-control.component';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
   bootstrapCheckLg,
@@ -16,10 +21,6 @@ import {
   bootstrapChevronUp,
   bootstrapLightningFill,
 } from '@ng-icons/bootstrap-icons';
-
-import { BreadcrumbsComponent, BreadcrumbStep } from '@shared/components/breadcrumbs/breadcrumbs.component';
-import { IApiCategory } from '@models/category.model';
-import { AddToCartControlComponent } from '@shared/components/add-to-cart-control/add-to-cart-control.component';
 
 @Component({
   selector: 'app-product-page',
@@ -49,10 +50,7 @@ export class ProductPageComponent implements OnInit {
   private readonly defaultImage = 'assets/Webp/no-image.webp';
   private activatedRoute = inject(ActivatedRoute);
   private productService = inject(ApiProductService);
-  private cartService = inject(CartService);
   private router = inject(Router);
-
-  ProductState = ProductState;
 
   product = signal<IApiProduct | undefined>(undefined);
   selectedPhotoUrl = signal<string | undefined>(undefined);
@@ -68,7 +66,7 @@ export class ProductPageComponent implements OnInit {
     const buildPath = (current: IApiCategory) => {
       steps.unshift({
         label: current.name,
-        url: `/category/${current.id}`
+        url: `/category/${current.id}`,
       });
       if (current.parent) {
         buildPath(current.parent);
@@ -115,8 +113,6 @@ export class ProductPageComponent implements OnInit {
   buildUrl(fileName: string): string {
     return `${this.imageBaseUrl}${fileName}`;
   }
-
-
 
   // Lógica para navegar el carrusel de la foto principal
   nextPhoto() {
