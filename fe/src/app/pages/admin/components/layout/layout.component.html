@@ -130,21 +130,12 @@
             (click)="toggleUserMenu()"
             class="group cursor-pointer flex items-center gap-3 pl-1 pr-4 py-1 rounded-full border border-gray-200 bg-white/5 hover:bg-gray-100 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
-            <div
-              class="h-8 w-8 rounded-full overflow-hidden bg-[#5a2a8a] flex items-center justify-center border border-white/30 text-white shadow-sm"
-            >
-              @if (currentUser()?.photo) {
-                <img
-                  [src]="imageBaseUrl + currentUser()!.photo!.fileName"
-                  alt="Avatar"
-                  class="h-full w-full object-cover"
-                />
-              } @else {
-                <span class="text-xs font-bold tracking-widest">
-                  {{ getUserInitials() }}
-                </span>
-              }
-            </div>
+            <app-user-avatar
+              size="xs"
+              [photo]="currentUser()?.photo"
+              [name]="currentUser()?.name || ''"
+              [lastName]="currentUser()?.lastName || ''"
+            />
 
             <div class="flex items-center gap-2">
               <span class="text-sm font-medium max-w-25 text-gray-600 truncate">

@@ -16,7 +16,7 @@ import {
   bootstrapShop, // Icono para ir al eccomerce
   bootstrapChevronDown,
 } from '@ng-icons/bootstrap-icons';
-import { environment } from 'src/environments/environment';
+import { UserAvatarComponent } from '@shared/components/user-avatar/user-avatar.component';
 
 interface menuItems {
   label: string;
@@ -32,6 +32,7 @@ interface menuItems {
     RouterOutlet,
     ClickOutsideDirective,
     NgIconComponent,
+    UserAvatarComponent,
   ],
   viewProviders: [
     provideIcons({
@@ -64,16 +65,6 @@ export class LayoutComponent {
 
   currentUser = this.authService.currentUser;
 
-  readonly imageBaseUrl = environment.userImagesUrl;
-
-  // Lógica para obtener iniciales del usuario actual
-  getUserInitials(): string {
-    const user = this.currentUser();
-    if (!user) return '';
-    const first = user.name?.charAt(0) || '';
-    const last = user.lastName?.charAt(0) || '';
-    return (first + last).toUpperCase();
-  }
 
   menuItems: menuItems[] = [
     {

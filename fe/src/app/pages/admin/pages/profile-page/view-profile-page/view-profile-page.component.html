@@ -5,23 +5,12 @@
   >
     <!-- Profile Picture -->
     <div class="relative">
-      <div
-        class="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-xl bg-white flex items-center justify-center"
-      >
-        @if (admin()?.photo) {
-          <img
-            [src]="imageBaseUrl + admin()?.photo?.fileName"
-            [alt]="admin()?.name"
-            class="w-full h-full object-cover"
-          />
-        } @else {
-          <div
-            class="bg-[#3d4494]/10 text-[#3d4494] w-full h-full flex items-center justify-center text-4xl font-black tracking-widest"
-          >
-            {{ getInitials() }}
-          </div>
-        }
-      </div>
+      <app-user-avatar
+        size="lg"
+        [photo]="admin()?.photo"
+        [name]="admin()?.name || ''"
+        [lastName]="admin()?.lastName || ''"
+      />
     </div>
 
     <div class="grow">

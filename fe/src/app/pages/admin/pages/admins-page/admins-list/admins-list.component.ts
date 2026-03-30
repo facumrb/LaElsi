@@ -1,7 +1,6 @@
 import { Component, input, output } from '@angular/core';
 import { TableActionsComponent } from '@admin/components/table-components/table-actions/table-actions.component';
 import { IApiAdmin } from '@models/user.model';
-import { environment } from 'src/environments/environment';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
   bootstrapEnvelope,
@@ -9,10 +8,11 @@ import {
 } from '@ng-icons/bootstrap-icons';
 
 import { TableEmptyStateComponent } from '@admin/components/table-components/table-empty-state/table-empty-state.component';
+import { UserAvatarComponent } from '@shared/components/user-avatar/user-avatar.component';
 
 @Component({
   selector: 'app-admins-list',
-  imports: [TableActionsComponent, NgIconComponent, TableEmptyStateComponent],
+  imports: [TableActionsComponent, NgIconComponent, TableEmptyStateComponent, UserAvatarComponent],
   viewProviders: provideIcons({
     bootstrapEnvelope,
     bootstrapTelephone,
@@ -24,14 +24,6 @@ export class AdminsListComponent {
   onEdit = output<IApiAdmin>();
   onDelete = output<IApiAdmin>();
 
-  // Como no hay filtros aún en el toolbar, esto podría venir siempre false, pero lo dejamos listo para el futuro.
+  // true cuando hay texto en el buscador del toolbar (lo pasa el padre)
   isFilterActive = input<boolean>(false);
-
-  readonly imageBaseUrl = environment.userImagesUrl;
-
-  getInitials(admin: IApiAdmin): string {
-    const first = admin.name?.charAt(0) || '';
-    const last = admin.lastName?.charAt(0) || '';
-    return (first + last).toUpperCase();
-  }
 }

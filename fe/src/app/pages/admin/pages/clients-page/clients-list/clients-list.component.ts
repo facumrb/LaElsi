@@ -1,7 +1,6 @@
 import { Component, input, output } from '@angular/core';
 import { TableActionsComponent } from '@admin/components/table-components/table-actions/table-actions.component';
 import { IApiClient } from '@models/user.model';
-import { environment } from 'src/environments/environment';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
   bootstrapEnvelope,
@@ -9,10 +8,11 @@ import {
 } from '@ng-icons/bootstrap-icons';
 
 import { TableEmptyStateComponent } from '@admin/components/table-components/table-empty-state/table-empty-state.component';
+import { UserAvatarComponent } from '@shared/components/user-avatar/user-avatar.component';
 
 @Component({
   selector: 'app-clients-list',
-  imports: [TableActionsComponent, NgIconComponent, TableEmptyStateComponent],
+  imports: [TableActionsComponent, NgIconComponent, TableEmptyStateComponent, UserAvatarComponent],
   viewProviders: provideIcons({
     bootstrapEnvelope,
     bootstrapTelephone,
@@ -27,13 +27,6 @@ export class ClientsListComponent {
   // Como no hay filtros aún en el toolbar, esto podría venir siempre false, pero lo dejamos listo para el futuro.
   isFilterActive = input<boolean>(false);
 
-  readonly imageBaseUrl = environment.userImagesUrl;
-
-  getInitials(client: IApiClient): string {
-    const first = client.name?.charAt(0) || '';
-    const last = client.lastName?.charAt(0) || '';
-    return (first + last).toUpperCase();
-  }
 
   // Función para determinar el color segun la condición fiscal
   getFiscalConditionClass(condition?: string): string {

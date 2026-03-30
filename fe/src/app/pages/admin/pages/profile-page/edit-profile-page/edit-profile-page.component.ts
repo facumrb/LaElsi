@@ -2,7 +2,7 @@ import { Component, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { switchMap } from 'rxjs';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ApiAdminService } from '@services/api-admin.service';
 import { IApiAdmin, ICreateAdmin, UserRole } from '@models/user.model';
 import { IApiUserPhoto } from '@models/photo.model';
@@ -20,6 +20,7 @@ import { TrimInputDirective } from '@shared/directives/trim-input.directive';
   selector: 'app-edit-profile-page',
   imports: [
     ReactiveFormsModule,
+    RouterLink,
     PhotoManagerComponent,
     FieldErrorComponent,
     GoBackButtonComponent,
@@ -105,10 +106,7 @@ export class EditProfilePageComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const userId = this.authService.currentUser()?.id;
-    if (userId) {
-      this.fetchAdmin(userId);
-    }
+    this.fetchAdmin(this.authService.currentUser()!.id);
   }
 
   private fetchAdmin(id: number): void {
@@ -140,7 +138,7 @@ export class EditProfilePageComponent implements OnInit {
         );
       },
       error: () => {
-        this.goBack();
+        this.router.navigate(['admin/view-profile']);
       },
     });
   }
@@ -200,9 +198,5 @@ export class EditProfilePageComponent implements OnInit {
           this.router.navigate(['admin/view-profile']);
         },
       });
-  }
-
-  goBack(): void {
-    this.router.navigate(['admin/view-profile']);
   }
 }

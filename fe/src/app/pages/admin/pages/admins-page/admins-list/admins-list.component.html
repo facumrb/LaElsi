@@ -37,19 +37,12 @@
             >
               <span class="admin-table-mobile-label mb-2 block">Usuario:</span>
               <div class="flex items-center gap-3">
-                @if (admin.photo) {
-                  <img
-                    [src]="imageBaseUrl + admin.photo.fileName"
-                    alt="{{ admin.username }}"
-                    class="h-10 w-10 shrink-0 rounded-full object-cover border border-gray-200"
-                  />
-                } @else {
-                  <div
-                    class="h-10 w-10 shrink-0 rounded-full bg-indigo-100 flex items-center justify-center text-[#3d4494] font-bold border border-indigo-200 text-xs"
-                  >
-                    {{ getInitials(admin) }}
-                  </div>
-                }
+                <app-user-avatar
+                  size="sm"
+                  [photo]="admin.photo"
+                  [name]="admin.name"
+                  [lastName]="admin.lastName"
+                />
                 <div
                   (click)="onEdit.emit(admin)"
                   class="font-semibold text-gray-900 text-base lg:text-sm cursor-pointer hover:underline"

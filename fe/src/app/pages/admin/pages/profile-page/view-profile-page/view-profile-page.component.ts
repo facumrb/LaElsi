@@ -12,11 +12,11 @@ import {
   bootstrapPhone,
   bootstrapShieldCheck,
 } from '@ng-icons/bootstrap-icons';
-import { environment } from 'src/environments/environment';
+import { UserAvatarComponent } from '@shared/components/user-avatar/user-avatar.component';
 
 @Component({
   selector: 'app-view-profile-page',
-  imports: [NgIconComponent],
+  imports: [NgIconComponent, UserAvatarComponent],
   viewProviders: [
     provideIcons({
       bootstrapEnvelope,
@@ -35,13 +35,9 @@ export class ViewProfilePageComponent implements OnInit {
   private authService = inject(AuthService);
 
   admin = signal<IApiAdmin | null>(null);
-  imageBaseUrl = environment.userImagesUrl;
 
   ngOnInit(): void {
-    const userId = this.authService.currentUser()?.id;
-    if (userId) {
-      this.fetchAdmin(userId);
-    }
+    this.fetchAdmin(this.authService.currentUser()!.id);
   }
 
   private fetchAdmin(id: number): void {
@@ -56,11 +52,4 @@ export class ViewProfilePageComponent implements OnInit {
     this.router.navigate(['/admin/edit-profile']);
   }
 
-  getInitials(): string {
-    const admin = this.admin();
-    if (!admin) return '';
-    const first = admin.name?.charAt(0) || '';
-    const last = admin.lastName?.charAt(0) || '';
-    return (first + last).toUpperCase();
-  }
 }

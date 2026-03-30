@@ -1,0 +1,14 @@
+<div
+  class="rounded-full overflow-hidden border border-gray-200 flex items-center justify-center shrink-0 bg-indigo-100"
+  [class]="containerClass()"
+>
+  @if (photoUrl()) {
+    <img
+      [src]="photoUrl()"
+      [alt]="name() + ' ' + lastName()"
+      class="w-full h-full object-cover"
+    />
+  } @else {
+    <span class="font-bold text-[#3d4494]">{{ initials() }}</span>
+  }
+</div>
