@@ -1,29 +1,23 @@
 import {
   Component,
   computed,
-  effect,
   inject,
   input,
+  linkedSignal,
   signal,
 } from '@angular/core';
 import { ApiPhotoService } from '@services/api-services/api-photo.service';
 import { AlertService } from '@services/alert.service';
 import { IApiUserPhoto } from '@models/photo.model';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import {
-  bootstrapCamera,
-  bootstrapTrash,
-  bootstrapPerson,
-} from '@ng-icons/bootstrap-icons';
+import { bootstrapCamera, bootstrapTrash } from '@ng-icons/bootstrap-icons';
 import { environment } from 'src/environments/environment';
 import { Observable, of } from 'rxjs';
 
 @Component({
   selector: 'app-photo-manager',
   imports: [NgIconComponent],
-  viewProviders: [
-    provideIcons({ bootstrapCamera, bootstrapTrash, bootstrapPerson }),
-  ],
+  viewProviders: [provideIcons({ bootstrapCamera, bootstrapTrash })],
   templateUrl: './photo-manager.component.html',
 })
 export class PhotoManagerComponent {
@@ -33,8 +27,11 @@ export class PhotoManagerComponent {
 
   currentPhoto = input<IApiUserPhoto | null>(null); // Recibimos la foto actual (o null) desde el padre
 
-  // Signal para mostrar la imagen en pantalla
-  previewUrl = signal<string | null>(null);
+  previewUrl = linkedSignal({
+    source: this.currentPhoto,
+    computation: (photo: IApiUserPhoto | null) =>
+      photo ? `${this.imageBaseUrl}${photo.fileName}` : null,
+  });
 
   // Guardamos el archivo aquí hasta que el padre llame a saveChanges()
   pendingFile = signal<File | null>(null);
@@ -72,23 +69,6 @@ export class PhotoManagerComponent {
     return (firstInitial + secondInitial).toUpperCase();
   });
 
-  constructor() {
-    effect(() => {
-      // Usamos paréntesis () porque ahora son signals
-      const photo = this.currentPhoto();
-      const hasPending = this.pendingFile();
-      const isDeleted = this.deletePending();
-
-      if (!hasPending && !isDeleted) {
-        if (photo) {
-          this.previewUrl.set(`${this.imageBaseUrl}${photo.fileName}`);
-        } else {
-          this.previewUrl.set(null);
-        }
-      }
-    });
-  }
-
   // SELECCIÓN DE ARCHIVO (Solo visual y memoria)
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -123,6 +103,11 @@ export class PhotoManagerComponent {
     // Si el usuario subió una foto nueva pero se arrepintió y le dio al tacho
     if (this.pendingFile()) {
       this.pendingFile.set(null);
+      // Restaurar el preview a la foto original
+      const photo = this.currentPhoto();
+      this.previewUrl.set(
+        photo ? `${this.imageBaseUrl}${photo.fileName}` : null,
+      );
       return;
     }
 
@@ -137,7 +122,7 @@ export class PhotoManagerComponent {
   }
 
   // MÉTODO PÚBLICO (El Padre llamará a esto al final)
-  saveChanges(userId: number): Observable<any> {
+  saveChanges(userId: number): Observable<IApiUserPhoto | void | null> {
     const file = this.pendingFile();
     const isDeleted = this.deletePending();
 

@@ -1,15 +1,7 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
-  bootstrapPerson,
-  bootstrapReceipt,
-  bootstrapGeoAlt,
-  bootstrapPersonCircle,
-  bootstrapCheckCircle,
   bootstrapBoxSeam,
-  bootstrapClockHistory,
-  bootstrapXCircle,
   bootstrapShieldLock,
   bootstrapFilePerson,
 } from '@ng-icons/bootstrap-icons';
@@ -19,32 +11,14 @@ import { AuthService } from '@services/auth.service';
 import { IApiClient } from '@models/user.model';
 import { IApiOrder } from '@models/order.model';
 import { environment } from 'src/environments/environment';
-import {
-  Router,
-  RouterLink,
-  RouterLinkActive,
-  RouterOutlet,
-} from '@angular/router';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-profile-page',
-  imports: [
-    ReactiveFormsModule,
-    NgIconComponent,
-    RouterOutlet,
-    RouterLink,
-    RouterLinkActive,
-  ],
+  imports: [NgIconComponent, RouterOutlet, RouterLink, RouterLinkActive],
   viewProviders: [
     provideIcons({
-      bootstrapPerson,
-      bootstrapReceipt,
-      bootstrapGeoAlt,
-      bootstrapPersonCircle,
-      bootstrapCheckCircle,
       bootstrapBoxSeam,
-      bootstrapClockHistory,
-      bootstrapXCircle,
       bootstrapShieldLock,
       bootstrapFilePerson,
     }),
@@ -55,7 +29,6 @@ export class ProfilePageComponent implements OnInit {
   private authService = inject(AuthService);
   private apiClientService = inject(ApiClientService);
   private apiOrderService = inject(ApiOrderService);
-  private router = inject(Router);
 
   loading = signal(true);
   misPedidos = signal<IApiOrder[]>([]);
@@ -63,13 +36,6 @@ export class ProfilePageComponent implements OnInit {
 
   currentUserSignal = this.authService.currentUser;
   fullProfile = signal<IApiClient | null>(null);
-
-  activeTab = computed(() => {
-    const url = this.router.url;
-    if (url.includes('orders')) return 'pedidos';
-    if (url.includes('user') || url.includes('account')) return 'usuario';
-    return 'personales';
-  });
 
   ngOnInit(): void {
     const userSummary = this.currentUserSignal();

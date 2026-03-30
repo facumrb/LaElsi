@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, inject, OnInit, signal, viewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DatePipe, Location } from '@angular/common';
@@ -47,7 +47,7 @@ export class AdminsFormComponent implements OnInit {
 
   formUtils = FormUtils;
 
-  @ViewChild(PhotoManagerComponent) photoManager!: PhotoManagerComponent;
+  photoManager = viewChild.required(PhotoManagerComponent);
 
   isEditMode = signal(false);
   adminId = signal<number | null>(null);
@@ -225,7 +225,7 @@ export class AdminsFormComponent implements OnInit {
     const formHasChanges = currentJson !== this.initialFormValue();
 
     // Verificar cambios en la foto
-    const photoHasChanges = this.photoManager?.hasChanges() ?? false;
+    const photoHasChanges = this.photoManager().hasChanges();
 
     return formHasChanges || photoHasChanges;
   }
@@ -277,7 +277,7 @@ export class AdminsFormComponent implements OnInit {
           }
 
           // Llamamos al método público del hijo
-          return this.photoManager.saveChanges(userId);
+          return this.photoManager().saveChanges(userId);
         }),
       )
       .subscribe({
@@ -300,7 +300,7 @@ export class AdminsFormComponent implements OnInit {
               sessionUpdates.photo = photoResponse;
             }
             // Caso B: No hay foto nueva devuelta, PERO se marcó para borrar
-            else if (this.photoManager.deletePending()) {
+            else if (this.photoManager().deletePending()) {
               sessionUpdates.photo = null;
             }
 

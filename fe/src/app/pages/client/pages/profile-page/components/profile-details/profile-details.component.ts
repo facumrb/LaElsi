@@ -1,9 +1,9 @@
 import {
   Component,
-  EventEmitter,
+  effect,
   inject,
   input,
-  Output,
+  output,
   signal,
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -18,7 +18,7 @@ import {
 } from '@ng-icons/bootstrap-icons';
 import { IApiClient, IUpdateClient, FiscalCondition } from '@models/user.model';
 import { ApiClientService } from '@services/api-services/api-client.service';
-import Swal from 'sweetalert2';
+import { AlertService } from '@services/alert.service';
 import { PhoneInputDirective } from '@shared/directives/phone-input.directive';
 import { NumericInputDirective } from '@shared/directives/numeric-input.directive';
 import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
@@ -52,11 +52,12 @@ export class ProfileDetailsComponent {
   private fb = inject(FormBuilder);
   private apiClientService = inject(ApiClientService);
   private http = inject(HttpClient);
+  private alertService = inject(AlertService);
 
   profile = input<IApiClient | null>(null);
 
   // Como output, disparamos un evento para decir que se actualizó
-  @Output() profileUpdated = new EventEmitter<void>();
+  profileUpdated = output<void>();
 
   saving = signal(false);
   fiscalConditions = Object.values(FiscalCondition);
@@ -125,17 +126,13 @@ export class ProfileDetailsComponent {
     apartment: ['', FormUtils.maxLength(5)],
   });
 
-  ngOnInit() {
-    if (this.profile()) {
-      this.patchForm(this.profile()!);
-    }
-  }
-
-  // Permite detectar los check de changes
-  ngOnChanges() {
-    if (this.profile()) {
-      this.patchForm(this.profile()!);
-    }
+  constructor() {
+    effect(() => {
+      const profile = this.profile();
+      if (profile) {
+        this.patchForm(profile);
+      }
+    });
   }
 
   toggleFiscalMenu() {
@@ -213,13 +210,12 @@ export class ProfileDetailsComponent {
     this.apiClientService.updateClient(userId, clientData).subscribe({
       next: () => {
         this.saving.set(false);
-        Swal.fire('¡Éxito!', 'Perfil actualizado correctamente', 'success');
+        this.alertService.toast('Perfil actualizado correctamente', 'success');
         this.profileUpdated.emit();
       },
       error: (err) => {
         this.saving.set(false);
-        Swal.fire(
-          'Error',
+        this.alertService.toast(
           err.error?.message || 'Error al actualizar',
           'error',
         );

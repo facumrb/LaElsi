@@ -9,7 +9,7 @@ import {
   selector: 'app-filter-button',
   imports: [NgIconComponent],
   host: {
-    class: 'block w-full h-full lg:w-auto md:w-auto sm:w-auto',
+    class: 'block w-full h-full sm:w-auto',
   },
   viewProviders: [
     provideIcons({

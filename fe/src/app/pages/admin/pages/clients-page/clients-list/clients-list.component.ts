@@ -12,7 +12,12 @@ import { UserAvatarComponent } from '@shared/components/user-avatar/user-avatar.
 
 @Component({
   selector: 'app-clients-list',
-  imports: [TableActionsComponent, NgIconComponent, TableEmptyStateComponent, UserAvatarComponent],
+  imports: [
+    TableActionsComponent,
+    NgIconComponent,
+    TableEmptyStateComponent,
+    UserAvatarComponent,
+  ],
   viewProviders: provideIcons({
     bootstrapEnvelope,
     bootstrapTelephone,
@@ -24,9 +29,7 @@ export class ClientsListComponent {
   onEdit = output<IApiClient>();
   onDelete = output<IApiClient>();
 
-  // Como no hay filtros aún en el toolbar, esto podría venir siempre false, pero lo dejamos listo para el futuro.
   isFilterActive = input<boolean>(false);
-
 
   // Función para determinar el color segun la condición fiscal
   getFiscalConditionClass(condition?: string): string {

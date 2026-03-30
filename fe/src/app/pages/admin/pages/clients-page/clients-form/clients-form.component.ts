@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, inject, OnInit, signal, viewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DatePipe, Location } from '@angular/common';
@@ -60,7 +60,7 @@ export class ClientsFormComponent implements OnInit {
 
   formUtils = FormUtils;
 
-  @ViewChild(PhotoManagerComponent) photoManager!: PhotoManagerComponent;
+  photoManager = viewChild.required(PhotoManagerComponent);
 
   isEditMode = signal(false);
   clientId = signal<number | null>(null);
@@ -292,7 +292,7 @@ export class ClientsFormComponent implements OnInit {
     const formHasChanges = currentJson !== this.initialFormValue();
 
     // Verificar cambios en la foto
-    const photoHasChanges = this.photoManager?.hasChanges() ?? false;
+    const photoHasChanges = this.photoManager().hasChanges();
 
     return formHasChanges || photoHasChanges;
   }
@@ -358,8 +358,8 @@ export class ClientsFormComponent implements OnInit {
             return of(null);
           }
 
-          if (this.photoManager?.hasChanges()) {
-            return this.photoManager.saveChanges(userId);
+          if (this.photoManager().hasChanges()) {
+            return this.photoManager().saveChanges(userId);
           }
 
           return of(null);

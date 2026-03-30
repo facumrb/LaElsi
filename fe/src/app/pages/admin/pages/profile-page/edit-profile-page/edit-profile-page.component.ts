@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, inject, OnInit, signal, viewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { switchMap } from 'rxjs';
@@ -38,7 +38,7 @@ export class EditProfilePageComponent implements OnInit {
   private alertService = inject(AlertService);
   private http = inject(HttpClient);
 
-  @ViewChild(PhotoManagerComponent) photoManager!: PhotoManagerComponent;
+  photoManager = viewChild.required(PhotoManagerComponent);
 
   formUtils = FormUtils;
   currentPhoto = signal<IApiUserPhoto | null>(null);
@@ -146,7 +146,7 @@ export class EditProfilePageComponent implements OnInit {
   get hasRealChanges(): boolean {
     const currentJson = JSON.stringify(this.formEditProfile.getRawValue());
     const formHasChanges = currentJson !== this.initialFormValue();
-    const photoHasChanges = this.photoManager?.hasChanges() ?? false;
+    const photoHasChanges = this.photoManager().hasChanges();
     return formHasChanges || photoHasChanges;
   }
 
@@ -176,7 +176,7 @@ export class EditProfilePageComponent implements OnInit {
       .updateAdmin(userId!, adminData)
       .pipe(
         switchMap(() => {
-          return this.photoManager.saveChanges(userId!);
+          return this.photoManager().saveChanges(userId!);
         }),
       )
       .subscribe({
@@ -190,7 +190,7 @@ export class EditProfilePageComponent implements OnInit {
 
           if (photoResponse && photoResponse.id) {
             sessionUpdates.photo = photoResponse;
-          } else if (this.photoManager.deletePending()) {
+          } else if (this.photoManager().deletePending()) {
             sessionUpdates.photo = null;
           }
 

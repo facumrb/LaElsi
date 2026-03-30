@@ -1,12 +1,11 @@
 import {
   Component,
-  EventEmitter,
+  effect,
   inject,
   input,
-  OnInit,
-  Output,
+  output,
   signal,
-  ViewChild,
+  viewChild,
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -14,7 +13,7 @@ import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { bootstrapShieldLock } from '@ng-icons/bootstrap-icons';
 import { IApiClient } from '@models/user.model';
 import { ApiClientService } from '@services/api-services/api-client.service';
-import Swal from 'sweetalert2';
+import { AlertService } from '@services/alert.service';
 import { PhotoManagerComponent } from '@shared/components/photo-manager/photo-manager.component';
 import { FormUtils } from '@shared/validators/form-utils';
 import { switchMap } from 'rxjs';
@@ -33,15 +32,16 @@ import { TrimInputDirective } from '@shared/directives/trim-input.directive';
   viewProviders: [provideIcons({ bootstrapShieldLock })],
   templateUrl: './profile-userData.component.html',
 })
-export class ProfileUserComponent implements OnInit {
+export class ProfileUserComponent {
   private fb = inject(FormBuilder);
   private apiClientService = inject(ApiClientService);
   private http = inject(HttpClient);
+  private alertService = inject(AlertService);
 
   profile = input<IApiClient | null>(null);
 
-  @Output() profileUpdated = new EventEmitter<void>();
-  @ViewChild(PhotoManagerComponent) photoManager!: PhotoManagerComponent;
+  profileUpdated = output<void>();
+  photoManager = viewChild.required(PhotoManagerComponent);
 
   saving = signal(false);
 
@@ -62,16 +62,13 @@ export class ProfileUserComponent implements OnInit {
     ],
   });
 
-  ngOnInit() {
-    if (this.profile()) {
-      this.patchForm(this.profile()!);
-    }
-  }
-
-  ngOnChanges() {
-    if (this.profile()) {
-      this.patchForm(this.profile()!);
-    }
+  constructor() {
+    effect(() => {
+      const profile = this.profile();
+      if (profile) {
+        this.patchForm(profile);
+      }
+    });
   }
 
   private patchForm(fullUser: IApiClient) {
@@ -111,19 +108,18 @@ export class ProfileUserComponent implements OnInit {
 
     this.apiClientService
       .updateClient(userId, clientData)
-      .pipe(switchMap(() => this.photoManager.saveChanges(userId)))
+      .pipe(switchMap(() => this.photoManager().saveChanges(userId)))
       .subscribe({
         next: () => {
           this.saving.set(false);
-          Swal.fire('¡Éxito!', 'Datos de usuario actualizados', 'success');
+          this.alertService.toast('Datos de usuario actualizados', 'success');
           this.formUsuario.get('password')?.setValue('');
           this.profileUpdated.emit();
         },
         error: (err) => {
           this.saving.set(false);
           console.error(err);
-          Swal.fire(
-            'Error',
+          this.alertService.toast(
             err.error?.message || 'Error al actualizar',
             'error',
           );

@@ -2,16 +2,17 @@
   <!-- Breadcrumbs -->
   <app-breadcrumbs [steps]="breadcrumbSteps()" />
 
-  @if (product()) {
+  @if (product(); as prod) {
     <div class="flex flex-col md:grid md:grid-cols-2 gap-6 md:gap-12">
       <div class="contents md:flex md:flex-col md:gap-8">
         <div class="order-3 md:order-0 flex flex-col md:flex-row gap-4 w-full">
           <div class="flex md:flex-col items-center gap-2 order-2 md:order-1">
-            @if (product()!.photos && product()!.photos!.length > 5) {
+            @if (productPhotos().length > 5) {
               <button
                 (click)="prevThumbnails()"
                 [disabled]="thumbnailIndex() === 0"
                 class="disabled:opacity-20 disabled:cursor-not-allowed text-gray-400 hover:text-[#f4abac] disabled:hover:text-gray-400 transition-colors p-1 cursor-pointer"
+                aria-label="Ver miniaturas anteriores"
               >
                 <ng-icon
                   name="bootstrapChevronUp"
@@ -22,7 +23,7 @@
 
             <div class="flex md:flex-col gap-3 overflow-hidden">
               @for (
-                photo of product()!.photos!.slice(
+                photo of productPhotos().slice(
                   thumbnailIndex(),
                   thumbnailIndex() + 5
                 );
@@ -32,25 +33,22 @@
                   role="button"
                   tabindex="0"
                   [attr.aria-label]="
-                    'Ver miniatura ' + ($index + 1) + ' de ' + product()!.name
+                    'Ver miniatura ' + ($index + 1) + ' de ' + prod.name
                   "
-                  (click)="selectedPhotoUrl.set(buildUrl(photo.fileName))"
-                  (mouseover)="selectedPhotoUrl.set(buildUrl(photo.fileName))"
+                  (click)="selectedPhotoUrl.set(photo.fullUrl)"
+                  (keydown.enter)="selectedPhotoUrl.set(photo.fullUrl)"
+                  (mouseover)="selectedPhotoUrl.set(photo.fullUrl)"
+                  (focus)="selectedPhotoUrl.set(photo.fullUrl)"
                   class="w-16 h-16 md:w-20 md:h-20 shrink-0 rounded-lg overflow-hidden cursor-pointer border-2 bg-white transition-all duration-300 focus:outline-none focus:border-[#f4abac] hover:border-[#f4abac]"
                   [class.border-[#f4abac]]="
-                    selectedPhotoUrl() === buildUrl(photo.fileName)
+                    selectedPhotoUrl() === photo.fullUrl
                   "
-                  [class.border-gray-200]="
-                    selectedPhotoUrl() !== buildUrl(photo.fileName)
-                  "
+                  [class.border-gray-200]="selectedPhotoUrl() !== photo.fullUrl"
                 >
                   <img
-                    [src]="buildUrl(photo.fileName)"
+                    [src]="photo.fullUrl"
                     [alt]="
-                      'Miniatura ' +
-                      ($index + 1) +
-                      ' del producto ' +
-                      product()!.name
+                      'Miniatura ' + ($index + 1) + ' del producto ' + prod.name
                     "
                     class="w-full h-full object-contain p-1"
                     loading="lazy"
@@ -59,11 +57,12 @@
               }
             </div>
 
-            @if (product()!.photos && product()!.photos!.length > 5) {
+            @if (productPhotos().length > 5) {
               <button
                 (click)="nextThumbnails()"
-                [disabled]="thumbnailIndex() + 5 >= product()!.photos!.length"
+                [disabled]="thumbnailIndex() + 5 >= productPhotos().length"
                 class="disabled:opacity-20 disabled:cursor-not-allowed text-gray-500 hover:text-[#f4abac] disabled:hover:text-gray-500 transition-colors p-1 cursor-pointer"
+                aria-label="Ver siguientes miniaturas"
               >
                 <ng-icon
                   name="bootstrapChevronDown"
@@ -75,17 +74,19 @@
 
           <div
             class="relative group flex-1 order-1 md:order-2 rounded-2xl overflow-hidden shadow-sm border border-gray-100 bg-white flex items-center justify-center aspect-4/3"
+            aria-live="polite"
           >
             <img
               [src]="selectedPhotoUrl()"
-              [alt]="product()!.name"
+              [alt]="prod.name"
               class="w-full h-full object-contain p-4 md:p-8 drop-shadow-sm"
             />
 
-            @if (product()!.photos && product()!.photos!.length > 1) {
+            @if (productPhotos().length > 1) {
               <button
                 (click)="prevPhoto()"
                 class="elsi-glass-nav absolute left-4 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-12 h-12"
+                aria-label="Foto anterior"
               >
                 <ng-icon name="bootstrapChevronLeft" class="text-2xl"></ng-icon>
               </button>
@@ -93,6 +94,7 @@
               <button
                 (click)="nextPhoto()"
                 class="elsi-glass-nav absolute right-4 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-12 h-12"
+                aria-label="Foto siguiente"
               >
                 <ng-icon
                   name="bootstrapChevronRight"
@@ -112,36 +114,38 @@
             Descripción
           </h3>
           <p class="text-gray-600 leading-relaxed">
-            {{ product()!.description }}
+            {{ prod.description }}
           </p>
         </div>
       </div>
 
       <div class="contents md:flex md:flex-col">
         <app-product-status-badge
-          [state]="product()!.state"
-          [stock]="product()!.stock"
+          [state]="prod.state"
+          [stock]="prod.stock"
           mode="banner"
         />
 
         <h1
           class="order-1 md:order-0 text-3xl md:text-4xl font-black text-gray-900 mt-2 md:mt-0 mb-1 md:mb-2 tracking-tight leading-tight"
         >
-          {{ product()!.name }}
+          {{ prod.name }}
         </h1>
 
         <div
           class="order-2 md:order-0 flex flex-wrap items-center gap-3 mb-0 md:mb-6 mt-1 md:mt-0"
         >
-          <span class="elsi-brand-label mb-0! text-gray-600! bg-gray-100 px-3 py-1 rounded-full">
-            Marca: {{ product()!.brand }}
+          <span
+            class="elsi-brand-label mb-0! text-gray-600! bg-gray-100 px-3 py-1 rounded-full"
+          >
+            Marca: {{ prod.brand }}
           </span>
-          @if (product()!.totalSold >= 10) {
+          @if (prod.totalSold >= 10) {
             <span
               class="text-xs font-bold text-orange-600 bg-orange-100 px-2 py-1 rounded border border-orange-100 flex items-center gap-1"
             >
               <ng-icon name="bootstrapLightningFill" class="text-sm"></ng-icon>
-              +{{ (product()!.totalSold / 10 | number: "1.0-0") + "0" }} ventas
+              +{{ (prod.totalSold / 10 | number: "1.0-0") + "0" }} ventas
             </span>
           }
         </div>
@@ -160,14 +164,14 @@
 
           <div class="mb-6">
             <app-product-status-badge
-              [state]="product()!.state"
-              [stock]="product()!.stock"
+              [state]="prod.state"
+              [stock]="prod.stock"
               [showStock]="true"
               mode="banner"
             />
           </div>
 
-          <app-add-to-cart-control [product]="product()!" layout="full" />
+          <app-add-to-cart-control [product]="prod" layout="full" />
 
           <div class="mt-6 space-y-4 border-t pt-6">
             <div
