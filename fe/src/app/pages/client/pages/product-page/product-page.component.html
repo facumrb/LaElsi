@@ -164,30 +164,7 @@
             />
           </div>
 
-          <button
-            (click)="addToCart()"
-            [disabled]="product()!.stock <= 0 || addedToCart() || product()!.state === ProductState.Inactivo"
-            [attr.aria-label]="
-              addedToCart()
-                ? 'Añadido al carrito con éxito'
-                : 'Añadir al carrito'
-            "
-            aria-live="polite"
-            class="elsi-btn-cart w-full"
-          >
-            @if (addedToCart()) {
-              <ng-icon
-                name="bootstrapCheckLg"
-                class="text-2xl animate-in zoom-in"
-              ></ng-icon>
-              <span class="animate-in fade-in">¡AGREGADO!</span>
-            } @else {
-              <span>{{
-                product()!.state === ProductState.Inactivo ? "PAUSADA" :
-                (product()!.stock > 0 ? "AÑADIR AL CARRITO" : "SIN STOCK")
-              }}</span>
-            }
-          </button>
+          <app-add-to-cart-control [product]="product()!" layout="full" />
 
           <div class="mt-6 space-y-4 border-t pt-6">
             <div

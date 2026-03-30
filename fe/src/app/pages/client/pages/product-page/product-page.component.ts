@@ -19,6 +19,7 @@ import {
 
 import { BreadcrumbsComponent, BreadcrumbStep } from '@shared/components/breadcrumbs/breadcrumbs.component';
 import { IApiCategory } from '@models/category.model';
+import { AddToCartControlComponent } from '@shared/components/add-to-cart-control/add-to-cart-control.component';
 
 @Component({
   selector: 'app-product-page',
@@ -28,6 +29,7 @@ import { IApiCategory } from '@models/category.model';
     NgIconComponent,
     BreadcrumbsComponent,
     ProductStatusBadgeComponent,
+    AddToCartControlComponent,
   ],
   viewProviders: [
     provideIcons({
@@ -55,7 +57,6 @@ export class ProductPageComponent implements OnInit {
   product = signal<IApiProduct | undefined>(undefined);
   selectedPhotoUrl = signal<string | undefined>(undefined);
   thumbnailIndex = signal(0);
-  addedToCart = signal(false);
 
   // Breadcrumbs
   breadcrumbSteps = computed<BreadcrumbStep[]>(() => {
@@ -115,18 +116,7 @@ export class ProductPageComponent implements OnInit {
     return `${this.imageBaseUrl}${fileName}`;
   }
 
-  addToCart() {
-    const currentProduct = this.product();
-    if (currentProduct) {
-      this.cartService.addToCart(currentProduct);
 
-      // Feedback visual
-      this.addedToCart.set(true);
-      setTimeout(() => {
-        this.addedToCart.set(false);
-      }, 2000);
-    }
-  }
 
   // Lógica para navegar el carrusel de la foto principal
   nextPhoto() {

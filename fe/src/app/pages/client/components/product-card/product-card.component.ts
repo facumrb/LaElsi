@@ -5,12 +5,14 @@ import { IApiProduct } from '@models/product.model';
 import { environment } from 'src/environments/environment';
 import { CartService } from '@services/cart.service';
 import { ProductStatusBadgeComponent } from '@shared/components/product-status-badge/product-status-badge.component';
-import { NgIconComponent, provideIcons } from '@ng-icons/core';
+import { provideIcons } from '@ng-icons/core';
 import { bootstrapCartPlus, bootstrapCheckLg } from '@ng-icons/bootstrap-icons';
+
+import { AddToCartControlComponent } from '@shared/components/add-to-cart-control/add-to-cart-control.component';
 
 @Component({
   selector: 'app-product-card',
-  imports: [CurrencyPipe, RouterLink, NgIconComponent, ProductStatusBadgeComponent],
+  imports: [CurrencyPipe, RouterLink, ProductStatusBadgeComponent, AddToCartControlComponent],
   viewProviders: [provideIcons({ bootstrapCartPlus, bootstrapCheckLg })],
   templateUrl: './product-card.component.html',
 })
@@ -19,7 +21,6 @@ export class ProductCardComponent {
   private readonly imageBaseUrl = environment.productImagesUrl;
   private readonly defaultImage = 'assets/Webp/no-image.webp';
   private cartService = inject(CartService);
-  addedToCart = signal(false);
 
   displayImageUrl = computed(() => {
     const currentProduct = this.product();
@@ -56,16 +57,5 @@ export class ProductCardComponent {
     imgElement.src = this.defaultImage;
   }
 
-  addToCart(event: Event) {
-    event.preventDefault();
-    event.stopPropagation();
 
-    if (this.product().stock > 0) {
-      this.cartService.addToCart(this.product());
-      this.addedToCart.set(true);
-      setTimeout(() => {
-        this.addedToCart.set(false);
-      }, 2000);
-    }
-  }
 }

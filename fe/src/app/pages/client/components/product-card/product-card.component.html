@@ -44,21 +44,7 @@
         </span>
       </div>
 
-      <button
-        (click)="addToCart($event)"
-        [disabled]="product().stock <= 0 || addedToCart()"
-        aria-label="Añadir al carrito"
-        class="h-10 w-10 flex items-center justify-center rounded-full bg-gray-900 text-white hover:bg-[#f4abac] transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed shadow-md cursor-pointer"
-      >
-        @if (addedToCart()) {
-          <ng-icon
-            name="bootstrapCheckLg"
-            class="text-lg animate-in zoom-in"
-          ></ng-icon>
-        } @else {
-          <ng-icon name="bootstrapCartPlus" class="text-lg"></ng-icon>
-        }
-      </button>
+      <app-add-to-cart-control [product]="product()" layout="compact" />
     </div>
   </div>
 </a>

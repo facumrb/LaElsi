@@ -1,0 +1,48 @@
+<div class="elsi-add-to-cart-container" [class.full-width]="layout() === 'full'">
+  @if (currentQuantity() === 0) {
+    <!-- Initial Add Button -->
+    <button
+      (click)="addInitial($event)"
+      [disabled]="product().stock <= 0"
+      aria-label="Añadir al carrito"
+      class="elsi-add-initial-btn"
+      [class.btn-full]="layout() === 'full'"
+    >
+      @if (layout() === 'compact') {
+        <ng-icon name="bootstrapPlusLg" class="text-xl"></ng-icon>
+      } @else {
+        <span class="flex items-center gap-2">
+           <ng-icon name="bootstrapPlusLg" class="text-lg"></ng-icon>
+           AÑADIR AL CARRITO
+        </span>
+      }
+    </button>
+  } @else {
+    <!-- Quantity Control "Pill" -->
+    <div
+      class="elsi-quantity-pill select-none"
+      [class.pill-full]="layout() === 'full'"
+    >
+      <button
+        (click)="decrement($event)"
+        aria-label="Disminuir cantidad"
+        class="pill-btn minus"
+      >
+        <ng-icon name="bootstrapDashLg"></ng-icon>
+      </button>
+
+      <span class="quantity-value font-bold">
+        {{ currentQuantity() }}
+      </span>
+
+      <button
+        (click)="increment($event)"
+        [disabled]="!canIncrease()"
+        aria-label="Aumentar cantidad"
+        class="pill-btn plus"
+      >
+        <ng-icon name="bootstrapPlusLg"></ng-icon>
+      </button>
+    </div>
+  }
+</div>
