@@ -1,10 +1,10 @@
 <a
   [routerLink]="['/product', product().id]"
-  class="group relative flex flex-col h-full bg-white rounded-xl shadow-sm hover:shadow-xl hover:-translate-y-1 border border-gray-100 transition-all duration-300 overflow-hidden"
+  class="elsi-product-card"
 >
-  <div class="relative w-full aspect-4/3 bg-gray-50 overflow-hidden">
+  <div class="elsi-product-img-container">
     <img
-      class="h-full w-full object-contain mix-blend-multiply transition-opacity duration-500 will-change-transform"
+      class="elsi-product-img"
       [src]="displayImageUrl()"
       alt=""
       width="300"
@@ -12,12 +12,20 @@
       loading="lazy"
       (error)="handleImageError($event)"
     />
+    
+    @if (product().stock <= 0) {
+      <div class="absolute inset-0 bg-white/50 backdrop-blur-[1px] z-10 flex items-center justify-center pointer-events-none">
+        <app-product-status-badge
+          [state]="product().state"
+          [stock]="product().stock"
+          mode="overlay"
+        />
+      </div>
+    }
   </div>
 
   <div class="p-4 flex flex-col grow">
-    <p
-      class="text-xs font-bold text-[#037971] uppercase tracking-wide mb-1 truncate"
-    >
+    <p class="elsi-brand-label">
       {{ product().brand || "Marca Genérica" }}
     </p>
 
@@ -31,7 +39,7 @@
       class="mt-auto pt-4 flex items-center justify-between border-t border-gray-50"
     >
       <div class="flex flex-col">
-        <span class="text-xl font-black text-gray-900">
+        <span class="text-xl elsi-price">
           {{ price() | currency: currency() : "symbol" : "1.0-0" }}
         </span>
       </div>

@@ -60,6 +60,9 @@ export class CategoryPageComponent implements OnInit {
   priceOrder = signal<PriceOrder>('Defecto');
   brandFilter = signal<string>('Todas');
   popularityOrder = signal<PopularityOrder>('Defecto');
+  
+  // Estado del modal para categoría inactiva
+  showInactiveCategoryModal = signal<boolean>(false);
 
   // Computed para productos filtrados
   productsFiltered = computed(() => {
@@ -127,11 +130,11 @@ export class CategoryPageComponent implements OnInit {
     // 1. Obtener la categoría y validar que esté activa
     this.ApiCategoryService.getCategoryById(id).subscribe({
       next: (data) => {
+        this.category.set(data);
         if (data.state !== CategoryState.Activo) {
-          this.router.navigate(['/']);
+          this.showInactiveCategoryModal.set(true);
           return;
         }
-        this.category.set(data);
       },
       error: () => this.router.navigate(['/']),
     });
@@ -141,5 +144,10 @@ export class CategoryPageComponent implements OnInit {
       next: (data) => this.productsRaw.set(data),
       error: (err) => console.error('Error al obtener productos', err),
     });
+  }
+
+  closeInactiveModal() {
+    this.showInactiveCategoryModal.set(false);
+    this.router.navigate(['/']);
   }
 }

@@ -4,12 +4,13 @@ import { RouterLink } from '@angular/router';
 import { IApiProduct } from '@models/product.model';
 import { environment } from 'src/environments/environment';
 import { CartService } from '@services/cart.service';
+import { ProductStatusBadgeComponent } from '@shared/components/product-status-badge/product-status-badge.component';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { bootstrapCartPlus, bootstrapCheckLg } from '@ng-icons/bootstrap-icons';
 
 @Component({
   selector: 'app-product-card',
-  imports: [CurrencyPipe, RouterLink, NgIconComponent],
+  imports: [CurrencyPipe, RouterLink, NgIconComponent, ProductStatusBadgeComponent],
   viewProviders: [provideIcons({ bootstrapCartPlus, bootstrapCheckLg })],
   templateUrl: './product-card.component.html',
 })

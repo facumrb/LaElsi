@@ -2,9 +2,10 @@ import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiProductService } from '@services/api-product.service';
 import { CartService } from '@services/cart.service';
-import { IApiProduct } from '@models/product.model';
+import { IApiProduct, ProductState } from '@models/product.model';
 import { CurrencyPipe, DecimalPipe } from '@angular/common';
 import { environment } from 'src/environments/environment';
+import { ProductStatusBadgeComponent } from '@shared/components/product-status-badge/product-status-badge.component';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
   bootstrapCheckLg,
@@ -21,7 +22,13 @@ import { IApiCategory } from '@models/category.model';
 
 @Component({
   selector: 'app-product-page',
-  imports: [CurrencyPipe, DecimalPipe, NgIconComponent, BreadcrumbsComponent],
+  imports: [
+    CurrencyPipe,
+    DecimalPipe,
+    NgIconComponent,
+    BreadcrumbsComponent,
+    ProductStatusBadgeComponent,
+  ],
   viewProviders: [
     provideIcons({
       bootstrapCheckLg,
@@ -42,6 +49,8 @@ export class ProductPageComponent implements OnInit {
   private productService = inject(ApiProductService);
   private cartService = inject(CartService);
   private router = inject(Router);
+
+  ProductState = ProductState;
 
   product = signal<IApiProduct | undefined>(undefined);
   selectedPhotoUrl = signal<string | undefined>(undefined);
@@ -87,7 +96,7 @@ export class ProductPageComponent implements OnInit {
   ngOnInit(): void {
     const id = Number(this.activatedRoute.snapshot.paramMap.get('id'));
 
-    this.productService.getActiveProductById(id).subscribe({
+    this.productService.getProductById(id).subscribe({
       next: (data) => {
         this.product.set(data);
         // Al cargar, seteamos la primera foto si existe
