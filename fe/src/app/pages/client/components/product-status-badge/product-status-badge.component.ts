@@ -3,7 +3,6 @@ import { ProductState } from '@models/product.model';
 
 @Component({
   selector: 'app-product-status-badge',
-  standalone: true,
   templateUrl: './product-status-badge.component.html',
 })
 export class ProductStatusBadgeComponent {

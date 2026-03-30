@@ -337,9 +337,7 @@
   .elsi-product-img {
     @apply h-full w-full object-contain mix-blend-multiply transition-all duration-500 will-change-transform;
   }
-  .group:hover .elsi-product-img {
-    @apply scale-105;
-  }
+
 
   .elsi-price {
     @apply font-black text-gray-900 tracking-tight;

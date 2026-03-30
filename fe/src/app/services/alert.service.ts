@@ -29,13 +29,13 @@ export class AlertService {
   }
 
   //Modal util para mensajes como "Sesión Expirada" o "Error de Red Crítico".
-  modal(title: string, text: string, icon: SweetAlertIcon = 'info') {
+  modal(title: string, html: string, icon: SweetAlertIcon = 'info') {
     return Swal.fire({
       title,
-      text,
+      html,
       icon,
       confirmButtonText: 'Entendido',
-      confirmButtonColor: '#3d4494',
+      confirmButtonColor: '#16a34a',
     });
   }
 
@@ -48,6 +48,23 @@ export class AlertService {
       confirmButtonColor: '#d33',
       cancelButtonColor: '#3085d6',
       confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => result.isConfirmed);
+  }
+
+  confirmAction(
+    title: string,
+    message: string,
+    confirmButtonText: string = 'Sí, confirmar',
+  ): Promise<boolean> {
+    return Swal.fire({
+      title: title,
+      text: message,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#16a34a',
+      cancelButtonColor: '#d33',
+      confirmButtonText: confirmButtonText,
       cancelButtonText: 'Cancelar',
     }).then((result) => result.isConfirmed);
   }
@@ -81,7 +98,8 @@ export class AlertService {
       showConfirmButton: false,
       customClass: {
         popup: '!rounded-3xl',
-        closeButton: '!w-10 !h-10 !rounded-full !bg-white !border !border-gray-200 !flex !shrink-0 !items-center !justify-center !text-gray-500 hover:!text-gray-900 hover:!bg-gray-100 !transition-colors !shadow-sm focus:!outline-none focus:!ring-2 focus:!ring-[#3d4494] !absolute !top-4 !right-4 !mt-0 !mr-0'
+        closeButton:
+          '!w-10 !h-10 !rounded-full !bg-white !border !border-gray-200 !flex !shrink-0 !items-center !justify-center !text-gray-500 hover:!text-gray-900 hover:!bg-gray-100 !transition-colors !shadow-sm focus:!outline-none focus:!ring-2 focus:!ring-[#3d4494] !absolute !top-4 !right-4 !mt-0 !mr-0',
       },
       closeButtonHtml: `
         <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 16 16">
