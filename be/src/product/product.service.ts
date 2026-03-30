@@ -160,7 +160,7 @@ export class ProductService {
 
   static async findOne(id: number) {
     const em = orm.em;
-    const product = await em.findOne(Product, { id }, { populate: ['category', 'photos', 'prices'], populateOrderBy: { photos: { order: 'ASC' } } });
+    const product = await em.findOne(Product, { id }, { populate: ['category.parent.parent', 'photos', 'prices'] as any, populateOrderBy: { photos: { order: 'ASC' } } as any });
     if (!product) throw new AppError('Producto no encontrado', 404);
     return product;
   }
@@ -171,7 +171,7 @@ export class ProductService {
       Product,
       { id, state: ProductState.Activo, category: { state: CategoryState.Activo } },
       {
-        populate: ['category', 'photos', 'prices'],
+        populate: ['category.parent.parent', 'photos', 'prices'] as any,
         populateWhere: { prices: { isCurrent: true } },
         populateOrderBy: { photos: { order: 'ASC' } }
       }

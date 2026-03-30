@@ -120,7 +120,7 @@ export class CategoryService {
 
   static async findOne(id: number) {
     const em = orm.em;
-    const category = await em.findOne(Category, { id }, { populate: ['products.photos', 'parent'] as any });
+    const category = await em.findOne(Category, { id }, { populate: ['products.photos', 'parent.parent'] as any });
     if (!category) {
       throw new AppError('Categoría no encontrada', 404);
     }
