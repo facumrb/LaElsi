@@ -12,9 +12,9 @@ import {
   bootstrapBagCheck,
   bootstrapReceipt,
 } from '@ng-icons/bootstrap-icons';
-import { ApiOrderService } from '@services/api-order.service';
-import { ApiProductService } from '@services/api-product.service';
-import { ApiClientService } from '@services/api-client.service';
+import { ApiOrderService } from '@services/api-services/api-order.service';
+import { ApiProductService } from '@services/api-services/api-product.service';
+import { ApiClientService } from '@services/api-services/api-client.service';
 import { OrderState, IApiOrder } from '@models/order.model';
 import { environment } from 'src/environments/environment';
 import { OrderDetailModalComponent } from '@shared/components/order-detail-modal/order-detail-modal.component';

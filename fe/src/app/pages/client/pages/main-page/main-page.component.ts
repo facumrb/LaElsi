@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { ApiProductService } from '@services/api-product.service';
-import { ApiCategoryService } from '@services/api-category.service';
+import { ApiProductService } from '@services/api-services/api-product.service';
+import { ApiCategoryService } from '@services/api-services/api-category.service';
 import { IApiProduct } from '@models/product.model';
 import { IApiCategory } from '@models/category.model';
 import { ProductCardComponent } from '../../components/product-card/product-card.component';

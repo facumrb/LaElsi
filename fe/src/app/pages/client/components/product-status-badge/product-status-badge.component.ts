@@ -4,24 +4,7 @@ import { ProductState } from '@models/product.model';
 @Component({
   selector: 'app-product-status-badge',
   standalone: true,
-  template: `
-    @if (status().isPaused) {
-      <div [class]="status().classes">
-        <span class="uppercase tracking-wider">Publicación pausada</span>
-      </div>
-    } @else if (status().isOutOfStock) {
-      <div [class]="status().classes">
-        <span class="uppercase tracking-widest">Agotado</span>
-        @if (mode() === 'banner') {
-          <span class="ml-1 font-medium">temporalmente</span>
-        }
-      </div>
-    } @else if (showStock() && stock() > 0) {
-      <div [class]="status().classes">
-        <span class="font-bold">Stock Disponible:</span> {{ stock() }} unidades
-      </div>
-    }
-  `,
+  templateUrl: './product-status-badge.component.html',
 })
 export class ProductStatusBadgeComponent {
   state = input.required<ProductState>();
@@ -48,7 +31,8 @@ export class ProductStatusBadgeComponent {
     if (m === 'banner') {
       classes += 'w-full py-3 px-4 rounded-xl border text-sm font-bold ';
     } else if (m === 'overlay') {
-      classes += 'px-4 py-1.5 rounded-md shadow-sm text-xs font-bold tracking-widest ';
+      classes +=
+        'px-4 py-1.5 rounded-md shadow-sm text-xs font-bold tracking-widest ';
     } else {
       classes += 'px-2.5 py-1 rounded-lg border text-[11px] font-black ';
     }

@@ -1,6 +1,6 @@
 import { Component, inject, signal, computed, effect } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ApiProductService } from '@services/api-product.service';
+import { ApiProductService } from '@services/api-services/api-product.service';
 import { ProductCardComponent } from '@client/components/product-card/product-card.component';
 import {
   ProductsFilterComponent,

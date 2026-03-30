@@ -1,8 +1,8 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { IApiAdmin } from '@models/user.model';
-import { ApiAdminService } from '@services/api-admin.service';
-import { AlertService } from '@shared/alert.service';
+import { ApiAdminService } from '@services/api-services/api-admin.service';
+import { AlertService } from '@services/alert.service';
 import { AdminsListComponent } from './admins-list/admins-list.component';
 import { AdminsToolbarComponent } from './admins-toolbar/admins-toolbar.component';
 

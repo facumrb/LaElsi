@@ -9,7 +9,7 @@ import {
   bootstrapArrowClockwise,
 } from '@ng-icons/bootstrap-icons';
 import { FormUtils } from '@shared/validators/form-utils';
-import { AlertService } from '@shared/alert.service';
+import { AlertService } from '@services/alert.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { GoBackButtonComponent } from '@shared/components/buttons/go-back-button/go-back-button.component';
 import { FieldErrorComponent } from '@shared/validators/field-error/field-error.component';

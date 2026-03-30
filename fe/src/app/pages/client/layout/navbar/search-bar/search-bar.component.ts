@@ -2,7 +2,7 @@ import { Component, signal, inject, DestroyRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { CurrencyPipe } from '@angular/common';
 import { IApiProduct } from '@models/product.model';
-import { ApiProductService } from '@services/api-product.service';
+import { ApiProductService } from '@services/api-services/api-product.service';
 import { environment } from 'src/environments/environment';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { bootstrapSearch } from '@ng-icons/bootstrap-icons';

@@ -17,7 +17,7 @@ import {
   bootstrapCheckLg,
 } from '@ng-icons/bootstrap-icons';
 import { IApiClient, IUpdateClient, FiscalCondition } from '@models/user.model';
-import { ApiClientService } from '@services/api-client.service';
+import { ApiClientService } from '@services/api-services/api-client.service';
 import Swal from 'sweetalert2';
 import { PhoneInputDirective } from '@shared/directives/phone-input.directive';
 import { NumericInputDirective } from '@shared/directives/numeric-input.directive';

@@ -1,9 +1,9 @@
 import { Component, output, model, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
-import { SearchInputComponent } from '@shared/components/inputs/search-input/search-input.component';
+import { SearchInputComponent } from '@admin/components/inputs/search-input/search-input.component';
 import { FilterButtonComponent } from '@shared/components/buttons/filter-button/filter-button.component';
-import { CreateEntityButtonComponent } from '@shared/components/buttons/create-entity-button/create-entity-button.component';
+import { CreateEntityButtonComponent } from '@admin/components/toolbar-components/create-entity-button/create-entity-button.component';
 
 export type StockFilter =
   | 'Todos'
@@ -16,7 +16,13 @@ export type StatusFilter = 'Todos' | 'Activo' | 'Inactivo';
 
 @Component({
   selector: 'app-categories-toolbar',
-  imports: [FormsModule, ClickOutsideDirective, SearchInputComponent, FilterButtonComponent, CreateEntityButtonComponent],
+  imports: [
+    FormsModule,
+    ClickOutsideDirective,
+    SearchInputComponent,
+    FilterButtonComponent,
+    CreateEntityButtonComponent,
+  ],
   templateUrl: './categories-toolbar.component.html',
 })
 export class CategoriesToolbarComponent {

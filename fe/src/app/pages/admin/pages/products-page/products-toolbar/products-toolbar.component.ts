@@ -14,9 +14,9 @@ import {
   bootstrapChevronDown,
   bootstrapCheckLg,
 } from '@ng-icons/bootstrap-icons';
-import { SearchInputComponent } from '@shared/components/inputs/search-input/search-input.component';
+import { SearchInputComponent } from '@admin/components/inputs/search-input/search-input.component';
 import { FilterButtonComponent } from '@shared/components/buttons/filter-button/filter-button.component';
-import { CreateEntityButtonComponent } from '@shared/components/buttons/create-entity-button/create-entity-button.component';
+import { CreateEntityButtonComponent } from '@admin/components/toolbar-components/create-entity-button/create-entity-button.component';
 
 export type StockFilter =
   | 'Todos'

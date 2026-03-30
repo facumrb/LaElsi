@@ -4,9 +4,7 @@ export const adminRoutes: Routes = [
   {
     path: '',
     loadComponent: () =>
-      import('@admin/components/layout/layout.component').then(
-        (m) => m.LayoutComponent,
-      ),
+      import('@admin/layout/layout.component').then((m) => m.LayoutComponent),
     children: [
       { path: '', redirectTo: 'analytics', pathMatch: 'full' },
 

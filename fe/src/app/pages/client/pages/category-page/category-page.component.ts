@@ -7,8 +7,8 @@ import {
   effect,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ApiProductService } from '@services/api-product.service';
-import { ApiCategoryService } from '@services/api-category.service';
+import { ApiProductService } from '@services/api-services/api-product.service';
+import { ApiCategoryService } from '@services/api-services/api-category.service';
 import { ProductCardComponent } from '@client/components/product-card/product-card.component';
 import {
   ProductsFilterComponent,
@@ -17,11 +17,18 @@ import {
 } from '@client/components/products-filter/products-filter.component';
 import { IApiCategory, CategoryState } from '@models/category.model';
 import { IApiProduct } from '@models/product.model';
-import { BreadcrumbsComponent, BreadcrumbStep } from '@shared/components/breadcrumbs/breadcrumbs.component';
+import {
+  BreadcrumbsComponent,
+  BreadcrumbStep,
+} from '@client/components/breadcrumbs/breadcrumbs.component';
 
 @Component({
   selector: 'app-category-page',
-  imports: [ProductCardComponent, ProductsFilterComponent, BreadcrumbsComponent],
+  imports: [
+    ProductCardComponent,
+    ProductsFilterComponent,
+    BreadcrumbsComponent,
+  ],
   templateUrl: './category-page.component.html',
 })
 export class CategoryPageComponent implements OnInit {
@@ -40,12 +47,12 @@ export class CategoryPageComponent implements OnInit {
     if (!cat) return [];
 
     const steps: BreadcrumbStep[] = [];
-    
+
     // Función para construir el path hacia arriba
     const buildPath = (current: IApiCategory) => {
       steps.unshift({
         label: current.name,
-        url: `/category/${current.id}`
+        url: `/category/${current.id}`,
       });
       if (current.parent) {
         buildPath(current.parent);
@@ -60,7 +67,7 @@ export class CategoryPageComponent implements OnInit {
   priceOrder = signal<PriceOrder>('Defecto');
   brandFilter = signal<string>('Todas');
   popularityOrder = signal<PopularityOrder>('Defecto');
-  
+
   // Estado del modal para categoría inactiva
   showInactiveCategoryModal = signal<boolean>(false);
 

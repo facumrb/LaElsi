@@ -1,8 +1,8 @@
 import { Component, model, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { SearchInputComponent } from '@shared/components/inputs/search-input/search-input.component';
+import { SearchInputComponent } from '@admin/components/inputs/search-input/search-input.component';
 
-import { CreateEntityButtonComponent } from '@shared/components/buttons/create-entity-button/create-entity-button.component';
+import { CreateEntityButtonComponent } from '@admin/components/toolbar-components/create-entity-button/create-entity-button.component';
 
 @Component({
   selector: 'app-admins-toolbar',

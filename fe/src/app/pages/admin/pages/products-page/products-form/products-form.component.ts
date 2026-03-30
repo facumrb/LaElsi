@@ -4,12 +4,12 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DatePipe, Location } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { GoBackButtonComponent } from '@shared/components/buttons/go-back-button/go-back-button.component';
-import { ApiCategoryService } from '@services/api-category.service';
+import { ApiCategoryService } from '@services/api-services/api-category.service';
 import { IApiCategory } from '@models/category.model';
 import { ProductDraftService } from '@services/product-draft.service';
 import { FormUtils } from '@shared/validators/form-utils';
-import { ApiProductService } from '@services/api-product.service';
-import { AlertService } from '@shared/alert.service';
+import { ApiProductService } from '@services/api-services/api-product.service';
+import { AlertService } from '@services/alert.service';
 import { ICreateProduct, ProductState } from '@models/product.model';
 import { PhotoManagerComponent } from './photo-manager/photo-manager.component';
 import { IApiProductPhoto } from '@models/photo.model';
@@ -21,7 +21,7 @@ import {
   bootstrapCheckLg,
   bootstrapPlusLg,
 } from '@ng-icons/bootstrap-icons';
-import { AuditInfoComponent } from '@shared/components/audit-info/audit-info.component';
+import { AuditInfoComponent } from '@admin/components/audit-info/audit-info.component';
 import { FieldErrorComponent } from '@shared/validators/field-error/field-error.component';
 import { TrimInputDirective } from '@shared/directives/trim-input.directive';
 

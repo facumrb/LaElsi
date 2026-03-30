@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { IApiCategory } from '@models/category.model';
-import { ApiCategoryService } from '@services/api-category.service';
+import { ApiCategoryService } from '@services/api-services/api-category.service';
 import { AuthService } from '@services/auth.service';
 import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';

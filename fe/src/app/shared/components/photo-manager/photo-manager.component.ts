@@ -6,8 +6,8 @@ import {
   input,
   signal,
 } from '@angular/core';
-import { ApiPhotoService } from '@services/api-photo.service';
-import { AlertService } from '@shared/alert.service';
+import { ApiPhotoService } from '@services/api-services/api-photo.service';
+import { AlertService } from '@services/alert.service';
 import { IApiUserPhoto } from '@models/photo.model';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {

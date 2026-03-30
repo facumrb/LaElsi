@@ -1,8 +1,8 @@
 import { Component, inject, signal, computed, OnInit } from '@angular/core';
-import { ApiCategoryService } from '@services/api-category.service';
+import { ApiCategoryService } from '@services/api-services/api-category.service';
 import { IApiCategory } from '@models/category.model';
 import { ReactiveFormsModule } from '@angular/forms';
-import { AlertService } from '@shared/alert.service';
+import { AlertService } from '@services/alert.service';
 import { CategoriesListComponent } from './categories-list/categories-list.component';
 import {
   CategoriesToolbarComponent,

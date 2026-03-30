@@ -13,7 +13,7 @@ import { HttpClient } from '@angular/common/http';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { bootstrapShieldLock } from '@ng-icons/bootstrap-icons';
 import { IApiClient } from '@models/user.model';
-import { ApiClientService } from '@services/api-client.service';
+import { ApiClientService } from '@services/api-services/api-client.service';
 import Swal from 'sweetalert2';
 import { PhotoManagerComponent } from '@shared/components/photo-manager/photo-manager.component';
 import { FormUtils } from '@shared/validators/form-utils';
@@ -58,10 +58,7 @@ export class ProfileUserComponent implements OnInit {
     ],
     password: [
       '',
-      [
-        FormUtils.maxLength(100),
-        Validators.pattern(FormUtils.passwordPattern),
-      ],
+      [FormUtils.maxLength(100), Validators.pattern(FormUtils.passwordPattern)],
     ],
   });
 

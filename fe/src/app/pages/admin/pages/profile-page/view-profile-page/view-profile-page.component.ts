@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { ApiAdminService } from '@services/api-admin.service';
+import { ApiAdminService } from '@services/api-services/api-admin.service';
 import { AuthService } from '@services/auth.service';
 import { IApiAdmin } from '@models/user.model';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
@@ -51,5 +51,4 @@ export class ViewProfilePageComponent implements OnInit {
   editarPerfil(): void {
     this.router.navigate(['/admin/edit-profile']);
   }
-
 }

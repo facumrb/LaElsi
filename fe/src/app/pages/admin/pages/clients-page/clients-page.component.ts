@@ -1,8 +1,8 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { IApiClient } from '@models/user.model';
-import { ApiClientService } from '@services/api-client.service';
-import { AlertService } from '@shared/alert.service';
+import { ApiClientService } from '@services/api-services/api-client.service';
+import { AlertService } from '@services/alert.service';
 import {
   ClientsToolbarComponent,
   FiscalConditionFilter,

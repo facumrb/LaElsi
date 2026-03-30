@@ -13,8 +13,8 @@ import {
   bootstrapShieldLock,
   bootstrapFilePerson,
 } from '@ng-icons/bootstrap-icons';
-import { ApiClientService } from '@services/api-client.service';
-import { ApiOrderService } from '@services/api-order.service';
+import { ApiClientService } from '@services/api-services/api-client.service';
+import { ApiOrderService } from '@services/api-services/api-order.service';
 import { AuthService } from '@services/auth.service';
 import { IApiClient } from '@models/user.model';
 import { IApiOrder } from '@models/order.model';

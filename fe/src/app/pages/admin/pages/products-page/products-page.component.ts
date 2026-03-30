@@ -1,8 +1,8 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { IApiProduct } from '@models/product.model';
 import { ReactiveFormsModule } from '@angular/forms';
-import { ApiProductService } from '@services/api-product.service';
-import { AlertService } from '@shared/alert.service';
+import { ApiProductService } from '@services/api-services/api-product.service';
+import { AlertService } from '@services/alert.service';
 import { ProductsListComponent } from './products-list/products-list.component';
 import {
   ProductsToolbarComponent,

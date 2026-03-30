@@ -4,7 +4,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DatePipe, Location } from '@angular/common';
 import { GoBackButtonComponent } from '@shared/components/buttons/go-back-button/go-back-button.component';
 import { switchMap } from 'rxjs';
-import { ApiClientService } from '@services/api-client.service';
+import { ApiClientService } from '@services/api-services/api-client.service';
 import { ICreateClient, UserRole, FiscalCondition } from '@models/user.model';
 import { IApiUserPhoto } from '@models/photo.model';
 import { HttpClient } from '@angular/common/http';
@@ -15,11 +15,11 @@ import {
   bootstrapCheckLg,
 } from '@ng-icons/bootstrap-icons';
 import { PhotoManagerComponent } from '@shared/components/photo-manager/photo-manager.component';
-import { AlertService } from '@shared/alert.service';
+import { AlertService } from '@services/alert.service';
 import { FormUtils } from '@shared/validators/form-utils';
 import { NumericInputDirective } from '@shared/directives/numeric-input.directive';
 import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
-import { AuditInfoComponent } from '@shared/components/audit-info/audit-info.component';
+import { AuditInfoComponent } from '@admin/components/audit-info/audit-info.component';
 import { PhoneInputDirective } from '@shared/directives/phone-input.directive';
 import { FieldErrorComponent } from '@shared/validators/field-error/field-error.component';
 import { TrimInputDirective } from '@shared/directives/trim-input.directive';

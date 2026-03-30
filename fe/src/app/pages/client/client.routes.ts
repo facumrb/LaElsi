@@ -1,13 +1,11 @@
 import { Routes } from '@angular/router';
-import { authGuard } from '@guards/auth.guard';
+import { clientGuard } from '@guards/client.guard';
 
 export const clientRoutes: Routes = [
   {
     path: '',
     loadComponent: () =>
-      import('./components/layout/layout.component').then(
-        (m) => m.LayoutComponent,
-      ),
+      import('./layout/layout.component').then((m) => m.LayoutComponent),
     children: [
       {
         path: '',
@@ -86,7 +84,7 @@ export const clientRoutes: Routes = [
           import('./pages/profile-page/profile-page.component').then(
             (m) => m.ProfilePageComponent,
           ),
-        canActivate: [authGuard],
+        canActivate: [clientGuard],
         children: [
           {
             path: '',

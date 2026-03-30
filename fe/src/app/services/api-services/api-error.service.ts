@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { AlertService } from './alert.service';
+import { AlertService } from '../alert.service';
 import { AuthService } from '@services/auth.service';
 
 @Injectable({

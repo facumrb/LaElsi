@@ -1,5 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { Location } from '@angular/common';
+import { Router } from '@angular/router';
+import { NavigationHistoryService } from '@services/navigation-history.service';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { bootstrapArrowLeft } from '@ng-icons/bootstrap-icons';
 
@@ -15,8 +17,19 @@ import { bootstrapArrowLeft } from '@ng-icons/bootstrap-icons';
 })
 export class GoBackButtonComponent {
   private location = inject(Location);
+  private router = inject(Router);
+  private navHistory = inject(NavigationHistoryService);
+
+  // Valor por defecto la raíz del e-commerce
+  fallbackUrl = input<string>('/');
 
   goBack() {
-    this.location.back();
+    if (this.navHistory.hasPreviousRoute()) {
+      // Si navegó dentro de la app, usamos Location (va a la previa)
+      this.location.back();
+    } else {
+      // Si no hay historial intra-app, usamos el fallback
+      this.router.navigateByUrl(this.fallbackUrl());
+    }
   }
 }

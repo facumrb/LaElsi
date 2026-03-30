@@ -65,7 +65,6 @@ export class LayoutComponent {
 
   currentUser = this.authService.currentUser;
 
-
   menuItems: menuItems[] = [
     {
       label: 'Analíticas',

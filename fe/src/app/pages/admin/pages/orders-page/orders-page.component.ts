@@ -1,7 +1,7 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { IApiOrder, OrderState, DeliveryMethod } from '@models/order.model';
-import { ApiOrderService } from '@services/api-order.service';
-import { AlertService } from '@shared/alert.service';
+import { ApiOrderService } from '@services/api-services/api-order.service';
+import { AlertService } from '@services/alert.service';
 import { OrdersListComponent } from './orders-list/orders-list.component';
 import {
   OrdersToolbarComponent,

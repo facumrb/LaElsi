@@ -350,13 +350,13 @@
   }
 
   .elsi-btn-cart {
-    @apply py-5 rounded-xl font-black text-lg text-white transition-all duration-300 transform active:scale-95 
-           disabled:bg-gray-400 disabled:text-gray-100 disabled:cursor-not-allowed 
+    @apply py-5 rounded-xl font-black text-lg text-white transition-all duration-300 transform active:scale-95
+           disabled:bg-gray-400 disabled:text-gray-100 disabled:cursor-not-allowed
            bg-gray-900 hover:bg-[#f4abac] shadow-lg cursor-pointer flex items-center justify-center gap-2;
   }
 
   .elsi-glass-nav {
-    @apply bg-white/80 backdrop-blur-sm text-gray-800 rounded-full shadow-md cursor-pointer 
+    @apply bg-white/80 backdrop-blur-sm text-gray-800 rounded-full shadow-md cursor-pointer
            opacity-0 transition-all duration-300 hover:bg-[#f4abac] hover:text-white;
   }
   .group:hover .elsi-glass-nav {
@@ -399,7 +399,7 @@
   }
 
   .elsi-add-initial-btn {
-    @apply h-10 w-10 flex items-center justify-center rounded-full bg-gray-900 text-white 
+    @apply h-10 w-10 flex items-center justify-center rounded-full bg-gray-900 text-white
            hover:bg-[#f4abac] transition-all duration-300 shadow-md cursor-pointer
            disabled:bg-gray-300 disabled:cursor-not-allowed;
     animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -410,8 +410,8 @@
   }
 
   .elsi-quantity-pill {
-    @apply flex items-center bg-gray-100 rounded-full p-1 shadow-inner border border-gray-200/50 
-           transition-all duration-300 h-10 min-w-[100px];
+    @apply flex items-center bg-gray-100 rounded-full p-1 shadow-inner border border-gray-200/50
+           transition-all duration-300 h-10 min-w-25;
     animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
 
@@ -420,7 +420,7 @@
   }
 
   .pill-btn {
-    @apply flex items-center justify-center w-8 h-8 rounded-full text-gray-700 
+    @apply flex items-center justify-center w-8 h-8 rounded-full text-gray-700
            transition-all duration-200 hover:bg-white hover:shadow-sm active:scale-95
            disabled:opacity-20 disabled:cursor-not-allowed cursor-pointer;
   }
@@ -449,4 +449,3 @@
     transform: scale(1);
   }
 }
-

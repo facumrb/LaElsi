@@ -7,10 +7,10 @@ import {
   signal,
 } from '@angular/core';
 import { IApiProductPhoto } from '@models/photo.model';
-import { ApiPhotoService } from '@services/api-photo.service';
+import { ApiPhotoService } from '@services/api-services/api-photo.service';
 import { environment } from 'src/environments/environment';
 import { forkJoin, Observable, of } from 'rxjs';
-import { AlertService } from '@shared/alert.service';
+import { AlertService } from '@services/alert.service';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
   bootstrapCloudUpload,

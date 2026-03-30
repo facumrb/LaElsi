@@ -10,8 +10,8 @@ import {
 import { IApiOrder, OrderState } from '@models/order.model';
 import { environment } from 'src/environments/environment';
 import { OrderDetailModalComponent } from '@shared/components/order-detail-modal/order-detail-modal.component';
-import { ApiOrderService } from '@services/api-order.service';
-import { AlertService } from '@shared/alert.service';
+import { ApiOrderService } from '@services/api-services/api-order.service';
+import { AlertService } from '@services/alert.service';
 
 @Component({
   selector: 'app-profile-orders',

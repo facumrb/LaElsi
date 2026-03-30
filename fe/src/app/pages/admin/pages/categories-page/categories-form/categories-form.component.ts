@@ -12,14 +12,14 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Location, DatePipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { GoBackButtonComponent } from '@shared/components/buttons/go-back-button/go-back-button.component';
-import { ApiCategoryService } from '@services/api-category.service';
+import { ApiCategoryService } from '@services/api-services/api-category.service';
 import {
   ICreateCategory,
   CategoryState,
   IApiCategory,
 } from '@models/category.model';
 import { ProductDraftService } from '@services/product-draft.service';
-import { AlertService } from '@shared/alert.service';
+import { AlertService } from '@services/alert.service';
 import { FormUtils } from '@shared/validators/form-utils';
 import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
@@ -27,7 +27,7 @@ import {
   bootstrapChevronDown,
   bootstrapCheckLg,
 } from '@ng-icons/bootstrap-icons';
-import { AuditInfoComponent } from '@shared/components/audit-info/audit-info.component';
+import { AuditInfoComponent } from '@admin/components/audit-info/audit-info.component';
 import { FieldErrorComponent } from '@shared/validators/field-error/field-error.component';
 import { TrimInputDirective } from '@shared/directives/trim-input.directive';
 import { NumericInputDirective } from '@shared/directives/numeric-input.directive';
