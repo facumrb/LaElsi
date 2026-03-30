@@ -1,0 +1,88 @@
+@if (mobileMenuOpen()) {
+  <div
+    class="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm transition-opacity md:hidden"
+    (click)="toggleMobileMenu.emit()"
+    aria-hidden="true"
+  ></div>
+
+  <aside
+    id="mobile-menu"
+    class="fixed inset-y-0 left-0 z-50 w-64 max-w-[85vw] bg-slate-900 text-white shadow-2xl transition-transform duration-300 md:hidden flex flex-col"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Menú de navegación móvil"
+  >
+    <div
+      class="h-16 flex items-center justify-center px-4 bg-slate-950 border-b border-slate-800 shrink-0"
+    >
+      <span class="text-xl font-bold tracking-widest text-white">LAELSI</span>
+    </div>
+
+    <nav class="flex-1 overflow-y-auto p-4 space-y-2">
+      @for (item of menuItems; track item.label) {
+        <a
+          [routerLink]="item.route"
+          (click)="toggleMobileMenu.emit()"
+          routerLinkActive="active bg-indigo-600 text-white shadow-md"
+          class="flex items-center p-3 rounded-lg [&:not(.active)]:hover:bg-slate-800 transition-colors text-slate-300"
+        >
+          <ng-icon [name]="item.icon" class="text-xl mr-3"></ng-icon>
+          <span class="font-medium">{{ item.label }}</span>
+        </a>
+      }
+    </nav>
+  </aside>
+}
+
+<aside
+  id="desktop-sidebar"
+  class="hidden md:flex flex-col bg-slate-900 text-slate-300 transition-all duration-300 ease-in-out shadow-xl z-10 shrink-0"
+  [class.w-64]="sidebarOpen()"
+  [class.w-20]="!sidebarOpen()"
+>
+  <div
+    class="h-16 flex items-center justify-center bg-slate-950 text-white overflow-hidden whitespace-nowrap border-b border-slate-800 shrink-0 transition-all"
+  >
+    @if (sidebarOpen()) {
+      <span
+        class="font-bold text-xl tracking-wider animate-in fade-in duration-300"
+        >LAELSI</span
+      >
+    }
+  </div>
+
+  <nav class="flex-1 overflow-y-auto py-6 flex flex-col gap-1 px-3">
+    @for (item of menuItems; track item.label) {
+      <a
+        [routerLink]="item.route"
+        routerLinkActive="active bg-indigo-600 text-white shadow-md"
+        class="flex items-center p-3 h-12 rounded-md [&:not(.active)]:hover:bg-slate-800 [&:not(.active)]:hover:text-white transition-all group relative overflow-hidden"
+        [class.justify-center]="!sidebarOpen()"
+        [title]="!sidebarOpen() ? item.label : ''"
+      >
+        <ng-icon
+          [name]="item.icon"
+          class="text-xl transition-all duration-300"
+          [class.mr-3]="sidebarOpen()"
+        ></ng-icon>
+
+        <span
+          class="font-medium whitespace-nowrap transition-all duration-300 origin-left"
+          [class.opacity-0]="!sidebarOpen()"
+          [class.w-0]="!sidebarOpen()"
+          [class.hidden]="!sidebarOpen()"
+        >
+          {{ item.label }}
+        </span>
+
+        @if (!sidebarOpen()) {
+          <div
+            class="absolute left-16 bg-slate-900 text-white text-xs px-2 py-1.5 rounded opacity-0 group-hover:opacity-100 transition-opacity z-50 pointer-events-none whitespace-nowrap shadow-xl border border-slate-700"
+          >
+            {{ item.label }}
+          </div>
+        }
+      </a>
+    }
+  </nav>
+</aside>
