@@ -129,9 +129,14 @@ export class BulkPriceModalComponent implements OnDestroy {
 
   onValueInput(event: Event) {
     const rawValue = (event.target as HTMLInputElement).value;
+    // Si está vacío o es un '-', se parsea a 0 para no disparar llamadas fallidas a la API.
+    let parsedValue = rawValue ? Number(rawValue) : 0;
+    if (isNaN(parsedValue)) {
+      parsedValue = 0;
+    }
+
     // Pasamos el valor al Subject para que aplique el debounce
-    // Si está vacío es 0
-    this._valueSubject.next(rawValue ? Number(rawValue) : 0);
+    this._valueSubject.next(parsedValue);
   }
 
   selectRoundingRule(rule: string) {

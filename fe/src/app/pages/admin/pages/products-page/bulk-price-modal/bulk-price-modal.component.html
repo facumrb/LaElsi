@@ -240,7 +240,7 @@
                   <th class="px-4 py-3">Producto</th>
                   <th class="px-4 py-3 text-right">Actual</th>
                   <th class="px-4 py-3 text-right">Nuevo</th>
-                  <th class="px-4 py-3 text-center">Dif.</th>
+                  <th class="px-4 py-3 text-center">Diferencia</th>
                   <th class="px-4 py-3 text-center">Estado</th>
                 </tr>
               </thead>
@@ -268,7 +268,7 @@
                             | currency: "ARS" : "symbol-narrow" : "1.0-2"
                         }}
                       } @else {
-                        <span class="text-gray-300">--</span>
+                        <span class="text-gray-400">--</span>
                       }
                     </td>
                     <td class="px-4 py-3 text-center tabular-nums text-xs">
@@ -331,7 +331,7 @@
                       <span
                         class="text-sm font-bold"
                         [class]="
-                          item.isValid ? 'text-gray-900' : 'text-gray-300'
+                          item.isValid ? 'text-gray-900' : 'text-gray-400'
                         "
                       >
                         {{

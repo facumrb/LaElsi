@@ -11,19 +11,18 @@
       ></app-search-input>
     </div>
 
-    @if (hasSelection()) {
-      <div class="w-full lg:w-auto order-3 lg:order-2">
-        <button
-          (click)="onBulkPriceUpdate.emit()"
-          class="animate-fadeIn w-full lg:w-auto cursor-pointer bg-white border border-gray-300 text-gray-700 px-3 h-10 rounded-lg hover:bg-green-50 hover:text-green-700 hover:border-green-200 transition-all flex justify-center items-center gap-2 whitespace-nowrap"
-        >
-          <ng-icon name="bootstrapCurrencyDollar" class="text-lg"></ng-icon>
-          <span>Actualizar Precios</span>
-        </button>
-      </div>
-    } @else {
-      <div class="h-10 w-full order-3 lg:hidden"></div>
-    }
+    <div class="w-full lg:w-auto order-3 lg:order-2">
+      <button
+        type="button"
+        (click)="onBulkPriceUpdate.emit()"
+        [disabled]="!hasSelection()"
+        class="animate-fadeIn w-full lg:w-auto flex items-center justify-center gap-2 px-3 h-10 rounded-lg border bg-white whitespace-nowrap transition-all"
+        [class]="hasSelection() ? 'cursor-pointer border-gray-300 text-gray-700 hover:bg-green-50 hover:text-green-700 hover:border-green-200' : 'cursor-not-allowed border-gray-200 text-gray-400 opacity-60 bg-gray-50'"
+      >
+        <ng-icon name="bootstrapCurrencyDollar" class="text-lg"></ng-icon>
+        <span>Actualizar Precios</span>
+      </button>
+    </div>
 
     <div
       class="grid grid-cols-2 gap-3 w-full lg:flex lg:w-auto order-1 lg:order-2 lg:ml-auto"
