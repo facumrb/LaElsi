@@ -1,0 +1,49 @@
+<section
+  class="flex min-h-[60vh] items-center justify-center p-6"
+  aria-label="Sección en desarrollo"
+>
+  <div class="relative w-full max-w-lg">
+    <!-- Marco de Construcción Perimetral -->
+    <div class="relative overflow-hidden rounded-[3rem] p-3 shadow-2xl">
+      <div
+        class="absolute inset-0 bg-[repeating-linear-gradient(-45deg,#1a1a1a,#1a1a1a_20px,#facc15_20px,#facc15_40px)]"
+        aria-hidden="true"
+      ></div>
+
+      <!-- Cuerpo de la Tarjeta (Interior) -->
+      <div
+        class="relative flex flex-col items-center rounded-[2.5rem] bg-yellow-400 px-8 py-16 text-center"
+      >
+        <!-- Ícono estilizado -->
+        <div class="mb-8">
+          <ng-icon name="bootstrapTools" class="text-[#2d2402]" size="64" />
+        </div>
+
+        <!-- Título -->
+        <h1
+          class="mb-4 text-3xl font-black uppercase tracking-tighter text-[#2d2402] sm:text-4xl"
+        >
+          Página en desarrollo
+        </h1>
+
+        <!-- Identificador de Sección -->
+        @if (sectionName()) {
+          <div class="mb-8 rounded-full bg-black/10 px-6 py-2">
+            <p
+              class="text-sm font-black uppercase tracking-widest text-[#2d2402]"
+            >
+              {{ sectionName() }}
+            </p>
+          </div>
+        }
+
+        <!-- Descripción -->
+        <p
+          class="max-w-70 text-lg font-bold leading-tight text-[#2d2402]/80 sm:max-w-none"
+        >
+          Esta sección estará disponible muy pronto.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
