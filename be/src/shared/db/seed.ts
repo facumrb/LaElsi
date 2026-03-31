@@ -10,14 +10,29 @@ import { ProductPhoto } from '../../photo/productPhoto/productPhoto.entity.js';
 import { Currency } from '../enums/currency.enum.js';
 import { orm } from './orm.js';
 import { EntityManager } from '@mikro-orm/core';
-import { CategoryState, ProductState } from '../../shared/enums/state.enum.js';
+import { CategoryState, OrderState, ProductState } from '../../shared/enums/state.enum.js';
 import { UserPhoto } from '../../photo/userPhoto/userPhoto.entity.js';
+import { Order } from '../../order/order.entity.js';
+import { OrderLine } from '../../order/order-line.entity.js';
+import { DeliveryMethod } from '../enums/delivery-method.enum.js';
+import { PaymentMethod } from '../enums/payment-method.enum.js';
 
 // --- DATOS CONSTANTES (Configuración) ---
 
 const ADMINS_DATA = [
   { name: 'Super', lastName: 'Admin', dni: '11111111', email: 'admin@laelsi.com', phone: '123456789', username: 'admin', password: 'admin123', photoFileName: 'adminprincipal.webp' },
-  { name: 'Julio', lastName: 'Cezar', dni: '44222123', email: 'juliocezar@gmail.com', phone: '122345678', username: 'admin1', password: 'admin123' }
+  { name: 'Julio', lastName: 'Cezar', dni: '44222123', email: 'juliocezar@gmail.com', phone: '122345678', username: 'admin1', password: 'admin123' },
+  { name: 'Maria', lastName: 'Gomez', dni: '10000001', email: 'maria@laelsi.com', phone: '111111111', username: 'maria_g', password: 'password123' },
+  { name: 'Carlos', lastName: 'Lopez', dni: '10000002', email: 'carlos@laelsi.com', phone: '222222222', username: 'carlos_l', password: 'password123' },
+  { name: 'Ana', lastName: 'Martinez', dni: '10000003', email: 'ana@laelsi.com', phone: '333333333', username: 'ana_m', password: 'password123' },
+  { name: 'Luis', lastName: 'Rodriguez', dni: '10000004', email: 'luis@laelsi.com', phone: '444444444', username: 'luis_r', password: 'password123' },
+  { name: 'Laura', lastName: 'Fernandez', dni: '10000005', email: 'laura@laelsi.com', phone: '555555555', username: 'laura_f', password: 'password123' },
+  { name: 'Jorge', lastName: 'Perez', dni: '10000006', email: 'jorge@laelsi.com', phone: '666666666', username: 'jorge_p', password: 'password123' },
+  { name: 'Sofia', lastName: 'Garcia', dni: '10000007', email: 'sofia@laelsi.com', phone: '777777777', username: 'sofia_g', password: 'password123' },
+  { name: 'Diego', lastName: 'Sanchez', dni: '10000008', email: 'diego@laelsi.com', phone: '888888888', username: 'diego_s', password: 'password123' },
+  { name: 'Marta', lastName: 'Romero', dni: '10000009', email: 'marta@laelsi.com', phone: '999999999', username: 'marta_r', password: 'password123' },
+  { name: 'Pedro', lastName: 'Torres', dni: '10000010', email: 'pedro@laelsi.com', phone: '1010101010', username: 'pedro_t', password: 'password123' },
+  { name: 'Lucia', lastName: 'Ruiz', dni: '10000011', email: 'lucia@laelsi.com', phone: '1101101101', username: 'lucia_r', password: 'password123' }
 ];
 
 const CLIENTS_DATA = [
@@ -90,6 +105,123 @@ const CLIENTS_DATA = [
     city: 'Rosario',
     province: 'Santa Fe',
     postalCode: '2000'
+  },
+  {
+    name: 'Valentina',
+    lastName: 'Moreno',
+    dni: '12000001',
+    email: 'valentina@laelsi.com',
+    phone: '3415000001',
+    username: 'valen_m',
+    password: 'password123',
+    role: UserRole.Client,
+    fiscalCondition: FiscalCondition.ConsumidorFinal,
+    street: 'Calle San Luis',
+    streetNumber: 320,
+    city: 'Rosario',
+    province: 'Santa Fe',
+    postalCode: '2000'
+  },
+  {
+    name: 'Rodrigo',
+    lastName: 'Ibañez',
+    dni: '12000002',
+    email: 'rodrigo@laelsi.com',
+    phone: '3415000002',
+    username: 'rodri_ib',
+    password: 'password123',
+    role: UserRole.Client,
+    cuit: '20120000029',
+    fiscalCondition: FiscalCondition.Monotributista,
+    street: 'Av. Francia',
+    streetNumber: 4200,
+    city: 'Rosario',
+    province: 'Santa Fe',
+    postalCode: '2008'
+  },
+  {
+    name: 'Camila',
+    lastName: 'Rios',
+    dni: '12000003',
+    email: 'camila@laelsi.com',
+    phone: '3415000003',
+    username: 'cami_rios',
+    password: 'password123',
+    role: UserRole.Client,
+    fiscalCondition: FiscalCondition.ConsumidorFinal,
+    street: 'Paraguay',
+    streetNumber: 850,
+    floor: '2',
+    apartment: 'A',
+    city: 'Rosario',
+    province: 'Santa Fe',
+    postalCode: '2000'
+  },
+  {
+    name: 'Matias',
+    lastName: 'Alvarez',
+    dni: '12000004',
+    email: 'matias@laelsi.com',
+    phone: '3415000004',
+    username: 'mati_alv',
+    password: 'password123',
+    role: UserRole.Client,
+    cuit: '20120000049',
+    fiscalCondition: FiscalCondition.ResponsableInscripto,
+    street: 'Entre Rios',
+    streetNumber: 1100,
+    city: 'Rosario',
+    province: 'Santa Fe',
+    postalCode: '2000'
+  },
+  {
+    name: 'Florencia',
+    lastName: 'Benitez',
+    dni: '12000005',
+    email: 'florencia@laelsi.com',
+    phone: '3415000005',
+    username: 'flor_ben',
+    password: 'password123',
+    role: UserRole.Client,
+    fiscalCondition: FiscalCondition.ConsumidorFinal,
+    street: 'Mendoza',
+    streetNumber: 2340,
+    city: 'Rosario',
+    province: 'Santa Fe',
+    postalCode: '2002'
+  },
+  {
+    name: 'Nicolas',
+    lastName: 'Castro',
+    dni: '12000006',
+    email: 'nicolas@laelsi.com',
+    phone: '3415000006',
+    username: 'nico_cas',
+    password: 'password123',
+    role: UserRole.Client,
+    fiscalCondition: FiscalCondition.ConsumidorFinal,
+    street: 'Corrientes',
+    streetNumber: 766,
+    city: 'Rosario',
+    province: 'Santa Fe',
+    postalCode: '2000'
+  },
+  {
+    name: 'Agustina',
+    lastName: 'Molina',
+    dni: '12000007',
+    email: 'agustina@laelsi.com',
+    phone: '3415000007',
+    username: 'agus_mol',
+    password: 'password123',
+    role: UserRole.Client,
+    cuit: '27120000079',
+    fiscalCondition: FiscalCondition.Monotributista,
+    street: 'San Martin',
+    streetNumber: 1590,
+    city: 'Rosario',
+    province: 'Santa Fe',
+    postalCode: '2000'
   }
 ];
 
@@ -98,6 +230,174 @@ const CATEGORIES_DATA = [
   { name: 'Jugueteria', description: 'Productos de Jugueteria', state: CategoryState.Activo, order: 2 },
   { name: 'Tecnologia', description: 'Productos de Tecnologia', state: CategoryState.Activo, order: 3 },
   { name: 'Indumentaria', description: 'Productos de Indumentaria', state: CategoryState.Inactivo, order: 4 }
+];
+
+const SUBCATEGORIES_DATA = [
+  { name: 'Útiles Escolares', description: 'Útiles para el colegio', parentName: 'Libreria', state: CategoryState.Activo, order: 1 },
+  { name: 'Papelería', description: 'Resmas, folios y papeles varios', parentName: 'Libreria', state: CategoryState.Activo, order: 2 },
+  { name: 'Arte y Dibujo', description: 'Materiales para arte y dibujo técnico', parentName: 'Libreria', state: CategoryState.Activo, order: 3 },
+  { name: 'Encuadernación', description: 'Productos de encuadernación y organización', parentName: 'Libreria', state: CategoryState.Activo, order: 4 },
+  { name: 'Indumentaria Escolar', description: 'Ropa y accesorios para el colegio', parentName: 'Libreria', state: CategoryState.Activo, order: 5 },
+  { name: 'Juegos de Mesa', description: 'Juegos de mesa y cartas', parentName: 'Jugueteria', state: CategoryState.Activo, order: 1 },
+  { name: 'Juguetes al Aire Libre', description: 'Pelotas, pistolas de agua y más', parentName: 'Jugueteria', state: CategoryState.Activo, order: 2 },
+  { name: 'Periféricos', description: 'Mouse, teclados y accesorios', parentName: 'Tecnologia', state: CategoryState.Activo, order: 1 },
+  { name: 'Audio y Video', description: 'Auriculares, parlantes y monitores', parentName: 'Tecnologia', state: CategoryState.Inactivo, order: 2 }
+];
+
+// Categorías de 3er nivel (hijas de subcategorías)
+const LEVEL3_CATEGORIES_DATA = [
+  // Hijas de "Útiles Escolares"
+  { name: 'Escritura', description: 'Lápices, bolígrafos y afines', parentName: 'Útiles Escolares', state: CategoryState.Activo, order: 1 },
+  { name: 'Geometría', description: 'Reglas, escuadras, compases y transportadores', parentName: 'Útiles Escolares', state: CategoryState.Activo, order: 2 },
+  // Hijas de "Papelería"
+  { name: 'Papel Estampado', description: 'Papel decorativo y de scrapbook', parentName: 'Papelería', state: CategoryState.Activo, order: 1 },
+  { name: 'Sobres y Carpetas', description: 'Sobres manila, sobres oficio y carpetas de archivo', parentName: 'Papelería', state: CategoryState.Activo, order: 2 },
+  // Hijas de "Arte y Dibujo"
+  { name: 'Pinturas y Acuarelas', description: 'Temperas, acuarelas y pinturas al óleo', parentName: 'Arte y Dibujo', state: CategoryState.Activo, order: 1 },
+  { name: 'Lápices de Color', description: 'Sets de lápices de colores y pasteles', parentName: 'Arte y Dibujo', state: CategoryState.Activo, order: 2 },
+  // Hijas de "Encuadernación"
+  { name: 'Anillado y Espiral', description: 'Anillos plásticos y espirales metálicos', parentName: 'Encuadernación', state: CategoryState.Activo, order: 1 },
+];
+
+interface IOrderLineSeed {
+  productName: string;
+  quantity: number;
+}
+
+interface IOrderSeed {
+  clientUsername: string;
+  status: OrderState;
+  deliveryMethod: DeliveryMethod;
+  paymentMethod: PaymentMethod;
+  dateTime: Date;
+  items: IOrderLineSeed[];
+}
+
+const ORDERS_DATA: IOrderSeed[] = [
+  {
+    clientUsername: 'cliente',
+    status: OrderState.Delivered,
+    deliveryMethod: DeliveryMethod.RetiroSucursal,
+    paymentMethod: PaymentMethod.Local,
+    dateTime: new Date('2025-11-10T10:30:00'),
+    items: [
+      { productName: 'Lápiz HB Classic', quantity: 5 },
+      { productName: 'Goma de Borrar Dos Banderas', quantity: 2 }
+    ]
+  },
+  {
+    clientUsername: 'empresa',
+    status: OrderState.Paid,
+    deliveryMethod: DeliveryMethod.Envio,
+    paymentMethod: PaymentMethod.Transferencia,
+    dateTime: new Date('2025-12-01T09:00:00'),
+    items: [
+      { productName: 'Resma A4 75g', quantity: 10 },
+      { productName: 'Bolígrafos Azul x10', quantity: 3 }
+    ]
+  },
+  {
+    clientUsername: 'monotributo',
+    status: OrderState.Shipped,
+    deliveryMethod: DeliveryMethod.Envio,
+    paymentMethod: PaymentMethod.Transferencia,
+    dateTime: new Date('2025-12-15T14:20:00'),
+    items: [
+      { productName: 'Mouse Inalámbrico', quantity: 1 },
+      { productName: 'Teclado Mecánico Gamer', quantity: 1 }
+    ]
+  },
+  {
+    clientUsername: 'exento',
+    status: OrderState.Pending,
+    deliveryMethod: DeliveryMethod.RetiroSucursal,
+    paymentMethod: PaymentMethod.Local,
+    dateTime: new Date('2026-01-05T11:00:00'),
+    items: [
+      { productName: 'Cuaderno Universitario Éxito', quantity: 4 },
+      { productName: 'Carpeta N3', quantity: 2 },
+      { productName: 'Resaltadores Pastel x4', quantity: 1 }
+    ]
+  },
+  {
+    clientUsername: 'valen_m',
+    status: OrderState.Delivered,
+    deliveryMethod: DeliveryMethod.Envio,
+    paymentMethod: PaymentMethod.Transferencia,
+    dateTime: new Date('2026-01-18T16:45:00'),
+    items: [
+      { productName: 'Auriculares Bluetooth', quantity: 1 },
+      { productName: 'Pendrive 64GB 3.0', quantity: 2 }
+    ]
+  },
+  {
+    clientUsername: 'rodri_ib',
+    status: OrderState.Cancelled,
+    deliveryMethod: DeliveryMethod.Envio,
+    paymentMethod: PaymentMethod.Transferencia,
+    dateTime: new Date('2026-01-22T08:15:00'),
+    items: [
+      { productName: 'Monitor 24 FHD', quantity: 1 }
+    ]
+  },
+  {
+    clientUsername: 'cami_rios',
+    status: OrderState.Paid,
+    deliveryMethod: DeliveryMethod.RetiroSucursal,
+    paymentMethod: PaymentMethod.Local,
+    dateTime: new Date('2026-02-03T13:00:00'),
+    items: [
+      { productName: 'Muñeca Articulada', quantity: 1 },
+      { productName: 'Masa para Modelar x4', quantity: 2 },
+      { productName: 'Rompecabezas 1000 Piezas', quantity: 1 }
+    ]
+  },
+  {
+    clientUsername: 'mati_alv',
+    status: OrderState.Delivered,
+    deliveryMethod: DeliveryMethod.Envio,
+    paymentMethod: PaymentMethod.Transferencia,
+    dateTime: new Date('2026-02-14T10:00:00'),
+    items: [
+      { productName: 'Disco SSD 480GB', quantity: 2 },
+      { productName: 'Cable HDMI 2m', quantity: 3 }
+    ]
+  },
+  {
+    clientUsername: 'flor_ben',
+    status: OrderState.Pending,
+    deliveryMethod: DeliveryMethod.RetiroSucursal,
+    paymentMethod: PaymentMethod.Local,
+    dateTime: new Date('2026-02-28T17:30:00'),
+    items: [
+      { productName: 'Pelota de Fútbol N5', quantity: 1 },
+      { productName: 'Auto a Control Remoto', quantity: 1 }
+    ]
+  },
+  {
+    clientUsername: 'nico_cas',
+    status: OrderState.Shipped,
+    deliveryMethod: DeliveryMethod.Envio,
+    paymentMethod: PaymentMethod.Transferencia,
+    dateTime: new Date('2026-03-10T12:00:00'),
+    items: [
+      { productName: 'Parlante Portátil', quantity: 1 },
+      { productName: 'Soporte para Celular', quantity: 1 },
+      { productName: 'Power Bank 10000mAh', quantity: 1 }
+    ]
+  },
+  {
+    clientUsername: 'agus_mol',
+    status: OrderState.Paid,
+    deliveryMethod: DeliveryMethod.RetiroSucursal,
+    paymentMethod: PaymentMethod.Local,
+    dateTime: new Date('2026-03-20T09:30:00'),
+    items: [
+      { productName: 'Juego de Cartas UNO', quantity: 2 },
+      { productName: 'Cubo Mágico 3x3', quantity: 1 },
+      { productName: 'Mochila Espalda 18p', quantity: 1 }
+    ]
+  }
 ];
 
 interface IProductSeed {
@@ -713,7 +1013,7 @@ async function seedClients(em: EntityManager) {
 }
 
 async function seedCategories(em: EntityManager): Promise<Record<string, Category>> {
-  const categoryCount = await em.count(Category, {});
+  const categoryCount = await em.count(Category, { parent: null });
   // Mapa para devolver las categorías creadas o encontradas y usarlas en productos
   const categoryMap: Record<string, Category> = {};
 
@@ -729,11 +1029,107 @@ async function seedCategories(em: EntityManager): Promise<Record<string, Categor
     }
   } else {
     // Si ya existen, las buscamos para poder asignar productos si hiciera falta
-    const existingCats = await em.find(Category, {});
+    const existingCats = await em.find(Category, { parent: null });
     existingCats.forEach((c) => (categoryMap[c.name] = c));
   }
 
   return categoryMap;
+}
+
+async function seedSubcategories(em: EntityManager, categoryMap: Record<string, Category>) {
+  const subcategoryCount = await em.count(Category, { parent: { $ne: null } });
+  if (subcategoryCount > 0) return;
+
+  // Mapa de subcategorías creadas en memoria para usarlas como padre del 3er nivel
+  const subcategoryMap: Record<string, Category> = {};
+
+  // — Nivel 2: subcategorías de categorías raíz —
+  for (const subData of SUBCATEGORIES_DATA) {
+    const parent = categoryMap[subData.parentName];
+    if (!parent) {
+      console.warn(`Categoría padre no encontrada para subcategoría: ${subData.name} (${subData.parentName})`);
+      continue;
+    }
+    const sub = new Category();
+    sub.name = subData.name;
+    sub.description = subData.description;
+    sub.state = subData.state;
+    sub.order = subData.order;
+    sub.parent = parent;
+    sub.depth = 1;
+    em.persist(sub);
+    subcategoryMap[sub.name] = sub;
+  }
+
+  // — Nivel 3: subcategorías de subcategorías —
+  for (const lvl3Data of LEVEL3_CATEGORIES_DATA) {
+    const parent = subcategoryMap[lvl3Data.parentName];
+    if (!parent) {
+      console.warn(`Subcategoría padre no encontrada para nivel 3: ${lvl3Data.name} (${lvl3Data.parentName})`);
+      continue;
+    }
+    const lvl3 = new Category();
+    lvl3.name = lvl3Data.name;
+    lvl3.description = lvl3Data.description;
+    lvl3.state = lvl3Data.state;
+    lvl3.order = lvl3Data.order;
+    lvl3.parent = parent;
+    lvl3.depth = 2;
+    em.persist(lvl3);
+  }
+}
+
+async function seedOrders(em: EntityManager) {
+  const orderCount = await em.count(Order, {});
+  if (orderCount > 0) return;
+
+  const allClients = await em.find(Client, {});
+  const clientMap: Record<string, Client> = {};
+  allClients.forEach((c) => (clientMap[c.username] = c));
+
+  const allProducts = await em.find(Product, {}, { populate: ['prices'] });
+  const productMap: Record<string, Product> = {};
+  allProducts.forEach((p) => (productMap[p.name] = p));
+
+  for (const orderData of ORDERS_DATA) {
+    const client = clientMap[orderData.clientUsername];
+    if (!client) {
+      console.warn(`Cliente no encontrado para la orden: ${orderData.clientUsername}`);
+      continue;
+    }
+
+    const order = new Order();
+    order.client = client;
+    order.status = orderData.status;
+    order.deliveryMethod = orderData.deliveryMethod;
+    order.paymentMethod = orderData.paymentMethod;
+    order.dateTime = orderData.dateTime;
+
+    let total = 0;
+
+    for (const itemData of orderData.items) {
+      const product = productMap[itemData.productName];
+      if (!product) {
+        console.warn(`Producto no encontrado para orden de ${orderData.clientUsername}: ${itemData.productName}`);
+        continue;
+      }
+
+      // Obtenemos el precio actual del producto (el primero disponible)
+      const currentPrice = product.prices[0]?.amount ?? 0;
+
+      const line = new OrderLine();
+      line.order = order;
+      line.product = product;
+      line.quantity = itemData.quantity;
+      line.price = currentPrice;
+
+      order.items.add(line);
+      total += currentPrice * itemData.quantity;
+    }
+
+    order.totalAmount = total;
+    em.persist(order);
+  }
 }
 
 function createProductEntity(data: IProductSeed, category: Category): Product {
@@ -782,7 +1178,10 @@ export async function seedDatabase() {
     // 3. Categorías (Obtenemos el mapa de categorías para usarlo abajo)
     const categoriesMap = await seedCategories(em);
 
-    // 4. Productos
+    // 4. Subcategorías
+    await seedSubcategories(em, categoriesMap);
+
+    // 5. Productos
     const existingProducts = await em.find(Product, {});
     const existingProductNames = new Set(existingProducts.map((p) => p.name));
 
@@ -799,7 +1198,13 @@ export async function seedDatabase() {
       }
     }
 
-    // 5. Guardar todo junto al final (Transacción implícita)
+    // 6. Guardar datos base antes de las órdenes (necesitamos IDs de productos y clientes)
+    await em.flush();
+
+    // 7. Órdenes
+    await seedOrders(em);
+
+    // 8. Guardar todo junto al final (Transacción implícita)
     await em.flush();
     console.log('🚀 Base de datos inicializada correctamente.');
   } catch (error) {
