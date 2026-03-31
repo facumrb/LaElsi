@@ -141,7 +141,7 @@
           <a
             [routerLink]="['/product', item.product.id]"
             (click)="onClose()"
-            class="flex items-center gap-4 p-4 rounded-2xl border border-gray-100 bg-white hover:bg-gray-50/50 transition-colors cursor-pointer group"
+            class="flex items-center gap-4 p-4 rounded-2xl border border-gray-100 bg-white cursor-pointer group elsi-hover-elevate"
           >
             <div
               class="w-20 h-20 shrink-0 bg-gray-50 rounded-xl overflow-hidden border border-gray-200/60 flex items-center justify-center p-1"
@@ -155,20 +155,20 @@
                     productImagesUrl + $any(item.product).photos[0].fileName
                   "
                   [alt]="item.product.name"
-                  class="w-full h-full object-contain mix-blend-multiply rounded-lg transition-transform group-hover:scale-105"
+                  class="w-full h-full object-contain mix-blend-multiply rounded-lg"
                 />
               } @else {
                 <img
                   src="assets/Webp/no-image.webp"
                   alt="Sin imagen"
-                  class="w-full h-full object-contain mix-blend-multiply rounded-lg opacity-50 transition-transform group-hover:scale-105"
+                  class="w-full h-full object-contain mix-blend-multiply rounded-lg opacity-50"
                 />
               }
             </div>
 
             <div class="grow min-w-0">
               <h4
-                class="font-bold text-gray-800 group-hover:text-[#037971] text-base leading-snug truncate mb-1 transition-colors"
+                class="font-bold text-gray-800 text-base leading-snug truncate mb-1"
                 [title]="item.product.name"
               >
                 {{ item.product.name }}
