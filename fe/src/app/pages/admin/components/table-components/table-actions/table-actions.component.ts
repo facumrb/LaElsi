@@ -1,4 +1,9 @@
-import { Component, input, output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  input,
+  output,
+} from '@angular/core';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
   bootstrapPencilSquare,
@@ -17,6 +22,7 @@ import {
       }
     `,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TableActionsComponent<T> {
   // Recibimos el objeto genérico (Product, Category, Admin, Client, etc.)

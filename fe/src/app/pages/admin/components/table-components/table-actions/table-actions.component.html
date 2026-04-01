@@ -1,5 +1,6 @@
 <div class="flex items-center justify-start lg:justify-center gap-3">
   <button
+    type="button"
     (click)="onEdit.emit(item())"
     aria-label="Editar"
     class="cursor-pointer text-blue-600 hover:text-blue-900 transition-colors flex items-center justify-center"
@@ -9,6 +10,7 @@
   </button>
 
   <button
+    type="button"
     (click)="onDelete.emit(item())"
     aria-label="Eliminar"
     class="cursor-pointer text-red-600 hover:text-red-900 transition-colors flex items-center justify-center"

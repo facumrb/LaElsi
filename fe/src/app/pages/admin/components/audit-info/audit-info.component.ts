@@ -6,9 +6,10 @@ import { Component, input } from '@angular/core';
   templateUrl: './audit-info.component.html',
 })
 export class AuditInfoComponent {
-  // Recibimos los valores ya formateados o nulos
-  createdAt = input<string | null | undefined>(null);
-  updatedAt = input<string | null | undefined>(null);
-  isActive = input<boolean | null | undefined>(true);
-  statusDate = input<string | null | undefined>(null);
+  createdAt = input.required<string | null>();
+  updatedAt = input.required<string | null>();
+
+  // Signals para manejar el estado Activo o Inactivo y su fecha
+  isActive = input.required<boolean | null>();
+  statusDate = input.required<string | null>();
 }
