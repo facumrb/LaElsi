@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { DatePipe, Location } from '@angular/common';
+import { Location } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { GoBackButtonComponent } from '@shared/components/buttons/go-back-button/go-back-button.component';
 import { ApiCategoryService } from '@services/api-services/api-category.service';
@@ -46,7 +46,6 @@ import { TrimInputDirective } from '@shared/directives/trim-input.directive';
       bootstrapPlusLg,
     }),
   ],
-  providers: [DatePipe],
   templateUrl: './products-form.component.html',
 })
 export class ProductsFormComponent implements OnInit {
@@ -57,7 +56,6 @@ export class ProductsFormComponent implements OnInit {
   private categoryService = inject(ApiCategoryService);
   private productService = inject(ApiProductService);
   private alertService = inject(AlertService);
-  private datePipe = inject(DatePipe);
   private draftService = inject(ProductDraftService);
   private http = inject(HttpClient);
 
@@ -199,7 +197,6 @@ export class ProductsFormComponent implements OnInit {
       this.productService.getProductById(+id).subscribe({
         next: (product) => {
           const currentPrice = product.prices?.find((p) => p.isCurrent);
-          const dateFormat = 'dd/MM/yyyy HH:mm';
 
           this.formProduct.patchValue({
             name: product.name,
@@ -212,18 +209,10 @@ export class ProductsFormComponent implements OnInit {
             category: product.category,
           });
 
-          // Auditoría → signals reactivos
-          this.auditCreatedAt.set(
-            this.datePipe.transform(product.createdAt, dateFormat),
-          );
-          this.auditUpdatedAt.set(
-            this.datePipe.transform(product.updatedAt, dateFormat),
-          );
-          this.auditStatusDate.set(
-            product.deletedAt
-              ? this.datePipe.transform(product.deletedAt, dateFormat)
-              : this.datePipe.transform(product.createdAt, dateFormat),
-          );
+          // Auditoría
+          this.auditCreatedAt.set(product.createdAt);
+          this.auditUpdatedAt.set(product.updatedAt);
+          this.auditStatusDate.set(product.deletedAt || product.createdAt);
 
           const formSnapshot = this.formProduct.getRawValue();
 
@@ -241,7 +230,6 @@ export class ProductsFormComponent implements OnInit {
           }
         },
         error: () => {
-          this.alertService.toast('Error al cargar', 'error');
           this.location.back();
         },
       });
@@ -362,8 +350,6 @@ export class ProductsFormComponent implements OnInit {
             },
           });
         },
-        error: () =>
-          this.alertService.toast('Error al guardar producto', 'error'),
       });
     } else {
       this.formProduct.markAllAsTouched();

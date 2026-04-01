@@ -1,6 +1,7 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { CurrencyPipe, DatePipe } from '@angular/common';
+import { CurrencyPipe } from '@angular/common';
+import { FormatDatePipe } from '@shared/pipes/format-date.pipe';
 import { RouterModule } from '@angular/router';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
@@ -26,7 +27,7 @@ import { IApiProduct } from '@models/product.model';
     RouterModule,
     NgIconComponent,
     CurrencyPipe,
-    DatePipe,
+    FormatDatePipe,
     OrderDetailModalComponent,
   ],
   viewProviders: [

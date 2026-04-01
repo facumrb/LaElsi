@@ -122,7 +122,7 @@
                     {{ order.client.lastName }}</span
                   >
                   <span class="text-xs text-gray-500">{{
-                    order.createdAt | date: "short"
+                    order.createdAt | formatDatePipe
                   }}</span>
                 </div>
                 <div class="flex flex-col items-end gap-1.5 shrink-0 ml-4">

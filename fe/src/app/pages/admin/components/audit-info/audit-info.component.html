@@ -10,7 +10,7 @@
         Creado el
       </label>
       <p class="mt-1 block text-gray-600 text-sm font-medium">
-        {{ createdAt() || "-" }}
+        {{ createdAt() | formatDatePipe }}
       </p>
     </div>
 
@@ -19,7 +19,7 @@
         Actualizado el
       </label>
       <p class="mt-1 block text-gray-600 text-sm font-medium">
-        {{ updatedAt() || "-" }}
+        {{ updatedAt() | formatDatePipe }}
       </p>
     </div>
 
@@ -28,7 +28,7 @@
         {{ isActive() === false ? 'Inactivo' : 'Activo' }} desde
       </label>
       <p class="mt-1 block text-gray-600 text-sm font-medium">
-        {{ statusDate() || "-" }}
+        {{ statusDate() | formatDatePipe }}
       </p>
     </div>
   </div>

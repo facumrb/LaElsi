@@ -54,7 +54,7 @@
                   ID de Pedido: #{{ pedido.id }}
                 </p>
                 <p class="font-bold text-gray-800">
-                  {{ pedido.createdAt | date: "dd 'de' MMMM, yyyy - HH:mm" }}
+                  {{ pedido.createdAt | formatDatePipe }}
                 </p>
               </div>
             </div>

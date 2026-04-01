@@ -7,7 +7,8 @@ import {
   inject,
   computed,
 } from '@angular/core';
-import { CurrencyPipe, DatePipe, DOCUMENT } from '@angular/common';
+import { CurrencyPipe, DOCUMENT } from '@angular/common';
+import { FormatDatePipe } from '@shared/pipes/format-date.pipe';
 import { RouterModule } from '@angular/router';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
@@ -27,7 +28,7 @@ import { CloseModalButtonComponent } from '@shared/components/buttons/close-moda
   imports: [
     NgIconComponent,
     CurrencyPipe,
-    DatePipe,
+    FormatDatePipe,
     ClickOutsideDirective,
     RouterModule,
     CloseModalButtonComponent,

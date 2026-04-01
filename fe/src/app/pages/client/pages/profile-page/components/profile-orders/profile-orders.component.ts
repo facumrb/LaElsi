@@ -1,5 +1,6 @@
 import { Component, input, signal, inject, output } from '@angular/core';
-import { CurrencyPipe, DatePipe } from '@angular/common';
+import { CurrencyPipe } from '@angular/common';
+import { FormatDatePipe } from '@shared/pipes/format-date.pipe';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
   bootstrapClockHistory,
@@ -15,7 +16,7 @@ import { AlertService } from '@services/alert.service';
 
 @Component({
   selector: 'app-profile-orders',
-  imports: [NgIconComponent, CurrencyPipe, DatePipe, OrderDetailModalComponent],
+  imports: [NgIconComponent, CurrencyPipe, FormatDatePipe, OrderDetailModalComponent],
   viewProviders: [
     provideIcons({
       bootstrapClockHistory,

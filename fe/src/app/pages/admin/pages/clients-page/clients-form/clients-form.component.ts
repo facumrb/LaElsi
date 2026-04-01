@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, signal, viewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { DatePipe, Location } from '@angular/common';
+import { Location } from '@angular/common';
 import { GoBackButtonComponent } from '@shared/components/buttons/go-back-button/go-back-button.component';
 import { switchMap } from 'rxjs';
 import { ApiClientService } from '@services/api-services/api-client.service';
@@ -45,7 +45,6 @@ import { TrimInputDirective } from '@shared/directives/trim-input.directive';
       bootstrapCheckLg,
     }),
   ],
-  providers: [DatePipe],
   templateUrl: './clients-form.component.html',
 })
 export class ClientsFormComponent implements OnInit {
@@ -55,7 +54,6 @@ export class ClientsFormComponent implements OnInit {
   private location = inject(Location);
   private clientService = inject(ApiClientService);
   private alertService = inject(AlertService);
-  private datePipe = inject(DatePipe);
   private http = inject(HttpClient);
 
   formUtils = FormUtils;
@@ -212,7 +210,6 @@ export class ClientsFormComponent implements OnInit {
     this.clientService.getClientById(id).subscribe({
       next: (client) => {
         this.currentPhoto.set(client.photo);
-        const dateFormat = 'dd/MM/yyyy HH:mm';
 
         this.formClient.patchValue({
           name: client.name,
@@ -237,18 +234,10 @@ export class ClientsFormComponent implements OnInit {
           apartment: client.apartment || '',
         });
 
-        // Auditoría → signals reactivos
-        this.auditCreatedAt.set(
-          this.datePipe.transform(client.createdAt, dateFormat),
-        );
-        this.auditUpdatedAt.set(
-          this.datePipe.transform(client.updatedAt, dateFormat),
-        );
-        this.auditStatusDate.set(
-          client.deletedAt
-            ? this.datePipe.transform(client.deletedAt, dateFormat)
-            : this.datePipe.transform(client.createdAt, dateFormat),
-        );
+        // Auditoría
+        this.auditCreatedAt.set(client.createdAt);
+        this.auditUpdatedAt.set(client.updatedAt);
+        this.auditStatusDate.set(client.deletedAt || client.createdAt);
 
         this.formClient.get('password')?.removeValidators(Validators.required);
         this.formClient.get('password')?.updateValueAndValidity();
@@ -271,7 +260,6 @@ export class ClientsFormComponent implements OnInit {
         this.initialFormValue.set(JSON.stringify(formSnapshot));
       },
       error: () => {
-        this.alertService.toast('Error al cargar cliente', 'error');
         this.location.back();
       },
     });
@@ -369,10 +357,6 @@ export class ClientsFormComponent implements OnInit {
         next: () => {
           this.alertService.toast('Guardado exitosamente', 'success');
           this.router.navigate(['/admin/clients']); // Redirección al listado de clientes
-        },
-        error: (err) => {
-          console.error(err);
-          this.alertService.toast('Error al guardar (revise la foto)', 'error');
         },
       });
   }

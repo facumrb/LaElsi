@@ -1,8 +1,9 @@
 import { Component, input } from '@angular/core';
+import { FormatDatePipe } from '@shared/pipes/format-date.pipe';
 
 @Component({
   selector: 'app-audit-info',
-  imports: [],
+  imports: [FormatDatePipe],
   templateUrl: './audit-info.component.html',
 })
 export class AuditInfoComponent {

@@ -19,7 +19,7 @@
         </h2>
         <p class="text-sm font-medium text-gray-500 mt-1">
           Realizado el
-          {{ order().createdAt | date: "dd 'de' MMMM, yyyy - HH:mm" }}
+          {{ order().createdAt | formatDatePipe }}
         </p>
       </div>
       <app-close-modal-button (clicked)="onClose()"></app-close-modal-button>

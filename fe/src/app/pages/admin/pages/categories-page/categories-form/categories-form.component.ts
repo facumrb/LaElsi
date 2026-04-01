@@ -9,7 +9,7 @@ import {
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { Location, DatePipe } from '@angular/common';
+import { Location } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { GoBackButtonComponent } from '@shared/components/buttons/go-back-button/go-back-button.component';
 import { ApiCategoryService } from '@services/api-services/api-category.service';
@@ -51,7 +51,6 @@ import { NumericInputDirective } from '@shared/directives/numeric-input.directiv
       bootstrapCheckLg,
     }),
   ],
-  providers: [DatePipe],
   templateUrl: './categories-form.component.html',
 })
 export class CategoriesFormComponent implements OnInit {
@@ -61,7 +60,6 @@ export class CategoriesFormComponent implements OnInit {
   private location = inject(Location);
   private categoryService = inject(ApiCategoryService);
   private alertService = inject(AlertService);
-  private datePipe = inject(DatePipe);
   private draftService = inject(ProductDraftService);
   private http = inject(HttpClient);
 
@@ -214,8 +212,6 @@ export class CategoriesFormComponent implements OnInit {
   loadCategory(id: number) {
     this.categoryService.getCategoryById(id).subscribe({
       next: (category) => {
-        const dateFormat = 'dd/MM/yyyy HH:mm';
-
         this.formCategory.patchValue({
           name: category.name,
           description: category.description || '',
@@ -224,18 +220,10 @@ export class CategoriesFormComponent implements OnInit {
           order: category.order || 1,
         });
 
-        // Auditoría → signals reactivos
-        this.auditCreatedAt.set(
-          this.datePipe.transform(category.createdAt, dateFormat),
-        );
-        this.auditUpdatedAt.set(
-          this.datePipe.transform(category.updatedAt, dateFormat),
-        );
-        this.auditStatusDate.set(
-          category.deletedAt
-            ? this.datePipe.transform(category.deletedAt, dateFormat)
-            : this.datePipe.transform(category.createdAt, dateFormat),
-        );
+        // Auditoría
+        this.auditCreatedAt.set(category.createdAt);
+        this.auditUpdatedAt.set(category.updatedAt);
+        this.auditStatusDate.set(category.deletedAt || category.createdAt);
 
         this.initialState.set(category.state);
 
@@ -249,7 +237,6 @@ export class CategoriesFormComponent implements OnInit {
         );
       },
       error: () => {
-        this.alertService.toast('Error al cargar la categoría', 'error');
         this.location.back();
       },
     });
@@ -326,10 +313,6 @@ export class CategoriesFormComponent implements OnInit {
         }
 
         this.router.navigate(['/admin/categories']);
-      },
-      error: (err) => {
-        console.error(err);
-        this.alertService.toast('Error al guardar', 'error');
       },
     });
   }

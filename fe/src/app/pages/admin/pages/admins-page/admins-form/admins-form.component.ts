@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, signal, viewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { DatePipe, Location } from '@angular/common';
+import { Location } from '@angular/common';
 import { switchMap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { ApiAdminService } from '@services/api-services/api-admin.service';
@@ -31,7 +31,6 @@ import { TrimInputDirective } from '@shared/directives/trim-input.directive';
     RouterLink,
     TrimInputDirective,
   ],
-  providers: [DatePipe],
   templateUrl: './admins-form.component.html',
 })
 export class AdminsFormComponent implements OnInit {
@@ -42,7 +41,6 @@ export class AdminsFormComponent implements OnInit {
   private adminService = inject(ApiAdminService);
   private authService = inject(AuthService);
   private alertService = inject(AlertService);
-  private datePipe = inject(DatePipe);
   private http = inject(HttpClient);
 
   formUtils = FormUtils;
@@ -162,8 +160,6 @@ export class AdminsFormComponent implements OnInit {
     this.adminService.getAdminById(id).subscribe({
       next: (admin) => {
         this.currentPhoto.set(admin.photo);
-        const dateFormat = 'dd/MM/yyyy HH:mm';
-
         this.formAdmin.patchValue({
           name: admin.name,
           lastName: admin.lastName,
@@ -173,18 +169,10 @@ export class AdminsFormComponent implements OnInit {
           email: admin.email,
         });
 
-        // Auditoría → signals reactivos
-        this.auditCreatedAt.set(
-          this.datePipe.transform(admin.createdAt, dateFormat),
-        );
-        this.auditUpdatedAt.set(
-          this.datePipe.transform(admin.updatedAt, dateFormat),
-        );
-        this.auditStatusDate.set(
-          admin.deletedAt
-            ? this.datePipe.transform(admin.deletedAt, dateFormat)
-            : this.datePipe.transform(admin.createdAt, dateFormat),
-        );
+        // Auditoría
+        this.auditCreatedAt.set(admin.createdAt);
+        this.auditUpdatedAt.set(admin.updatedAt);
+        this.auditStatusDate.set(admin.deletedAt || admin.createdAt);
 
         this.formAdmin.get('password')?.removeValidators(Validators.required);
         this.formAdmin.get('password')?.updateValueAndValidity();
@@ -204,7 +192,6 @@ export class AdminsFormComponent implements OnInit {
         this.initialFormValue.set(JSON.stringify(formSnapshot));
       },
       error: () => {
-        this.alertService.toast('Error al cargar administrador', 'error');
         this.location.back();
       },
     });
@@ -308,10 +295,6 @@ export class AdminsFormComponent implements OnInit {
             this.authService.updateCurrentUser(sessionUpdates);
           }
           this.router.navigate(['/admin/admins']);
-        },
-        error: (err) => {
-          console.error(err);
-          this.alertService.toast('Error al guardar (revise la foto)', 'error');
         },
       });
   }
