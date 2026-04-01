@@ -1,0 +1,223 @@
+<div
+  class="bg-white rounded-2xl shadow-sm border border-neutral-200 p-6 sticky top-8"
+>
+  <h2 class="text-lg font-bold text-neutral-900 mb-5">Resumen del pedido</h2>
+
+  <dl class="space-y-3 mb-6 text-sm">
+    <div class="flex justify-between text-neutral-500">
+      <dt>Subtotal ({{ totalItems() }})</dt>
+      <dd class="font-medium text-neutral-900">
+        {{ totalAmount() | currency: "ARS" : "symbol-narrow" : "1.0-0" }}
+      </dd>
+    </div>
+
+    <div class="flex justify-between text-neutral-600">
+      <dt>Envío</dt>
+      <dd class="font-medium text-green-700">A convenir / Gratis</dd>
+    </div>
+
+    <div
+      class="border-t border-neutral-100 pt-4 flex justify-between items-center"
+    >
+      <dt class="text-base font-bold text-neutral-900">Total</dt>
+      <dd class="text-xl font-bold text-[#3d4494]">
+        {{ totalAmount() | currency: "ARS" : "symbol-narrow" : "1.0-0" }}
+      </dd>
+    </div>
+  </dl>
+
+  <fieldset class="mb-6">
+    <legend
+      class="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-3"
+    >
+      Método de Entrega
+    </legend>
+    <div class="space-y-3">
+      <label class="relative block cursor-pointer group">
+        <input
+          type="radio"
+          name="shipping"
+          class="peer sr-only"
+          [value]="DeliveryMethodEnum.RetiroSucursal"
+          [checked]="shippingMethod() === DeliveryMethodEnum.RetiroSucursal"
+          (change)="setShippingMethod(DeliveryMethodEnum.RetiroSucursal)"
+        />
+        <div
+          class="p-3 rounded-xl border-2 transition-all flex items-center justify-between"
+          [class]="
+            shippingMethod() === DeliveryMethodEnum.RetiroSucursal
+              ? 'border-[#3d4494] bg-blue-50/10'
+              : 'border-neutral-100 bg-white hover:border-neutral-300'
+          "
+        >
+          <span class="font-semibold text-sm text-neutral-700">
+            Retiro en sucursal
+          </span>
+        </div>
+      </label>
+
+      <label class="relative block cursor-pointer group">
+        <input
+          type="radio"
+          name="shipping"
+          class="peer sr-only"
+          [value]="DeliveryMethodEnum.Envio"
+          [checked]="shippingMethod() === DeliveryMethodEnum.Envio"
+          (change)="setShippingMethod(DeliveryMethodEnum.Envio)"
+        />
+        <div
+          class="p-3 rounded-xl border-2 transition-all flex items-center justify-between"
+          [class]="
+            shippingMethod() === DeliveryMethodEnum.Envio
+              ? 'border-[#3d4494] bg-blue-50/10'
+              : 'border-neutral-100 bg-white hover:border-neutral-300'
+          "
+        >
+          <span class="font-semibold text-sm text-neutral-700">
+            Envío a domicilio
+          </span>
+        </div>
+      </label>
+    </div>
+
+    @if (shippingMethod() === DeliveryMethodEnum.Envio) {
+      <div
+        class="mt-2 text-xs text-amber-600 bg-amber-50 p-2.5 rounded-lg border border-amber-100 flex gap-2"
+      >
+        <ng-icon name="bootstrapInfoCircle" class="mt-0.5"></ng-icon>
+        <span>
+          Por el momento no hacemos envios. Podes coordinar con nosotros el
+          retiro luego de la compra.
+        </span>
+      </div>
+    }
+  </fieldset>
+
+  <fieldset class="mb-6">
+    <legend
+      class="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-3"
+    >
+      Método de Pago
+    </legend>
+
+    <div class="flex flex-col gap-3 mb-3">
+      <label class="relative block cursor-pointer group">
+        <input
+          type="radio"
+          name="payment"
+          class="peer sr-only"
+          [value]="PaymentMethodEnum.Transferencia"
+          [checked]="paymentMethod() === PaymentMethodEnum.Transferencia"
+          (change)="setPaymentMethod(PaymentMethodEnum.Transferencia)"
+        />
+        <div
+          class="p-3 rounded-xl border-2 transition-all flex items-center justify-between"
+          [class]="
+            paymentMethod() === PaymentMethodEnum.Transferencia
+              ? 'border-[#3d4494] bg-blue-50/10'
+              : 'border-neutral-100 bg-white hover:border-neutral-300'
+          "
+        >
+          <span class="font-semibold text-sm text-neutral-800">
+            Transferencia - Depósito Bancario
+          </span>
+        </div>
+      </label>
+
+      <label class="relative block cursor-pointer group">
+        <input
+          type="radio"
+          name="payment"
+          class="peer sr-only"
+          [value]="PaymentMethodEnum.Local"
+          [checked]="paymentMethod() === PaymentMethodEnum.Local"
+          (change)="setPaymentMethod(PaymentMethodEnum.Local)"
+        />
+        <div
+          class="p-3 rounded-xl border-2 transition-all flex items-center justify-between"
+          [class]="
+            paymentMethod() === PaymentMethodEnum.Local
+              ? 'border-[#3d4494] bg-blue-50/10'
+              : 'border-neutral-100 bg-white hover:border-neutral-300'
+          "
+        >
+          <span class="font-semibold text-sm text-neutral-800">
+            Pago en el Local (Efectivo / Tarjeta)
+          </span>
+        </div>
+      </label>
+    </div>
+
+    <div
+      class="h-26 bg-neutral-50 rounded-xl border border-neutral-200 p-4 relative overflow-hidden"
+    >
+      @if (paymentMethod() === PaymentMethodEnum.Transferencia) {
+        <div
+          class="absolute inset-0 flex flex-col justify-center px-4 animate-in fade-in zoom-in-95 duration-200"
+        >
+          <p class="text-sm font-medium text-neutral-600 mb-2">
+            Alias para transferir:
+          </p>
+          <div
+            class="flex items-center justify-between bg-white p-2 rounded-lg border border-neutral-200 shadow-sm"
+          >
+            <code
+              class="text-base font-bold text-[#3d4494] font-mono select-all px-1 truncate"
+            >
+              {{ mpAlias }}
+            </code>
+
+            <button
+              type="button"
+              (click)="copyAlias()"
+              class="text-xs font-semibold text-neutral-500 hover:text-[#3d4494] uppercase tracking-wide px-2 py-1 transition-colors cursor-pointer"
+              title="Copiar alias al portapapeles"
+            >
+              Copiar
+            </button>
+          </div>
+        </div>
+      } @else {
+        <div
+          class="absolute inset-0 flex flex-col justify-center px-4 animate-in fade-in zoom-in-95 duration-200"
+        >
+          <p class="text-sm text-neutral-500 pl-7 leading-snug">
+            Aceptamos
+            <span class="font-semibold text-neutral-700"
+              >Efectivo, Débito y Crédito</span
+            >
+            en nuestro local.
+          </p>
+        </div>
+      }
+    </div>
+  </fieldset>
+
+  <div class="space-y-3">
+    <!-- El hover no se aplicará si el botón está disabled configurando `disabled:hover:bg-[#3d4494]`
+         o similar, pero Tailwind V4 `disabled:bg-[#3d4494] disabled:opacity-50` suele ser suficiente
+         o desactivando el hover en disabled via class condition -->
+    <button
+      (click)="checkout()"
+      [disabled]="shippingMethod() === DeliveryMethodEnum.Envio"
+      class="w-full text-white font-bold py-3.5 rounded-xl shadow-lg transition-all flex justify-center items-center gap-2"
+      [class]="
+        shippingMethod() === DeliveryMethodEnum.Envio
+          ? 'bg-[#3d4494] opacity-50 cursor-not-allowed'
+          : 'bg-[#3d4494] hover:bg-[#2a2f63] shadow-blue-900/10 active:scale-[0.98] cursor-pointer'
+      "
+    >
+      <span>Confirmar Pedido</span>
+    </button>
+
+    <a
+      [href]="whatsAppLink()"
+      target="_blank"
+      class="w-full flex items-center justify-center gap-2 text-emerald-700 font-bold py-3 rounded-xl border border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 transition-all active:scale-[0.98]"
+      aria-label="Consultar dudas por WhatsApp"
+    >
+      <ng-icon name="bootstrapWhatsapp" class="text-xl"></ng-icon>
+      <span class="text-sm">Consultar por WhatsApp</span>
+    </a>
+  </div>
+</div>

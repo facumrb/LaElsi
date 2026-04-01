@@ -1,0 +1,104 @@
+<div
+  class="bg-white rounded-2xl shadow-sm border border-neutral-100 overflow-hidden"
+>
+  <div class="divide-y divide-neutral-100">
+    @for (item of items(); track $index) {
+      <div
+        class="p-6 flex items-center gap-6 hover:bg-neutral-50/50 transition-colors animate-in fade-in slide-in-from-bottom-2"
+      >
+        <div
+          class="w-24 h-24 shrink-0 bg-neutral-50 rounded-xl overflow-hidden border border-neutral-200"
+        >
+          <img
+            [src]="
+              imageBaseUrl +
+              (item.product.photos && item.product.photos.length > 0
+                ? item.product.photos[0].fileName
+                : 'assets/Webp/no-image.webp')
+            "
+            [alt]="item.product.name"
+            class="w-full h-full object-cover mix-blend-multiply"
+          />
+        </div>
+
+        <div class="grow">
+          <div class="flex justify-between items-start mb-1">
+            <h2 class="font-bold text-neutral-800 text-lg leading-snug">
+              {{ item.product.name }}
+            </h2>
+            <button
+              type="button"
+              (click)="removeItem(item.product.id)"
+              class="cursor-pointer text-neutral-400 hover:text-red-500 rounded-lg transition-all"
+              title="Eliminar producto"
+            >
+              <ng-icon name="bootstrapTrash" class="text-xl"></ng-icon>
+            </button>
+          </div>
+
+          <p class="text-neutral-500 text-sm mb-4 font-medium">
+            {{ item.product.brand }}
+          </p>
+
+          <div class="flex items-center justify-between mt-4">
+            <div class="flex items-center border border-neutral-200 rounded-lg">
+              <button
+                type="button"
+                (click)="updateQuantity(item.product.id, item.quantity - 1)"
+                class="cursor-pointer w-9 h-9 flex items-center justify-center text-neutral-500 hover:text-[#3d4494] hover:bg-neutral-50 rounded-l-lg transition-colors disabled:opacity-50 disabled:hover:text-neutral-500 disabled:hover:bg-transparent"
+                [disabled]="item.quantity <= 1"
+                [attr.aria-label]="'Disminuir cantidad de ' + item.product.name"
+              >
+                <ng-icon name="bootstrapDash" aria-hidden="true"></ng-icon>
+              </button>
+
+              <span
+                class="min-w-10 text-center font-semibold text-neutral-800 text-sm"
+              >
+                {{ item.quantity }}
+              </span>
+
+              <button
+                type="button"
+                (click)="updateQuantity(item.product.id, item.quantity + 1)"
+                class="cursor-pointer w-9 h-9 flex items-center justify-center text-neutral-500 hover:text-[#3d4494] hover:bg-neutral-50 rounded-r-lg transition-colors disabled:opacity-50 disabled:hover:text-neutral-500 disabled:hover:bg-transparent"
+                [attr.aria-label]="'Aumentar cantidad de ' + item.product.name"
+                [disabled]="item.quantity >= item.product.stock"
+              >
+                <ng-icon name="bootstrapPlus" aria-hidden="true"></ng-icon>
+              </button>
+            </div>
+
+            <div class="text-right">
+              <p class="text-lg font-bold text-[#3d4494] leading-tight mb-1">
+                {{
+                  getCurrentPrice(item.product) * item.quantity
+                    | currency: "ARS" : "symbol-narrow" : "1.0-0"
+                }}
+              </p>
+
+              <p class="text-xs font-medium text-neutral-500">
+                {{
+                  getCurrentPrice(item.product)
+                    | currency: "ARS" : "symbol-narrow" : "1.0-0"
+                }}
+                c/u
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>
+
+<div class="flex justify-end mt-3">
+  <button
+    type="button"
+    (click)="clearCart()"
+    class="cursor-pointer text-sm text-gray-500 hover:text-red-600 font-medium flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-red-50 transition-all"
+  >
+    <ng-icon name="bootstrapCartX"></ng-icon>
+    Vaciar todo el carrito
+  </button>
+</div>
