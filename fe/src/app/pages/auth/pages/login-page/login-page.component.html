@@ -22,10 +22,7 @@
         class="space-y-5"
       >
         <div>
-          <label
-            for="username"
-            class="mb-1.5 form-label font-semibold"
-          >
+          <label for="username" class="mb-1.5 form-label font-semibold">
             Nombre de usuario
           </label>
           <input
@@ -42,10 +39,7 @@
         </div>
 
         <div>
-          <label
-            for="password"
-            class="mb-1.5 form-label font-semibold"
-          >
+          <label for="password" class="mb-1.5 form-label font-semibold">
             Contraseña
           </label>
 
@@ -60,25 +54,10 @@
               class="form-input p-3 pr-10 focus:border-[#3d4494] focus:ring-1 focus:ring-[#3d4494] outline-none transition-all"
             />
 
-            @if (showEyeIcon()) {
-              <button
-                type="button"
-                (click)="togglePasswordVisibility()"
-                [attr.aria-label]="
-                  passwordVisible()
-                    ? 'Ocultar contraseña'
-                    : 'Mostrar contraseña'
-                "
-                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#3d4494] focus:outline-none transition-colors flex items-center justify-center p-1 rounded-full hover:bg-gray-50"
-                tabindex="-1"
-              >
-                @if (passwordVisible()) {
-                  <ng-icon name="bootstrapEye" class="text-xl"></ng-icon>
-                } @else {
-                  <ng-icon name="bootstrapEyeSlash" class="text-xl"></ng-icon>
-                }
-              </button>
-            }
+            <app-password-toggle-button
+              [(visible)]="passwordVisible"
+              [show]="showEyeIcon()"
+            />
           </div>
 
           <div class="mt-1 flex justify-between items-start">

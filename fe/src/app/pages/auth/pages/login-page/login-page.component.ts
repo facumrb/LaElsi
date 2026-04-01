@@ -3,17 +3,14 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '@services/auth.service';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import {
-  bootstrapEye,
-  bootstrapEyeSlash,
-  bootstrapArrowClockwise,
-} from '@ng-icons/bootstrap-icons';
+import { bootstrapArrowClockwise } from '@ng-icons/bootstrap-icons';
 import { FormUtils } from '@shared/validators/form-utils';
 import { AlertService } from '@services/alert.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { GoBackButtonComponent } from '@shared/components/buttons/go-back-button/go-back-button.component';
 import { FieldErrorComponent } from '@shared/validators/field-error/field-error.component';
 import { TrimInputDirective } from '@shared/directives/trim-input.directive';
+import { PasswordToggleButtonComponent } from '@shared/components/buttons/password-toggle-button/password-toggle-button.component';
 
 @Component({
   selector: 'app-login-page',
@@ -24,11 +21,10 @@ import { TrimInputDirective } from '@shared/directives/trim-input.directive';
     GoBackButtonComponent,
     FieldErrorComponent,
     TrimInputDirective,
+    PasswordToggleButtonComponent,
   ],
   viewProviders: [
     provideIcons({
-      bootstrapEye,
-      bootstrapEyeSlash,
       bootstrapArrowClockwise,
     }),
   ],
@@ -38,10 +34,8 @@ export class LoginPageComponent {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
-  private activatedroute = inject(ActivatedRoute);
+  private activatedRoute = inject(ActivatedRoute);
   private alertService = inject(AlertService);
-
-  formUtils = FormUtils;
 
   // Signals para el estado de la UI
   loading = signal(false);
@@ -72,10 +66,6 @@ export class LoginPageComponent {
     return val ? val.length > 0 : false;
   });
 
-  togglePasswordVisibility(): void {
-    this.passwordVisible.update((current) => !current);
-  }
-
   forgotPassword() {
     this.alertService.recoverPassword();
   }
@@ -94,13 +84,13 @@ export class LoginPageComponent {
         this.loading.set(false);
         this.alertService.toast('¡Bienvenido de nuevo!', 'success');
 
-        // Logica de redireccionamiento post-login
-        const returnUrl = this.activatedroute.snapshot.queryParams['returnUrl'];
+        // Lógica de redireccionamiento post-login
+        const returnUrl = this.activatedRoute.snapshot.queryParams['returnUrl'];
         if (returnUrl) {
-          // Si existe, vamos directo ahí (ej: /checkout)
+          // Si existe una ruta de retorno (ej: /cart-page), vamos allí
           this.router.navigateByUrl(returnUrl);
         } else {
-          // Si no existe, decidimos según el rol
+          // Si no existe, navegamos al home correspondiente según el rol
           if (this.authService.isAdmin()) {
             this.router.navigate(['/admin']); // Dashboard Admin
           } else {
