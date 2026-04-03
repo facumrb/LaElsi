@@ -1,0 +1,79 @@
+<div class="relative w-full" (clickOutside)="showParentMenu.set(false)">
+  <label for="parentId" class="form-label"> Categoría Padre (opcional) </label>
+
+  <button
+    type="button"
+    id="parentId"
+    (click)="toggleParentMenu()"
+    class="select-trigger focus:ring-1"
+  >
+    <span class="flex items-center gap-3">
+      <span class="block truncate">{{ parentName() }}</span>
+    </span>
+    <span class="select-chevron-wrapper">
+      <ng-icon
+        name="bootstrapChevronDown"
+        class="text-gray-400 transition-transform duration-200"
+        [class.rotate-180]="showParentMenu()"
+      ></ng-icon>
+    </span>
+  </button>
+
+  @if (showParentMenu()) {
+    <ul class="select-dropdown">
+      <li (click)="selectParent(null)" class="select-option">
+        <div class="flex items-center gap-2">
+          <span
+            class="font-bold"
+            [class.text-gray-900]="control().value !== null"
+            [class.text-indigo-700]="control().value === null"
+          >
+            Ninguna (Categoría Raíz)
+          </span>
+        </div>
+        @if (control().value === null) {
+          <span class="absolute inset-y-0 right-0 flex items-center pr-4">
+            <ng-icon
+              name="bootstrapCheckLg"
+              class="text-lg text-indigo-600"
+            ></ng-icon>
+          </span>
+        }
+      </li>
+
+      <li class="border-b border-dashed border-gray-300"></li>
+      @for (cat of eligibleParents(); track cat.id) {
+        <li
+          (click)="selectParent(cat.id)"
+          class="select-option relative"
+          [class.bg-gray-50]="!cat.depth"
+          [class.border-l-4]="!cat.depth"
+          [class.border-gray-200]="!cat.depth"
+          [style.padding-left.rem]="(cat.depth || 0) * 1 + 1"
+        >
+          <div class="flex items-center gap-2">
+            <span
+              [class.font-bold]="!cat.depth"
+              [class.text-gray-900]="!cat.depth"
+              [class.text-gray-700]="cat.depth"
+              [class.font-semibold]="control().value === cat.id && cat.depth"
+              [class.text-indigo-700]="control().value === cat.id"
+            >
+              {{ cat.name }}
+            </span>
+          </div>
+          @if (control().value === cat.id) {
+            <span class="absolute inset-y-0 right-0 flex items-center pr-4">
+              <ng-icon
+                name="bootstrapCheckLg"
+                class="text-lg"
+                [class.text-indigo-600]="control().value === cat.id"
+              ></ng-icon>
+            </span>
+          }
+        </li>
+      }
+    </ul>
+  }
+  <app-field-error [control]="control()" />
+</div>

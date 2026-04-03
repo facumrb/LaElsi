@@ -175,7 +175,7 @@
   }
 
   .table-parent-info {
-    @apply text-[10px] text-gray-400 font-medium ml-4;
+    @apply text-[10px] text-gray-500 font-medium ml-4;
   }
 
   /* ── Toolbar ── */

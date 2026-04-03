@@ -32,78 +32,12 @@
           />
         </div>
 
-        <div class="relative w-full" (clickOutside)="showParentMenu.set(false)">
-          <label for="parentId" class="form-label">
-            Categoría Padre (opcional)
-          </label>
-
-          <button
-            type="button"
-            id="parentId"
-            (click)="toggleParentMenu()"
-            class="select-trigger focus:ring-1"
-          >
-            <span class="flex items-center gap-3">
-              <span class="block truncate">{{ parentName() }}</span>
-            </span>
-            <span class="select-chevron-wrapper">
-              <ng-icon
-                name="bootstrapChevronDown"
-                class="text-gray-400 transition-transform duration-200"
-                [class.rotate-180]="showParentMenu()"
-              ></ng-icon>
-            </span>
-          </button>
-
-          @if (showParentMenu()) {
-            <ul class="select-dropdown">
-              <li (click)="selectParent(null)" class="select-option">
-                <div class="flex items-center">
-                  <span
-                    [class.font-semibold]="
-                      formCategory.get('parentId')?.value === null
-                    "
-                  >
-                    Ninguna (Categoría Raíz)
-                  </span>
-                </div>
-                @if (formCategory.get("parentId")?.value === null) {
-                  <span class="select-check-icon">
-                    <ng-icon name="bootstrapCheckLg" class="text-lg"></ng-icon>
-                  </span>
-                }
-              </li>
-              @for (cat of eligibleParents(); track cat.id) {
-                <li
-                  (click)="selectParent(cat.id)"
-                  class="select-option"
-                  [style.padding-left.rem]="(cat.depth || 0) * 0.75 + 1"
-                >
-                  <div class="flex items-center">
-                    <span
-                      [class.font-semibold]="
-                        formCategory.get('parentId')?.value === cat.id
-                      "
-                    >
-                      {{ cat.name }}
-                    </span>
-                  </div>
-                  @if (formCategory.get("parentId")?.value === cat.id) {
-                    <span
-                      class="absolute inset-y-0 right-0 flex items-center pr-4"
-                    >
-                      <ng-icon
-                        name="bootstrapCheckLg"
-                        class="text-lg"
-                      ></ng-icon>
-                    </span>
-                  }
-                </li>
-              }
-            </ul>
-          }
-          <app-field-error [control]="formCategory.controls.parentId" />
-        </div>
+        <app-category-parent-select
+          [control]="parentIdControl"
+          [categories]="allCategories()"
+          [currentCategoryId]="categoryId()"
+          [currentParentId]="currentParentId()"
+        />
 
         <div>
           <label for="description" class="form-label"
@@ -124,28 +58,13 @@
           />
         </div>
 
-        <div>
-          <label for="order" class="form-label">
-            Orden de Visualización
-            <span class="text-xs font-normal text-gray-500"
-              >(El orden máximo es: {{ maxOrder() }})</span
-            >
-            <span class="text-red-500">*</span>
-          </label>
-          <input
-            type="number"
-            id="order"
-            name="order"
-            formControlName="order"
-            min="1"
-            [max]="maxOrder()"
-            inputmode="numeric"
-            appNumericInput
-            class="form-input"
-            placeholder="Ej: 1, 2, 3..."
-          />
-          <app-field-error [control]="formCategory.controls.order" />
-        </div>
+        <app-category-order-input
+          [control]="orderControl"
+          [categories]="allCategories()"
+          [currentParentId]="currentParentId()"
+          [isEditMode]="isEditMode()"
+          [categoryId]="categoryId()"
+        />
 
         <div class="relative w-full" (clickOutside)="showStateMenu.set(false)">
           <label for="state" class="form-label">
@@ -236,7 +155,7 @@
         </button>
         <button
           type="submit"
-          [disabled]="formCategory.invalid || !hasRealChanges"
+          [disabled]="!formCategory.valid || !hasRealChanges"
           class="btn-primary"
         >
           {{ isEditMode() ? "Guardar Cambios" : "Crear Categoría" }}
