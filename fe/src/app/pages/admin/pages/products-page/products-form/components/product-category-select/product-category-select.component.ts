@@ -64,11 +64,11 @@ export class ProductCategorySelectComponent {
   });
 
   // Nombre de la categoria seleccionada
-  selectedCategoryName = computed(() => {
+  get selectedCategoryName() {
     const cat = this.control().value;
     if (!cat) return 'Seleccione una categoría';
     return cat.name;
-  });
+  }
 
   toggleMenu() {
     this.showCategoryMenu.update((v) => !v);

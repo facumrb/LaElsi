@@ -35,7 +35,6 @@ import { CategoryParentSelectComponent } from './components/category-parent-sele
     AuditInfoComponent,
     GoBackButtonComponent,
     FieldErrorComponent,
-    RouterLink,
     CategoryParentSelectComponent,
   ],
   viewProviders: [
@@ -176,6 +175,18 @@ export class CategoriesFormComponent implements OnInit {
   selectState(state: string) {
     this.formCategory.patchValue({ state: state as CategoryState });
     this.showStateMenu.set(false);
+  }
+
+  onCancel() {
+    const fromProduct =
+      this.routeActive.snapshot.queryParamMap.get('fromProduct');
+    const draft = this.draftService.getDraft();
+
+    if (fromProduct === 'true' && draft) {
+      this.router.navigateByUrl(draft.returnUrl);
+    } else {
+      this.router.navigate(['/admin/categories']);
+    }
   }
 
   onSubmit() {

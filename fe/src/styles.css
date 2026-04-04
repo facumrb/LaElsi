@@ -249,7 +249,11 @@
   .navbar-subdropdown::after {
     content: "";
     /* Usamos un cuadrado rotado para que tenga borde negro a la izquierda y abajo */
-    @apply absolute top-3 -left-1.5 w-2 h-2 bg-white border-l border-b border-black rotate-45 z-0;
+    @apply absolute top-3 -left-1.5 w-2 h-2 bg-white border-l border-b border-black rotate-45 z-0 transition-colors;
+  }
+
+  .navbar-subdropdown:has(> .navbar-dropdown-item:first-of-type:hover)::after {
+    @apply bg-gray-100;
   }
 
   /* Chevron giratorio al hacer hover sobre una categoría raíz */

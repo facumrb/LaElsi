@@ -15,7 +15,7 @@
         type="button"
         (click)="onBulkPriceUpdate.emit()"
         [disabled]="!hasSelection()"
-        class="animate-fadeIn w-full lg:w-auto flex items-center justify-center gap-2 px-3 h-10 rounded-lg border bg-white whitespace-nowrap transition-all"
+        class="w-full lg:w-auto flex items-center justify-center gap-2 px-3 h-10 rounded-lg border bg-white whitespace-nowrap transition-colors"
         [class]="hasSelection() ? 'cursor-pointer border-gray-300 text-gray-700 hover:bg-green-50 hover:text-green-700 hover:border-green-200' : 'cursor-not-allowed border-gray-200 text-gray-400 opacity-60 bg-gray-50'"
       >
         <ng-icon name="bootstrapCurrencyDollar" class="text-lg"></ng-icon>

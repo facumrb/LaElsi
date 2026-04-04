@@ -6,25 +6,15 @@
   <button
     type="button"
     (click)="toggleMenu()"
-    class="select-trigger group relative w-full cursor-pointer bg-white rounded-lg border py-2.5 pl-3 pr-10 text-left shadow-sm focus:outline-none focus:ring-1 sm:text-sm transition-colors"
-    [class]="
-      control().invalid && (control().dirty || control().touched)
-        ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
-        : 'border-gray-300 focus:border-gray-900 focus:ring-gray-900'
-    "
+    class="select-trigger focus:border-gray-900 focus:ring-1 focus:ring-gray-900 w-full"
   >
-    <span
-      class="block truncate text-gray-700"
-      [class.text-gray-400]="!control().value"
-    >
-      {{ selectedCategoryName() }}
+    <span class="block truncate" [class.text-gray-400]="!control().value">
+      {{ selectedCategoryName }}
     </span>
-    <span
-      class="select-chevron-wrapper absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none"
-    >
+    <span class="select-chevron-wrapper">
       <ng-icon
         name="bootstrapChevronDown"
-        class="text-sm text-gray-400 transition-transform duration-200 group-hover:text-gray-500"
+        class="text-sm text-gray-400 transition-transform duration-200"
         [class.rotate-180]="showCategoryMenu()"
       ></ng-icon>
     </span>
@@ -32,7 +22,7 @@
 
   @if (showCategoryMenu()) {
     <div
-      class="select-dropdown absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white pt-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm animate-fadeIn"
+      class="select-dropdown absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm animate-fadeIn"
     >
       @for (cat of hierarchicalCategories(); track cat.id) {
         <div
