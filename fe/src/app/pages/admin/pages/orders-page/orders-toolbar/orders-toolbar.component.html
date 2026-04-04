@@ -1,9 +1,12 @@
 <div class="toolbar-container">
-  <h1 class="page-title">Gestión de Órdenes</h1>
+  <app-toolbar-title title="Órdenes"></app-toolbar-title>
 
   <div class="flex flex-col lg:flex-row gap-3 w-full lg:w-auto">
-    <div class="w-full lg:w-80 lg:min-w-[320px]">
-      <app-search-input [(query)]="searchQuery" placeholder="Buscar por cliente o ID de orden..."></app-search-input>
+    <div class="w-full lg:w-73">
+      <app-search-input
+        [(query)]="searchQuery"
+        placeholder="Buscar por cliente o ID de orden..."
+      ></app-search-input>
     </div>
 
     <!-- Filtros -->

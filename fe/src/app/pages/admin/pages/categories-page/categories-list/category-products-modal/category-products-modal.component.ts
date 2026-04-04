@@ -12,7 +12,7 @@ import {
 import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
 import { environment } from 'src/environments/environment';
 import { CloseModalButtonComponent } from '@shared/components/buttons/close-modal-button/close-modal-button.component';
-import { SearchInputComponent } from '@admin/components/inputs/search-input/search-input.component';
+import { SearchInputComponent } from '@admin/components/toolbar-components/search-input/search-input.component';
 
 @Component({
   selector: 'app-category-products-modal',

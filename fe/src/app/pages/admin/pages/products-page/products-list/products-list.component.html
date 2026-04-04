@@ -18,8 +18,8 @@
               ></ng-icon>
             </div>
           </th>
-          <th class="admin-table-header-cell pl-1 pr-6 w-[26%]">Producto</th>
-          <th class="admin-table-header-cell w-[15%]">Categoría</th>
+          <th class="admin-table-header-cell pl-2 pr-3 w-[24%]">Producto</th>
+          <th class="admin-table-header-cell w-[14%]">Categoría</th>
           <th
             class="admin-table-header-cell pl-10 pr-6 text-left whitespace-nowrap w-[15%]"
           >
@@ -36,7 +36,7 @@
             Estado
           </th>
           <th
-            class="admin-table-header-cell text-center whitespace-nowrap w-[13%] rounded-tr-lg"
+            class="admin-table-header-cell text-center whitespace-nowrap w-[16%] rounded-tr-lg"
           >
             Acciones
           </th>
@@ -119,13 +119,14 @@
                     class="absolute text-white text-sm pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity duration-200"
                   ></ng-icon>
                 </div>
-
-                <div class="relative h-12 w-12 shrink-0">
-                  <img
-                    class="h-full w-full rounded-lg object-cover border border-gray-200 bg-gray-50"
-                    [src]="getProductMainImage(product)"
-                    alt=""
-                  />
+                <div class="lg:pl-1">
+                  <div class="relative h-12 w-12 shrink-0">
+                    <img
+                      class="h-full w-full rounded-lg object-cover border border-gray-200 bg-gray-50"
+                      [src]="getProductMainImage(product)"
+                      alt=""
+                    />
+                  </div>
                 </div>
 
                 <div

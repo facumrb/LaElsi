@@ -2,16 +2,18 @@ import { Component, model, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
 import { OrderState, DeliveryMethod } from '@models/order.model';
-import { SearchInputComponent } from '@admin/components/inputs/search-input/search-input.component';
+import { SearchInputComponent } from '@admin/components/toolbar-components/search-input/search-input.component';
 
 export type OrderStatusFilter = OrderState | 'Todos';
 export type DeliveryMethodFilter = DeliveryMethod | 'Todos';
 
 import { FilterButtonComponent } from '@shared/components/buttons/filter-button/filter-button.component';
+import { ToolbarTitleComponent } from '@admin/components/toolbar-components/toolbar-title/toolbar-title.component';
 
 @Component({
   selector: 'app-orders-toolbar',
   imports: [
+    ToolbarTitleComponent,
     FormsModule,
     ClickOutsideDirective,
     SearchInputComponent,

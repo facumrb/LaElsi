@@ -1,11 +1,12 @@
 <div class="toolbar-container">
-  <h1 class="page-title">Gestión de Categorías</h1>
+  <app-toolbar-title title="Categorías"></app-toolbar-title>
 
   <div class="flex flex-col lg:flex-row gap-3 w-full lg:w-auto">
-    <div class="w-full lg:w-72">
-      <app-categories-search-bar
-        [(searchQuery)]="searchQuery"
-      ></app-categories-search-bar>
+    <div class="w-full lg:w-48 xl:w-72">
+      <app-search-input
+        [(query)]="searchQuery"
+        placeholder="Buscar categoría..."
+      ></app-search-input>
     </div>
 
     <div class="grid grid-cols-2 lg:flex gap-3 w-full lg:w-auto">

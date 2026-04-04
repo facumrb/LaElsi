@@ -2,7 +2,8 @@ import { Component, input, model, output } from '@angular/core';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { bootstrapCurrencyDollar } from '@ng-icons/bootstrap-icons';
 import { CreateEntityButtonComponent } from '@admin/components/toolbar-components/create-entity-button/create-entity-button.component';
-import { ProductsSearchBarComponent } from './components/products-search-bar/products-search-bar.component';
+import { ToolbarTitleComponent } from '@admin/components/toolbar-components/toolbar-title/toolbar-title.component';
+import { SearchInputComponent } from '@admin/components/toolbar-components/search-input/search-input.component';
 import { ProductsFilterButtonComponent } from './components/products-filter-button/products-filter-button.component';
 
 export type StockFilter =
@@ -23,9 +24,10 @@ export interface SimpleCategory {
 @Component({
   selector: 'app-products-toolbar',
   imports: [
+    ToolbarTitleComponent,
     NgIconComponent,
     CreateEntityButtonComponent,
-    ProductsSearchBarComponent,
+    SearchInputComponent,
     ProductsFilterButtonComponent,
   ],
   viewProviders: provideIcons({
