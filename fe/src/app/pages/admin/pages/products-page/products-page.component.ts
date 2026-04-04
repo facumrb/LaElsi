@@ -10,7 +10,7 @@ import {
   StockFilter,
 } from './products-toolbar/products-toolbar.component';
 import { Router } from '@angular/router';
-import { BulkPriceModalComponent } from './bulk-price-modal/bulk-price-modal.component';
+import { BulkPriceModalComponent } from './products-toolbar/components/bulk-price-modal/bulk-price-modal.component';
 
 interface SimpleCategory {
   id: number;

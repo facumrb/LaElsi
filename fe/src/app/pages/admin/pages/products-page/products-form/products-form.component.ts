@@ -11,7 +11,8 @@ import { FormUtils } from '@shared/validators/form-utils';
 import { ApiProductService } from '@services/api-services/api-product.service';
 import { AlertService } from '@services/alert.service';
 import { ICreateProduct, ProductState } from '@models/product.model';
-import { PhotoManagerComponent } from './photo-manager/photo-manager.component';
+import { PhotoManagerComponent } from './components/photo-manager/photo-manager.component';
+import { ProductCategorySelectComponent } from './components/product-category-select/product-category-select.component';
 import { IApiProductPhoto } from '@models/photo.model';
 import { NumericInputDirective } from '@shared/directives/numeric-input.directive';
 import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
@@ -38,6 +39,7 @@ import { TrimInputDirective } from '@shared/directives/trim-input.directive';
     FieldErrorComponent,
     RouterLink,
     TrimInputDirective,
+    ProductCategorySelectComponent,
   ],
   viewProviders: [
     provideIcons({
@@ -229,9 +231,6 @@ export class ProductsFormComponent implements OnInit {
             this.initialPhotos.set(product.photos);
           }
         },
-        error: () => {
-          this.location.back();
-        },
       });
     } else {
       // Validación async para creación
@@ -242,21 +241,11 @@ export class ProductsFormComponent implements OnInit {
   }
 
   // UI States
-  showCategoryMenu = signal(false);
   showStateMenu = signal(false);
 
   // --- Lógica de Menús de acordeon ---
-  toggleCategoryMenu() {
-    this.showCategoryMenu.update((v) => !v);
-    this.showStateMenu.set(false);
-  }
-  selectCategory(c: IApiCategory) {
-    this.formProduct.patchValue({ category: c });
-    this.showCategoryMenu.set(false);
-  }
   toggleStateMenu() {
     this.showStateMenu.update((v) => !v);
-    this.showCategoryMenu.set(false);
   }
   selectState(state: string) {
     this.formProduct.patchValue({ state: state as ProductState });
@@ -338,14 +327,6 @@ export class ProductsFormComponent implements OnInit {
           this.photoManager.saveChanges(finalId).subscribe({
             next: () => {
               this.alertService.toast('Guardado exitosamente', 'success');
-              this.router.navigate(['/admin/products']);
-            },
-            error: (err) => {
-              console.error(err);
-              this.alertService.toast(
-                'Producto guardado, pero error en fotos',
-                'warning',
-              );
               this.router.navigate(['/admin/products']);
             },
           });

@@ -66,79 +66,12 @@
           <app-field-error [control]="formProduct.controls.brand" />
         </div>
 
-        <div
-          class="md:col-span-2 relative"
-          (clickOutside)="showCategoryMenu.set(false)"
-        >
-          <label for="category" class="form-label">
-            Categoría <span class="text-red-500">*</span>
-          </label>
-
-          <button
-            type="button"
-            id="category"
-            (click)="toggleCategoryMenu()"
-            class="select-trigger focus:border-gray-900 focus:ring-1 focus:ring-gray-900"
-          >
-            <span class="block truncate">
-              @if (formProduct.get("category")?.value; as cat) {
-                {{ cat.name }}
-              } @else {
-                <span class="text-gray-500">Seleccione una categoría</span>
-              }
-            </span>
-            <span class="select-chevron-wrapper">
-              <ng-icon
-                name="bootstrapChevronDown"
-                class="text-sm text-gray-400 transition-transform duration-200"
-                [class.rotate-180]="showCategoryMenu()"
-              ></ng-icon>
-            </span>
-          </button>
-
-          @if (showCategoryMenu()) {
-            <div class="select-dropdown">
-              @for (cat of categories(); track cat.id) {
-                <div (click)="selectCategory(cat)" class="select-option">
-                  <span
-                    class="block truncate font-normal"
-                    [class.font-semibold]="
-                      formProduct.get('category')?.value?.name === cat.name
-                    "
-                  >
-                    {{ cat.name }}
-                  </span>
-                  @if (formProduct.get("category")?.value?.name === cat.name) {
-                    <span
-                      class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-900"
-                    >
-                      <ng-icon
-                        name="bootstrapCheckLg"
-                        class="text-xl"
-                      ></ng-icon>
-                    </span>
-                  }
-                </div>
-              } @empty {
-                <div class="py-2 px-3 text-gray-500 text-sm">
-                  No hay categorías cargadas.
-                </div>
-              }
-
-              <!-- Botón para Crear Nueva Categoría -->
-              <div class="border-t border-gray-100">
-                <button
-                  type="button"
-                  (click)="goToCreateCategory()"
-                  class="cursor-pointer flex w-full items-center gap-2 px-3 py-3 text-sm font-semibold text-[#3d4494] hover:bg-blue-50 transition-colors"
-                >
-                  <ng-icon name="bootstrapPlusLg"></ng-icon>
-                  Nueva Categoría
-                </button>
-              </div>
-            </div>
-          }
-          <app-field-error [control]="formProduct.controls.category" />
+        <div class="md:col-span-2">
+          <app-product-category-select
+            [control]="formProduct.controls.category"
+            [categories]="categories()"
+            (createCategory)="goToCreateCategory()"
+          ></app-product-category-select>
         </div>
 
         <div

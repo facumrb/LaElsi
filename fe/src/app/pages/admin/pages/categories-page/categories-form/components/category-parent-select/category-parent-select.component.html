@@ -45,29 +45,27 @@
       @for (cat of eligibleParents(); track cat.id) {
         <li
           (click)="selectParent(cat.id)"
-          class="select-option relative"
-          [class.bg-gray-50]="!cat.depth"
-          [class.border-l-4]="!cat.depth"
-          [class.border-gray-200]="!cat.depth"
-          [style.padding-left.rem]="(cat.depth || 0) * 1 + 1"
+          class="relative cursor-pointer select-none py-2 pr-9 text-gray-900 hover:bg-gray-100 transition-colors"
+          [style.padding-left.rem]="0.75 + (cat.depth || 0) * 1"
         >
           <div class="flex items-center gap-2">
+            @if (cat.depth && cat.depth > 0) {
+              <span class="text-gray-300">↳</span>
+            }
             <span
+              class="block truncate"
               [class.font-bold]="!cat.depth"
-              [class.text-gray-900]="!cat.depth"
-              [class.text-gray-700]="cat.depth"
-              [class.font-semibold]="control().value === cat.id && cat.depth"
-              [class.text-indigo-700]="control().value === cat.id"
+              [class.font-normal]="cat.depth && cat.depth > 0"
+              [class.text-[#3d4494]]="control().value === cat.id"
             >
               {{ cat.name }}
             </span>
           </div>
           @if (control().value === cat.id) {
-            <span class="absolute inset-y-0 right-0 flex items-center pr-4">
+            <span class="absolute inset-y-0 right-0 flex items-center pr-4 text-[#3d4494]">
               <ng-icon
                 name="bootstrapCheckLg"
                 class="text-lg"
-                [class.text-indigo-600]="control().value === cat.id"
               ></ng-icon>
             </span>
           }

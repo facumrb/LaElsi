@@ -1,0 +1,94 @@
+<div class="relative w-full" (clickOutside)="showCategoryMenu.set(false)">
+  <label class="form-label"
+    >Categoría <span class="text-red-500">*</span></label
+  >
+
+  <button
+    type="button"
+    (click)="toggleMenu()"
+    class="select-trigger group relative w-full cursor-pointer bg-white rounded-lg border py-2.5 pl-3 pr-10 text-left shadow-sm focus:outline-none focus:ring-1 sm:text-sm transition-colors"
+    [class]="
+      control().invalid && (control().dirty || control().touched)
+        ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
+        : 'border-gray-300 focus:border-gray-900 focus:ring-gray-900'
+    "
+  >
+    <span
+      class="block truncate text-gray-700"
+      [class.text-gray-400]="!control().value"
+    >
+      {{ selectedCategoryName() }}
+    </span>
+    <span
+      class="select-chevron-wrapper absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none"
+    >
+      <ng-icon
+        name="bootstrapChevronDown"
+        class="text-sm text-gray-400 transition-transform duration-200 group-hover:text-gray-500"
+        [class.rotate-180]="showCategoryMenu()"
+      ></ng-icon>
+    </span>
+  </button>
+
+  @if (showCategoryMenu()) {
+    <div
+      class="select-dropdown absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white pt-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm animate-fadeIn"
+    >
+      @for (cat of hierarchicalCategories(); track cat.id) {
+        <div
+          (click)="selectCategory(cat)"
+          class="relative cursor-pointer select-none py-2 pr-9 text-gray-900 hover:bg-gray-100 transition-colors"
+          [style.padding-left.rem]="0.75 + cat.depth * 1"
+          [class.font-bold]="cat.depth === 0"
+          [class.font-normal]="cat.depth > 0"
+        >
+          <div class="flex items-center gap-2">
+            @if (cat.depth > 0) {
+              <span class="text-gray-300">↳</span>
+            }
+            <span
+              class="block truncate"
+              [class.text-[#3d4494]]="control().value?.id === cat.id"
+            >
+              {{ cat.name }}
+            </span>
+          </div>
+
+          @if (control().value?.id === cat.id) {
+            <span
+              class="absolute inset-y-0 right-0 flex items-center pr-4 text-[#3d4494]"
+            >
+              <ng-icon name="bootstrapCheckLg" class="text-lg"></ng-icon>
+            </span>
+          }
+        </div>
+      }
+
+      @if (hierarchicalCategories().length === 0) {
+        <div
+          class="relative cursor-default select-none py-2 pl-3 pr-9 text-gray-500"
+        >
+          No hay categorías disponibles
+        </div>
+      }
+
+      <div class="border-t border-dashed border-gray-300">
+        <button
+          type="button"
+          (click)="createCategory.emit()"
+          class="cursor-pointer flex w-full items-center gap-2 px-3 py-2 text-sm font-bold text-[#3d4494] hover:bg-blue-50 transition-colors"
+        >
+          <ng-icon name="bootstrapPlusLg"></ng-icon>
+          Nueva Categoría
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- Errores -->
+  @if (control().invalid && (control().dirty || control().touched)) {
+    <div class="mt-1">
+      <app-field-error [control]="control()"></app-field-error>
+    </div>
+  }
+</div>
