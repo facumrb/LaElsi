@@ -1,9 +1,10 @@
 import { Component, output, model, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
-import { SearchInputComponent } from '@admin/components/inputs/search-input/search-input.component';
-import { FilterButtonComponent } from '@shared/components/buttons/filter-button/filter-button.component';
 import { CreateEntityButtonComponent } from '@admin/components/toolbar-components/create-entity-button/create-entity-button.component';
+import { CategoriesOrderModalComponent } from './components/categories-order-modal/categories-order-modal.component';
+import { CategoriesSearchBarComponent } from './components/categories-search-bar/categories-search-bar.component';
+import { CategoriesFilterButtonComponent } from './components/categories-filter-button/categories-filter-button.component';
+import { NgIconComponent, provideIcons } from '@ng-icons/core';
+import { bootstrapArrowDownUp } from '@ng-icons/bootstrap-icons';
 
 export type StockFilter =
   | 'Todos'
@@ -17,12 +18,13 @@ export type StatusFilter = 'Todos' | 'Activo' | 'Inactivo';
 @Component({
   selector: 'app-categories-toolbar',
   imports: [
-    FormsModule,
-    ClickOutsideDirective,
-    SearchInputComponent,
-    FilterButtonComponent,
     CreateEntityButtonComponent,
+    CategoriesOrderModalComponent,
+    CategoriesSearchBarComponent,
+    CategoriesFilterButtonComponent,
+    NgIconComponent,
   ],
+  providers: [provideIcons({ bootstrapArrowDownUp })],
   templateUrl: './categories-toolbar.component.html',
 })
 export class CategoriesToolbarComponent {
@@ -33,16 +35,8 @@ export class CategoriesToolbarComponent {
   // OUTPUT: Para avisar que hicieron clic en "Agregar"
   onAdd = output<void>();
 
-  showFilterMenu = signal(false);
+  // OUTPUT: Para avisar que el orden ha cambiado
+  onOrderChange = output<void>();
 
-  hayFiltrosActivos() {
-    return this.statusFilter() !== 'Todos' || this.stockFilter() !== 'Todos';
-  }
-
-  limpiar() {
-    this.statusFilter.set('Todos');
-    this.stockFilter.set('Todos');
-    this.searchQuery.set('');
-    this.showFilterMenu.set(false);
-  }
+  showOrderModal = signal(false);
 }

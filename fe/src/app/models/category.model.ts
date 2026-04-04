@@ -24,9 +24,10 @@ export interface IApiCategory {
 // Para CREAR
 export type ICreateCategory = Omit<
   IApiCategory,
-  'id' | 'products' | 'createdAt' | 'updatedAt' | 'deletedAt' | 'parent' | 'children' | 'depth'
+  'id' | 'products' | 'createdAt' | 'updatedAt' | 'deletedAt' | 'parent' | 'children' | 'depth' | 'order'
 > & {
   parentId?: number | null;
+  order?: number;
 };
 
 // Para EDITAR

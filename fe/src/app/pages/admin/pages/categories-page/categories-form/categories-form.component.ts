@@ -23,7 +23,6 @@ import {
 import { AuditInfoComponent } from '@admin/components/audit-info/audit-info.component';
 import { FieldErrorComponent } from '@shared/validators/field-error/field-error.component';
 import { TrimInputDirective } from '@shared/directives/trim-input.directive';
-import { CategoryOrderInputComponent } from './components/category-order-input/category-order-input.component';
 import { CategoryParentSelectComponent } from './components/category-parent-select/category-parent-select.component';
 
 @Component({
@@ -37,7 +36,6 @@ import { CategoryParentSelectComponent } from './components/category-parent-sele
     GoBackButtonComponent,
     FieldErrorComponent,
     RouterLink,
-    CategoryOrderInputComponent,
     CategoryParentSelectComponent,
   ],
   viewProviders: [
@@ -88,15 +86,6 @@ export class CategoriesFormComponent implements OnInit {
     description: ['', [FormUtils.maxLength(1000), FormUtils.notOnlyWhiteSpace]],
     state: [CategoryState.Activo, [Validators.required]],
     parentId: [null as number | null],
-    order: [
-      1,
-      [
-        Validators.required,
-        Validators.min(1),
-        Validators.max(1), // Se actualiza dinámicamente por el effect()
-        Validators.pattern(FormUtils.numberPattern),
-      ],
-    ],
   });
 
   // Seguimiento reactivo del parentId del formulario
@@ -110,11 +99,6 @@ export class CategoriesFormComponent implements OnInit {
   get parentIdControl() {
     return this.formCategory.get(
       'parentId',
-    ) as import('@angular/forms').FormControl<number | null>;
-  }
-  get orderControl() {
-    return this.formCategory.get(
-      'order',
     ) as import('@angular/forms').FormControl<number | null>;
   }
 
@@ -153,7 +137,6 @@ export class CategoriesFormComponent implements OnInit {
           description: category.description || '',
           state: category.state,
           parentId: category.parentId ?? category.parent?.id ?? null,
-          order: category.order || 1,
         });
 
         // Auditoría
@@ -207,7 +190,6 @@ export class CategoriesFormComponent implements OnInit {
       description: formValue.description || null,
       state: formValue.state!,
       parentId: formValue.parentId || null,
-      order: Number(formValue.order) || 0,
     };
 
     let request$;

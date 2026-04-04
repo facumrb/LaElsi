@@ -94,7 +94,19 @@ export class ApiCategoryService {
   // Obtener subcategorías de una categoría
   getCategoryChildren(id: number): Observable<IApiCategory[]> {
     return this.http
-      .get<{ message: string; data: IApiCategory[] }>(`${this.apiUrl}/${id}/children`)
+      .get<{
+        message: string;
+        data: IApiCategory[];
+      }>(`${this.apiUrl}/${id}/children`)
       .pipe(map((response) => response.data));
+  }
+
+  // Actualizar el orden de las categorias en lote
+  updateCategoryOrders(
+    updates: { id: number; order: number; parentId: number | null }[],
+  ): Observable<void> {
+    return this.http
+      .patch<{ message: string }>(`${this.apiUrl}/reorder`, { updates })
+      .pipe(map(() => void 0));
   }
 }

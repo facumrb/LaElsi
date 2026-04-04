@@ -85,10 +85,14 @@ export class CategoryService {
       }
     }
 
-    const order = data.order ?? 1;
-
-    // Abrir hueco en el nivel correspondiente
-    await this.shiftPeers(parent?.id ?? null, order, 1);
+    let order = data.order;
+    if (order === undefined) {
+      const lastPeer = await em.findOne(Category, { parent: parent?.id ?? null }, { orderBy: { order: 'DESC' } as any });
+      order = lastPeer ? lastPeer.order + 1 : 1;
+    } else {
+      // Abrir hueco en el nivel correspondiente
+      await this.shiftPeers(parent?.id ?? null, order, 1);
+    }
 
     const categoryData: any = {
       name: data.name,
@@ -112,10 +116,14 @@ export class CategoryService {
 
   static async findAll() {
     const em = orm.em;
-    return em.find(Category, {}, {
-      populate: ['children', 'parent', 'products.photos'] as any,
-      orderBy: { order: 'ASC', name: 'ASC' } as any
-    });
+    return em.find(
+      Category,
+      {},
+      {
+        populate: ['children', 'parent', 'products.photos'] as any,
+        orderBy: { order: 'ASC', name: 'ASC' } as any
+      }
+    );
   }
 
   static async findOne(id: number) {
@@ -136,9 +144,8 @@ export class CategoryService {
     }
 
     const oldParentId = (category.parent as any)?.id ?? null;
-    const newParentId = data.parentId !== undefined ? (data.parentId || null) : oldParentId;
+    const newParentId = data.parentId !== undefined ? data.parentId || null : oldParentId;
     const oldOrder = category.order;
-    const newOrder = data.order ?? oldOrder;
 
     // 1. Manejo de cambio de nivel / padre
     if (newParentId !== oldParentId) {
@@ -168,8 +175,14 @@ export class CategoryService {
       // Cerrar hueco en el padre anterior (mover los de orden > oldOrder, un lugar hacia arriba)
       await this.shiftPeers(oldParentId, oldOrder + 1, -1);
 
-      // Abrir hueco en el nuevo padre
-      await this.shiftPeers(newParentId, newOrder, 1);
+      let newOrder = data.order;
+      if (newOrder === undefined) {
+        const lastPeer = await em.findOne(Category, { parent: newParentId }, { orderBy: { order: 'DESC' } as any });
+        newOrder = lastPeer ? lastPeer.order + 1 : 1;
+      } else {
+        // Abrir hueco en el nuevo padre
+        await this.shiftPeers(newParentId, newOrder, 1);
+      }
 
       const depthDiff = newDepth - category.depth;
       category.depth = newDepth;
@@ -181,7 +194,8 @@ export class CategoryService {
       }
     }
     // 2. Cambio de orden en el MISMO nivel
-    else if (newOrder !== oldOrder) {
+    else if (data.order !== undefined && data.order !== oldOrder) {
+      const newOrder = data.order;
       if (newOrder < oldOrder) {
         // Mover hacia arriba: desplazar intermedios hacia abajo
         await this.shiftPeersBetween(newParentId, newOrder, oldOrder - 1, 1);
@@ -216,16 +230,60 @@ export class CategoryService {
     }
   }
 
-  private static async updateDescendantsDepth(cat: Category, diff: number) {
-    const em = orm.em;
+  private static async updateDescendantsDepth(cat: Category, diff: number, txEm?: any) {
+    const em = txEm ?? orm.em;
     for (const child of cat.children) {
       await em.populate(child, ['children']);
       child.depth += diff;
       if (child.depth > 2) {
         throw new AppError('La operación resultaría en una profundidad mayor a 3 niveles para algunas subcategorías', 400);
       }
-      await this.updateDescendantsDepth(child, diff);
+      await this.updateDescendantsDepth(child, diff, em);
     }
+  }
+
+  static async bulkUpdateOrderAndParent(updates: { id: number; order: number; parentId: number | null }[]) {
+    return await orm.em.transactional(async (em) => {
+      for (const update of updates) {
+        const category = await em.findOne(Category, { id: update.id }, { populate: ['parent', 'children'] as any });
+        if (!category) throw new AppError(`Categoría no encontrada (ID: ${update.id})`, 404);
+
+        let newDepth = 0;
+        let newParent = null;
+
+        if (update.parentId) {
+          if (update.parentId === category.id) {
+            throw new AppError(`Una categoría no puede ser su propio padre (ID: ${category.id})`, 400);
+          }
+
+          let currentId: number | null = update.parentId;
+          while (currentId !== null) {
+            if (currentId === category.id) throw new AppError(`Asignación inválida: se detectó un ciclo circular`, 400);
+            const parentCat: any = await em.findOne(Category, { id: currentId }, { populate: ['parent'] as any });
+            currentId = parentCat?.parent?.id ?? null;
+          }
+
+          newParent = await em.findOne(Category, { id: update.parentId });
+          if (!newParent) {
+            throw new AppError(`La categoría padre especificada no existe (ID: ${update.parentId})`, 404);
+          }
+          newDepth = newParent.depth + 1;
+          if (newDepth > 2) {
+            throw new AppError('Se ha excedido el límite máximo de profundidad (3 niveles)', 400);
+          }
+        }
+
+        const depthDiff = newDepth - category.depth;
+        category.depth = newDepth;
+        category.parent = newParent as any;
+        category.order = update.order;
+
+        if (depthDiff !== 0) {
+          await this.updateDescendantsDepth(category, depthDiff, em);
+        }
+      }
+      return true;
+    });
   }
 
   static async removeCategory(id: number) {
@@ -297,10 +355,14 @@ export class CategoryService {
 
   static async getChildren(parentId: number) {
     const em = orm.em;
-    return em.find(Category, { parent: parentId }, {
-      populate: ['children'],
-      orderBy: { order: 'ASC', name: 'ASC' }
-    });
+    return em.find(
+      Category,
+      { parent: parentId },
+      {
+        populate: ['children'],
+        orderBy: { order: 'ASC', name: 'ASC' }
+      }
+    );
   }
 
   static async findAllActive() {

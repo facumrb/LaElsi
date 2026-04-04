@@ -1,0 +1,250 @@
+@if (isOpen()) {
+  <div class="fixed inset-0 z-100 flex items-center justify-center p-4">
+    <!-- Backdrop -->
+    <div
+      class="absolute inset-0 bg-gray-500/75 transition-opacity"
+      aria-hidden="true"
+    ></div>
+
+    <!-- Modal content -->
+    <div
+      class="relative bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col font-sans"
+      (clickOutside)="close()"
+    >
+      <!-- Header -->
+      <div
+        class="flex items-center justify-between px-6 py-4 border-b border-gray-200"
+      >
+        <h3 class="text-lg font-semibold text-gray-900">
+          Reordenar Categorías
+        </h3>
+        <app-close-modal-button (clicked)="close()"></app-close-modal-button>
+      </div>
+
+      <!-- Body -->
+      <div class="p-6 overflow-y-auto flex-1">
+        <p class="text-sm text-gray-500 mb-4">
+          Arrastra y suelta las categorías para cambiar su orden de
+          visualización. Solo puedes reordenar categorías que se encuentren en
+          el mismo nivel.
+        </p>
+
+        @if (isLoading()) {
+          <div class="flex justify-center p-8">
+            <div
+              class="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin"
+            ></div>
+          </div>
+        } @else {
+          <!-- LEVEL 1 -->
+          <div
+            class="space-y-2"
+            cdkDropList
+            (cdkDropListDropped)="drop($event, categories())"
+          >
+            @for (cat of categories(); track cat.id; let idx = $index) {
+              <div
+                cdkDrag
+                class="bg-white border hover:border-indigo-300 border-gray-200 rounded-md overflow-hidden transition-all shadow-sm group cursor-grab"
+              >
+                <!-- Helper box dragged -->
+                <div
+                  *cdkDragPreview
+                  class="bg-white border-2 border-indigo-500 rounded-md shadow-xl p-3 flex items-center gap-3 w-100"
+                >
+                  <span class="font-medium text-gray-700"
+                    >{{ idx + 1 }} - {{ cat.name }}</span
+                  >
+                </div>
+                <div
+                  *cdkDragPlaceholder
+                  class="min-h-12.5 bg-indigo-50 border border-indigo-200 border-dashed rounded-md"
+                ></div>
+
+                <div class="flex items-center gap-3 p-3 bg-white">
+                  <span class="font-medium text-gray-700 flex-1"
+                    >{{ idx + 1 }} - {{ cat.name }}</span
+                  >
+
+                  @if (cat.children && cat.children.length > 0) {
+                    <button
+                      (click)="toggleExpand(cat.id)"
+                      class="px-2 py-1 text-xs text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded transition-colors flex items-center gap-1 cursor-pointer"
+                    >
+                      {{
+                        expandedMap()[cat.id]
+                          ? "Ocultar Hijos"
+                          : "Ver Hijos (" + cat.children.length + ")"
+                      }}
+                      <ng-icon
+                        name="bootstrapChevronDown"
+                        class="text-base transition-transform {{
+                          expandedMap()[cat.id] ? 'rotate-180' : ''
+                        }}"
+                      ></ng-icon>
+                    </button>
+                  }
+                </div>
+
+                <!-- LEVEL 2 -->
+                @if (
+                  expandedMap()[cat.id] &&
+                  cat.children &&
+                  cat.children.length > 0
+                ) {
+                  <div
+                    class="pl-8 pr-3 pb-3 border-t border-gray-100 bg-gray-50/50 pt-3 animate-fadeIn"
+                  >
+                    <div
+                      class="space-y-2"
+                      cdkDropList
+                      (cdkDropListDropped)="drop($event, cat.children!)"
+                    >
+                      @for (
+                        child of cat.children!;
+                        track child.id;
+                        let jdx = $index
+                      ) {
+                        <div
+                          cdkDrag
+                          class="bg-white border hover:border-indigo-300 border-gray-200 rounded-md overflow-hidden transition-all shadow-sm cursor-grab"
+                        >
+                          <!-- Preview -->
+                          <div
+                            *cdkDragPreview
+                            class="bg-white border-2 border-indigo-400 rounded-md shadow-xl p-3 flex items-center gap-3 w-87.5"
+                          >
+                            <span class="text-sm font-medium text-gray-700"
+                              >{{ jdx + 1 }} - {{ child.name }}</span
+                            >
+                          </div>
+                          <div
+                            *cdkDragPlaceholder
+                            class="min-h-11.5 bg-indigo-50 border border-indigo-200 border-dashed rounded-md"
+                          ></div>
+
+                          <div class="flex items-center gap-3 p-2 bg-white">
+                            <span
+                              class="text-sm font-medium text-gray-700 flex-1"
+                              >{{ jdx + 1 }} - {{ child.name }}</span
+                            >
+
+                            @if (child.children && child.children.length > 0) {
+                              <button
+                                (click)="toggleExpand(child.id)"
+                                class="px-2 py-1 text-xs text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded transition-colors flex items-center gap-1 cursor-pointer"
+                              >
+                                {{
+                                  expandedMap()[child.id]
+                                    ? "Ocultar Hijos"
+                                    : "Ver Hijos (" +
+                                      child.children.length +
+                                      ")"
+                                }}
+                                <ng-icon
+                                  name="bootstrapChevronDown"
+                                  class="text-base transition-transform {{
+                                    expandedMap()[child.id] ? 'rotate-180' : ''
+                                  }}"
+                                ></ng-icon>
+                              </button>
+                            }
+                          </div>
+
+                          <!-- LEVEL 3 -->
+                          @if (
+                            expandedMap()[child.id] &&
+                            child.children &&
+                            child.children.length > 0
+                          ) {
+                            <div
+                              class="pl-8 pr-2 pb-2 border-t border-gray-100 bg-white pt-2 animate-fadeIn"
+                            >
+                              <div
+                                class="space-y-1.5"
+                                cdkDropList
+                                (cdkDropListDropped)="
+                                  drop($event, child.children!)
+                                "
+                              >
+                                @for (
+                                  subchild of child.children!;
+                                  track subchild.id;
+                                  let kdx = $index
+                                ) {
+                                  <div
+                                    cdkDrag
+                                    class="bg-gray-50 border hover:border-indigo-300 border-gray-200 rounded-md overflow-hidden transition-all cursor-grab"
+                                  >
+                                    <!-- Preview -->
+                                    <div
+                                      *cdkDragPreview
+                                      class="bg-gray-50 border-2 border-indigo-300 rounded-md shadow-xl p-2 flex items-center gap-3 w-75"
+                                    >
+                                      <span
+                                        class="text-xs font-medium text-gray-700"
+                                        >{{ kdx + 1 }} -
+                                        {{ subchild.name }}</span
+                                      >
+                                    </div>
+                                    <div
+                                      *cdkDragPlaceholder
+                                      class="min-h-10 bg-indigo-50 border border-indigo-200 border-dashed rounded-md"
+                                    ></div>
+
+                                    <div
+                                      class="flex items-center gap-2 p-2 bg-gray-50"
+                                    >
+                                      <span
+                                        class="text-xs font-medium text-gray-700 flex-1"
+                                        >{{ kdx + 1 }} -
+                                        {{ subchild.name }}</span
+                                      >
+                                    </div>
+                                  </div>
+                                }
+                              </div>
+                            </div>
+                          }
+                        </div>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Footer -->
+      <div
+        class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end gap-3 rounded-b-lg"
+      >
+        <button
+          type="button"
+          (click)="close()"
+          class="cursor-pointer px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none transition-colors"
+          [disabled]="isSaving()"
+        >
+          Cancelar
+        </button>
+        <button
+          type="button"
+          (click)="save()"
+          class="cursor-pointer inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md hover:bg-indigo-700 focus:outline-none transition-colors disabled:opacity-70 disabled:cursor-not-allowed min-w-35"
+          [disabled]="isSaving() || isLoading()"
+        >
+          @if (isSaving()) {
+            <div
+              class="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin mr-2"
+            ></div>
+            Guardando...
+          } @else {
+            Guardar Orden
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+}

@@ -15,5 +15,6 @@ categoryRouter.get('/:id', CategoryController.findOne);
 
 // Rutas protegidas (solo Admin puede crear/editar/eliminar)
 categoryRouter.post('/', verifyToken, verifyRole([UserRole.Admin]), sanitizeCategoryInput, CategoryController.add);
+categoryRouter.patch('/reorder', verifyToken, verifyRole([UserRole.Admin]), CategoryController.bulkUpdateOrder);
 categoryRouter.patch('/:id', verifyToken, verifyRole([UserRole.Admin]), sanitizeCategoryInput, CategoryController.update);
 categoryRouter.delete('/:id', verifyToken, verifyRole([UserRole.Admin]), CategoryController.remove);

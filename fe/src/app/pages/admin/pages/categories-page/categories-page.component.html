@@ -4,6 +4,7 @@
     [(statusFilter)]="statusFilter"
     [(stockFilter)]="stockFilter"
     (onAdd)="handleNavigateToCreate()"
+    (onOrderChange)="loadCategories()"
   />
 
   <app-categories-list

@@ -73,6 +73,12 @@ export class CategoryController {
     const categories = await CategoryService.findAllActive();
     return res.status(200).json(ApiResponse.success('Categorías activas encontradas', categories));
   });
+
+  static bulkUpdateOrder = asyncHandler(async (req: Request, res: Response) => {
+    const updates = req.body.updates;
+    await CategoryService.bulkUpdateOrderAndParent(updates);
+    return res.status(200).json(ApiResponse.success('Orden de categorías actualizado'));
+  });
 }
 
 export { sanitizeCategoryInput };

@@ -58,14 +58,6 @@
           />
         </div>
 
-        <app-category-order-input
-          [control]="orderControl"
-          [categories]="allCategories()"
-          [currentParentId]="currentParentId()"
-          [isEditMode]="isEditMode()"
-          [categoryId]="categoryId()"
-        />
-
         <div class="relative w-full" (clickOutside)="showStateMenu.set(false)">
           <label for="state" class="form-label">
             Estado <span class="text-red-500">*</span>
