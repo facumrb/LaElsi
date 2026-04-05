@@ -56,15 +56,13 @@ export class ProfilePageComponent implements OnInit {
         this.authService.updateCurrentUser(fullUser);
         this.loading.set(false);
       },
-      error: (err) => {
+      error: () => {
         this.loading.set(false);
-        console.error(err);
       },
     });
 
     this.apiOrderService.getOrdersByClient(id).subscribe({
       next: (orders) => this.misPedidos.set(orders),
-      error: (err) => console.error('Error al cargar pedidos', err),
     });
   }
 

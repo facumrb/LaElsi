@@ -72,8 +72,7 @@ export class SearchBarComponent {
         filter((term) => term.length > 2),
         switchMap((term) =>
           this.apiProductService.searchProducts(term).pipe(
-            catchError((err) => {
-              console.error('Error al realizar búsqueda rápida:', err);
+            catchError(() => {
               return of([]);
             }),
           ),

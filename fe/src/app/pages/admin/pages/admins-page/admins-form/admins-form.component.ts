@@ -2,7 +2,7 @@ import { Component, inject, OnInit, signal, viewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Location } from '@angular/common';
-import { switchMap } from 'rxjs';
+import { switchMap, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { ApiAdminService } from '@services/api-services/api-admin.service';
 import { AuthService } from '@services/auth.service';
@@ -42,8 +42,6 @@ export class AdminsFormComponent implements OnInit {
   private authService = inject(AuthService);
   private alertService = inject(AlertService);
   private http = inject(HttpClient);
-
-  formUtils = FormUtils;
 
   photoManager = viewChild.required(PhotoManagerComponent);
 
@@ -123,10 +121,6 @@ export class AdminsFormComponent implements OnInit {
     ],
   });
 
-  get formPending() {
-    return this.formAdmin.pending;
-  }
-
   ngOnInit() {
     this.checkEditMode();
     if (!this.isEditMode()) {
@@ -139,18 +133,20 @@ export class AdminsFormComponent implements OnInit {
     if (id) {
       this.loadAdminData(+id);
     } else {
-      // Configurar validadores asíncronos para creación
-      this.formAdmin.controls.dni.addAsyncValidators(
-        FormUtils.uniqueFieldValidator('Admin', 'dni', this.http),
-      );
-      this.formAdmin.controls.username.addAsyncValidators(
-        FormUtils.uniqueFieldValidator('Admin', 'username', this.http),
-      );
-      this.formAdmin.controls.email.addAsyncValidators(
-        FormUtils.uniqueFieldValidator('Admin', 'email', this.http),
-      );
-      this.formAdmin.get('password')?.addValidators(Validators.required);
+      this.setupAsyncValidators();
     }
+  }
+
+  private setupAsyncValidators(excludeId?: number) {
+    this.formAdmin.controls.dni.setAsyncValidators(
+      FormUtils.uniqueFieldValidator('Admin', 'dni', this.http, excludeId),
+    );
+    this.formAdmin.controls.username.setAsyncValidators(
+      FormUtils.uniqueFieldValidator('Admin', 'username', this.http, excludeId),
+    );
+    this.formAdmin.controls.email.setAsyncValidators(
+      FormUtils.uniqueFieldValidator('Admin', 'email', this.http, excludeId),
+    );
   }
 
   loadAdminData(id: number) {
@@ -177,16 +173,7 @@ export class AdminsFormComponent implements OnInit {
         this.formAdmin.get('password')?.removeValidators(Validators.required);
         this.formAdmin.get('password')?.updateValueAndValidity();
 
-        // Configurar validadores asíncronos para edición
-        this.formAdmin.controls.dni.setAsyncValidators(
-          FormUtils.uniqueFieldValidator('Admin', 'dni', this.http, id),
-        );
-        this.formAdmin.controls.username.setAsyncValidators(
-          FormUtils.uniqueFieldValidator('Admin', 'username', this.http, id),
-        );
-        this.formAdmin.controls.email.setAsyncValidators(
-          FormUtils.uniqueFieldValidator('Admin', 'email', this.http, id),
-        );
+        this.setupAsyncValidators(id);
 
         const formSnapshot = this.formAdmin.getRawValue();
         this.initialFormValue.set(JSON.stringify(formSnapshot));
@@ -218,34 +205,36 @@ export class AdminsFormComponent implements OnInit {
   }
 
   onSubmit() {
-    if (this.formAdmin.invalid) {
+    if (!this.formAdmin.valid) {
       this.formAdmin.markAllAsTouched();
       return;
     }
 
     const formValue = this.formAdmin.getRawValue();
 
-    const adminData: ICreateAdmin = {
+    const baseData = {
       name: formValue.name!,
       lastName: formValue.lastName!,
       dni: formValue.dni!,
       phone: formValue.phone!,
       username: formValue.username!,
       email: formValue.email!,
-      password: formValue.password || '',
       role: UserRole.Admin,
     };
 
-    if (this.isEditMode() && !adminData.password) {
-      delete (adminData as any).password;
-    }
+    const adminData = formValue.password
+      ? { ...baseData, password: formValue.password }
+      : baseData;
 
     // Guardar datos del Usuario
     let userRequest$;
     if (this.isEditMode() && this.adminId()) {
-      userRequest$ = this.adminService.updateAdmin(this.adminId()!, adminData);
+      userRequest$ = this.adminService.updateAdmin(
+        this.adminId()!,
+        adminData as Partial<ICreateAdmin>
+      );
     } else {
-      userRequest$ = this.adminService.addAdmin(adminData);
+      userRequest$ = this.adminService.addAdmin(adminData as ICreateAdmin);
     }
 
     // Una vez guardado el usuario, procesamos la foto
@@ -260,11 +249,14 @@ export class AdminsFormComponent implements OnInit {
             console.error(
               'No se pudo obtener el ID del usuario para subir la foto',
             );
-            return [];
+            return of(null);
           }
 
-          // Llamamos al método público del hijo
-          return this.photoManager().saveChanges(userId);
+          if (this.photoManager().hasChanges()) {
+            return this.photoManager().saveChanges(userId);
+          }
+
+          return of(null);
         }),
       )
       .subscribe({

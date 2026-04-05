@@ -233,7 +233,7 @@
 
         <button
           type="submit"
-          [disabled]="formProduct.invalid || !hasRealChanges"
+          [disabled]="!formProduct.valid || !hasRealChanges"
           class="btn-primary py-2"
         >
           {{ isEditMode() ? "Guardar Cambios" : "Crear Producto" }}

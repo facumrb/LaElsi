@@ -88,7 +88,7 @@ export class ProfileUserComponent {
   }
 
   onSubmit() {
-    if (this.formUsuario.invalid) {
+    if (!this.formUsuario.valid) {
       this.formUsuario.markAllAsTouched();
       return;
     }
@@ -116,13 +116,8 @@ export class ProfileUserComponent {
           this.formUsuario.get('password')?.setValue('');
           this.profileUpdated.emit();
         },
-        error: (err) => {
+        error: () => {
           this.saving.set(false);
-          console.error(err);
-          this.alertService.toast(
-            err.error?.message || 'Error al actualizar',
-            'error',
-          );
         },
       });
   }

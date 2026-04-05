@@ -15,14 +15,6 @@
         Crea tu cuenta de cliente
       </p>
 
-      @if (errorMessage()) {
-        <div
-          class="mb-6 rounded-md bg-red-100 p-3 text-center text-sm font-medium text-red-700 border border-red-200"
-        >
-          {{ errorMessage() }}
-        </div>
-      }
-
       <form
         [formGroup]="formRegister"
         (ngSubmit)="onSubmit()"
@@ -31,7 +23,9 @@
         <div class="form-grid-2 gap-y-1">
           <!-- Nombre -->
           <div>
-            <label for="name" class="form-label">Nombre <span class="text-red-500">*</span></label>
+            <label for="name" class="form-label"
+              >Nombre <span class="text-red-500">*</span></label
+            >
             <input
               type="text"
               id="name"
@@ -47,7 +41,9 @@
 
           <!-- Apellido -->
           <div>
-            <label for="lastName" class="form-label">Apellido <span class="text-red-500">*</span></label>
+            <label for="lastName" class="form-label"
+              >Apellido <span class="text-red-500">*</span></label
+            >
             <input
               type="text"
               id="lastName"
@@ -63,15 +59,18 @@
 
           <!-- DNI -->
           <div>
-            <label for="dni" class="form-label">DNI <span class="text-red-500">*</span></label>
+            <label for="dni" class="form-label"
+              >DNI <span class="text-red-500">*</span></label
+            >
             <input
               type="text"
               id="dni"
               name="dni"
               formControlName="dni"
               inputmode="numeric"
+              appNumericInput
               minlength="7"
-              maxlength="8"
+              maxlength="15"
               class="form-input"
               placeholder="Ej: 12345678"
             />
@@ -83,15 +82,18 @@
 
           <!-- Teléfono -->
           <div>
-            <label for="phone" class="form-label">Teléfono <span class="text-red-500">*</span></label>
+            <label for="phone" class="form-label"
+              >Teléfono <span class="text-red-500">*</span></label
+            >
             <input
               type="text"
               id="phone"
               name="phone"
               formControlName="phone"
               inputmode="tel"
-              minlength="8"
-              maxlength="15"
+              appPhoneInput
+              minlength="7"
+              maxlength="20"
               class="form-input"
               placeholder="Ej: 3415555555"
             />
@@ -121,7 +123,9 @@
 
           <!-- Email -->
           <div>
-            <label for="email" class="form-label">Email <span class="text-red-500">*</span></label>
+            <label for="email" class="form-label"
+              >Email <span class="text-red-500">*</span></label
+            >
             <input
               type="email"
               id="email"
@@ -150,7 +154,7 @@
               formControlName="password"
               maxlength="100"
               class="form-input"
-              placeholder="Mínimo 6 caracteres"
+              placeholder="Mínimo 8 caracteres, 1 letra, 1 número."
             />
             <app-field-error [control]="formRegister.controls.password" />
           </div>
@@ -159,10 +163,10 @@
         <div class="pt-2">
           <button
             type="submit"
-            [disabled]="loading() || formPending"
+            [disabled]="loading() || !formRegister.valid"
             class="btn-primary w-full flex justify-center py-3 shadow-md hover:shadow-lg transform active:scale-[0.98]"
           >
-            @if (loading() || formPending) {
+            @if (loading() || formRegister.pending) {
               <ng-icon
                 name="bootstrapArrowClockwise"
                 class="animate-spin text-xl mr-2"

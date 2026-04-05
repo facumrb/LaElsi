@@ -389,7 +389,7 @@
 
         <button
           type="submit"
-          [disabled]="formClient.invalid || !hasRealChanges || formPending"
+          [disabled]="!formClient.valid || !hasRealChanges"
           class="btn-primary px-8"
         >
           {{ isEditMode() ? "Guardar Cambios" : "Crear Cliente" }}

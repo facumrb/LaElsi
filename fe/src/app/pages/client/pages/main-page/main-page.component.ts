@@ -37,7 +37,6 @@ export class MainPageComponent implements OnInit {
     // 1. Obtener los más vendidos generales
     this.apiProductService.getBestSellers(10).subscribe({
       next: (products) => this.globalBestSellers.set(products),
-      error: (err) => console.error('Error fetching global best sellers', err),
     });
 
     // 2. Obtener categorías activas y sus más vendidos
@@ -65,14 +64,12 @@ export class MainPageComponent implements OnInit {
             );
             this.loading.set(false);
           },
-          error: (err) => {
-            console.error('Error fetching categories best sellers', err);
+          error: () => {
             this.loading.set(false);
           },
         });
       },
-      error: (err) => {
-        console.error('Error fetching categories', err);
+      error: () => {
         this.loading.set(false);
       },
     });

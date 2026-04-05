@@ -55,8 +55,13 @@ export class AnalyticsPageComponent {
   clients = toSignal(this.clientService.getAllClients(), { initialValue: [] });
 
   totalRevenue = computed(() => {
+    const incomesStatuses = [
+      OrderState.Paid,
+      OrderState.Shipped,
+      OrderState.Delivered,
+    ];
     return this.orders()
-      .filter((o) => o.status !== OrderState.Cancelled)
+      .filter((o) => incomesStatuses.includes(o.status))
       .reduce((acc, order) => acc + Number(order.totalAmount || 0), 0);
   });
 

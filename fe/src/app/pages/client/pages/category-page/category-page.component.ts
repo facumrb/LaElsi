@@ -149,7 +149,6 @@ export class CategoryPageComponent implements OnInit {
     // 2. Obtener los productos activos de la categoría
     this.ApiProductService.getActiveProductsByCategory(id).subscribe({
       next: (data) => this.productsRaw.set(data),
-      error: (err) => console.error('Error al obtener productos', err),
     });
   }
 

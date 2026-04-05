@@ -177,7 +177,7 @@ export class ProfileDetailsComponent {
   }
 
   onSubmit() {
-    if (this.formPerfil.invalid) {
+    if (!this.formPerfil.valid) {
       this.formPerfil.markAllAsTouched();
       return;
     }
@@ -213,12 +213,8 @@ export class ProfileDetailsComponent {
         this.alertService.toast('Perfil actualizado correctamente', 'success');
         this.profileUpdated.emit();
       },
-      error: (err) => {
+      error: () => {
         this.saving.set(false);
-        this.alertService.toast(
-          err.error?.message || 'Error al actualizar',
-          'error',
-        );
       },
     });
   }

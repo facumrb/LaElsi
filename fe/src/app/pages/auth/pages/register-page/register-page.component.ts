@@ -9,6 +9,8 @@ import { FormUtils } from '@shared/validators/form-utils';
 import { FieldErrorComponent } from '@shared/validators/field-error/field-error.component';
 import { GoBackButtonComponent } from '@shared/components/buttons/go-back-button/go-back-button.component';
 import { TrimInputDirective } from '@shared/directives/trim-input.directive';
+import { NumericInputDirective } from '@shared/directives/numeric-input.directive';
+import { PhoneInputDirective } from '@shared/directives/phone-input.directive';
 
 @Component({
   selector: 'app-register-page',
@@ -19,6 +21,8 @@ import { TrimInputDirective } from '@shared/directives/trim-input.directive';
     FieldErrorComponent,
     GoBackButtonComponent,
     TrimInputDirective,
+    NumericInputDirective,
+    PhoneInputDirective,
   ],
   viewProviders: [
     provideIcons({
@@ -34,42 +38,82 @@ export class RegisterPageComponent {
   private http = inject(HttpClient);
 
   loading = signal(false);
-  errorMessage = signal('');
 
   formRegister = this.fb.nonNullable.group({
-    name: ['', [Validators.required, FormUtils.minLength(2)]],
-    lastName: ['', [Validators.required, FormUtils.minLength(2)]],
+    name: [
+      '',
+      [
+        Validators.required,
+        FormUtils.minLength(2),
+        FormUtils.maxLength(100),
+        FormUtils.notOnlyWhiteSpace,
+      ],
+    ],
+    lastName: [
+      '',
+      [
+        Validators.required,
+        FormUtils.minLength(2),
+        FormUtils.maxLength(100),
+        FormUtils.notOnlyWhiteSpace,
+      ],
+    ],
     dni: [
       '',
-      [Validators.required, Validators.pattern('^[0-9]{7,8}$')],
+      [
+        Validators.required,
+        FormUtils.minLength(7),
+        FormUtils.maxLength(15),
+        Validators.pattern(FormUtils.numberPattern),
+      ],
       [FormUtils.uniqueFieldValidator('Client', 'dni', this.http)],
     ],
-    phone: ['', [Validators.required, Validators.pattern('^[0-9]{8,15}$')]],
+    phone: [
+      '',
+      [
+        Validators.required,
+        FormUtils.minLength(7),
+        FormUtils.maxLength(20),
+        Validators.pattern(FormUtils.phonePattern),
+      ],
+    ],
     username: [
       '',
-      [Validators.required, FormUtils.minLength(4)],
+      [
+        Validators.required,
+        FormUtils.minLength(4),
+        FormUtils.maxLength(30),
+        Validators.pattern(FormUtils.usernamePattern),
+        FormUtils.notOnlyWhiteSpace,
+      ],
       [FormUtils.uniqueFieldValidator('Client', 'username', this.http)],
     ],
     email: [
       '',
-      [Validators.required, Validators.email],
+      [
+        Validators.required,
+        FormUtils.maxLength(255),
+        Validators.pattern(FormUtils.emailPattern),
+      ],
       [FormUtils.uniqueFieldValidator('Client', 'email', this.http)],
     ],
-    password: ['', [Validators.required, FormUtils.minLength(6)]],
+    password: [
+      '',
+      [
+        Validators.required,
+        FormUtils.maxLength(100),
+        Validators.pattern(FormUtils.passwordPattern),
+      ],
+    ],
   });
 
-  get formPending() {
-    return this.formRegister.pending;
-  }
-
   onSubmit() {
-    if (this.formRegister.invalid) {
+    if (!this.formRegister.valid) {
       this.formRegister.markAllAsTouched();
       return;
     }
 
     this.loading.set(true);
-    this.errorMessage.set('');
 
     const registerData = this.formRegister.getRawValue();
 
@@ -80,9 +124,8 @@ export class RegisterPageComponent {
           queryParams: { registered: 'true' },
         });
       },
-      error: (err) => {
+      error: () => {
         this.loading.set(false);
-        this.errorMessage.set(err.error?.message || 'Error al registrarse');
       },
     });
   }

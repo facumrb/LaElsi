@@ -56,8 +56,6 @@ export class ClientsFormComponent implements OnInit {
   private alertService = inject(AlertService);
   private http = inject(HttpClient);
 
-  formUtils = FormUtils;
-
   photoManager = viewChild.required(PhotoManagerComponent);
 
   isEditMode = signal(false);
@@ -72,7 +70,7 @@ export class ClientsFormComponent implements OnInit {
   auditUpdatedAt = signal<string | null>(null);
   auditStatusDate = signal<string | null>(null);
 
-  fiscalConditions = Object.values(FiscalCondition);
+  fiscalConditions = Object.values(FiscalCondition) as FiscalCondition[];
   isFiscalMenuOpen = signal(false);
 
   // Alternar estado
@@ -81,8 +79,8 @@ export class ClientsFormComponent implements OnInit {
   }
 
   // Seleccionar opción y cerrar
-  selectFiscalCondition(value: string) {
-    this.formClient.get('fiscalCondition')?.setValue(value as any);
+  selectFiscalCondition(value: FiscalCondition) {
+    this.formClient.get('fiscalCondition')?.setValue(value);
     this.isFiscalMenuOpen.set(false);
   }
 
@@ -170,10 +168,6 @@ export class ClientsFormComponent implements OnInit {
     apartment: ['', FormUtils.maxLength(5)],
   });
 
-  get formPending() {
-    return this.formClient.pending;
-  }
-
   ngOnInit() {
     this.checkEditMode();
     if (!this.isEditMode()) {
@@ -186,21 +180,23 @@ export class ClientsFormComponent implements OnInit {
     if (id) {
       this.loadClientData(+id);
     } else {
-      // Configurar validadores asíncronos para creación
-      this.formClient.controls.dni.addAsyncValidators(
-        FormUtils.uniqueFieldValidator('Client', 'dni', this.http),
-      );
-      this.formClient.controls.username.addAsyncValidators(
-        FormUtils.uniqueFieldValidator('Client', 'username', this.http),
-      );
-      this.formClient.controls.email.addAsyncValidators(
-        FormUtils.uniqueFieldValidator('Client', 'email', this.http),
-      );
-      this.formClient.controls.cuit.addAsyncValidators(
-        FormUtils.uniqueFieldValidator('Client', 'cuit', this.http),
-      );
-      this.formClient.get('password')?.addValidators(Validators.required);
+      this.setupAsyncValidators();
     }
+  }
+
+  private setupAsyncValidators(excludeId?: number) {
+    this.formClient.controls.dni.setAsyncValidators(
+      FormUtils.uniqueFieldValidator('Client', 'dni', this.http, excludeId),
+    );
+    this.formClient.controls.username.setAsyncValidators(
+      FormUtils.uniqueFieldValidator('Client', 'username', this.http, excludeId),
+    );
+    this.formClient.controls.email.setAsyncValidators(
+      FormUtils.uniqueFieldValidator('Client', 'email', this.http, excludeId),
+    );
+    this.formClient.controls.cuit.setAsyncValidators(
+      FormUtils.uniqueFieldValidator('Client', 'cuit', this.http, excludeId),
+    );
   }
 
   loadClientData(id: number) {
@@ -242,19 +238,7 @@ export class ClientsFormComponent implements OnInit {
         this.formClient.get('password')?.removeValidators(Validators.required);
         this.formClient.get('password')?.updateValueAndValidity();
 
-        // Configurar validadores asíncronos para edición
-        this.formClient.controls.dni.setAsyncValidators(
-          FormUtils.uniqueFieldValidator('Client', 'dni', this.http, id),
-        );
-        this.formClient.controls.username.setAsyncValidators(
-          FormUtils.uniqueFieldValidator('Client', 'username', this.http, id),
-        );
-        this.formClient.controls.email.setAsyncValidators(
-          FormUtils.uniqueFieldValidator('Client', 'email', this.http, id),
-        );
-        this.formClient.controls.cuit.setAsyncValidators(
-          FormUtils.uniqueFieldValidator('Client', 'cuit', this.http, id),
-        );
+        this.setupAsyncValidators(id);
 
         const formSnapshot = this.formClient.getRawValue();
         this.initialFormValue.set(JSON.stringify(formSnapshot));
@@ -286,22 +270,21 @@ export class ClientsFormComponent implements OnInit {
   }
 
   onSubmit() {
-    if (this.formClient.invalid) {
+    if (!this.formClient.valid) {
       this.formClient.markAllAsTouched();
       return;
     }
 
     const formValue = this.formClient.getRawValue();
 
-    // Construimos el objeto ICreateClient
-    const clientData: ICreateClient = {
+    // Construimos el objeto base
+    const baseData = {
       name: formValue.name!,
       lastName: formValue.lastName!,
       dni: formValue.dni!,
       phone: formValue.phone!,
       username: formValue.username!,
       email: formValue.email!,
-      password: formValue.password || '',
       role: UserRole.Client,
 
       // Campos opcionales
@@ -318,16 +301,19 @@ export class ClientsFormComponent implements OnInit {
       apartment: formValue.apartment || undefined,
     };
 
-    if (this.isEditMode() && !clientData.password) {
-      delete (clientData as any).password;
-    }
+    const clientData = formValue.password
+      ? { ...baseData, password: formValue.password }
+      : baseData;
 
     // Guardar datos
     let request$;
     if (this.isEditMode() && this.clientId()) {
-      request$ = this.clientService.updateClient(this.clientId()!, clientData);
+      request$ = this.clientService.updateClient(
+        this.clientId()!,
+        clientData as Partial<ICreateClient>
+      );
     } else {
-      request$ = this.clientService.addClient(clientData);
+      request$ = this.clientService.addClient(clientData as ICreateClient);
     }
 
     // Procesar foto y guardar

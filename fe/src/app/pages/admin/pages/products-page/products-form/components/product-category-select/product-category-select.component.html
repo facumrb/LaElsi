@@ -76,7 +76,7 @@
   }
 
   <!-- Errores -->
-  @if (control().invalid && (control().dirty || control().touched)) {
+  @if (!control().valid && (control().dirty || control().touched)) {
     <div class="mt-1">
       <app-field-error [control]="control()"></app-field-error>
     </div>

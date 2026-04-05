@@ -172,7 +172,7 @@
 
         <button
           type="submit"
-          [disabled]="formEditProfile.invalid || !hasRealChanges || formPending"
+          [disabled]="!formEditProfile.valid || !hasRealChanges"
           class="btn-primary px-8"
         >
           Actualizar Perfil

@@ -71,7 +71,7 @@ export class LoginPageComponent {
   }
 
   onSubmit() {
-    if (this.formLogin.invalid) {
+    if (!this.formLogin.valid) {
       this.formLogin.markAllAsTouched();
       return;
     }

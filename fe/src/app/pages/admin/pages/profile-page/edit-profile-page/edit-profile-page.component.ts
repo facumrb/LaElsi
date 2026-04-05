@@ -101,10 +101,6 @@ export class EditProfilePageComponent implements OnInit {
     ],
   });
 
-  get formPending() {
-    return this.formEditProfile.pending;
-  }
-
   ngOnInit(): void {
     this.fetchAdmin(this.authService.currentUser()!.id);
   }
@@ -151,7 +147,7 @@ export class EditProfilePageComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.formEditProfile.invalid) {
+    if (!this.formEditProfile.valid) {
       this.formEditProfile.markAllAsTouched();
       return;
     }
