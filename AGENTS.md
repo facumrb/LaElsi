@@ -14,8 +14,9 @@ Before any significant coding, follow the SDD cycle:
 1.  **Init**: `/sdd-init` (if not done for the session).
 2.  **Explore**: `/sdd-explore <topic>` to understand existing logic.
 3.  **Propose/Spec/Design**: Generate the delta specs and technical design.
-4.  **Apply**: Write code in batches.
-5.  **Verify/Archive**: Validate and sync.
+4.  **User Confirmation**: ALWAYS ask for confirmation before applying changes definitively.
+5.  **Apply**: Write code in batches.
+6.  **Verify/Archive**: Validate and sync.
 
 ### 2. Memory (Engram)
 - **Proactive Save**: Always call `mem_save` after:
