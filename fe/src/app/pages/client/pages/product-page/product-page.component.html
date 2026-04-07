@@ -35,23 +35,25 @@
                   [attr.aria-label]="
                     'Ver miniatura ' + ($index + 1) + ' de ' + prod.name
                   "
-                  (click)="selectedPhotoUrl.set(photo.fullUrl)"
-                  (keydown.enter)="selectedPhotoUrl.set(photo.fullUrl)"
-                  (mouseover)="selectedPhotoUrl.set(photo.fullUrl)"
-                  (focus)="selectedPhotoUrl.set(photo.fullUrl)"
+                  (click)="selectedPhotoFileName.set(photo.fileName)"
+                  (keydown.enter)="selectedPhotoFileName.set(photo.fileName)"
+                  (mouseover)="selectedPhotoFileName.set(photo.fileName)"
+                  (focus)="selectedPhotoFileName.set(photo.fileName)"
                   class="w-16 h-16 md:w-20 md:h-20 shrink-0 rounded-lg overflow-hidden cursor-pointer border-2 bg-white transition-all duration-300 focus:outline-none focus:border-[#f4abac] hover:border-[#f4abac]"
                   [class.border-[#f4abac]]="
-                    selectedPhotoUrl() === photo.fullUrl
+                    selectedPhotoFileName() === photo.fileName
                   "
-                  [class.border-gray-200]="selectedPhotoUrl() !== photo.fullUrl"
+                  [class.border-gray-200]="
+                    selectedPhotoFileName() !== photo.fileName
+                  "
                 >
-                  <img
-                    [src]="photo.fullUrl"
-                    [alt]="
+                  <app-product-image
+                    [imageUrl]="photo.fileName"
+                    [altText]="
                       'Miniatura ' + ($index + 1) + ' del producto ' + prod.name
                     "
-                    class="w-full h-full object-contain p-1"
-                    loading="lazy"
+                    containerClass="w-full h-full bg-white"
+                    imageClass="p-1"
                   />
                 </div>
               }
@@ -76,10 +78,11 @@
             class="relative group flex-1 order-1 md:order-2 rounded-2xl overflow-hidden shadow-sm border border-gray-100 bg-white flex items-center justify-center aspect-4/3"
             aria-live="polite"
           >
-            <img
-              [src]="selectedPhotoUrl()"
-              [alt]="prod.name"
-              class="w-full h-full object-contain p-4 md:p-8 drop-shadow-sm"
+            <app-product-image
+              [imageUrl]="selectedPhotoFileName()"
+              [altText]="prod.name"
+              containerClass="w-full h-full"
+              imageClass="p-4 md:p-8 drop-shadow-sm"
             />
 
             @if (productPhotos().length > 1) {
@@ -120,12 +123,6 @@
       </div>
 
       <div class="contents md:flex md:flex-col">
-        <app-product-status-badge
-          [state]="prod.state"
-          [stock]="prod.stock"
-          mode="banner"
-        />
-
         <h1
           class="order-1 md:order-0 text-3xl md:text-4xl font-black text-gray-900 mt-2 md:mt-0 mb-1 md:mb-2 tracking-tight leading-tight"
         >
@@ -145,7 +142,10 @@
               class="text-xs font-bold text-orange-600 bg-orange-100 px-2 py-1 rounded border border-orange-100 flex items-center gap-1"
             >
               <ng-icon name="bootstrapLightningFill" class="text-sm"></ng-icon>
-              +{{ (prod.totalSold / 10 | number: "1.0-0") + "0" }} ventas
+              +{{
+                prod.totalSold - (prod.totalSold % 10) | number: "1.0-0"
+              }}
+              ventas
             </span>
           }
         </div>
@@ -162,16 +162,29 @@
             </span>
           </div>
 
-          <div class="mb-6">
+          <div
+            [class.mb-6]="
+              prod.state === 'Activo' &&
+              prod.category.state === 'Activo' &&
+              prod.stock > 0
+            "
+          >
             <app-product-status-badge
-              [state]="prod.state"
-              [stock]="prod.stock"
+              [productState]="prod.state"
+              [categoryState]="prod.category.state"
+              [productStock]="prod.stock"
               [showStock]="true"
               mode="banner"
             />
           </div>
 
-          <app-add-to-cart-control [product]="prod" layout="full" />
+          @if (
+            prod.state === "Activo" &&
+            prod.category.state === "Activo" &&
+            prod.stock > 0
+          ) {
+            <app-add-to-cart-control [product]="prod" layout="full" />
+          }
 
           <div class="mt-6 space-y-4 border-t pt-6">
             <div

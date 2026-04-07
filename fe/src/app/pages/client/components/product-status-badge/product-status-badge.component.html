@@ -6,11 +6,12 @@
   <div [class]="status().classes">
     <span class="uppercase tracking-widest">Agotado</span>
     @if (mode() === "banner") {
-      <span class="ml-1 font-medium">temporalmente</span>
+      <span class="ml-1 font-medium">(temporalmente)</span>
     }
   </div>
-} @else if (showStock() && stock() > 0) {
+} @else if (showStock() && productStock() > 0) {
   <div [class]="status().classes">
-    <span class="font-bold">Stock Disponible:</span> {{ stock() }} unidades
+    <span class="font-bold">Stock Disponible:</span>
+    {{ productStock() }} unidades
   </div>
 }

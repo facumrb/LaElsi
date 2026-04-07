@@ -33,7 +33,10 @@
 
     <div class="px-5 py-3 border-b border-gray-50">
       <div class="h-10 w-full">
-        <app-search-input [(query)]="searchQuery" placeholder="Buscar producto en esta lista..."></app-search-input>
+        <app-search-input
+          [(query)]="searchQuery"
+          placeholder="Buscar producto en esta lista..."
+        ></app-search-input>
       </div>
     </div>
 
@@ -48,10 +51,15 @@
               >
                 <div class="flex items-center gap-3 min-w-0">
                   <div class="relative h-10 w-10 shrink-0">
-                    <img
-                      class="h-full w-full rounded-lg object-cover border border-gray-200 bg-gray-50"
-                      [src]="getProductMainImage(product)"
-                      alt=""
+                    <app-product-image
+                      [imageUrl]="
+                        product.photos && product.photos.length > 0
+                          ? product.photos[0].fileName
+                          : null
+                      "
+                      [altText]="product.name"
+                      containerClass="h-full w-full bg-gray-50"
+                      imageClass="rounded-lg border border-gray-200"
                     />
                   </div>
 

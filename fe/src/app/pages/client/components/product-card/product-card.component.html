@@ -1,28 +1,22 @@
-<a
-  [routerLink]="['/product', product().id]"
-  class="elsi-product-card group"
->
-  <div class="elsi-product-img-container">
-    <img
-      class="elsi-product-img"
-      [src]="displayImageUrl()"
-      alt=""
-      width="300"
-      height="225"
-      loading="lazy"
-      (error)="handleImageError($event)"
-    />
-    
+<a [routerLink]="['/product', product().id]" class="elsi-product-card group">
+  <app-product-image
+    [imageUrl]="imageFileName()"
+    [altText]="product().name"
+    containerClass="w-full aspect-4/3 bg-gray-50"
+  >
     @if (product().stock <= 0) {
-      <div class="absolute inset-0 bg-white/50 backdrop-blur-[1px] z-10 flex items-center justify-center pointer-events-none">
+      <div
+        class="absolute inset-0 bg-white/50 backdrop-blur-[1px] z-10 flex items-center justify-center pointer-events-none"
+      >
         <app-product-status-badge
-          [state]="product().state"
-          [stock]="product().stock"
+          [productState]="product().state"
+          [categoryState]="product().category.state"
+          [productStock]="product().stock"
           mode="overlay"
         />
       </div>
     }
-  </div>
+  </app-product-image>
 
   <div class="p-4 flex flex-col grow">
     <p class="elsi-brand-label">

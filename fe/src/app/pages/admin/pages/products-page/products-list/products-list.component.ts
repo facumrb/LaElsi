@@ -3,7 +3,7 @@ import { TableActionsComponent } from '@admin/components/table-components/table-
 import { CurrencyPipe } from '@angular/common';
 import { Component, input, output, model } from '@angular/core';
 import { IApiProduct } from '@models/product.model';
-import { environment } from 'src/environments/environment';
+import { ProductImageComponent } from '@shared/components/product-image/product-image.component';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { bootstrapCheck } from '@ng-icons/bootstrap-icons';
 import { TableEmptyStateComponent } from '@admin/components/table-components/table-empty-state/table-empty-state.component';
@@ -16,6 +16,7 @@ import { TableEmptyStateComponent } from '@admin/components/table-components/tab
     NgIconComponent,
     TableEmptyStateComponent,
     EntityStateBadgeComponent,
+    ProductImageComponent,
   ],
   viewProviders: provideIcons({
     bootstrapCheck,
@@ -53,19 +54,6 @@ export class ProductsListComponent {
     } else {
       this.selectedIds.set(this.products().map((p) => p.id));
     }
-  }
-
-  private readonly imageBaseUrl = environment.productImagesUrl;
-
-  private getImageUrl(fileName: string | undefined): string {
-    return `${this.imageBaseUrl}${fileName}`;
-  }
-
-  getProductMainImage(product: IApiProduct): string {
-    if (product.photos && product.photos.length > 0) {
-      return this.getImageUrl(product.photos[0].fileName);
-    }
-    return 'assets/Webp/no-image.webp';
   }
 
   getProductPrice(product: IApiProduct): number {

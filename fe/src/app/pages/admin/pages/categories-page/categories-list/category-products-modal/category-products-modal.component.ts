@@ -10,9 +10,9 @@ import {
   bootstrapArrowRightShort,
 } from '@ng-icons/bootstrap-icons';
 import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
-import { environment } from 'src/environments/environment';
 import { CloseModalButtonComponent } from '@shared/components/buttons/close-modal-button/close-modal-button.component';
 import { SearchInputComponent } from '@admin/components/toolbar-components/search-input/search-input.component';
+import { ProductImageComponent } from '@shared/components/product-image/product-image.component';
 
 @Component({
   selector: 'app-category-products-modal',
@@ -22,6 +22,7 @@ import { SearchInputComponent } from '@admin/components/toolbar-components/searc
     ClickOutsideDirective,
     CloseModalButtonComponent,
     SearchInputComponent,
+    ProductImageComponent,
   ],
   viewProviders: [
     provideIcons({
@@ -50,18 +51,4 @@ export class CategoryProductsModalComponent {
 
     return products.filter((p) => p.name.toLowerCase().includes(query));
   });
-
-  // --- Lógica de Imágenes ---
-  private readonly imageBaseUrl = environment.productImagesUrl;
-
-  private getImageUrl(fileName: string | undefined): string {
-    return `${this.imageBaseUrl}${fileName}`;
-  }
-
-  getProductMainImage(product: IApiProduct): string {
-    if (product.photos && product.photos.length > 0) {
-      return this.getImageUrl(product.photos[0].fileName);
-    }
-    return 'assets/Webp/no-image.webp';
-  }
 }

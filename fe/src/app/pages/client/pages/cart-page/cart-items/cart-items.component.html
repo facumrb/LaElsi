@@ -9,15 +9,14 @@
         <div
           class="w-24 h-24 shrink-0 bg-neutral-50 rounded-xl overflow-hidden border border-neutral-200"
         >
-          <img
-            [src]="
-              imageBaseUrl +
-              (item.product.photos && item.product.photos.length > 0
+          <app-product-image
+            [imageUrl]="
+              item.product.photos && item.product.photos.length > 0
                 ? item.product.photos[0].fileName
-                : 'assets/Webp/no-image.webp')
+                : null
             "
-            [alt]="item.product.name"
-            class="w-full h-full object-cover mix-blend-multiply"
+            [altText]="item.product.name"
+            containerClass="w-full h-full bg-neutral-50"
           />
         </div>
 

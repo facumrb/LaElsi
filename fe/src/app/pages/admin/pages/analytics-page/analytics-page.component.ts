@@ -17,9 +17,8 @@ import { ApiOrderService } from '@services/api-services/api-order.service';
 import { ApiProductService } from '@services/api-services/api-product.service';
 import { ApiClientService } from '@services/api-services/api-client.service';
 import { OrderState, IApiOrder } from '@models/order.model';
-import { environment } from 'src/environments/environment';
 import { OrderDetailModalComponent } from '@shared/components/order-detail-modal/order-detail-modal.component';
-import { IApiProduct } from '@models/product.model';
+import { ProductImageComponent } from '@shared/components/product-image/product-image.component';
 
 @Component({
   selector: 'app-analytics-page',
@@ -29,6 +28,7 @@ import { IApiProduct } from '@models/product.model';
     CurrencyPipe,
     FormatDatePipe,
     OrderDetailModalComponent,
+    ProductImageComponent,
   ],
   viewProviders: [
     provideIcons({
@@ -105,18 +105,5 @@ export class AnalyticsPageComponent {
       default:
         return 'bg-gray-50 text-gray-700 border-gray-200';
     }
-  }
-
-  private readonly imageBaseUrl = environment.productImagesUrl;
-
-  private getImageUrl(fileName: string | undefined): string {
-    return `${this.imageBaseUrl}${fileName}`;
-  }
-
-  getProductMainImage(product: IApiProduct): string {
-    if (product.photos && product.photos.length > 0) {
-      return this.getImageUrl(product.photos[0].fileName);
-    }
-    return 'assets/Webp/no-image.webp';
   }
 }

@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { IApiProductPhoto } from '@models/photo.model';
 import { ApiPhotoService } from '@services/api-services/api-photo.service';
-import { environment } from 'src/environments/environment';
+import { ProductImageComponent } from '@shared/components/product-image/product-image.component';
 import { forkJoin, Observable, of } from 'rxjs';
 import { AlertService } from '@services/alert.service';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
@@ -29,7 +29,7 @@ interface IUiPhoto {
 
 @Component({
   selector: 'app-photo-manager',
-  imports: [NgIconComponent],
+  imports: [NgIconComponent, ProductImageComponent],
   viewProviders: [
     provideIcons({
       bootstrapCloudUpload,
@@ -43,7 +43,6 @@ interface IUiPhoto {
 export class PhotoManagerComponent {
   private photoService = inject(ApiPhotoService);
   private alertService = inject(AlertService);
-  private readonly imageBaseUrl = environment.productImagesUrl;
   readonly MAX_PHOTOS = 10;
 
   // Input: Recibimos las fotos cuando estamos en modo Edición
@@ -64,7 +63,7 @@ export class PhotoManagerComponent {
         this.gallery.set(
           photos.map((p) => ({
             uiId: `old-${p.id}`,
-            src: `${this.imageBaseUrl}${p.fileName}`,
+            src: p.fileName,
             originalId: p.id,
             isNew: false,
           })),

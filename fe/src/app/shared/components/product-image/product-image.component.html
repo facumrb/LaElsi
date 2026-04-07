@@ -1,0 +1,15 @@
+<div
+  class="relative overflow-hidden flex items-center justify-center transition-all duration-300 {{
+    containerClass()
+  }}"
+>
+  <img
+    [src]="displayUrl()"
+    [alt]="altText()"
+    class="h-full w-full object-contain mix-blend-multiply transition-all duration-500 will-change-transform {{
+      imageClass()
+    }}"
+    loading="lazy"
+    (error)="handleImageError()"
+  />
+</div>

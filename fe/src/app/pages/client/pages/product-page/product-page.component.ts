@@ -11,6 +11,7 @@ import {
 } from '@client/components/breadcrumbs/breadcrumbs.component';
 import { IApiCategory } from '@models/category.model';
 import { AddToCartControlComponent } from '@client/components/add-to-cart-control/add-to-cart-control.component';
+import { ProductImageComponent } from '@shared/components/product-image/product-image.component';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
   bootstrapCheckLg,
@@ -31,6 +32,7 @@ import {
     BreadcrumbsComponent,
     ProductStatusBadgeComponent,
     AddToCartControlComponent,
+    ProductImageComponent,
   ],
   viewProviders: [
     provideIcons({
@@ -46,14 +48,12 @@ import {
   templateUrl: './product-page.component.html',
 })
 export class ProductPageComponent implements OnInit {
-  private readonly imageBaseUrl = environment.productImagesUrl;
-  private readonly defaultImage = 'assets/Webp/no-image.webp';
   private activatedRoute = inject(ActivatedRoute);
   private productService = inject(ApiProductService);
   private router = inject(Router);
 
   product = signal<IApiProduct | undefined>(undefined);
-  selectedPhotoUrl = signal<string | undefined>(undefined);
+  selectedPhotoFileName = signal<string | null>(null);
   thumbnailIndex = signal(0);
 
   // Breadcrumbs
@@ -82,12 +82,7 @@ export class ProductPageComponent implements OnInit {
   });
 
   productPhotos = computed(() => {
-    const photos = this.product()?.photos;
-    if (!photos) return [];
-    return photos.map((p) => ({
-      ...p,
-      fullUrl: `${this.imageBaseUrl}${p.fileName}`,
-    }));
+    return this.product()?.photos || [];
   });
 
   productPrice = computed(() => {
@@ -108,11 +103,9 @@ export class ProductPageComponent implements OnInit {
         this.product.set(data);
         // Al cargar, seteamos la primera foto si existe
         if (data.photos && data.photos.length > 0) {
-          this.selectedPhotoUrl.set(
-            `${this.imageBaseUrl}${data.photos[0].fileName}`,
-          );
+          this.selectedPhotoFileName.set(data.photos[0].fileName);
         } else {
-          this.selectedPhotoUrl.set(this.defaultImage);
+          this.selectedPhotoFileName.set(null);
         }
       },
       error: () => this.router.navigate(['/']),
@@ -123,26 +116,24 @@ export class ProductPageComponent implements OnInit {
   nextPhoto() {
     const photos = this.productPhotos();
     if (!photos.length) return;
-
     const currentIndex = photos.findIndex(
-      (p) => p.fullUrl === this.selectedPhotoUrl(),
+      (p) => p.fileName === this.selectedPhotoFileName(),
     );
     const nextIndex = (currentIndex + 1) % photos.length;
-    this.selectedPhotoUrl.set(photos[nextIndex].fullUrl);
+    this.selectedPhotoFileName.set(photos[nextIndex].fileName);
   }
 
   prevPhoto() {
     const photos = this.productPhotos();
     if (!photos.length) return;
-
     const currentIndex = photos.findIndex(
-      (p) => p.fullUrl === this.selectedPhotoUrl(),
+      (p) => p.fileName === this.selectedPhotoFileName(),
     );
     const prevIndex =
       currentIndex === -1
         ? photos.length - 1
         : (currentIndex - 1 + photos.length) % photos.length;
-    this.selectedPhotoUrl.set(photos[prevIndex].fullUrl);
+    this.selectedPhotoFileName.set(photos[prevIndex].fileName);
   }
 
   nextThumbnails() {

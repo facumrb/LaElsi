@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { CurrencyPipe } from '@angular/common';
 import { IApiProduct } from '@models/product.model';
 import { ApiProductService } from '@services/api-services/api-product.service';
-import { environment } from 'src/environments/environment';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { bootstrapSearch } from '@ng-icons/bootstrap-icons';
 import { FormsModule } from '@angular/forms';
@@ -19,10 +18,17 @@ import {
 } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
+import { ProductImageComponent } from '@shared/components/product-image/product-image.component';
 
 @Component({
   selector: 'app-search-bar',
-  imports: [CurrencyPipe, NgIconComponent, FormsModule, ClickOutsideDirective],
+  imports: [
+    CurrencyPipe,
+    NgIconComponent,
+    FormsModule,
+    ClickOutsideDirective,
+    ProductImageComponent,
+  ],
   viewProviders: provideIcons({
     bootstrapSearch,
   }),
@@ -40,9 +46,6 @@ export class SearchBarComponent {
 
   // Subject auxiliar para controlar el flujo asíncrono de petición de resultados
   private readonly searchSubject = new Subject<string>();
-
-  // URL base para conformar las rutas de las imágenes
-  private readonly imageBaseUrl = environment.productImagesUrl;
 
   constructor() {
     this.initSearchFlow();
@@ -89,11 +92,6 @@ export class SearchBarComponent {
           this.isLoading.set(false);
         },
       });
-  }
-
-  // Arma la URL completa de la imagen del producto.
-  buildUrl(fileName: string): string {
-    return `${this.imageBaseUrl}${fileName}`;
   }
 
   // Extrae del producto el monto del precio marcado como 'actual'.

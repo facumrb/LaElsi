@@ -10,11 +10,11 @@ import {
 import { IApiProduct } from '@models/product.model';
 import { CartService } from '@services/cart.service';
 import { AlertService } from '@services/alert.service';
-import { environment } from 'src/environments/environment';
+import { ProductImageComponent } from '@shared/components/product-image/product-image.component';
 
 @Component({
   selector: 'app-cart-items',
-  imports: [CurrencyPipe, NgIconComponent],
+  imports: [CurrencyPipe, NgIconComponent, ProductImageComponent],
   viewProviders: [
     provideIcons({
       bootstrapTrash,
@@ -30,7 +30,6 @@ export class CartItemsComponent {
   private alertService = inject(AlertService);
 
   items = this.cartService.items;
-  imageBaseUrl = environment.productImagesUrl;
 
   getCurrentPrice(product: IApiProduct): number {
     return product.prices?.find((p) => p.isCurrent)?.amount || 0;

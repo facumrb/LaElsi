@@ -51,11 +51,14 @@
             <div
               class="w-10 h-10 shrink-0 rounded-md overflow-hidden border border-gray-200 bg-gray-100"
             >
-              <img
-                [src]="buildUrl(product.photos[0].fileName)"
-                [alt]="product.name"
-                class="w-full h-full object-cover"
-                onerror="this.style.display = 'none'"
+              <app-product-image
+                [imageUrl]="
+                  product.photos && product.photos.length > 0
+                    ? product.photos[0].fileName
+                    : null
+                "
+                [altText]="product.name"
+                containerClass="w-full h-full bg-transparent"
               />
             </div>
             <div class="flex flex-col overflow-hidden">

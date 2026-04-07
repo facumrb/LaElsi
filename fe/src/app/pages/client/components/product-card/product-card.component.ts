@@ -2,9 +2,9 @@ import { Component, computed, input } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { IApiProduct } from '@models/product.model';
-import { environment } from 'src/environments/environment';
 import { ProductStatusBadgeComponent } from '@client/components/product-status-badge/product-status-badge.component';
 import { AddToCartControlComponent } from '@client/components/add-to-cart-control/add-to-cart-control.component';
+import { ProductImageComponent } from '@shared/components/product-image/product-image.component';
 
 @Component({
   selector: 'app-product-card',
@@ -13,31 +13,17 @@ import { AddToCartControlComponent } from '@client/components/add-to-cart-contro
     RouterLink,
     ProductStatusBadgeComponent,
     AddToCartControlComponent,
+    ProductImageComponent,
   ],
   templateUrl: './product-card.component.html',
 })
 export class ProductCardComponent {
   product = input.required<IApiProduct>();
-  private readonly imageBaseUrl = environment.productImagesUrl;
-  private readonly defaultImage = 'assets/Webp/no-image.webp';
-
-  displayImageUrl = computed(() => {
-    const currentProduct = this.product();
-    const photos = currentProduct.photos;
-
-    // Si no hay fotos, devolvemos imagen por defecto
-    if (!photos || photos.length === 0) {
-      return this.defaultImage;
-    }
-
-    // Buscamos la foto con order 0
+  imageFileName = computed(() => {
+    const photos = this.product().photos;
+    if (!photos || photos.length === 0) return null;
     const mainPhoto = photos.find((p) => p.order === 0);
-
-    // Si existe la 0, usamos esa. Si no, usamos la primera del array como respaldo.
-    const photoToUse = mainPhoto || photos[0];
-
-    // Retorno de la URL de la imagen
-    return `${this.imageBaseUrl}${photoToUse.fileName}`;
+    return (mainPhoto || photos[0]).fileName;
   });
 
   price = computed(() => {
@@ -49,10 +35,4 @@ export class ProductCardComponent {
     const currentPrice = this.product().prices?.find((p) => p.isCurrent);
     return currentPrice ? currentPrice.currency : 'ARS';
   });
-
-  handleImageError(event: Event) {
-    const imgElement = event.target as HTMLImageElement;
-    if (imgElement.src.includes(this.defaultImage)) return;
-    imgElement.src = this.defaultImage;
-  }
 }

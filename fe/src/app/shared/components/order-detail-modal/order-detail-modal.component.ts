@@ -17,11 +17,10 @@ import {
   bootstrapWhatsapp,
 } from '@ng-icons/bootstrap-icons';
 import { IApiOrder, OrderState, PaymentMethod } from '@models/order.model';
-import { environment } from 'src/environments/environment';
 import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
 import { AuthService } from 'src/app/services/auth.service';
-
 import { CloseModalButtonComponent } from '@shared/components/buttons/close-modal-button/close-modal-button.component';
+import { ProductImageComponent } from '@shared/components/product-image/product-image.component';
 
 @Component({
   selector: 'app-order-detail-modal',
@@ -32,6 +31,7 @@ import { CloseModalButtonComponent } from '@shared/components/buttons/close-moda
     ClickOutsideDirective,
     RouterModule,
     CloseModalButtonComponent,
+    ProductImageComponent,
   ],
   viewProviders: [
     provideIcons({
@@ -54,7 +54,6 @@ export class OrderDetailModalComponent implements OnInit, OnDestroy {
 
   private document = inject(DOCUMENT);
   private authService = inject(AuthService);
-  productImagesUrl = environment.productImagesUrl;
 
   currentUserName = computed(() => {
     const user = this.authService.currentUser();

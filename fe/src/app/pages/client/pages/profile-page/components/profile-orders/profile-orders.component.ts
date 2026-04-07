@@ -16,7 +16,12 @@ import { AlertService } from '@services/alert.service';
 
 @Component({
   selector: 'app-profile-orders',
-  imports: [NgIconComponent, CurrencyPipe, FormatDatePipe, OrderDetailModalComponent],
+  imports: [
+    NgIconComponent,
+    CurrencyPipe,
+    FormatDatePipe,
+    OrderDetailModalComponent,
+  ],
   viewProviders: [
     provideIcons({
       bootstrapClockHistory,
@@ -29,7 +34,6 @@ import { AlertService } from '@services/alert.service';
 })
 export class ProfileOrdersComponent {
   orders = input<IApiOrder[]>([]);
-  productImagesUrl = environment.productImagesUrl;
   private orderService = inject(ApiOrderService);
   private alertService = inject(AlertService);
   profileUpdated = output<void>();
