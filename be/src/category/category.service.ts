@@ -55,7 +55,7 @@ export class CategoryService {
       { populate: ['products.photos'] }
     );
 
-    // Defensa: Filtrar categorías que no tienen productos activos en su subárbol
+    // Filtrar categorías que no tienen productos activos en su subárbol
     const filtered: Category[] = [];
     for (const cat of categories) {
       if (await this.hasActiveProductsInSubtree(cat.id)) {
@@ -339,11 +339,20 @@ export class CategoryService {
 
     const categories = await em.find(Category, filter, options);
 
-    // Defensa: Filtrar categorías que no tienen productos activos en su subárbol (Opción C)
+    // Filtrar categorías que no tienen productos activos en su subárbol
     if (state === CategoryState.Activo) {
+      const filterActiveChildren = (category: Category) => {
+        if (category.children && category.children.isInitialized()) {
+          const activeItems = category.children.getItems().filter((c) => c.state === CategoryState.Activo);
+          for (const item of activeItems) filterActiveChildren(item);
+          category.children.set(activeItems);
+        }
+      };
+
       const filtered: Category[] = [];
       for (const cat of categories) {
         if (await this.hasActiveProductsInSubtree(cat.id)) {
+          filterActiveChildren(cat);
           filtered.push(cat);
         }
       }
@@ -380,10 +389,20 @@ export class CategoryService {
       }
     );
 
-    // Defensa: Filtrar categorías que no tienen productos activos en su subárbol
+    // Filtrar subcategorías que tengan estado inactivo
+    const filterActiveChildren = (category: Category) => {
+      if (category.children && category.children.isInitialized()) {
+        const activeItems = category.children.getItems().filter((c) => c.state === CategoryState.Activo);
+        for (const item of activeItems) filterActiveChildren(item);
+        category.children.set(activeItems);
+      }
+    };
+
+    // Filtrar categorías que no tienen productos activos en su subárbol
     const filtered: Category[] = [];
     for (const cat of categories) {
       if (await this.hasActiveProductsInSubtree(cat.id)) {
+        filterActiveChildren(cat);
         filtered.push(cat);
       }
     }
