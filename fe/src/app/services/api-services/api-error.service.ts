@@ -23,7 +23,14 @@ export class ApiErrorService {
     switch (err.status) {
       case 400:
         titulo = 'Datos Inválidos';
-        if (!backendMessage) mensaje = 'Revisa los datos del formulario.';
+        if (!backendMessage) {
+          mensaje = 'Revisa los datos del formulario.';
+        } else if (
+          backendMessage.includes('No se puede activar una categoría')
+        ) {
+          titulo = 'Acción Inválida';
+          esCritico = true;
+        }
         break;
 
       case 401:

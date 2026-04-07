@@ -206,18 +206,21 @@ export class CategoryService {
       category.order = newOrder;
     }
 
-    // Asignar el resto de los datos
     const { parentId, order: _order, ...updateData } = data;
     const oldState = category.state;
-    em.assign(category, updateData);
 
-    if (category.state !== oldState) {
-      if (category.state === CategoryState.Activo) {
+    if (updateData.state !== undefined && updateData.state !== oldState) {
+      if (updateData.state === CategoryState.Activo) {
         const hasActive = await this.hasActiveProductsInSubtree(category.id);
         if (!hasActive) {
           throw new AppError('No se puede activar una categoría que no tiene productos activos ni subcategorías con productos.', 400);
         }
       }
+    }
+
+    em.assign(category, updateData);
+
+    if (category.state !== oldState) {
       category.deletedAt = category.state === CategoryState.Inactivo ? new Date() : undefined;
     }
 
