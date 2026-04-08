@@ -1178,21 +1178,29 @@ async function seedOrders(em: EntityManager) {
   const needed = 50 - totalCountNow;
   
   if (needed > 0) {
-    const productsArray = Array.from(allProducts);
-    const clientsArray = Array.from(allClients);
+    const productsArray = await em.find(Product, {}, { populate: ['prices'] });
+    const clientsArray = await em.find(Client, {});
 
     for (let i = 1; i <= needed; i++) {
+      // Repartimos entre los clientes de forma cíclica
       const client = clientsArray[i % clientsArray.length];
       const order = new Order();
       order.client = client;
-      order.status = OrderState.Paid;
-      order.deliveryMethod = DeliveryMethod.Envio;
-      order.paymentMethod = PaymentMethod.Transferencia;
-      order.dateTime = new Date();
+      
+      // Estados variados
+      const states = [OrderState.Pending, OrderState.Paid, OrderState.Shipped, OrderState.Delivered];
+      order.status = states[i % states.length];
+      
+      order.deliveryMethod = i % 2 === 0 ? DeliveryMethod.Envio : DeliveryMethod.RetiroSucursal;
+      order.paymentMethod = i % 2 === 0 ? PaymentMethod.Transferencia : PaymentMethod.Local;
+      
+      // Fechas variadas en los últimos 3 meses
+      const date = new Date();
+      date.setDate(date.getDate() - (i * 2));
+      order.dateTime = date;
       
       let total = 0;
-      // Agregamos 1 o 2 productos aleatorios
-      const itemsCount = Math.floor(Math.random() * 2) + 1;
+      const itemsCount = Math.floor(Math.random() * 3) + 1;
       for (let j = 0; j < itemsCount; j++) {
         const product = productsArray[Math.floor(Math.random() * productsArray.length)];
         const currentPrice = product.prices[0]?.amount ?? 0;
@@ -1277,22 +1285,26 @@ export async function seedDatabase() {
       }
     }
 
-    // Completamos hasta 50 productos
-    const neededProducts = 50 - existingProductNames.size;
-    if (neededProducts > 0) {
-      const firstCategory = Object.values(categoriesMap)[0];
-      for (let i = 1; i <= neededProducts; i++) {
-        const prodData: IProductSeed = {
-          name: `Producto Generico ${i}`,
-          description: `Descripción del producto genérico ${i}`,
-          brand: 'Marca Genérica',
-          stock: 100,
-          categoryName: firstCategory.name,
-          price: 1000 + (i * 100),
-          photos: [{ fileName: 'placeholder.png' }]
-        };
-        const product = createProductEntity(prodData, firstCategory);
-        em.persist(product);
+    for (const categoryName in categoriesMap) {
+      const category = categoriesMap[categoryName];
+      const productsInCategory = await em.find(Product, { category });
+      const currentCount = productsInCategory.length;
+
+      if (currentCount < 20) {
+        const neededForCategory = 20 - currentCount;
+        for (let i = 1; i <= neededForCategory; i++) {
+          const prodData: IProductSeed = {
+            name: `${categoryName} Extra ${i}`,
+            description: `Descripción extra para producto de ${categoryName} #${i}`,
+            brand: 'Marca Extra',
+            stock: 20 + i,
+            categoryName: categoryName,
+            price: 500 + (i * 150),
+            photos: [{ fileName: `placeholder_${categoryName.toLowerCase()}_${i}.png` }]
+          };
+          const product = createProductEntity(prodData, category);
+          em.persist(product);
+        }
       }
     }
 
