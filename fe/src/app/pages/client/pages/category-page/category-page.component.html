@@ -33,6 +33,13 @@
     }
   </div>
 
+  <!-- Paginación -->
+  <app-pagination
+    [currentPage]="currentPage()"
+    [totalPages]="totalPages()"
+    (pageChange)="onPageChange($event)"
+  />
+
   @if (showInactiveCategoryModal()) {
     <div class="elsi-modal-overlay">
       <div class="elsi-modal-card">

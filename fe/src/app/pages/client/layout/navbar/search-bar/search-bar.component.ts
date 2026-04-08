@@ -76,7 +76,7 @@ export class SearchBarComponent {
         switchMap((term) =>
           this.apiProductService.searchProducts(term).pipe(
             catchError(() => {
-              return of([]);
+              return of({ data: [], total: 0, page: 1, limit: 16, totalPages: 0 } as any);
             }),
           ),
         ),
@@ -84,8 +84,8 @@ export class SearchBarComponent {
       )
       .subscribe({
         next: (products) => {
-          this.results.set(products.slice(0, 6)); // Top 6 matches recomendados
-          this.showResults.set(products.length > 0);
+          this.results.set(products.data.slice(0, 6)); // Top 6 matches recomendados
+          this.showResults.set(products.data.length > 0);
           this.isLoading.set(false);
         },
         error: () => {

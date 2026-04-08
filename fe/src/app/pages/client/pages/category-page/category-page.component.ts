@@ -21,6 +21,7 @@ import {
   BreadcrumbsComponent,
   BreadcrumbStep,
 } from '@client/components/breadcrumbs/breadcrumbs.component';
+import { PaginationComponent } from '@shared/components/pagination/pagination.component';
 
 @Component({
   selector: 'app-category-page',
@@ -28,6 +29,7 @@ import {
     ProductCardComponent,
     ProductsFilterComponent,
     BreadcrumbsComponent,
+    PaginationComponent,
   ],
   templateUrl: './category-page.component.html',
 })
@@ -40,6 +42,10 @@ export class CategoryPageComponent implements OnInit {
   category = signal<IApiCategory | null>(null);
   private productsRaw = signal<IApiProduct[]>([]);
   availableBrands = signal<string[]>([]);
+
+  // Paginación
+  currentPage = signal<number>(1);
+  totalPages = signal<number>(1);
 
   // Breadcrumbs
   breadcrumbSteps = computed<BreadcrumbStep[]>(() => {
@@ -127,9 +133,25 @@ export class CategoryPageComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.route.params.subscribe((params) => {
-      const id = Number(params['id']);
+    // Escuchar tanto params (id) como queryParams (page)
+    this.route.paramMap.subscribe((params) => {
+      const id = Number(params.get('id'));
+      
+      // Combinar con query parameters actuales
+      const pageParam = this.route.snapshot.queryParamMap.get('page');
+      this.currentPage.set(Number(pageParam) || 1);
+      
       this.cargarDatosDePagina(id);
+    });
+    
+    // Escuchar también cambios solo en queryParams cuando ya estamos en la misma categoría
+    this.route.queryParamMap.subscribe((queryParams) => {
+      const newPage = Number(queryParams.get('page')) || 1;
+      const idStr = this.route.snapshot.paramMap.get('id');
+      if (idStr && Number(idStr) > 0 && newPage !== this.currentPage()) {
+        this.currentPage.set(newPage);
+        this.cargarDatosDePagina(Number(idStr));
+      }
     });
   }
 
@@ -146,10 +168,22 @@ export class CategoryPageComponent implements OnInit {
       error: () => this.router.navigate(['/']),
     });
 
-    // 2. Obtener los productos activos de la categoría
-    this.ApiProductService.getActiveProductsByCategory(id).subscribe({
-      next: (data) => this.productsRaw.set(data),
+    // 2. Obtener los productos activos de la categoría con paginación
+    this.ApiProductService.getActiveProductsByCategory(id, this.currentPage()).subscribe({
+      next: (data) => {
+        this.productsRaw.set(data.data);
+        this.totalPages.set(data.totalPages);
+      },
     });
+  }
+
+  onPageChange(page: number) {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { page: page },
+      queryParamsHandling: 'merge',
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' }); // Mejor UX
   }
 
   closeInactiveModal() {

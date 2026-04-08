@@ -6,6 +6,7 @@ import {
   ICreateProduct,
   IUpdateProduct,
 } from '@models/product.model';
+import { IPaginatedResult } from '../../models/pagination.model';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -16,30 +17,26 @@ export class ApiProductService {
   private readonly apiUrl = `${environment.apiUrl}/products`;
 
   // Obtener todos los productos
-  getAllProducts(): Observable<IApiProduct[]> {
+  getAllProducts(page: number = 1, limit: number = 16): Observable<IPaginatedResult<IApiProduct>> {
+    const params = new HttpParams().set('page', page).set('limit', limit);
     return this.http
-      .get<{ message: string; data: IApiProduct[] }>(this.apiUrl)
+      .get<{ message: string; data: IPaginatedResult<IApiProduct> }>(this.apiUrl, { params })
       .pipe(map((response) => response.data));
   }
 
   // Obtener todos los productos activos
-  getActiveProducts(): Observable<IApiProduct[]> {
+  getActiveProducts(page: number = 1, limit: number = 16): Observable<IPaginatedResult<IApiProduct>> {
+    const params = new HttpParams().set('page', page).set('limit', limit);
     return this.http
-      .get<{ message: string; data: IApiProduct[] }>(`${this.apiUrl}/active`)
+      .get<{ message: string; data: IPaginatedResult<IApiProduct> }>(`${this.apiUrl}/active`, { params })
       .pipe(map((response) => response.data));
   }
 
   // Obtener productos con paginación
   getProductsPage(
     page: number = 1,
-    limit: number = 10,
-  ): Observable<{
-    products: IApiProduct[];
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-  }> {
+    limit: number = 16,
+  ): Observable<IPaginatedResult<IApiProduct>> {
     const params = new HttpParams()
       .set('page', page.toString())
       .set('limit', limit.toString());
@@ -47,13 +44,7 @@ export class ApiProductService {
     return this.http
       .get<{
         message: string;
-        data: {
-          products: IApiProduct[];
-          total: number;
-          page: number;
-          limit: number;
-          totalPages: number;
-        };
+        data: IPaginatedResult<IApiProduct>;
       }>(`${this.apiUrl}/page`, { params })
       .pipe(map((response) => response.data));
   }
@@ -73,33 +64,35 @@ export class ApiProductService {
   }
 
   // Buscar productos por nombre o descripción
-  searchProducts(query: string): Observable<IApiProduct[]> {
-    const params = new HttpParams().set('query', query);
+  searchProducts(query: string, page: number = 1, limit: number = 16): Observable<IPaginatedResult<IApiProduct>> {
+    const params = new HttpParams().set('query', query).set('page', page).set('limit', limit);
     return this.http
       .get<{
         message: string;
-        data: IApiProduct[];
+        data: IPaginatedResult<IApiProduct>;
       }>(`${this.apiUrl}/search`, { params })
       .pipe(map((response) => response.data));
   }
 
   // Obtener productos segun una categoría (todos)
-  getProductsByCategory(categoryId: number): Observable<IApiProduct[]> {
+  getProductsByCategory(categoryId: number, page: number = 1, limit: number = 16): Observable<IPaginatedResult<IApiProduct>> {
+    const params = new HttpParams().set('page', page).set('limit', limit);
     return this.http
       .get<{
         message: string;
-        data: IApiProduct[];
-      }>(`${this.apiUrl}/category/${categoryId}`)
+        data: IPaginatedResult<IApiProduct>;
+      }>(`${this.apiUrl}/category/${categoryId}`, { params })
       .pipe(map((response) => response.data));
   }
 
   // Obtener productos activos segun una categoría
-  getActiveProductsByCategory(categoryId: number): Observable<IApiProduct[]> {
+  getActiveProductsByCategory(categoryId: number, page: number = 1, limit: number = 16): Observable<IPaginatedResult<IApiProduct>> {
+    const params = new HttpParams().set('page', page).set('limit', limit);
     return this.http
       .get<{
         message: string;
-        data: IApiProduct[];
-      }>(`${this.apiUrl}/active/category/${categoryId}`)
+        data: IPaginatedResult<IApiProduct>;
+      }>(`${this.apiUrl}/active/category/${categoryId}`, { params })
       .pipe(map((response) => response.data));
   }
 

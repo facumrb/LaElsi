@@ -1,5 +1,5 @@
 import { Component, inject, signal, computed, effect } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ApiProductService } from '@services/api-services/api-product.service';
 import { ProductCardComponent } from '@client/components/product-card/product-card.component';
 import {
@@ -8,10 +8,11 @@ import {
   PopularityOrder,
 } from '@client/components/products-filter/products-filter.component';
 import { IApiProduct } from '@models/product.model';
+import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
 
 @Component({
   selector: 'app-search-result',
-  imports: [ProductCardComponent, ProductsFilterComponent],
+  imports: [ProductCardComponent, ProductsFilterComponent, PaginationComponent],
   templateUrl: './search-result.component.html',
 })
 export class SearchResultComponent {
@@ -20,19 +21,35 @@ export class SearchResultComponent {
   private productsRaw = signal<IApiProduct[]>([]);
   availableBrands = signal<string[]>([]);
   searchTerm = signal<string>('');
+  
+  // Paginación
+  currentPage = signal<number>(1);
+  totalPages = signal<number>(1);
+  private readonly router = inject(Router);
 
   constructor() {
-    // Sincronizar el query param 'q' de la URL con nuestra Signal
+    // Sincronizar el query param 'q' y 'page' de la URL con nuestra Signal
     this.route.queryParams.subscribe((params) => {
       this.searchTerm.set(params['q'] || '');
+      this.currentPage.set(Number(params['page']) || 1);
       this.loadProducts();
     });
   }
 
   loadProducts() {
-    this.productService.searchProducts(this.searchTerm()).subscribe((prods) => {
-      this.productsRaw.set(prods);
+    this.productService.searchProducts(this.searchTerm(), this.currentPage()).subscribe((prods) => {
+      this.productsRaw.set(prods.data);
+      this.totalPages.set(prods.totalPages);
     });
+  }
+
+  onPageChange(page: number) {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { page: page },
+      queryParamsHandling: 'merge',
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' }); // Mejor UX
   }
 
   // Filtros

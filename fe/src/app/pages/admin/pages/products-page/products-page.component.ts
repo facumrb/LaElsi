@@ -139,7 +139,7 @@ export class ProductsPageComponent implements OnInit {
   loadProducts() {
     this.apiService.getAllProducts().subscribe({
       next: (data) => {
-        this.productsRaw.set(data);
+        this.productsRaw.set(data.data);
       },
     });
   }

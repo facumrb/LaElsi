@@ -3,6 +3,7 @@ import { ProductService, CreateProductDto, UpdateProductDto } from './product.se
 import { asyncHandler } from '../shared/errors/asyncHandler.js';
 import { AppError } from '../shared/errors/appError.js';
 import { ApiResponse } from '../shared/utils/apiResponse.js';
+import { getPaginationParams } from '../shared/utils/pagination.js';
 
 function sanitizeProductInput(req: Request, res: Response, next: any) {
   req.body.sanitizedInput = {
@@ -40,23 +41,29 @@ export class ProductController {
   // ============================================================================
   static searchProductsByText = asyncHandler(async (req: Request, res: Response) => {
     const { query } = req.query;
-    const products = await ProductService.searchProductsByText(query as string);
+    const { page, limit } = getPaginationParams(req);
+
+    const products = await ProductService.searchProductsByText(query as string, page, limit);
     return res.status(200).json(ApiResponse.success('Productos encontrados', products));
   });
 
   static findProductsByCategory = asyncHandler(async (req: Request, res: Response) => {
     const categoryId = Number.parseInt(req.params.categoryId);
+    const { page, limit } = getPaginationParams(req);
+
     if (isNaN(categoryId)) throw new AppError('ID de categoría inválido', 400);
 
-    const products = await ProductService.findProductsByCategory(categoryId);
+    const products = await ProductService.findProductsByCategory(categoryId, page, limit);
     return res.status(200).json(ApiResponse.success('Productos encontrados en la categoría', products));
   });
 
   static findActiveProductsByCategory = asyncHandler(async (req: Request, res: Response) => {
     const categoryId = Number.parseInt(req.params.categoryId);
+    const { page, limit } = getPaginationParams(req);
+
     if (isNaN(categoryId)) throw new AppError('ID de categoría inválido', 400);
 
-    const products = await ProductService.findActiveProductsByCategory(categoryId);
+    const products = await ProductService.findActiveProductsByCategory(categoryId, page, limit);
     return res.status(200).json(ApiResponse.success('Productos activos encontrados en la categoría', products));
   });
 
@@ -64,7 +71,9 @@ export class ProductController {
   // CONSULTAS GENERALES
   // ============================================================================
   static findAll = asyncHandler(async (req: Request, res: Response) => {
-    const products = await ProductService.findAll();
+    const { page, limit } = getPaginationParams(req);
+
+    const products = await ProductService.findAll(page, limit);
     return res.status(200).json(ApiResponse.success('Todos los Productos fueron encontrados', products));
   });
 
@@ -111,16 +120,15 @@ export class ProductController {
   // 📄 DATOS PAGINADOS Y ESTADOS ACTIVOS (CLIENTE FINAL)
   // ============================================================================
   static findPage = asyncHandler(async (req: Request, res: Response) => {
-    const DEFAULT_LIMIT = 10;
-    const page = Number.parseInt(req.query.page as string) || 1;
-    const limit = Number.parseInt(req.query.limit as string) || DEFAULT_LIMIT;
+    const { page, limit } = getPaginationParams(req);
 
     const data = await ProductService.findPage(page, limit);
     return res.status(200).json(ApiResponse.success('Página de productos encontrada', data));
   });
 
   static findAllActive = asyncHandler(async (req: Request, res: Response) => {
-    const products = await ProductService.findAllActive();
+    const { page, limit } = getPaginationParams(req);
+    const products = await ProductService.findAllActive(page, limit);
     return res.status(200).json(ApiResponse.success('Productos activos encontrados', products));
   });
 

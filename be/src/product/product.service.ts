@@ -8,6 +8,9 @@ import path from 'path';
 import fs from 'fs/promises';
 import { AppError } from '../shared/errors/appError.js';
 import { CategoryService } from '../category/category.service.js';
+import { PaginatedResult } from '../shared/utils/pagination.interface.js';
+import { DEFAULT_PAGE_SIZE } from '../shared/config/pagination.js';
+import { buildPaginatedResponse } from '../shared/utils/pagination.js';
 
 const PRODUCT_PATH = path.join(process.cwd(), 'uploads', 'products');
 const VALID_CURRENCIES = Object.values(Currency);
@@ -100,13 +103,14 @@ export class ProductService {
     return product;
   }
 
-  static async searchProductsByText(query: string) {
+  static async searchProductsByText(query: string, page: number = 1, limit: number = DEFAULT_PAGE_SIZE): Promise<PaginatedResult<Product>> {
     const em = orm.em;
     if (!query || query.trim().length === 0) {
       throw new AppError('El parámetro de búsqueda es requerido', 400);
     }
+    const offset = (page - 1) * limit;
 
-    return em.find(
+    const [data, total] = await em.findAndCount(
       Product,
       {
         state: ProductState.Activo,
@@ -116,23 +120,30 @@ export class ProductService {
       {
         populate: ['category', 'photos', 'prices'],
         populateWhere: { prices: { isCurrent: true } },
-        populateOrderBy: { photos: { order: 'ASC' } }
+        populateOrderBy: { photos: { order: 'ASC' } },
+        limit,
+        offset
       }
     );
+    
+    return buildPaginatedResponse(data, total, page, limit);
   }
 
-  static async findProductsByCategory(categoryId: number) {
+  static async findProductsByCategory(categoryId: number, page: number = 1, limit: number = DEFAULT_PAGE_SIZE): Promise<PaginatedResult<Product>> {
     const em = orm.em;
-    return em.find(
+    const offset = (page - 1) * limit;
+    const [data, total] = await em.findAndCount(
       Product,
       { category: { id: categoryId } },
-      { populate: ['category', 'photos', 'prices'] }
+      { populate: ['category', 'photos', 'prices'], limit, offset }
     );
+    return buildPaginatedResponse(data, total, page, limit);
   }
 
-  static async findActiveProductsByCategory(categoryId: number) {
+  static async findActiveProductsByCategory(categoryId: number, page: number = 1, limit: number = DEFAULT_PAGE_SIZE): Promise<PaginatedResult<Product>> {
     const em = orm.em;
-    return em.find(
+    const offset = (page - 1) * limit;
+    const [data, total] = await em.findAndCount(
       Product,
       {
         category: { id: categoryId, state: CategoryState.Activo },
@@ -141,21 +152,28 @@ export class ProductService {
       {
         populate: ['category', 'photos', 'prices'],
         populateWhere: { prices: { isCurrent: true } },
-        populateOrderBy: { photos: { order: 'ASC' } }
+        populateOrderBy: { photos: { order: 'ASC' } },
+        limit,
+        offset
       }
     );
+    return buildPaginatedResponse(data, total, page, limit);
   }
 
-  static async findAll() {
+  static async findAll(page: number = 1, limit: number = DEFAULT_PAGE_SIZE): Promise<PaginatedResult<Product>> {
     const em = orm.em;
-    return em.find(
+    const offset = (page - 1) * limit;
+    const [data, total] = await em.findAndCount(
       Product,
       {},
       {
         populate: ['category', 'photos', 'prices'],
-        populateOrderBy: { photos: { order: 'ASC' } }
+        populateOrderBy: { photos: { order: 'ASC' } },
+        limit,
+        offset
       }
     );
+    return buildPaginatedResponse(data, total, page, limit);
   }
 
   static async findOne(id: number) {
@@ -283,41 +301,26 @@ export class ProductService {
     }
   }
 
-  static async findPage(page: number, limit: number) {
-    const em = orm.em;
-    const offset = (page - 1) * limit;
-
-    const [products, total] = await em.findAndCount(
-      Product,
-      {},
-      {
-        populate: ['category', 'photos', 'prices'],
-        limit,
-        offset,
-        populateOrderBy: { photos: { order: 'ASC' } }
-      }
-    );
-
-    return {
-      products,
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit)
-    };
+  static async findPage(page: number = 1, limit: number = DEFAULT_PAGE_SIZE): Promise<PaginatedResult<Product>> {
+    // 🚨 Para el cliente final, SÓLO se devuelven los activos con categoría activa
+    return this.findAllActive(page, limit);
   }
 
-  static async findAllActive() {
+  static async findAllActive(page: number = 1, limit: number = DEFAULT_PAGE_SIZE): Promise<PaginatedResult<Product>> {
     const em = orm.em;
-    return em.find(
+    const offset = (page - 1) * limit;
+    const [data, total] = await em.findAndCount(
       Product,
       { state: ProductState.Activo, category: { state: CategoryState.Activo } },
       {
         populate: ['category', 'photos', 'prices'],
         populateWhere: { prices: { isCurrent: true } },
-        populateOrderBy: { photos: { order: 'ASC' } }
+        populateOrderBy: { photos: { order: 'ASC' } },
+        limit,
+        offset
       }
     );
+    return buildPaginatedResponse(data, total, page, limit);
   }
 
   static async findBestSellers(limit: number) {

@@ -17,7 +17,7 @@
 
   <!-- Grilla de Productos -->
   <div
-    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6 mt-6"
+    class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6"
   >
     @for (product of productsFiltered(); track product.id) {
       <app-product-card [product]="product" />
@@ -29,4 +29,11 @@
       </div>
     }
   </div>
+
+  <!-- Paginación -->
+  <app-pagination
+    [currentPage]="currentPage()"
+    [totalPages]="totalPages()"
+    (pageChange)="onPageChange($event)"
+  />
 </div>

@@ -15,6 +15,8 @@ import {
 } from '@ng-icons/bootstrap-icons';
 import { ApiOrderService } from '@services/api-services/api-order.service';
 import { ApiProductService } from '@services/api-services/api-product.service';
+import { map } from 'rxjs';
+import { filter, of, Subject, switchMap, tap } from 'rxjs';
 import { ApiClientService } from '@services/api-services/api-client.service';
 import { OrderState, IApiOrder } from '@models/order.model';
 import { OrderDetailModalComponent } from '@shared/components/order-detail-modal/order-detail-modal.component';
@@ -49,9 +51,10 @@ export class AnalyticsPageComponent {
   private clientService = inject(ApiClientService);
 
   orders = toSignal(this.orderService.getAllOrders(), { initialValue: [] });
-  products = toSignal(this.productService.getAllProducts(), {
-    initialValue: [],
-  });
+  products = toSignal(
+    this.productService.getAllProducts().pipe(map(res => res.data)),
+    { initialValue: [] }
+  );
   clients = toSignal(this.clientService.getAllClients(), { initialValue: [] });
 
   totalRevenue = computed(() => {
