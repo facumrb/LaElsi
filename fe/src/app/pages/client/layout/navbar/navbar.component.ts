@@ -18,6 +18,7 @@ import {
 import { SearchBarComponent } from './search-bar/search-bar.component';
 import { CartService } from '@services/cart.service';
 import { UserAvatarComponent } from '@shared/components/user-avatar/user-avatar.component';
+import { LogoComponent } from '@shared/components/logo/logo.component';
 
 @Component({
   selector: 'app-navbar',
@@ -28,6 +29,7 @@ import { UserAvatarComponent } from '@shared/components/user-avatar/user-avatar.
     SearchBarComponent,
     ClickOutsideDirective,
     UserAvatarComponent,
+    LogoComponent,
   ],
   viewProviders: [
     provideIcons({

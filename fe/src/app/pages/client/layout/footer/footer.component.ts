@@ -6,19 +6,18 @@ import {
   bootstrapWhatsapp,
   bootstrapGeoAlt,
   bootstrapClock,
-  bootstrapEnvelope,
 } from '@ng-icons/bootstrap-icons';
+import { LogoComponent } from '@shared/components/logo/logo.component';
 
 @Component({
   selector: 'app-footer',
-  imports: [RouterLink, NgIconComponent],
+  imports: [RouterLink, NgIconComponent, LogoComponent],
   viewProviders: [
     provideIcons({
       bootstrapInstagram,
       bootstrapWhatsapp,
       bootstrapGeoAlt,
       bootstrapClock,
-      bootstrapEnvelope,
     }),
   ],
   templateUrl: './footer.component.html',

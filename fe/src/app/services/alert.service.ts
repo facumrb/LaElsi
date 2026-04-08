@@ -79,7 +79,7 @@ export class AlertService {
           <br>
           <p>Por favor, contactanos por WhatsApp indicando tu <b>nombre de usuario</b> o <b>email</b>.</p>
           <div style="margin-top: 15px; text-align: center;">
-            <a href="https://wa.me/5493417121860?text=Hola,%20necesito%20recuperar%20mi%20contraseña%20en%20LaElsi"
+            <a href="https://wa.me/5493417121860?text=Hola,%20necesito%20recuperar%20mi%20contraseña%20en%20Laelsi"
                target="_blank"
                style="display: inline-flex; align-items: center; gap: 8px; background-color: #25D366; color: white; padding: 10px 20px; border-radius: 50px; text-decoration: none; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
 

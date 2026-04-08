@@ -89,11 +89,15 @@
     <div
       class="mt-3 border-t border-white/10 pt-3 text-center text-xs text-gray-300"
     >
-      <p>
-        Copyright &copy; {{ currentYear() }}
-        <span class="font-bold text-[#f4abac]">LaElsi</span> &boxh; Todos los
-        derechos reservados.
-      </p>
+      <div class="flex items-center justify-center gap-2">
+        <p>Copyright &copy; {{ currentYear() }}</p>
+        <app-logo
+          [width]="128"
+          [height]="48"
+          customClass="h-5 w-auto object-contain"
+        />
+        <p>&boxh; Todos los derechos reservados.</p>
+      </div>
     </div>
   </div>
 </footer>

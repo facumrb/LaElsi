@@ -10,10 +10,11 @@ import {
   bootstrapChevronLeft,
   bootstrapChevronRight,
 } from '@ng-icons/bootstrap-icons';
+import { LogoComponent } from '@shared/components/logo/logo.component';
 
 @Component({
   selector: 'app-main-page',
-  imports: [ProductCardComponent, NgIconComponent],
+  imports: [ProductCardComponent, NgIconComponent, LogoComponent],
   viewProviders: [
     provideIcons({ bootstrapChevronLeft, bootstrapChevronRight }),
   ],

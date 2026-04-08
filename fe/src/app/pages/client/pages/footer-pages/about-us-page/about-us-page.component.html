@@ -4,12 +4,12 @@
       <div class="flex w-full flex-col gap-8 text-center lg:text-left">
         <div class="flex flex-col gap-4">
           <h1 class="text-4xl font-bold text-[#3d4494] font-manrope">
-            Somos La Elsi, tu librería de confianza
+            Somos Laelsi, tu librería de confianza
           </h1>
 
           <p class="text-base leading-relaxed text-gray-600">
             Desde el corazón de Rosario, llevamos nuestra pasión por la
-            librería, la juguetería y la papelería a todo el país. En La Elsi
+            librería, la juguetería y la papelería a todo el país. En Laelsi
             trabajamos cada día para ofrecer productos de primera calidad,
             seleccionados cuidadosamente para estudiantes, profesionales,
             emprendedores y familias.
@@ -50,10 +50,11 @@
         </div>
       </div>
       <div class="flex justify-center">
-        <img
-          class="h-full max-h-105"
-          src="assets/Webp/Logo.webp"
-          alt="LaElsi Logo"
+        <app-logo
+          [width]="128"
+          [height]="48"
+          loading="eager"
+          customClass="h-full max-h-105 object-contain"
         />
       </div>
     </div>
