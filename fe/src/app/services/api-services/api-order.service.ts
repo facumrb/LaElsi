@@ -1,7 +1,8 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { IPaginatedResult } from '../../models/pagination.model';
 import {
   IApiOrder,
   ICreateOrder,
@@ -16,9 +17,10 @@ export class ApiOrderService {
   private http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiUrl}/orders`;
 
-  getAllOrders(): Observable<IApiOrder[]> {
+  getAllOrders(page: number = 1, limit: number = 16): Observable<IPaginatedResult<IApiOrder>> {
+    const params = new HttpParams().set('page', page).set('limit', limit);
     return this.http
-      .get<{ message: string; data: IApiOrder[] }>(this.apiUrl)
+      .get<{ message: string; data: IPaginatedResult<IApiOrder> }>(this.apiUrl, { params })
       .pipe(map((response) => response.data));
   }
 
@@ -28,12 +30,13 @@ export class ApiOrderService {
       .pipe(map((response) => response.data));
   }
 
-  getOrdersByClient(clientId: number): Observable<IApiOrder[]> {
+  getOrdersByClient(clientId: number, page: number = 1, limit: number = 16): Observable<IPaginatedResult<IApiOrder>> {
+    const params = new HttpParams().set('page', page).set('limit', limit);
     return this.http
       .get<{
         message: string;
-        data: IApiOrder[];
-      }>(`${this.apiUrl}/client/${clientId}`)
+        data: IPaginatedResult<IApiOrder>;
+      }>(`${this.apiUrl}/client/${clientId}`, { params })
       .pipe(map((response) => response.data));
   }
 

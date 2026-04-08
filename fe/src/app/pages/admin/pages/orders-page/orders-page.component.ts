@@ -74,9 +74,9 @@ export class OrdersPageComponent implements OnInit {
     this.loadOrders();
   }
   loadOrders() {
-    this.orderService.getAllOrders().subscribe({
+    this.orderService.getAllOrders(1, 1000).subscribe({ // Temporarily fetch 1000 items until full admin pagination is done
       next: (data) => {
-        this.ordersRaw.set(data);
+        this.ordersRaw.set(data.data);
       },
     });
   }

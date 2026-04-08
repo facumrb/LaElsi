@@ -7,7 +7,9 @@ import { OrderState } from '../shared/enums/state.enum.js';
 import { DeliveryMethod } from '../shared/enums/delivery-method.enum.js';
 import { PaymentMethod } from '../shared/enums/payment-method.enum.js';
 import { AppError } from '../shared/errors/appError.js';
-
+import { PaginatedResult } from '../shared/utils/pagination.interface.js';
+import { DEFAULT_PAGE_SIZE } from '../shared/config/pagination.js';
+import { buildPaginatedResponse } from '../shared/utils/pagination.js';
 const VALID_ORDER_STATES = Object.values(OrderState);
 const VALID_DELIVERY_METHODS = Object.values(DeliveryMethod);
 const VALID_PAYMENT_METHODS = Object.values(PaymentMethod);
@@ -110,15 +112,19 @@ export class OrderService {
     return order;
   }
 
-  static async findAll() {
+  static async findAll(page: number = 1, limit: number = DEFAULT_PAGE_SIZE): Promise<PaginatedResult<Order>> {
     const em = orm.em;
-    return em.find(
+    const offset = (page - 1) * limit;
+    const [data, total] = await em.findAndCount(
       Order,
       {},
       {
-        populate: ['client', 'items', 'items.product', 'items.product.photos']
+        populate: ['client', 'items', 'items.product', 'items.product.photos'],
+        limit,
+        offset
       }
     );
+    return buildPaginatedResponse(data, total, page, limit);
   }
 
   static async findOne(id: number) {
@@ -137,16 +143,20 @@ export class OrderService {
     return order;
   }
 
-  static async findByClient(clientId: number) {
+  static async findByClient(clientId: number, page: number = 1, limit: number = DEFAULT_PAGE_SIZE): Promise<PaginatedResult<Order>> {
     const em = orm.em;
-    return em.find(
+    const offset = (page - 1) * limit;
+    const [data, total] = await em.findAndCount(
       Order,
       { client: { id: clientId } },
       {
         populate: ['client', 'items', 'items.product', 'items.product.photos'],
-        orderBy: { createdAt: 'DESC' }
+        orderBy: { createdAt: 'DESC' },
+        limit,
+        offset
       }
     );
+    return buildPaginatedResponse(data, total, page, limit);
   }
 
   static async updateStatus(id: number, status: string) {

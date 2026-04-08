@@ -50,10 +50,13 @@ export class AnalyticsPageComponent {
   private productService = inject(ApiProductService);
   private clientService = inject(ApiClientService);
 
-  orders = toSignal(this.orderService.getAllOrders(), { initialValue: [] });
+  orders = toSignal(
+    this.orderService.getAllOrders(1, 100).pipe(map((res) => res.data)), 
+    { initialValue: [] as IApiOrder[] }
+  );
   products = toSignal(
-    this.productService.getAllProducts().pipe(map(res => res.data)),
-    { initialValue: [] }
+    this.productService.getAllProducts(1, 100).pipe(map(res => res.data)),
+    { initialValue: [] as any[] } // Temporarily any[] until full product type is imported if needed, wait it has them.
   );
   clients = toSignal(this.clientService.getAllClients(), { initialValue: [] });
 

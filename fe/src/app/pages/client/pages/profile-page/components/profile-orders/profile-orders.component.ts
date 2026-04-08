@@ -11,6 +11,7 @@ import {
 import { IApiOrder, OrderState } from '@models/order.model';
 import { environment } from 'src/environments/environment';
 import { OrderDetailModalComponent } from '@shared/components/order-detail-modal/order-detail-modal.component';
+import { PaginationComponent } from '@shared/components/pagination/pagination.component';
 import { ApiOrderService } from '@services/api-services/api-order.service';
 import { AlertService } from '@services/alert.service';
 
@@ -21,6 +22,7 @@ import { AlertService } from '@services/alert.service';
     CurrencyPipe,
     FormatDatePipe,
     OrderDetailModalComponent,
+    PaginationComponent,
   ],
   viewProviders: [
     provideIcons({
@@ -34,6 +36,9 @@ import { AlertService } from '@services/alert.service';
 })
 export class ProfileOrdersComponent {
   orders = input<IApiOrder[]>([]);
+  currentPage = input<number>(1);
+  totalPages = input<number>(1);
+  pageChange = output<number>();
   private orderService = inject(ApiOrderService);
   private alertService = inject(AlertService);
   profileUpdated = output<void>();
@@ -80,5 +85,9 @@ export class ProfileOrdersComponent {
           });
         }
       });
+  }
+
+  onPageChange(page: number) {
+    this.pageChange.emit(page);
   }
 }

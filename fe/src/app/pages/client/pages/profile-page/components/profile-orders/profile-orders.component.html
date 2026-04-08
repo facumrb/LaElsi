@@ -112,6 +112,13 @@
       }
     }
   </div>
+  @if (orders().length > 0) {
+    <app-pagination
+      [currentPage]="currentPage()"
+      [totalPages]="totalPages()"
+      (pageChange)="onPageChange($event)"
+    />
+  }
 </div>
 
 <!-- Renderizar modal de detalle solo si hay un pedido seleccionado -->

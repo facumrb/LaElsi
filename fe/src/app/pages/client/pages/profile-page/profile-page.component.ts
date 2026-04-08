@@ -11,7 +11,7 @@ import { AuthService } from '@services/auth.service';
 import { IApiClient } from '@models/user.model';
 import { IApiOrder } from '@models/order.model';
 import { environment } from 'src/environments/environment';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { RouterLink, RouterLinkActive, RouterOutlet, ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-profile-page',
@@ -32,13 +32,26 @@ export class ProfilePageComponent implements OnInit {
 
   loading = signal(true);
   misPedidos = signal<IApiOrder[]>([]);
+  currentPage = signal<number>(1);
+  totalPages = signal<number>(1);
   productImagesUrl = environment.productImagesUrl;
+
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
 
   currentUserSignal = this.authService.currentUser;
   fullProfile = signal<IApiClient | null>(null);
 
   ngOnInit(): void {
     const userSummary = this.currentUserSignal();
+
+    this.route.queryParamMap.subscribe((queryParams) => {
+      const page = Number(queryParams.get('page')) || 1;
+      this.currentPage.set(page);
+      if (userSummary) {
+        this.loadOrders(userSummary.id);
+      }
+    });
 
     if (userSummary) {
       this.loadFullProfile(userSummary.id);
@@ -61,8 +74,15 @@ export class ProfilePageComponent implements OnInit {
       },
     });
 
-    this.apiOrderService.getOrdersByClient(id).subscribe({
-      next: (orders) => this.misPedidos.set(orders),
+    this.loadOrders(id);
+  }
+
+  loadOrders(id: number) {
+    this.apiOrderService.getOrdersByClient(id, this.currentPage()).subscribe({
+      next: (data) => {
+        this.misPedidos.set(data.data);
+        this.totalPages.set(data.totalPages);
+      },
     });
   }
 
@@ -72,6 +92,18 @@ export class ProfilePageComponent implements OnInit {
     }
     if (componentRef.orders) {
       componentRef.orders = this.misPedidos;
+      if (componentRef.currentPage) {
+        componentRef.currentPage = this.currentPage;
+        componentRef.totalPages = this.totalPages;
+        componentRef.pageChange.subscribe((page: number) => {
+          this.router.navigate([], {
+            relativeTo: this.route,
+            queryParams: { page: page },
+            queryParamsHandling: 'merge',
+          });
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      }
     }
     if (componentRef.profileUpdated) {
       componentRef.profileUpdated.subscribe(() => {
