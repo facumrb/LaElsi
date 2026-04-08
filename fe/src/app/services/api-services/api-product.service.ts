@@ -17,8 +17,18 @@ export class ApiProductService {
   private readonly apiUrl = `${environment.apiUrl}/products`;
 
   // Obtener todos los productos
-  getAllProducts(page: number = 1, limit: number = 16): Observable<IPaginatedResult<IApiProduct>> {
-    const params = new HttpParams().set('page', page).set('limit', limit);
+  getAllProducts(
+    page: number = 1,
+    limit: number = 16,
+    filters: { query?: string; state?: string; categoryId?: number; stockFilter?: string } = {}
+  ): Observable<IPaginatedResult<IApiProduct>> {
+    let params = new HttpParams().set('page', page).set('limit', limit);
+    
+    if (filters.query) params = params.set('query', filters.query);
+    if (filters.state && filters.state !== 'Todos') params = params.set('state', filters.state);
+    if (filters.categoryId && filters.categoryId !== 0) params = params.set('categoryId', filters.categoryId);
+    if (filters.stockFilter && filters.stockFilter !== 'Todos') params = params.set('stockFilter', filters.stockFilter);
+
     return this.http
       .get<{ message: string; data: IPaginatedResult<IApiProduct> }>(this.apiUrl, { params })
       .pipe(map((response) => response.data));

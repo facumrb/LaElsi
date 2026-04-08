@@ -6,14 +6,13 @@ import {
   computed,
   signal,
 } from '@angular/core';
-import { NgClass } from '@angular/common';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { bootstrapChevronLeft, bootstrapChevronRight } from '@ng-icons/bootstrap-icons';
 
 @Component({
   selector: 'app-pagination',
   standalone: true,
-  imports: [NgClass, NgIconComponent],
+  imports: [NgIconComponent],
   viewProviders: [
     provideIcons({
       bootstrapChevronLeft,

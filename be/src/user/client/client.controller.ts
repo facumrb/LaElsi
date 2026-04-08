@@ -3,6 +3,7 @@ import { ClientService, CreateClientDto, UpdateClientDto } from './client.servic
 import { asyncHandler } from '../../shared/errors/asyncHandler.js';
 import { AppError } from '../../shared/errors/appError.js';
 import { ApiResponse } from '../../shared/utils/apiResponse.js';
+import { getPaginationParams } from '../../shared/utils/pagination.js';
 
 function sanitizeClientInput(req: Request, res: Response, next: NextFunction) {
   req.body.sanitizedInput = {
@@ -53,13 +54,15 @@ export class ClientController {
   });
 
   static findAll = asyncHandler(async (req: Request, res: Response) => {
-    const clients = await ClientService.findAll();
+    const { page, limit } = getPaginationParams(req);
+    const clients = await ClientService.findAll(page, limit);
     return res.status(200).json(ApiResponse.success('Todos los Clientes fueron encontrados', clients));
   });
 
   static searchClientByText = asyncHandler(async (req: Request, res: Response) => {
     const { query } = req.query;
-    const clients = await ClientService.searchClientByText(query as string);
+    const { page, limit } = getPaginationParams(req);
+    const clients = await ClientService.searchClientByText(query as string, page, limit);
     return res.status(200).json(ApiResponse.success('Resultados de búsqueda', clients));
   });
 

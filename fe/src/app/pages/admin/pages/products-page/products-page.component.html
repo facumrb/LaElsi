@@ -19,6 +19,14 @@
     [(selectedIds)]="selectedIds"
   />
 
+  @if (productsFiltered().length > 0) {
+    <app-pagination
+      [currentPage]="currentPage()"
+      [totalPages]="totalPages()"
+      (pageChange)="onPageChange($event)"
+    />
+  }
+
   @if (showBulkModal()) {
     <app-bulk-price-modal
       [productIds]="selectedIds()"

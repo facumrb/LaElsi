@@ -2,6 +2,7 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { IApiProduct } from '@models/product.model';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ApiProductService } from '@services/api-services/api-product.service';
+import { ApiCategoryService } from '@services/api-services/api-category.service';
 import { AlertService } from '@services/alert.service';
 import { ProductsListComponent } from './products-list/products-list.component';
 import {
@@ -9,8 +10,10 @@ import {
   StatusFilter,
   StockFilter,
 } from './products-toolbar/products-toolbar.component';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
+import { PaginationComponent } from '@shared/components/pagination/pagination.component';
 import { BulkPriceModalComponent } from './products-toolbar/components/bulk-price-modal/bulk-price-modal.component';
+import { effect } from '@angular/core';
 
 interface SimpleCategory {
   id: number;
@@ -24,15 +27,22 @@ interface SimpleCategory {
     ProductsListComponent,
     ProductsToolbarComponent,
     BulkPriceModalComponent,
+    PaginationComponent,
   ],
   templateUrl: './products-page.component.html',
 })
 export class ProductsPageComponent implements OnInit {
   private alertService = inject(AlertService);
   private apiService = inject(ApiProductService);
+  private categoryService = inject(ApiCategoryService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
   private productsRaw = signal<IApiProduct[]>([]);
+  currentPage = signal(1);
+  totalPages = signal(1);
+
+  allCategories = signal<SimpleCategory[]>([]);
 
   searchQuery = signal('');
   statusFilter = signal<StatusFilter>('Todos');
@@ -41,23 +51,7 @@ export class ProductsPageComponent implements OnInit {
 
   showBulkModal = signal(false);
 
-  availableCategories = computed<SimpleCategory[]>(() => {
-    const products = this.productsRaw();
-    const uniqueCategories = new Map<number, string>();
-
-    products.forEach((p) => {
-      if (p.category) {
-        uniqueCategories.set(p.category.id, p.category.name);
-      }
-    });
-
-    return Array.from(uniqueCategories.entries())
-      .map(([id, name]) => ({
-        id,
-        name,
-      }))
-      .sort((a, b) => a.name.localeCompare(b.name)); // Ordenado alfabéticamente
-  });
+  availableCategories = computed<SimpleCategory[]>(() => this.allCategories());
 
   filtersActive = computed(() => {
     return (
@@ -69,54 +63,34 @@ export class ProductsPageComponent implements OnInit {
   });
 
   productsFiltered = computed(() => {
-    // Obtenemos los valores actuales de los signals
+    // El filtrado grueso ya viene del server
+    // Solo aplicamos ordenamiento local de la página si es necesario
     const currentProducts = this.productsRaw();
-    const query = this.searchQuery().toLowerCase().trim();
-    const status = this.statusFilter();
     const stockType = this.stockFilter();
-    const categoryId = this.categoryFilter();
+    
+    const sorted = [...currentProducts];
 
-    // Aplicamos filtros (Search, Status, Stock)
-    let filtered = currentProducts.filter((p) => {
-      // Filtro de Búsqueda (Nombre, descripcion o Marca)
-      const matchesSearch =
-        p.name.toLowerCase().includes(query) ||
-        p.description.toLowerCase().includes(query) ||
-        p.brand.toLowerCase().includes(query);
-
-      // Filtro de Estado
-      const matchesStatus = status === 'Todos' || p.state === status;
-
-      // Filtro de Stock
-      let matchesStock = true;
-      if (stockType === 'AltoStock') matchesStock = p.stock > 10;
-      if (stockType === 'BajoStock') matchesStock = p.stock <= 10;
-      if (stockType === 'SinStock') matchesStock = p.stock === 0;
-      // Nota: 'MasProductos' y 'MenosProductos' no filtran, solo ordenan,
-      // así que aquí pasan como true.
-
-      // Filtro Categoría
-      const matchesCategory =
-        categoryId === 'Todos' || p.category.id === Number(categoryId);
-
-      return matchesSearch && matchesStatus && matchesStock && matchesCategory;
-    });
-
-    // Ordenamiento
     if (stockType === 'MasProductos') {
-      // Ordenar de Mayor a Menor stock
-      filtered.sort((a, b) => b.stock - a.stock);
+      sorted.sort((a, b) => b.stock - a.stock);
     } else if (stockType === 'MenosProductos') {
-      // Ordenar de Menor a Mayor stock
-      filtered.sort((a, b) => a.stock - b.stock);
-    } else {
-      filtered.sort((a, b) => a.id - b.id);
+      sorted.sort((a, b) => a.stock - b.stock);
     }
 
-    return filtered;
+    return sorted;
   });
 
   selectedIds = signal<number[]>([]);
+
+  constructor() {
+    // Al cambiar cualquier filtro, reseteamos paginación
+    effect(() => {
+      this.searchQuery();
+      this.statusFilter();
+      this.stockFilter();
+      this.categoryFilter();
+      this.onFilterChange();
+    });
+  }
 
   handleBulkPriceUpdate() {
     if (this.selectedIds().length === 0) {
@@ -133,15 +107,58 @@ export class ProductsPageComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.loadProducts();
+    this.route.queryParamMap.subscribe((params) => {
+      this.currentPage.set(Number(params.get('page')) || 1);
+      this.loadProducts();
+    });
+    this.loadCategories();
+  }
+
+  loadCategories() {
+    this.categoryService.getAllCategories().subscribe((cats) => {
+      // Flatten or map categories for the filter
+      const flat: SimpleCategory[] = [];
+      const process = (c: any) => {
+        flat.push({ id: c.id, name: c.name });
+        if (c.children) c.children.forEach(process);
+      };
+      cats.forEach(process);
+      this.allCategories.set(flat.sort((a, b) => a.name.localeCompare(b.name)));
+    });
+  }
+
+  // Detectar cambios en filtros para volver a página 1
+  onFilterChange() {
+    if (this.currentPage() !== 1) {
+      this.onPageChange(1);
+    } else {
+      this.loadProducts();
+    }
   }
 
   loadProducts() {
-    this.apiService.getAllProducts().subscribe({
+    const filters = {
+      query: this.searchQuery(),
+      state: this.statusFilter(),
+      categoryId: this.categoryFilter() === 'Todos' ? undefined : (this.categoryFilter() as number),
+      stockFilter: this.stockFilter()
+    };
+
+    this.apiService.getAllProducts(this.currentPage(), 16, filters).subscribe({
       next: (data) => {
         this.productsRaw.set(data.data);
+        this.totalPages.set(data.totalPages);
       },
     });
+  }
+
+  onPageChange(page: number) {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { page },
+      queryParamsHandling: 'merge',
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   handleNavigateToCreate() {

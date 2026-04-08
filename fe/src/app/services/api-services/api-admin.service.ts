@@ -2,6 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { IApiAdmin, ICreateAdmin, IUpdateAdmin } from '@models/user.model';
+import { IPaginatedResult } from '../../models/pagination.model';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -11,9 +12,10 @@ export class ApiAdminService {
   private http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiUrl}/admins`;
 
-  getAllAdmins(): Observable<IApiAdmin[]> {
+  getAllAdmins(page: number = 1, limit: number = 16): Observable<IPaginatedResult<IApiAdmin>> {
+    const params = new HttpParams().set('page', page).set('limit', limit);
     return this.http
-      .get<{ message: string; data: IApiAdmin[] }>(this.apiUrl)
+      .get<{ message: string; data: IPaginatedResult<IApiAdmin> }>(this.apiUrl, { params })
       .pipe(map((response) => response.data));
   }
 
@@ -24,12 +26,19 @@ export class ApiAdminService {
   }
 
   // Buscar administradores por nombre, apellido, nombre de usuario o dni
-  searchAdmins(query: string): Observable<IApiAdmin[]> {
-    const params = new HttpParams().set('query', query);
+  searchAdmins(
+    query: string,
+    page: number = 1,
+    limit: number = 16
+  ): Observable<IPaginatedResult<IApiAdmin>> {
+    const params = new HttpParams()
+      .set('query', query)
+      .set('page', page)
+      .set('limit', limit);
     return this.http
       .get<{
         message: string;
-        data: IApiAdmin[];
+        data: IPaginatedResult<IApiAdmin>;
       }>(`${this.apiUrl}/search`, { params })
       .pipe(map((response) => response.data));
   }

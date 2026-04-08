@@ -3,6 +3,9 @@ import { orm } from '../../shared/db/orm.js';
 import { UserRole } from '../user.entity.js';
 import jwt from 'jsonwebtoken';
 import { AppError } from '../../shared/errors/appError.js';
+import { PaginatedResult } from '../../shared/utils/pagination.interface.js';
+import { DEFAULT_PAGE_SIZE } from '../../shared/config/pagination.js';
+import { buildPaginatedResponse } from '../../shared/utils/pagination.js';
 import fs from 'fs/promises';
 import path from 'path';
 import bcrypt from 'bcrypt';
@@ -79,24 +82,32 @@ export class ClientService {
     return client;
   }
 
-  static async findAll() {
+  static async findAll(page: number = 1, limit: number = DEFAULT_PAGE_SIZE): Promise<PaginatedResult<Client>> {
     const em = orm.em;
-    return em.find(Client, {}, { populate: ['photo'] });
+    const offset = (page - 1) * limit;
+    const [data, total] = await em.findAndCount(
+      Client,
+      {},
+      { populate: ['photo'], limit, offset }
+    );
+    return buildPaginatedResponse(data, total, page, limit);
   }
 
-  static async searchClientByText(query: string) {
+  static async searchClientByText(query: string, page: number = 1, limit: number = DEFAULT_PAGE_SIZE): Promise<PaginatedResult<Client>> {
     const em = orm.em;
     if (!query || query.trim().length === 0) {
       throw new AppError('El parámetro de búsqueda es requerido', 400);
     }
+    const offset = (page - 1) * limit;
 
-    return em.find(
+    const [data, total] = await em.findAndCount(
       Client,
       {
         $or: [{ name: { $like: `%${query}%` } }, { lastName: { $like: `%${query}%` } }, { username: { $like: `%${query}%` } }, { dni: { $like: `%${query}%` } }]
       },
-      { populate: ['photo'] }
+      { populate: ['photo'], limit, offset }
     );
+    return buildPaginatedResponse(data, total, page, limit);
   }
 
   static async addClient(data: CreateClientDto) {

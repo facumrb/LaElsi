@@ -11,4 +11,10 @@
     (onEdit)="handleNavigateToEdit($event)"
     (onDelete)="handleDelete($event)"
   />
+
+  <app-pagination
+    [currentPage]="currentPage()"
+    [totalPages]="totalPages()"
+    (pageChange)="onPageChange($event)"
+  />
 </div>

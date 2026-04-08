@@ -3,6 +3,7 @@ import { AdminService, CreateAdminDto, UpdateAdminDto } from './admin.service.js
 import { asyncHandler } from '../../shared/errors/asyncHandler.js';
 import { AppError } from '../../shared/errors/appError.js';
 import { ApiResponse } from '../../shared/utils/apiResponse.js';
+import { getPaginationParams } from '../../shared/utils/pagination.js';
 
 function sanitizeAdminInput(req: Request, res: Response, next: NextFunction) {
   req.body.sanitizedInput = {
@@ -40,13 +41,15 @@ export class AdminController {
   });
 
   static findAll = asyncHandler(async (req: Request, res: Response) => {
-    const admins = await AdminService.findAll();
+    const { page, limit } = getPaginationParams(req);
+    const admins = await AdminService.findAll(page, limit);
     return res.status(200).json(ApiResponse.success('Todos los Administradores fueron encontrados', admins));
   });
 
   static searchAdminByText = asyncHandler(async (req: Request, res: Response) => {
     const { query } = req.query;
-    const admins = await AdminService.searchAdminByText(query as string);
+    const { page, limit } = getPaginationParams(req);
+    const admins = await AdminService.searchAdminByText(query as string, page, limit);
     return res.status(200).json(ApiResponse.success('Resultados de búsqueda', admins));
   });
 

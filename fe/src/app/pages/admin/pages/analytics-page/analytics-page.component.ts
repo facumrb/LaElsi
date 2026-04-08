@@ -58,7 +58,10 @@ export class AnalyticsPageComponent {
     this.productService.getAllProducts(1, 100).pipe(map(res => res.data)),
     { initialValue: [] as any[] } // Temporarily any[] until full product type is imported if needed, wait it has them.
   );
-  clients = toSignal(this.clientService.getAllClients(), { initialValue: [] });
+  clients = toSignal(
+    this.clientService.getAllClients(1, 100).pipe(map((res) => res.data)),
+    { initialValue: [] as any[] }
+  );
 
   totalRevenue = computed(() => {
     const incomesStatuses = [

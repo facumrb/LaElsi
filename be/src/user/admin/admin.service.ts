@@ -2,6 +2,9 @@ import { Admin } from './admin.entity.js';
 import { orm } from '../../shared/db/orm.js';
 import { UserRole } from '../user.entity.js';
 import { AppError } from '../../shared/errors/appError.js';
+import { PaginatedResult } from '../../shared/utils/pagination.interface.js';
+import { DEFAULT_PAGE_SIZE } from '../../shared/config/pagination.js';
+import { buildPaginatedResponse } from '../../shared/utils/pagination.js';
 import fs from 'fs/promises';
 import path from 'path';
 import bcrypt from 'bcrypt';
@@ -45,24 +48,32 @@ export class AdminService {
     return admin;
   }
 
-  static async findAll() {
+  static async findAll(page: number = 1, limit: number = DEFAULT_PAGE_SIZE): Promise<PaginatedResult<Admin>> {
     const em = orm.em;
-    return em.find(Admin, {}, { populate: ['photo'] });
+    const offset = (page - 1) * limit;
+    const [data, total] = await em.findAndCount(
+      Admin,
+      {},
+      { populate: ['photo'], limit, offset }
+    );
+    return buildPaginatedResponse(data, total, page, limit);
   }
 
-  static async searchAdminByText(query: string) {
+  static async searchAdminByText(query: string, page: number = 1, limit: number = DEFAULT_PAGE_SIZE): Promise<PaginatedResult<Admin>> {
     const em = orm.em;
     if (!query || query.trim().length === 0) {
       throw new AppError('El parámetro de búsqueda es requerido', 400);
     }
+    const offset = (page - 1) * limit;
 
-    return em.find(
+    const [data, total] = await em.findAndCount(
       Admin,
       {
         $or: [{ name: { $like: `%${query}%` } }, { lastName: { $like: `%${query}%` } }, { email: { $like: `%${query}%` } }, { dni: { $like: `%${query}%` } }]
       },
-      { populate: ['photo'] }
+      { populate: ['photo'], limit, offset }
     );
+    return buildPaginatedResponse(data, total, page, limit);
   }
 
   static async addAdmin(data: CreateAdminDto) {

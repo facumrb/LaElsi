@@ -1,5 +1,6 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
+import { effect } from '@angular/core';
 import { IApiClient } from '@models/user.model';
 import { ApiClientService } from '@services/api-services/api-client.service';
 import { AlertService } from '@services/alert.service';
@@ -8,18 +9,22 @@ import {
   FiscalConditionFilter,
 } from './clients-toolbar/clients-toolbar.component';
 import { ClientsListComponent } from './clients-list/clients-list.component';
+import { PaginationComponent } from '@shared/components/pagination/pagination.component';
 
 @Component({
   selector: 'app-clients-page',
-  imports: [ClientsListComponent, ClientsToolbarComponent],
+  imports: [ClientsListComponent, ClientsToolbarComponent, PaginationComponent],
   templateUrl: './clients-page.component.html',
 })
 export class ClientsPageComponent implements OnInit {
   private alertService = inject(AlertService);
   private apiService = inject(ApiClientService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
   private clientsRaw = signal<IApiClient[]>([]);
+  currentPage = signal<number>(1);
+  totalPages = signal<number>(1);
 
   searchQuery = signal<string>('');
   fiscalFilter = signal<FiscalConditionFilter>('Todos');
@@ -29,42 +34,63 @@ export class ClientsPageComponent implements OnInit {
   });
 
   clientsFiltered = computed(() => {
-    const query = this.searchQuery().toLowerCase().trim();
-    const fiscalContext = this.fiscalFilter();
-    const clients = this.clientsRaw();
-
-    const filtered = clients.filter((client) => {
-      // Filtro de la barra de Búsqueda
-      let matchesSearch = true;
-      if (query) {
-        matchesSearch =
-          client.name.toLowerCase().includes(query) ||
-          client.lastName.toLowerCase().includes(query) ||
-          client.username.toLowerCase().includes(query) ||
-          client.dni.includes(query);
-      }
-
-      // Filtro de Condicion Fiscal
-      const clientFiscal = client.fiscalCondition || 'Consumidor Final';
-      const matchesFiscal =
-        fiscalContext === 'Todos' || clientFiscal === fiscalContext;
-
-      return matchesSearch && matchesFiscal;
-    });
-
-    return filtered.sort((a, b) => a.id - b.id);
+    // El filtrado fuerte (búsqueda) se hace en el server.
+    // Aquí solo ordenamos o mostramos lo que trajo el server.
+    return [...this.clientsRaw()].sort((a, b) => a.id - b.id);
   });
 
+  constructor() {
+    effect(() => {
+      this.searchQuery();
+      this.fiscalFilter();
+      this.onFilterChange();
+    });
+  }
+
   ngOnInit() {
-    this.loadClients();
+    this.route.queryParamMap.subscribe((params) => {
+      this.currentPage.set(Number(params.get('page')) || 1);
+      this.loadClients();
+    });
+  }
+
+  onFilterChange() {
+    if (this.currentPage() !== 1) {
+      this.onPageChange(1);
+    } else {
+      this.loadClients();
+    }
   }
 
   loadClients() {
-    this.apiService.getAllClients().subscribe({
-      next: (data) => {
-        this.clientsRaw.set(data);
-      },
+    const query = this.searchQuery().trim();
+    
+    // Si hay búsqueda, usamos el endpoint de search
+    if (query) {
+      this.apiService.searchClients(query, this.currentPage()).subscribe({
+        next: (data) => {
+          this.clientsRaw.set(data.data);
+          this.totalPages.set(data.totalPages);
+        },
+      });
+    } else {
+      // Si no hay búsqueda, usamos getAll normal
+      this.apiService.getAllClients(this.currentPage()).subscribe({
+        next: (data) => {
+          this.clientsRaw.set(data.data);
+          this.totalPages.set(data.totalPages);
+        },
+      });
+    }
+  }
+
+  onPageChange(page: number) {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { page },
+      queryParamsHandling: 'merge',
     });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   handleNavigateToCreate() {

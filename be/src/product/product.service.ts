@@ -160,19 +160,46 @@ export class ProductService {
     return buildPaginatedResponse(data, total, page, limit);
   }
 
-  static async findAll(page: number = 1, limit: number = DEFAULT_PAGE_SIZE): Promise<PaginatedResult<Product>> {
+  static async findAll(
+    page: number = 1,
+    limit: number = DEFAULT_PAGE_SIZE,
+    filters: { query?: string; state?: ProductState; categoryId?: number; stockFilter?: string } = {}
+  ): Promise<PaginatedResult<Product>> {
     const em = orm.em;
     const offset = (page - 1) * limit;
-    const [data, total] = await em.findAndCount(
-      Product,
-      {},
-      {
-        populate: ['category', 'photos', 'prices'],
-        populateOrderBy: { photos: { order: 'ASC' } },
-        limit,
-        offset
-      }
-    );
+
+    const where: any = {};
+
+    if (filters.query) {
+      where.$or = [
+        { name: { $like: `%${filters.query}%` } },
+        { description: { $like: `%${filters.query}%` } },
+        { brand: { $like: `%${filters.query}%` } }
+      ];
+    }
+
+    if (filters.state) {
+      where.state = filters.state;
+    }
+
+    if (filters.categoryId) {
+      where.category = { id: filters.categoryId };
+    }
+
+    if (filters.stockFilter) {
+      if (filters.stockFilter === 'AltoStock') where.stock = { $gt: 10 };
+      if (filters.stockFilter === 'BajoStock') where.stock = { $lte: 10, $gt: 0 };
+      if (filters.stockFilter === 'SinStock') where.stock = 0;
+    }
+
+    const [data, total] = await em.findAndCount(Product, where, {
+      populate: ['category', 'photos', 'prices'],
+      populateOrderBy: { photos: { order: 'ASC' } },
+      limit,
+      offset,
+      orderBy: { id: 'ASC' }
+    });
+
     return buildPaginatedResponse(data, total, page, limit);
   }
 

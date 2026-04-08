@@ -72,8 +72,14 @@ export class ProductController {
   // ============================================================================
   static findAll = asyncHandler(async (req: Request, res: Response) => {
     const { page, limit } = getPaginationParams(req);
+    const { query, state, categoryId, stockFilter } = req.query;
 
-    const products = await ProductService.findAll(page, limit);
+    const products = await ProductService.findAll(page, limit, {
+      query: query as string,
+      state: state as any,
+      categoryId: categoryId ? Number(categoryId) : undefined,
+      stockFilter: stockFilter as string
+    });
     return res.status(200).json(ApiResponse.success('Todos los Productos fueron encontrados', products));
   });
 
