@@ -949,10 +949,15 @@ const PRODUCTS_DATA: IProductSeed[] = [
 // --------- FUNCIONES DE LÓGICA ---------
 
 async function seedAdmins(em: EntityManager) {
-  const adminCount = await em.count(Admin, {});
-  if (adminCount > 0) return;
-
+  const currentAdmins = await em.find(Admin, {});
+  const currentCount = currentAdmins.length;
+  
+  // Insertamos los hardcodeados primero si no existen
+  const existingUsernames = new Set(currentAdmins.map(a => a.username));
+  
   for (const adminData of ADMINS_DATA) {
+    if (existingUsernames.has(adminData.username)) continue;
+    
     const admin = new Admin();
     admin.name = adminData.name;
     admin.lastName = adminData.lastName;
@@ -972,14 +977,35 @@ async function seedAdmins(em: EntityManager) {
       admin.photo = photo;
       em.persist(photo);
     }
+    existingUsernames.add(adminData.username);
+  }
+
+  // Completamos hasta 50
+  const needed = 50 - existingUsernames.size;
+  if (needed > 0) {
+    const password = await bcrypt.hash('password123', 10);
+    for (let i = 1; i <= needed; i++) {
+      const admin = new Admin();
+      admin.name = `AdminName${i}`;
+      admin.lastName = `AdminLast${i}`;
+      admin.dni = `90000${i.toString().padStart(3, '0')}`;
+      admin.email = `admin${i}@laelsi.test`;
+      admin.phone = `1234500${i}`;
+      admin.username = `admin_gen_${i}`;
+      admin.role = UserRole.Admin;
+      admin.password = password;
+      em.persist(admin);
+    }
   }
 }
 
 async function seedClients(em: EntityManager) {
-  const clientCount = await em.count(Client, {});
-  if (clientCount > 0) return;
+  const currentClients = await em.find(Client, {});
+  const existingUsernames = new Set(currentClients.map(c => c.username));
 
   for (const clientData of CLIENTS_DATA) {
+    if (existingUsernames.has(clientData.username)) continue;
+
     const client = new Client();
     client.name = clientData.name;
     client.lastName = clientData.lastName;
@@ -1008,6 +1034,31 @@ async function seedClients(em: EntityManager) {
       photo.user = client;
       client.photo = photo;
       em.persist(photo);
+    }
+    existingUsernames.add(clientData.username);
+  }
+
+  // Completamos hasta 50
+  const needed = 50 - existingUsernames.size;
+  if (needed > 0) {
+    const password = await bcrypt.hash('password123', 10);
+    for (let i = 1; i <= needed; i++) {
+      const client = new Client();
+      client.name = `ClientName${i}`;
+      client.lastName = `ClientLast${i}`;
+      client.dni = `80000${i.toString().padStart(3, '0')}`;
+      client.email = `client${i}@laelsi.test`;
+      client.phone = `3410000${i}`;
+      client.username = `client_gen_${i}`;
+      client.role = UserRole.Client;
+      client.password = password;
+      client.fiscalCondition = FiscalCondition.ConsumidorFinal;
+      client.street = 'Calle Falsa';
+      client.streetNumber = 123 + i;
+      client.city = 'Rosario';
+      client.province = 'Santa Fe';
+      client.postalCode = '2000';
+      em.persist(client);
     }
   }
 }
@@ -1080,8 +1131,8 @@ async function seedSubcategories(em: EntityManager, categoryMap: Record<string, 
 }
 
 async function seedOrders(em: EntityManager) {
-  const orderCount = await em.count(Order, {});
-  if (orderCount > 0) return;
+  const currentOrders = await em.find(Order, {});
+  const currentCount = currentOrders.length;
 
   const allClients = await em.find(Client, {});
   const clientMap: Record<string, Client> = {};
@@ -1091,44 +1142,71 @@ async function seedOrders(em: EntityManager) {
   const productMap: Record<string, Product> = {};
   allProducts.forEach((p) => (productMap[p.name] = p));
 
-  for (const orderData of ORDERS_DATA) {
-    const client = clientMap[orderData.clientUsername];
-    if (!client) {
-      console.warn(`Cliente no encontrado para la orden: ${orderData.clientUsername}`);
-      continue;
-    }
+  // Insertamos las hardcodeadas si no existen
+  if (currentCount === 0) {
+    for (const orderData of ORDERS_DATA) {
+      const client = clientMap[orderData.clientUsername];
+      if (!client) continue;
 
-    const order = new Order();
-    order.client = client;
-    order.status = orderData.status;
-    order.deliveryMethod = orderData.deliveryMethod;
-    order.paymentMethod = orderData.paymentMethod;
-    order.dateTime = orderData.dateTime;
+      const order = new Order();
+      order.client = client;
+      order.status = orderData.status;
+      order.deliveryMethod = orderData.deliveryMethod;
+      order.paymentMethod = orderData.paymentMethod;
+      order.dateTime = orderData.dateTime;
 
-    let total = 0;
-
-    for (const itemData of orderData.items) {
-      const product = productMap[itemData.productName];
-      if (!product) {
-        console.warn(`Producto no encontrado para orden de ${orderData.clientUsername}: ${itemData.productName}`);
-        continue;
+      let total = 0;
+      for (const itemData of orderData.items) {
+        const product = productMap[itemData.productName];
+        if (!product) continue;
+        const currentPrice = product.prices[0]?.amount ?? 0;
+        const line = new OrderLine();
+        line.order = order;
+        line.product = product;
+        line.quantity = itemData.quantity;
+        line.price = currentPrice;
+        order.items.add(line);
+        total += currentPrice * itemData.quantity;
       }
-
-      // Obtenemos el precio actual del producto (el primero disponible)
-      const currentPrice = product.prices[0]?.amount ?? 0;
-
-      const line = new OrderLine();
-      line.order = order;
-      line.product = product;
-      line.quantity = itemData.quantity;
-      line.price = currentPrice;
-
-      order.items.add(line);
-      total += currentPrice * itemData.quantity;
+      order.totalAmount = total;
+      em.persist(order);
     }
+  }
 
-    order.totalAmount = total;
-    em.persist(order);
+  // Completamos hasta 50
+  const totalCountNow = await em.count(Order, {});
+  const needed = 50 - totalCountNow;
+  
+  if (needed > 0) {
+    const productsArray = Array.from(allProducts);
+    const clientsArray = Array.from(allClients);
+
+    for (let i = 1; i <= needed; i++) {
+      const client = clientsArray[i % clientsArray.length];
+      const order = new Order();
+      order.client = client;
+      order.status = OrderState.Paid;
+      order.deliveryMethod = DeliveryMethod.Envio;
+      order.paymentMethod = PaymentMethod.Transferencia;
+      order.dateTime = new Date();
+      
+      let total = 0;
+      // Agregamos 1 o 2 productos aleatorios
+      const itemsCount = Math.floor(Math.random() * 2) + 1;
+      for (let j = 0; j < itemsCount; j++) {
+        const product = productsArray[Math.floor(Math.random() * productsArray.length)];
+        const currentPrice = product.prices[0]?.amount ?? 0;
+        const line = new OrderLine();
+        line.order = order;
+        line.product = product;
+        line.quantity = Math.floor(Math.random() * 3) + 1;
+        line.price = currentPrice;
+        order.items.add(line);
+        total += currentPrice * line.quantity;
+      }
+      order.totalAmount = total;
+      em.persist(order);
+    }
   }
 }
 
@@ -1193,8 +1271,28 @@ export async function seedDatabase() {
       if (category) {
         const product = createProductEntity(prodData, category);
         em.persist(product);
+        existingProductNames.add(prodData.name);
       } else {
         console.warn(`Categoría no encontrada para el producto: ${prodData.name} (${prodData.categoryName})`);
+      }
+    }
+
+    // Completamos hasta 50 productos
+    const neededProducts = 50 - existingProductNames.size;
+    if (neededProducts > 0) {
+      const firstCategory = Object.values(categoriesMap)[0];
+      for (let i = 1; i <= neededProducts; i++) {
+        const prodData: IProductSeed = {
+          name: `Producto Generico ${i}`,
+          description: `Descripción del producto genérico ${i}`,
+          brand: 'Marca Genérica',
+          stock: 100,
+          categoryName: firstCategory.name,
+          price: 1000 + (i * 100),
+          photos: [{ fileName: 'placeholder.png' }]
+        };
+        const product = createProductEntity(prodData, firstCategory);
+        em.persist(product);
       }
     }
 
