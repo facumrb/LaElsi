@@ -11,6 +11,7 @@ import { GoBackButtonComponent } from '@shared/components/buttons/go-back-button
 import { FieldErrorComponent } from '@shared/validators/field-error/field-error.component';
 import { TrimInputDirective } from '@shared/directives/trim-input.directive';
 import { PasswordToggleButtonComponent } from '@shared/components/buttons/password-toggle-button/password-toggle-button.component';
+import { LogoComponent } from '@shared/components/logo/logo.component';
 
 @Component({
   selector: 'app-login-page',
@@ -22,6 +23,7 @@ import { PasswordToggleButtonComponent } from '@shared/components/buttons/passwo
     FieldErrorComponent,
     TrimInputDirective,
     PasswordToggleButtonComponent,
+    LogoComponent,
   ],
   viewProviders: [
     provideIcons({

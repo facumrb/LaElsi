@@ -1,4 +1,4 @@
-<div class="animate-fadeIn container mx-auto p-4">
+<div class="animate-fadeIn">
   <!-- Hero Section -->
   <header class="mb-10 mt-4 px-6">
     <div
@@ -17,9 +17,15 @@
 
       <div class="relative z-10 w-full">
         <h1
-          class="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-6 tracking-tight drop-shadow-sm"
+          class="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-6 tracking-tight drop-shadow-sm flex items-center justify-center gap-4 flex-wrap"
         >
-          Bienvenidos a LaElsi
+          <span>Bienvenidos a</span>
+          <app-logo
+            [width]="128"
+            [height]="48"
+            loading="eager"
+            customClass="h-12 md:h-16 lg:h-20 w-auto object-contain drop-shadow-sm"
+          />
         </h1>
         <p
           class="text-lg md:text-xl text-indigo-100 max-w-2xl mx-auto font-medium"
@@ -31,7 +37,7 @@
     </div>
   </header>
 
-  <div class="container mx-auto px-6">
+  <div>
     @if (loading()) {
       <div class="flex justify-center items-center py-20">
         <div
@@ -46,47 +52,34 @@
         @if (globalBestSellers().length > 0) {
           <section class="mb-10">
             <div
-              class="bg-white/90 backdrop-blur-xl rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-white/60 p-6 md:p-8 relative overflow-hidden group"
+              class="bg-white/90 backdrop-blur-xl rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-white/60 p-4 md:p-8 relative overflow-hidden group"
             >
               <div class="flex items-center justify-between mb-8 relative z-10">
                 <h2
-                  class="text-3xl font-bold text-neutral-800 border-l-4 border-blue-600 pl-4"
+                  class="text-3xl font-bold text-neutral-800 border-l-4 border-blue-600 pl-2"
                 >
-                  🔥 Los Más Vendidos en General
+                  🔥Más vendidos
                 </h2>
 
-                <div class="hidden md:flex gap-2">
-                  <button
-                    (click)="scrollCarousel(globalScroll, 'left')"
-                    aria-label="Anterior"
-                    class="h-10 w-10 rounded-full bg-white border border-gray-200 shadow-sm hover:shadow hover:bg-gray-50 flex items-center justify-center transition-all cursor-pointer"
-                  >
-                    <ng-icon
-                      name="bootstrapChevronLeft"
-                      class="text-xl text-gray-600"
-                    ></ng-icon>
-                  </button>
-                  <button
-                    (click)="scrollCarousel(globalScroll, 'right')"
-                    aria-label="Siguiente"
-                    class="h-10 w-10 rounded-full bg-white border border-gray-200 shadow-sm hover:shadow hover:bg-gray-50 flex items-center justify-center transition-all cursor-pointer"
-                  >
-                    <ng-icon
-                      name="bootstrapChevronRight"
-                      class="text-xl text-gray-600"
-                    ></ng-icon>
-                  </button>
-                </div>
+                <app-carousel-nav
+                  variant="solid"
+                  [disablePrev]="globalTracker.atStart()"
+                  [disableNext]="globalTracker.atEnd()"
+                  (prev)="scrollCarousel(globalScroll, 'left', globalTracker)"
+                  (next)="scrollCarousel(globalScroll, 'right', globalTracker)"
+                />
               </div>
 
               <div class="relative group z-10">
                 <div
                   #globalScroll
+                  #globalTracker="scrollTracker"
+                  appScrollTracker
                   class="flex overflow-x-auto gap-4 md:gap-6 pb-2 scroll-smooth scrollbar-hide snap-x snap-mandatory"
                 >
                   @for (product of globalBestSellers(); track $index) {
                     <div
-                      class="flex-none w-[80vw] sm:w-[calc(50%-0.5rem)] md:w-[calc(33.333%-1rem)] lg:w-[calc(25%-1.125rem)] xl:w-[calc(20%-1.2rem)] snap-start"
+                      class="flex-none w-[calc(50%-0.5rem)] md:w-[calc(33.333%-1rem)] lg:w-[calc(25%-1.125rem)] xl:w-[calc(20%-1.2rem)] snap-start"
                     >
                       <app-product-card
                         [product]="product"
@@ -104,7 +97,7 @@
         @for (item of categoriesWithBestSellers(); track $index) {
           <section class="mb-10">
             <div
-              class="bg-white/90 backdrop-blur-xl rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-white/60 p-6 md:p-8 relative overflow-hidden group"
+              class="bg-white/90 backdrop-blur-xl rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-white/60 p-4 md:p-8 relative overflow-hidden group"
             >
               <div class="flex items-center justify-between mb-8 relative z-10">
                 <h2
@@ -114,38 +107,25 @@
                   <span class="text-blue-600">Más Populares</span>
                 </h2>
 
-                <div class="hidden md:flex gap-2">
-                  <button
-                    (click)="scrollCarousel(catScroll, 'left')"
-                    aria-label="Anterior"
-                    class="h-10 w-10 rounded-full bg-white border border-gray-200 shadow-sm hover:shadow hover:bg-gray-50 flex items-center justify-center transition-all cursor-pointer"
-                  >
-                    <ng-icon
-                      name="bootstrapChevronLeft"
-                      class="text-xl text-gray-600"
-                    ></ng-icon>
-                  </button>
-                  <button
-                    (click)="scrollCarousel(catScroll, 'right')"
-                    aria-label="Siguiente"
-                    class="h-10 w-10 rounded-full bg-white border border-gray-200 shadow-sm hover:shadow hover:bg-gray-50 flex items-center justify-center transition-all cursor-pointer"
-                  >
-                    <ng-icon
-                      name="bootstrapChevronRight"
-                      class="text-xl text-gray-600"
-                    ></ng-icon>
-                  </button>
-                </div>
+                <app-carousel-nav
+                  variant="solid"
+                  [disablePrev]="catTracker.atStart()"
+                  [disableNext]="catTracker.atEnd()"
+                  (prev)="scrollCarousel(catScroll, 'left', catTracker)"
+                  (next)="scrollCarousel(catScroll, 'right', catTracker)"
+                />
               </div>
 
               <div class="relative group z-10">
                 <div
                   #catScroll
+                  #catTracker="scrollTracker"
+                  appScrollTracker
                   class="flex overflow-x-auto gap-4 md:gap-6 pb-2 scroll-smooth scrollbar-hide snap-x snap-mandatory"
                 >
                   @for (product of item.products; track $index) {
                     <div
-                      class="flex-none w-[80vw] sm:w-[calc(50%-0.5rem)] md:w-[calc(33.333%-1rem)] lg:w-[calc(25%-1.125rem)] xl:w-[calc(20%-1.2rem)] snap-start"
+                      class="flex-none w-[calc(50%-0.5rem)] md:w-[calc(33.333%-1rem)] lg:w-[calc(25%-1.125rem)] xl:w-[calc(20%-1.2rem)] snap-start"
                     >
                       <app-product-card
                         [product]="product"

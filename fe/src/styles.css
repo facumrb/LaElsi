@@ -392,7 +392,7 @@
   }
 
   .elsi-add-initial-btn {
-    @apply h-10 w-10 flex items-center justify-center rounded-full bg-gray-900 text-white
+    @apply h-8 w-8 sm:h-10 sm:w-10 flex items-center justify-center rounded-full bg-gray-900 text-white
            hover:bg-[#f4abac] transition-all duration-300 shadow-md cursor-pointer
            disabled:bg-gray-300 disabled:cursor-not-allowed;
     animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -404,7 +404,7 @@
 
   .elsi-quantity-pill {
     @apply flex items-center bg-gray-100 rounded-full p-1 shadow-inner border border-gray-200/50
-           transition-all duration-300 h-10 min-w-25;
+           transition-all duration-300 h-8 sm:h-10 min-w-20 sm:min-w-25;
     animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
 
@@ -413,9 +413,9 @@
   }
 
   .pill-btn {
-    @apply flex items-center justify-center w-8 h-8 rounded-full text-gray-700
+    @apply flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 rounded-full text-gray-700
            transition-all duration-200 hover:bg-white hover:shadow-sm active:scale-95
-           disabled:opacity-20 disabled:cursor-not-allowed cursor-pointer;
+           disabled:opacity-20 disabled:cursor-not-allowed cursor-pointer text-sm sm:text-base;
   }
 
   .pill-full .pill-btn {
@@ -423,7 +423,7 @@
   }
 
   .quantity-value {
-    @apply flex-1 text-center text-sm text-gray-900 font-bold tabular-nums;
+    @apply flex-1 text-center text-xs sm:text-sm text-gray-900 font-bold tabular-nums;
   }
 
   .pill-full .quantity-value {

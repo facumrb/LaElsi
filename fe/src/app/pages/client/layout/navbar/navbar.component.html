@@ -14,12 +14,11 @@
       </button>
 
       <a routerLink="/" class="shrink-0 block" aria-label="Ir al inicio">
-        <img
-          src="assets/Webp/Logo.webp"
-          alt="La Elsi logo"
-          width="128"
-          height="48"
-          class="w-24 md:w-32 h-auto object-contain"
+        <app-logo
+          [width]="128"
+          [height]="48"
+          loading="eager"
+          customClass="w-24 md:w-32 h-auto object-contain"
         />
       </a>
     </div>
@@ -240,12 +239,10 @@
       aria-label="Menú principal móvil"
     >
       <div class="flex items-center justify-center p-4 bg-[#3d4494] shadow-sm">
-        <img
-          src="assets/Webp/Logo.webp"
-          alt="La Elsi"
-          width="128"
-          height="48"
-          class="h-12 w-auto object-contain"
+        <app-logo
+          [width]="128"
+          [height]="48"
+          customClass="h-12 w-auto object-contain"
         />
       </div>
 

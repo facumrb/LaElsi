@@ -11,6 +11,7 @@ import { GoBackButtonComponent } from '@shared/components/buttons/go-back-button
 import { TrimInputDirective } from '@shared/directives/trim-input.directive';
 import { NumericInputDirective } from '@shared/directives/numeric-input.directive';
 import { PhoneInputDirective } from '@shared/directives/phone-input.directive';
+import { LogoComponent } from '@shared/components/logo/logo.component';
 
 @Component({
   selector: 'app-register-page',
@@ -23,6 +24,7 @@ import { PhoneInputDirective } from '@shared/directives/phone-input.directive';
     TrimInputDirective,
     NumericInputDirective,
     PhoneInputDirective,
+    LogoComponent,
   ],
   viewProviders: [
     provideIcons({

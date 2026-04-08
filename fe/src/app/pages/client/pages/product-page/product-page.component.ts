@@ -3,7 +3,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ApiProductService } from '@services/api-services/api-product.service';
 import { IApiProduct } from '@models/product.model';
 import { CurrencyPipe, DecimalPipe } from '@angular/common';
-import { environment } from 'src/environments/environment';
 import { ProductStatusBadgeComponent } from '@client/components/product-status-badge/product-status-badge.component';
 import {
   BreadcrumbsComponent,
@@ -12,14 +11,11 @@ import {
 import { IApiCategory } from '@models/category.model';
 import { AddToCartControlComponent } from '@client/components/add-to-cart-control/add-to-cart-control.component';
 import { ProductImageComponent } from '@shared/components/product-image/product-image.component';
+import { CarouselNavComponent } from '@client/components/carousel-nav/carousel-nav.component';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
   bootstrapCheckLg,
   bootstrapShieldCheck,
-  bootstrapChevronLeft,
-  bootstrapChevronRight,
-  bootstrapChevronDown,
-  bootstrapChevronUp,
   bootstrapLightningFill,
 } from '@ng-icons/bootstrap-icons';
 
@@ -33,15 +29,12 @@ import {
     ProductStatusBadgeComponent,
     AddToCartControlComponent,
     ProductImageComponent,
+    CarouselNavComponent,
   ],
   viewProviders: [
     provideIcons({
       bootstrapCheckLg,
       bootstrapShieldCheck,
-      bootstrapChevronLeft,
-      bootstrapChevronRight,
-      bootstrapChevronUp,
-      bootstrapChevronDown,
       bootstrapLightningFill,
     }),
   ],

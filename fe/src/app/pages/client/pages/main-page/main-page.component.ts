@@ -5,17 +5,17 @@ import { IApiProduct } from '@models/product.model';
 import { IApiCategory } from '@models/category.model';
 import { ProductCardComponent } from '../../components/product-card/product-card.component';
 import { forkJoin, map } from 'rxjs';
-import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import {
-  bootstrapChevronLeft,
-  bootstrapChevronRight,
-} from '@ng-icons/bootstrap-icons';
+import { LogoComponent } from '@shared/components/logo/logo.component';
+import { ScrollTrackerDirective } from '@shared/directives/scroll-tracker.directive';
+import { CarouselNavComponent } from '@client/components/carousel-nav/carousel-nav.component';
 
 @Component({
   selector: 'app-main-page',
-  imports: [ProductCardComponent, NgIconComponent],
-  viewProviders: [
-    provideIcons({ bootstrapChevronLeft, bootstrapChevronRight }),
+  imports: [
+    ProductCardComponent,
+    LogoComponent,
+    ScrollTrackerDirective,
+    CarouselNavComponent,
   ],
   templateUrl: './main-page.component.html',
 })
@@ -75,11 +75,21 @@ export class MainPageComponent implements OnInit {
     });
   }
 
-  scrollCarousel(container: HTMLElement, direction: 'left' | 'right') {
-    const scrollAmount = container.clientWidth;
-    container.scrollBy({
-      left: direction === 'left' ? -scrollAmount : scrollAmount,
-      behavior: 'smooth',
-    });
+  scrollCarousel(
+    container: HTMLElement,
+    direction: 'left' | 'right',
+    tracker: any,
+  ) {
+    const width = container.clientWidth;
+    const targetLeft = container.scrollLeft + (direction === 'left' ? -width : width);
+
+    const atStart = targetLeft <= 5;
+    const atEnd = targetLeft + width >= container.scrollWidth - 5;
+
+    if (atStart || atEnd) {
+      tracker.forceState(atStart, atEnd);
+    }
+
+    container.scrollTo({ left: targetLeft });
   }
 }

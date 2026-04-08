@@ -80,8 +80,8 @@ export class OrderDetailModalComponent implements OnInit, OnDestroy {
     const clientEmail = this.order().client.email;
     const adminName = this.currentUserName();
     const orderId = this.order().id;
-    const subject = `Consulta sobre el pedido #${orderId} - LaElsi`;
-    const body = `Hola, soy ${adminName}, de la librería LaElsi. Quisiera preguntarle con respecto al pedido de ID ${orderId}.`;
+    const subject = `Consulta sobre el pedido #${orderId} - Laelsi`;
+    const body = `Hola, soy ${adminName}, de la librería Laelsi. Quisiera preguntarle con respecto al pedido de ID ${orderId}.`;
 
     return `mailto:${clientEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   }
@@ -105,7 +105,7 @@ export class OrderDetailModalComponent implements OnInit, OnDestroy {
     const clientPhone = this.order().client.phone.replace(/\D/g, '');
     const adminName = this.currentUserName();
     const orderId = this.order().id;
-    const message = `Hola, soy ${adminName}, de la librería LaElsi. Quisiera preguntarle con respecto al pedido de ID ${orderId}.`;
+    const message = `Hola, soy ${adminName}, de la librería Laelsi. Quisiera preguntarle con respecto al pedido de ID ${orderId}.`;
 
     return `https://wa.me/${clientPhone}?text=${encodeURIComponent(message)}`;
   }

@@ -18,7 +18,7 @@
     }
   </app-product-image>
 
-  <div class="p-4 flex flex-col grow">
+  <div class="p-3 sm:p-4 flex flex-col grow">
     <p class="elsi-brand-label">
       {{ product().brand || "Marca Genérica" }}
     </p>
@@ -30,15 +30,17 @@
     </h2>
 
     <div
-      class="mt-auto pt-4 flex items-center justify-between border-t border-gray-50"
+      class="mt-auto pt-3 flex flex-wrap items-center justify-between gap-x-2 gap-y-3 border-t border-gray-50"
     >
-      <div class="flex flex-col">
-        <span class="text-xl elsi-price">
+      <div class="flex flex-col min-w-0 max-w-full">
+        <span class="text-lg sm:text-xl elsi-price truncate">
           {{ price() | currency: currency() : "symbol" : "1.0-0" }}
         </span>
       </div>
 
-      <app-add-to-cart-control [product]="product()" layout="compact" />
+      <div class="shrink-0 flex">
+        <app-add-to-cart-control [product]="product()" layout="compact" />
+      </div>
     </div>
   </div>
 </a>

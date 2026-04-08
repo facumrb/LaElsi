@@ -5,13 +5,16 @@
     </div>
 
     <div class="rounded-xl bg-white p-8 shadow-xl border border-gray-100">
-      <h1
-        class="mb-2 text-center text-3xl font-bold uppercase tracking-widest text-[#3d4494]"
-      >
-        LaElsi
-      </h1>
+      <div class="mb-4 flex justify-center">
+        <app-logo
+          [width]="128"
+          [height]="48"
+          loading="eager"
+          customClass="h-14 w-auto object-contain"
+        />
+      </div>
 
-      <p class="mb-8 text-center text-gray-500 text-sm">
+      <p class="mb-6 text-center text-gray-500 text-sm">
         Ingresa tus credenciales para acceder
       </p>
 
