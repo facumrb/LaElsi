@@ -20,22 +20,22 @@ import { CLIENTS_DATA } from './seed-data/clients.js';
 import { CATEGORIES_DATA, SUBCATEGORIES_DATA, LEVEL3_CATEGORIES_DATA } from './seed-data/categories.js';
 import { PRODUCTS_DATA } from './seed-data/products.js';
 
-const PWD_HASH = await bcrypt.hash('password123', 10);
-
 const createPhoto = (u: any, fn: string) => Object.assign(new UserPhoto(), { fileName: fn, user: u });
 
 async function seedUsers(em: EntityManager) {
   if (await em.count(Admin, {}) > 0) return;
-  ADMINS_DATA.forEach(d => {
-    const a = Object.assign(new Admin(), { ...d, role: UserRole.Admin, password: PWD_HASH });
+  for (const d of ADMINS_DATA) {
+    const password = await bcrypt.hash(d.password, 10);
+    const a = Object.assign(new Admin(), { ...d, role: UserRole.Admin, password });
     if (d.photoFileName) em.persist(createPhoto(a, d.photoFileName));
     em.persist(a);
-  });
-  CLIENTS_DATA.forEach(d => {
-    const c = Object.assign(new Client(), { ...d, city: d.city || 'Rosario', province: d.province || 'Santa Fe', postalCode: d.postalCode || '2000', street: d.street || 'Calle Falsa', streetNumber: d.streetNumber || 123, password: PWD_HASH });
+  }
+  for (const d of CLIENTS_DATA) {
+    const password = await bcrypt.hash(d.password || 'password123', 10);
+    const c = Object.assign(new Client(), { ...d, city: d.city || 'Rosario', province: d.province || 'Santa Fe', postalCode: d.postalCode || '2000', street: d.street || 'Calle Falsa', streetNumber: d.streetNumber || 123, password });
     if (d.photoFileName) em.persist(createPhoto(c, d.photoFileName));
     em.persist(c);
-  });
+  }
 }
 
 async function seedCategories(em: EntityManager) {
@@ -56,14 +56,17 @@ async function seedProducts(em: EntityManager, catMap: Record<string, Category>)
   PRODUCTS_DATA.forEach(d => catMap[d.categoryName] && em.persist(createProd(d, catMap[d.categoryName])));
   Object.keys(catMap).forEach(name => {
     const count = PRODUCTS_DATA.filter(p => p.categoryName === name).length;
-    for (let i = 1; i <= (20 - count); i++) em.persist(createProd({ name: `${name} Gen ${i}`, price: 1000 + (i * 10), photos: [{ fileName: 'placeholder.png' }] }, catMap[name]));
+    for (let i = 1; i <= (20 - count); i++) em.persist(createProd({ name: `${name} Gen ${i}`, price: 1000 + (i * 10) }, catMap[name]));
   });
 }
 
 function createProd(d: any, cat: Category) {
-  const p = Object.assign(new Product(), { brand: 'Generic', stock: 50, state: ProductState.Activo, ...d, category: cat });
+  const { photos, ...rest } = d;
+  const p = Object.assign(new Product(), { brand: 'Generic', description: 'Descripción por defecto', stock: 50, state: ProductState.Activo, ...rest, category: cat });
   p.prices.add(Object.assign(new Price(), { amount: d.price, currency: Currency.ARS, product: p }));
-  d.photos.forEach((f: any, i: number) => p.photos.add(Object.assign(new ProductPhoto(), { fileName: f.fileName, order: i, product: p })));
+  if (photos) {
+    photos.forEach((f: any, i: number) => p.photos.add(Object.assign(new ProductPhoto(), { fileName: f.fileName, order: i, product: p })));
+  }
   return p;
 }
 
@@ -71,19 +74,19 @@ async function seedOrders(em: EntityManager) {
   if (await em.count(Order, {}) > 0) return;
   const clients = await em.find(Client, {});
   const products = await em.find(Product, {}, { populate: ['prices'] });
-  for (const c of clients) {
-    const needed = c.username === 'cliente' ? 34 : 20;
-    for (let i = 0; i < needed; i++) {
-        const o = Object.assign(new Order(), { client: c, status: OrderState.Delivered, dateTime: new Date(), deliveryMethod: DeliveryMethod.RetiroSucursal, paymentMethod: PaymentMethod.Local, totalAmount: 0 });
-        let total = 0;
-        for (let j = 0; j < 2; j++) {
-            const p = products[Math.floor(Math.random() * products.length)];
-            const price = p.prices[0]?.amount || 0;
-            o.items.add(Object.assign(new OrderLine(), { order: o, product: p, quantity: 1, price }));
-            total += price;
-        }
-        o.totalAmount = total; em.persist(o);
+  const states = Object.values(OrderState);
+  for (let i = 0; i < 30; i++) {
+    const c = clients[Math.floor(Math.random() * clients.length)];
+    const randomStatus = states[Math.floor(Math.random() * states.length)];
+    const o = Object.assign(new Order(), { client: c, status: randomStatus, dateTime: new Date(), deliveryMethod: DeliveryMethod.RetiroSucursal, paymentMethod: PaymentMethod.Local, totalAmount: 0 });
+    let total = 0;
+    for (let j = 0; j < 2; j++) {
+        const p = products[Math.floor(Math.random() * products.length)];
+        const price = p.prices[0]?.amount || 0;
+        o.items.add(Object.assign(new OrderLine(), { order: o, product: p, quantity: 1, price }));
+        total += price;
     }
+    o.totalAmount = total; em.persist(o);
   }
 }
 
@@ -96,6 +99,6 @@ export async function seedDatabase() {
     await em.flush();
     await seedOrders(em);
     await em.flush();
-    console.log('🚀 Seed OK: 35 Admins, 35 Clients, 20 Products/Cat, 20 Orders/Client.');
+    console.log('🚀 Seed OK: 35 Admins, 35 Clients, 20 Products/Cat, 30 Orders in total.');
   } catch (e) { console.error('❌ Error:', e); }
 }
