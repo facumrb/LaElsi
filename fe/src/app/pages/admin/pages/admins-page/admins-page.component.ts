@@ -93,7 +93,6 @@ export class AdminsPageComponent implements OnInit {
       queryParamsHandling: 'merge',
     });
     this.loadAdmins();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   handleNavigateToCreate() {

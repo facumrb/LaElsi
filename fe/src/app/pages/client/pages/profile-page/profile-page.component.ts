@@ -101,7 +101,6 @@ export class ProfilePageComponent implements OnInit {
             queryParams: { page: page },
             queryParamsHandling: 'merge',
           });
-          window.scrollTo({ top: 0, behavior: 'smooth' });
         });
       }
     }

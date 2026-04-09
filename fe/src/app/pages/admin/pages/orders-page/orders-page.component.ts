@@ -108,7 +108,6 @@ export class OrdersPageComponent implements OnInit {
       queryParamsHandling: 'merge',
     });
     this.loadOrders();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   openOrderDetail(order: IApiOrder) {

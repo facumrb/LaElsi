@@ -142,7 +142,6 @@ export class ProductsPageComponent implements OnInit {
       queryParamsHandling: 'merge',
     });
     this.loadProducts();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   handleNavigateToCreate() {

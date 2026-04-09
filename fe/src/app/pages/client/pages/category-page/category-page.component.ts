@@ -169,7 +169,6 @@ export class CategoryPageComponent implements OnInit {
       queryParamsHandling: 'merge',
     });
     this.loadProducts(this.currentCategoryId());
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   closeInactiveModal() {

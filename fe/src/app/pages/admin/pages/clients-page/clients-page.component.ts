@@ -100,7 +100,6 @@ export class ClientsPageComponent implements OnInit {
       queryParamsHandling: 'merge',
     });
     this.loadClients();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   handleNavigateToCreate() {

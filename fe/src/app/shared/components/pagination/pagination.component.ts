@@ -1,4 +1,11 @@
-import { Component, computed, input, output } from '@angular/core';
+import {
+  Component,
+  computed,
+  ElementRef,
+  inject,
+  input,
+  output,
+} from '@angular/core';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
   bootstrapChevronLeft,
@@ -17,6 +24,8 @@ import {
   ],
 })
 export class PaginationComponent {
+  private el = inject(ElementRef);
+
   currentPage = input.required<number>();
   totalPages = input.required<number>();
   pageChange = output<number>();
@@ -53,7 +62,30 @@ export class PaginationComponent {
 
   onPageChange(page: number) {
     if (page !== this.currentPage() && page >= 1 && page <= this.totalPages()) {
-      this.pageChange.emit(page);
+      const scrollable = this.findScrollableParent(this.el.nativeElement);
+
+      if (scrollable && scrollable.scrollTop > 0) {
+        scrollable.scrollTo({ top: 0, behavior: 'smooth' });
+        setTimeout(() => this.pageChange.emit(page), 250);
+      } else if (!scrollable && window.scrollY > 0) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setTimeout(() => this.pageChange.emit(page), 250);
+      } else {
+        this.pageChange.emit(page);
+      }
     }
+  }
+
+  private findScrollableParent(element: HTMLElement): HTMLElement | null {
+    let parent = element.parentElement;
+    while (parent) {
+      const style = getComputedStyle(parent);
+      const overflow = style.overflowY;
+      if (overflow === 'auto' || overflow === 'scroll') {
+        return parent;
+      }
+      parent = parent.parentElement;
+    }
+    return null;
   }
 }
