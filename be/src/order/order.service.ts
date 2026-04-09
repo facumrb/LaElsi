@@ -151,7 +151,7 @@ export class OrderService {
       populate: ['client', 'items', 'items.product', 'items.product.photos'],
       limit,
       offset,
-      orderBy: { dateTime: 'DESC' }
+      orderBy: { id: 'DESC' }
     });
     return buildPaginatedResponse(data, total, page, limit);
   }
@@ -180,7 +180,7 @@ export class OrderService {
       { client: { id: clientId } },
       {
         populate: ['client', 'items', 'items.product', 'items.product.photos'],
-        orderBy: { dateTime: 'DESC' },
+        orderBy: { id: 'DESC' },
         limit,
         offset
       }

@@ -80,7 +80,7 @@ export class AnalyticsPageComponent {
   totalClients = computed(() => this.clients().length);
 
   recentOrders = computed(() => {
-    return [...this.orders()].sort((a, b) => b.id - a.id).slice(0, 5);
+    return this.orders().slice(0, 5);
   });
 
   selectedOrder = signal<IApiOrder | null>(null);
