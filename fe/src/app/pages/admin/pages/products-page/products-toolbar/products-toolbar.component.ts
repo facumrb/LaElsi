@@ -1,4 +1,5 @@
 import { Component, input, model, output } from '@angular/core';
+import { IApiCategory } from '@models/category.model';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { bootstrapCurrencyDollar } from '@ng-icons/bootstrap-icons';
 import { CreateEntityButtonComponent } from '@admin/components/toolbar-components/create-entity-button/create-entity-button.component';
@@ -15,11 +16,6 @@ export type StockFilter =
   | 'MenosProductos'; // Productos de Menor a mayor stock
 
 export type StatusFilter = 'Todos' | 'Activo' | 'Inactivo';
-
-export interface SimpleCategory {
-  id: number;
-  name: string;
-}
 
 @Component({
   selector: 'app-products-toolbar',
@@ -47,5 +43,5 @@ export class ProductsToolbarComponent {
   onBulkPriceUpdate = output<void>();
 
   categoryFilter = model.required<number | 'Todos'>();
-  categories = input.required<SimpleCategory[]>();
+  categories = input.required<IApiCategory[]>();
 }

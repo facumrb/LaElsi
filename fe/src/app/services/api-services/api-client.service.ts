@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { IApiClient, ICreateClient, IUpdateClient } from '@models/user.model';
-import { IPaginatedResult } from '../../models/pagination.model';
+import { IPaginatedResult } from '@models/pagination.model';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -12,10 +12,20 @@ export class ApiClientService {
   private http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiUrl}/clients`;
 
-  getAllClients(page: number = 1, limit: number = 16): Observable<IPaginatedResult<IApiClient>> {
-    const params = new HttpParams().set('page', page).set('limit', limit);
+  getAllClients(
+    page: number = 1,
+    limit: number = 16,
+    fiscalCondition?: string,
+  ): Observable<IPaginatedResult<IApiClient>> {
+    let params = new HttpParams().set('page', page).set('limit', limit);
+    if (fiscalCondition && fiscalCondition !== 'Todos') {
+      params = params.set('fiscalCondition', fiscalCondition);
+    }
     return this.http
-      .get<{ message: string; data: IPaginatedResult<IApiClient> }>(this.apiUrl, { params })
+      .get<{
+        message: string;
+        data: IPaginatedResult<IApiClient>;
+      }>(this.apiUrl, { params })
       .pipe(map((response) => response.data));
   }
 
@@ -38,7 +48,7 @@ export class ApiClientService {
   searchClients(
     query: string,
     page: number = 1,
-    limit: number = 16
+    limit: number = 16,
   ): Observable<IPaginatedResult<IApiClient>> {
     const params = new HttpParams()
       .set('query', query)

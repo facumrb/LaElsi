@@ -83,7 +83,7 @@ export class ProductService {
     };
 
     const product = em.create(Product, productEntityData);
-    
+
     // update price logic
     const newPrice = em.create(Price, {
       amount: price,
@@ -103,61 +103,87 @@ export class ProductService {
     return product;
   }
 
-  static async searchProductsByText(query: string, page: number = 1, limit: number = DEFAULT_PAGE_SIZE): Promise<PaginatedResult<Product>> {
+  static async searchProductsByText(
+    query: string,
+    page: number = 1,
+    limit: number = DEFAULT_PAGE_SIZE,
+    filters: { brand?: string; priceOrder?: string; popularityOrder?: string } = {}
+  ): Promise<PaginatedResult<Product>> {
     const em = orm.em;
     if (!query || query.trim().length === 0) {
       throw new AppError('El parámetro de búsqueda es requerido', 400);
     }
     const offset = (page - 1) * limit;
 
-    const [data, total] = await em.findAndCount(
-      Product,
-      {
-        state: ProductState.Activo,
-        category: { state: CategoryState.Activo },
-        $or: [{ name: { $like: `%${query}%` } }, { description: { $like: `%${query}%` } }, { brand: { $like: `%${query}%` } }]
-      },
-      {
-        populate: ['category', 'photos', 'prices'],
-        populateWhere: { prices: { isCurrent: true } },
-        populateOrderBy: { photos: { order: 'ASC' } },
-        limit,
-        offset
-      }
-    );
-    
+    const where: any = {
+      state: ProductState.Activo,
+      category: { state: CategoryState.Activo },
+      $or: [{ name: { $like: `%${query}%` } }, { description: { $like: `%${query}%` } }, { brand: { $like: `%${query}%` } }]
+    };
+
+    if (filters.brand) {
+      where.brand = filters.brand;
+    }
+
+    const orderBy = this.buildClientOrderBy(filters);
+
+    const [data, total] = await em.findAndCount(Product, where, {
+      populate: ['category', 'photos', 'prices'],
+      populateWhere: { prices: { isCurrent: true } },
+      populateOrderBy: { photos: { order: 'ASC' } },
+      limit,
+      offset,
+      orderBy
+    });
+
     return buildPaginatedResponse(data, total, page, limit);
   }
 
   static async findProductsByCategory(categoryId: number, page: number = 1, limit: number = DEFAULT_PAGE_SIZE): Promise<PaginatedResult<Product>> {
     const em = orm.em;
     const offset = (page - 1) * limit;
-    const [data, total] = await em.findAndCount(
-      Product,
-      { category: { id: categoryId } },
-      { populate: ['category', 'photos', 'prices'], limit, offset }
-    );
+    const [data, total] = await em.findAndCount(Product, { category: { id: categoryId } }, { populate: ['category', 'photos', 'prices'], limit, offset });
     return buildPaginatedResponse(data, total, page, limit);
   }
 
-  static async findActiveProductsByCategory(categoryId: number, page: number = 1, limit: number = DEFAULT_PAGE_SIZE): Promise<PaginatedResult<Product>> {
+  static async findActiveProductsByCategory(
+    categoryId: number,
+    page: number = 1,
+    limit: number = DEFAULT_PAGE_SIZE,
+    filters: { brand?: string; priceOrder?: string; popularityOrder?: string } = {}
+  ): Promise<PaginatedResult<Product>> {
     const em = orm.em;
     const offset = (page - 1) * limit;
-    const [data, total] = await em.findAndCount(
-      Product,
-      {
-        category: { id: categoryId, state: CategoryState.Activo },
-        state: ProductState.Activo
-      },
-      {
-        populate: ['category', 'photos', 'prices'],
-        populateWhere: { prices: { isCurrent: true } },
-        populateOrderBy: { photos: { order: 'ASC' } },
-        limit,
-        offset
-      }
-    );
+
+    const where: any = {
+      category: { id: categoryId, state: CategoryState.Activo },
+      state: ProductState.Activo
+    };
+
+    if (filters.brand) {
+      where.brand = filters.brand;
+    }
+
+    const orderBy = this.buildClientOrderBy(filters);
+
+    const [data, total] = await em.findAndCount(Product, where, {
+      populate: ['category', 'photos', 'prices'],
+      populateWhere: { prices: { isCurrent: true } },
+      populateOrderBy: { photos: { order: 'ASC' } },
+      limit,
+      offset,
+      orderBy
+    });
     return buildPaginatedResponse(data, total, page, limit);
+  }
+
+  // Construye el orderBy para filtros de cliente (precio y popularidad)
+  private static buildClientOrderBy(filters: { priceOrder?: string; popularityOrder?: string }): any {
+    if (filters.priceOrder === 'Menor') return { prices: { amount: 'ASC' } };
+    if (filters.priceOrder === 'Mayor') return { prices: { amount: 'DESC' } };
+    if (filters.popularityOrder === 'MasVentas') return { totalSold: 'DESC' };
+    if (filters.popularityOrder === 'MenosVentas') return { totalSold: 'ASC' };
+    return { id: 'ASC' };
   }
 
   static async findAll(
@@ -171,11 +197,7 @@ export class ProductService {
     const where: any = {};
 
     if (filters.query) {
-      where.$or = [
-        { name: { $like: `%${filters.query}%` } },
-        { description: { $like: `%${filters.query}%` } },
-        { brand: { $like: `%${filters.query}%` } }
-      ];
+      where.$or = [{ name: { $like: `%${filters.query}%` } }, { description: { $like: `%${filters.query}%` } }, { brand: { $like: `%${filters.query}%` } }];
     }
 
     if (filters.state) {
@@ -186,10 +208,21 @@ export class ProductService {
       where.category = { id: filters.categoryId };
     }
 
+    // Filtros de stock (WHERE) y ordenamiento
+    let orderBy: any = { id: 'ASC' };
+
     if (filters.stockFilter) {
-      if (filters.stockFilter === 'AltoStock') where.stock = { $gt: 10 };
-      if (filters.stockFilter === 'BajoStock') where.stock = { $lte: 10, $gt: 0 };
+      if (filters.stockFilter === 'AltoStock') {
+        where.stock = { $gt: 10 };
+        orderBy = { stock: 'DESC' };
+      }
+      if (filters.stockFilter === 'BajoStock') {
+        where.stock = { $lte: 10, $gt: 0 };
+        orderBy = { stock: 'DESC' };
+      }
       if (filters.stockFilter === 'SinStock') where.stock = 0;
+      if (filters.stockFilter === 'MasProductos') orderBy = { stock: 'DESC' };
+      if (filters.stockFilter === 'MenosProductos') orderBy = { stock: 'ASC' };
     }
 
     const [data, total] = await em.findAndCount(Product, where, {
@@ -197,7 +230,7 @@ export class ProductService {
       populateOrderBy: { photos: { order: 'ASC' } },
       limit,
       offset,
-      orderBy: { id: 'ASC' }
+      orderBy
     });
 
     return buildPaginatedResponse(data, total, page, limit);
@@ -273,7 +306,7 @@ export class ProductService {
     em.assign(product, updateData);
 
     if (product.state !== oldState) {
-       product.deletedAt = new Date();
+      product.deletedAt = new Date();
     }
 
     try {

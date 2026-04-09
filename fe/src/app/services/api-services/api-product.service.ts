@@ -20,25 +20,42 @@ export class ApiProductService {
   getAllProducts(
     page: number = 1,
     limit: number = 16,
-    filters: { query?: string; state?: string; categoryId?: number; stockFilter?: string } = {}
+    filters: {
+      query?: string;
+      state?: string;
+      categoryId?: number;
+      stockFilter?: string;
+    } = {},
   ): Observable<IPaginatedResult<IApiProduct>> {
     let params = new HttpParams().set('page', page).set('limit', limit);
-    
+
     if (filters.query) params = params.set('query', filters.query);
-    if (filters.state && filters.state !== 'Todos') params = params.set('state', filters.state);
-    if (filters.categoryId && filters.categoryId !== 0) params = params.set('categoryId', filters.categoryId);
-    if (filters.stockFilter && filters.stockFilter !== 'Todos') params = params.set('stockFilter', filters.stockFilter);
+    if (filters.state && filters.state !== 'Todos')
+      params = params.set('state', filters.state);
+    if (filters.categoryId && filters.categoryId !== 0)
+      params = params.set('categoryId', filters.categoryId);
+    if (filters.stockFilter && filters.stockFilter !== 'Todos')
+      params = params.set('stockFilter', filters.stockFilter);
 
     return this.http
-      .get<{ message: string; data: IPaginatedResult<IApiProduct> }>(this.apiUrl, { params })
+      .get<{
+        message: string;
+        data: IPaginatedResult<IApiProduct>;
+      }>(this.apiUrl, { params })
       .pipe(map((response) => response.data));
   }
 
   // Obtener todos los productos activos
-  getActiveProducts(page: number = 1, limit: number = 16): Observable<IPaginatedResult<IApiProduct>> {
+  getActiveProducts(
+    page: number = 1,
+    limit: number = 16,
+  ): Observable<IPaginatedResult<IApiProduct>> {
     const params = new HttpParams().set('page', page).set('limit', limit);
     return this.http
-      .get<{ message: string; data: IPaginatedResult<IApiProduct> }>(`${this.apiUrl}/active`, { params })
+      .get<{
+        message: string;
+        data: IPaginatedResult<IApiProduct>;
+      }>(`${this.apiUrl}/active`, { params })
       .pipe(map((response) => response.data));
   }
 
@@ -69,13 +86,34 @@ export class ApiProductService {
   // Obtener un producto activo por ID (uso público)
   getActiveProductById(id: number): Observable<IApiProduct> {
     return this.http
-      .get<{ message: string; data: IApiProduct }>(`${this.apiUrl}/active/${id}`)
+      .get<{
+        message: string;
+        data: IApiProduct;
+      }>(`${this.apiUrl}/active/${id}`)
       .pipe(map((response) => response.data));
   }
 
   // Buscar productos por nombre o descripción
-  searchProducts(query: string, page: number = 1, limit: number = 16): Observable<IPaginatedResult<IApiProduct>> {
-    const params = new HttpParams().set('query', query).set('page', page).set('limit', limit);
+  searchProducts(
+    query: string,
+    page: number = 1,
+    limit: number = 16,
+    filters: {
+      brand?: string;
+      priceOrder?: string;
+      popularityOrder?: string;
+    } = {},
+  ): Observable<IPaginatedResult<IApiProduct>> {
+    let params = new HttpParams()
+      .set('query', query)
+      .set('page', page)
+      .set('limit', limit);
+    if (filters.brand && filters.brand !== 'Todas')
+      params = params.set('brand', filters.brand);
+    if (filters.priceOrder && filters.priceOrder !== 'Defecto')
+      params = params.set('priceOrder', filters.priceOrder);
+    if (filters.popularityOrder && filters.popularityOrder !== 'Defecto')
+      params = params.set('popularityOrder', filters.popularityOrder);
     return this.http
       .get<{
         message: string;
@@ -85,7 +123,11 @@ export class ApiProductService {
   }
 
   // Obtener productos segun una categoría (todos)
-  getProductsByCategory(categoryId: number, page: number = 1, limit: number = 16): Observable<IPaginatedResult<IApiProduct>> {
+  getProductsByCategory(
+    categoryId: number,
+    page: number = 1,
+    limit: number = 16,
+  ): Observable<IPaginatedResult<IApiProduct>> {
     const params = new HttpParams().set('page', page).set('limit', limit);
     return this.http
       .get<{
@@ -96,8 +138,23 @@ export class ApiProductService {
   }
 
   // Obtener productos activos segun una categoría
-  getActiveProductsByCategory(categoryId: number, page: number = 1, limit: number = 16): Observable<IPaginatedResult<IApiProduct>> {
-    const params = new HttpParams().set('page', page).set('limit', limit);
+  getActiveProductsByCategory(
+    categoryId: number,
+    page: number = 1,
+    limit: number = 16,
+    filters: {
+      brand?: string;
+      priceOrder?: string;
+      popularityOrder?: string;
+    } = {},
+  ): Observable<IPaginatedResult<IApiProduct>> {
+    let params = new HttpParams().set('page', page).set('limit', limit);
+    if (filters.brand && filters.brand !== 'Todas')
+      params = params.set('brand', filters.brand);
+    if (filters.priceOrder && filters.priceOrder !== 'Defecto')
+      params = params.set('priceOrder', filters.priceOrder);
+    if (filters.popularityOrder && filters.popularityOrder !== 'Defecto')
+      params = params.set('popularityOrder', filters.popularityOrder);
     return this.http
       .get<{
         message: string;

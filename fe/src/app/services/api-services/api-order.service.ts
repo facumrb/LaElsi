@@ -17,10 +17,31 @@ export class ApiOrderService {
   private http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiUrl}/orders`;
 
-  getAllOrders(page: number = 1, limit: number = 16): Observable<IPaginatedResult<IApiOrder>> {
-    const params = new HttpParams().set('page', page).set('limit', limit);
+  getAllOrders(
+    page: number = 1,
+    limit: number = 10,
+    filters: {
+      query?: string;
+      status?: string;
+      deliveryMethod?: string;
+      paymentMethod?: string;
+    } = {},
+  ): Observable<IPaginatedResult<IApiOrder>> {
+    let params = new HttpParams().set('page', page).set('limit', limit);
+
+    if (filters.query) params = params.set('query', filters.query);
+    if (filters.status && filters.status !== 'Todos')
+      params = params.set('status', filters.status);
+    if (filters.deliveryMethod && filters.deliveryMethod !== 'Todos')
+      params = params.set('deliveryMethod', filters.deliveryMethod);
+    if (filters.paymentMethod && filters.paymentMethod !== 'Todos')
+      params = params.set('paymentMethod', filters.paymentMethod);
+
     return this.http
-      .get<{ message: string; data: IPaginatedResult<IApiOrder> }>(this.apiUrl, { params })
+      .get<{
+        message: string;
+        data: IPaginatedResult<IApiOrder>;
+      }>(this.apiUrl, { params })
       .pipe(map((response) => response.data));
   }
 
@@ -30,7 +51,11 @@ export class ApiOrderService {
       .pipe(map((response) => response.data));
   }
 
-  getOrdersByClient(clientId: number, page: number = 1, limit: number = 16): Observable<IPaginatedResult<IApiOrder>> {
+  getOrdersByClient(
+    clientId: number,
+    page: number = 1,
+    limit: number = 10,
+  ): Observable<IPaginatedResult<IApiOrder>> {
     const params = new HttpParams().set('page', page).set('limit', limit);
     return this.http
       .get<{

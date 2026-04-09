@@ -5,6 +5,7 @@ import {
   signal,
   computed,
   effect,
+  untracked,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiProductService } from '@services/api-services/api-product.service';
@@ -22,6 +23,8 @@ import {
   BreadcrumbStep,
 } from '@client/components/breadcrumbs/breadcrumbs.component';
 import { PaginationComponent } from '@shared/components/pagination/pagination.component';
+import { NgIconComponent, provideIcons } from '@ng-icons/core';
+import { bootstrapExclamationTriangle } from '@ng-icons/bootstrap-icons';
 
 @Component({
   selector: 'app-category-page',
@@ -30,7 +33,9 @@ import { PaginationComponent } from '@shared/components/pagination/pagination.co
     ProductsFilterComponent,
     BreadcrumbsComponent,
     PaginationComponent,
+    NgIconComponent,
   ],
+  viewProviders: [provideIcons({ bootstrapExclamationTriangle })],
   templateUrl: './category-page.component.html',
 })
 export class CategoryPageComponent implements OnInit {
@@ -77,81 +82,46 @@ export class CategoryPageComponent implements OnInit {
   // Estado del modal para categoría inactiva
   showInactiveCategoryModal = signal<boolean>(false);
 
-  // Computed para productos filtrados
-  productsFiltered = computed(() => {
-    const currentProducts = this.productsRaw();
-    const priceOrder = this.priceOrder();
-    const brandSelected = this.brandFilter();
-    const popularityOrder = this.popularityOrder();
+  // Los productos ya vienen filtrados y ordenados del server
+  productsFiltered = computed(() => [...this.productsRaw()]);
 
-    let filtered = currentProducts.filter((p) => {
-      // Filtro de Marca
-      const matchesBrand =
-        brandSelected === 'Todas' || p.brand === brandSelected;
-      return matchesBrand;
+  // ID de la categoría actual
+  private currentCategoryId = signal<number>(0);
+  private initialLoadDone = false;
+
+  constructor() {
+    // Reacciona a cambios en los filtros y recarga del server
+    effect(() => {
+      this.priceOrder();
+      this.brandFilter();
+      this.popularityOrder();
+      untracked(() => {
+        if (this.initialLoadDone && this.currentCategoryId() > 0) {
+          this.currentPage.set(1);
+          this.loadProducts(this.currentCategoryId());
+        }
+      });
     });
+  }
 
-    // Ordenamiento por Precio
-    if (priceOrder === 'Menor') {
-      // Menor a Mayor (más barato primero)
-      filtered.sort((a, b) => {
-        const priceA = a.prices.find((pr) => pr.isCurrent)?.amount || 0;
-        const priceB = b.prices.find((pr) => pr.isCurrent)?.amount || 0;
-        return priceA - priceB;
-      });
-    } else if (priceOrder === 'Mayor') {
-      // Mayor a Menor (más caro primero)
-      filtered.sort((a, b) => {
-        const priceA = a.prices.find((pr) => pr.isCurrent)?.amount || 0;
-        const priceB = b.prices.find((pr) => pr.isCurrent)?.amount || 0;
-        return priceB - priceA;
-      });
-    }
-
-    // Ordenamiento por Ventas
-    if (popularityOrder === 'MasVentas') {
-      // Mayor a Menor (más ventas primero)
-      filtered.sort((a, b) => b.totalSold - a.totalSold);
-    } else if (popularityOrder === 'MenosVentas') {
-      // Menor a Mayor (menos ventas primero)
-      filtered.sort((a, b) => a.totalSold - b.totalSold);
-    }
-
-    // Si no hay ordenamiento por precio ni por ventas, mantener orden por ID
-    if (priceOrder === 'Defecto' && popularityOrder === 'Defecto') {
-      filtered.sort((a, b) => a.id - b.id);
-    }
-
-    return filtered;
-  });
-
-  // Effect para extraer las marcas disponibles de los productos
+  // Effect para extraer las marcas disponibles de los productos.
   private brandExtractor = effect(() => {
     const products = this.productsRaw();
-    const brands = [...new Set(products.map((p) => p.brand))].sort();
-    this.availableBrands.set(brands);
+    const currentBrand = this.brandFilter();
+    if (currentBrand === 'Todas') {
+      const brands = [...new Set(products.map((p) => p.brand))].sort();
+      this.availableBrands.set(brands);
+    }
   });
 
   ngOnInit(): void {
-    // Escuchar tanto params (id) como queryParams (page)
     this.route.paramMap.subscribe((params) => {
       const id = Number(params.get('id'));
-      
-      // Combinar con query parameters actuales
       const pageParam = this.route.snapshot.queryParamMap.get('page');
       this.currentPage.set(Number(pageParam) || 1);
-      
+      this.currentCategoryId.set(id);
       this.cargarDatosDePagina(id);
-    });
-    
-    // Escuchar también cambios solo en queryParams cuando ya estamos en la misma categoría
-    this.route.queryParamMap.subscribe((queryParams) => {
-      const newPage = Number(queryParams.get('page')) || 1;
-      const idStr = this.route.snapshot.paramMap.get('id');
-      if (idStr && Number(idStr) > 0 && newPage !== this.currentPage()) {
-        this.currentPage.set(newPage);
-        this.cargarDatosDePagina(Number(idStr));
-      }
+      this.initialLoadDone = true;
     });
   }
 
@@ -168,8 +138,22 @@ export class CategoryPageComponent implements OnInit {
       error: () => this.router.navigate(['/']),
     });
 
-    // 2. Obtener los productos activos de la categoría con paginación
-    this.ApiProductService.getActiveProductsByCategory(id, this.currentPage()).subscribe({
+    // 2. Obtener los productos activos de la categoría con filtros
+    this.loadProducts(id);
+  }
+
+  loadProducts(categoryId: number) {
+    const filters = {
+      brand: this.brandFilter(),
+      priceOrder: this.priceOrder(),
+      popularityOrder: this.popularityOrder(),
+    };
+    this.ApiProductService.getActiveProductsByCategory(
+      categoryId,
+      this.currentPage(),
+      16,
+      filters,
+    ).subscribe({
       next: (data) => {
         this.productsRaw.set(data.data);
         this.totalPages.set(data.totalPages);
@@ -178,12 +162,14 @@ export class CategoryPageComponent implements OnInit {
   }
 
   onPageChange(page: number) {
+    this.currentPage.set(page);
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: { page: page },
+      queryParams: { page },
       queryParamsHandling: 'merge',
     });
-    window.scrollTo({ top: 0, behavior: 'smooth' }); // Mejor UX
+    this.loadProducts(this.currentCategoryId());
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   closeInactiveModal() {

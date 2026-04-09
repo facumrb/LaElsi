@@ -82,14 +82,14 @@ export class ClientService {
     return client;
   }
 
-  static async findAll(page: number = 1, limit: number = DEFAULT_PAGE_SIZE): Promise<PaginatedResult<Client>> {
+  static async findAll(page: number = 1, limit: number = DEFAULT_PAGE_SIZE, fiscalCondition?: string): Promise<PaginatedResult<Client>> {
     const em = orm.em;
     const offset = (page - 1) * limit;
-    const [data, total] = await em.findAndCount(
-      Client,
-      {},
-      { populate: ['photo'], limit, offset }
-    );
+    const where: any = {};
+    if (fiscalCondition) {
+      where.fiscalCondition = fiscalCondition;
+    }
+    const [data, total] = await em.findAndCount(Client, where, { populate: ['photo'], limit, offset });
     return buildPaginatedResponse(data, total, page, limit);
   }
 

@@ -3,6 +3,7 @@ import { OrderService, CreateOrderDto, UpdateOrderStatusDto } from './order.serv
 import { asyncHandler } from '../shared/errors/asyncHandler.js';
 import { AppError } from '../shared/errors/appError.js';
 import { ApiResponse } from '../shared/utils/apiResponse.js';
+import { getPaginationParams } from '../shared/utils/pagination.js';
 
 export class OrderController {
   static create = asyncHandler(async (req: Request, res: Response) => {
@@ -12,7 +13,15 @@ export class OrderController {
   });
 
   static findAll = asyncHandler(async (req: Request, res: Response) => {
-    const orders = await OrderService.findAll();
+    const { page, limit } = getPaginationParams(req);
+    const { query, status, deliveryMethod, paymentMethod } = req.query;
+
+    const orders = await OrderService.findAll(page, limit, {
+      query: query as string,
+      status: status as string,
+      deliveryMethod: deliveryMethod as string,
+      paymentMethod: paymentMethod as string
+    });
     return res.status(200).json(ApiResponse.success('Todas las órdenes encontradas', orders));
   });
 
@@ -28,7 +37,8 @@ export class OrderController {
     const clientId = Number(req.params.clientId);
     if (isNaN(clientId)) throw new AppError('ID de cliente inválido', 400);
 
-    const orders = await OrderService.findByClient(clientId);
+    const { page, limit } = getPaginationParams(req);
+    const orders = await OrderService.findByClient(clientId, page, limit);
     return res.status(200).json(ApiResponse.success('Órdenes del cliente encontradas', orders));
   });
 

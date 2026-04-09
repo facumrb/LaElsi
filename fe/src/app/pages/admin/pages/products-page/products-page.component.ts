@@ -1,6 +1,14 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  inject,
+  OnInit,
+  signal,
+  effect,
+  untracked,
+} from '@angular/core';
 import { IApiProduct } from '@models/product.model';
-import { ReactiveFormsModule } from '@angular/forms';
+import { IApiCategory } from '@models/category.model';
 import { ApiProductService } from '@services/api-services/api-product.service';
 import { ApiCategoryService } from '@services/api-services/api-category.service';
 import { AlertService } from '@services/alert.service';
@@ -13,17 +21,10 @@ import {
 import { Router, ActivatedRoute } from '@angular/router';
 import { PaginationComponent } from '@shared/components/pagination/pagination.component';
 import { BulkPriceModalComponent } from './products-toolbar/components/bulk-price-modal/bulk-price-modal.component';
-import { effect } from '@angular/core';
-
-interface SimpleCategory {
-  id: number;
-  name: string;
-}
 
 @Component({
   selector: 'app-products-page',
   imports: [
-    ReactiveFormsModule,
     ProductsListComponent,
     ProductsToolbarComponent,
     BulkPriceModalComponent,
@@ -42,7 +43,7 @@ export class ProductsPageComponent implements OnInit {
   currentPage = signal(1);
   totalPages = signal(1);
 
-  allCategories = signal<SimpleCategory[]>([]);
+  allCategories = signal<IApiCategory[]>([]);
 
   searchQuery = signal('');
   statusFilter = signal<StatusFilter>('Todos');
@@ -51,7 +52,7 @@ export class ProductsPageComponent implements OnInit {
 
   showBulkModal = signal(false);
 
-  availableCategories = computed<SimpleCategory[]>(() => this.allCategories());
+  availableCategories = computed<IApiCategory[]>(() => this.allCategories());
 
   filtersActive = computed(() => {
     return (
@@ -63,34 +64,28 @@ export class ProductsPageComponent implements OnInit {
   });
 
   productsFiltered = computed(() => {
-    // El filtrado grueso ya viene del server
-    // Solo aplicamos ordenamiento local de la página si es necesario
-    const currentProducts = this.productsRaw();
-    const stockType = this.stockFilter();
-    
-    const sorted = [...currentProducts];
-
-    if (stockType === 'MasProductos') {
-      sorted.sort((a, b) => b.stock - a.stock);
-    } else if (stockType === 'MenosProductos') {
-      sorted.sort((a, b) => a.stock - b.stock);
-    }
-
-    return sorted;
+    return [...this.productsRaw()];
   });
 
   selectedIds = signal<number[]>([]);
 
   constructor() {
-    // Al cambiar cualquier filtro, reseteamos paginación
+    // Al cambiar cualquier filtro, reseteamos a página 1 y recargamos del server.
     effect(() => {
       this.searchQuery();
       this.statusFilter();
       this.stockFilter();
       this.categoryFilter();
-      this.onFilterChange();
+      untracked(() => {
+        if (this.initialLoadDone) {
+          this.currentPage.set(1);
+          this.loadProducts();
+        }
+      });
     });
   }
+
+  private initialLoadDone = false;
 
   handleBulkPriceUpdate() {
     if (this.selectedIds().length === 0) {
@@ -107,41 +102,28 @@ export class ProductsPageComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.route.queryParamMap.subscribe((params) => {
-      this.currentPage.set(Number(params.get('page')) || 1);
-      this.loadProducts();
-    });
+    const pageParam = this.route.snapshot.queryParamMap.get('page');
+    this.currentPage.set(Number(pageParam) || 1);
+    this.loadProducts();
+    this.initialLoadDone = true;
     this.loadCategories();
   }
 
   loadCategories() {
     this.categoryService.getAllCategories().subscribe((cats) => {
-      // Flatten or map categories for the filter
-      const flat: SimpleCategory[] = [];
-      const process = (c: any) => {
-        flat.push({ id: c.id, name: c.name });
-        if (c.children) c.children.forEach(process);
-      };
-      cats.forEach(process);
-      this.allCategories.set(flat.sort((a, b) => a.name.localeCompare(b.name)));
+      this.allCategories.set(cats);
     });
-  }
-
-  // Detectar cambios en filtros para volver a página 1
-  onFilterChange() {
-    if (this.currentPage() !== 1) {
-      this.onPageChange(1);
-    } else {
-      this.loadProducts();
-    }
   }
 
   loadProducts() {
     const filters = {
       query: this.searchQuery(),
       state: this.statusFilter(),
-      categoryId: this.categoryFilter() === 'Todos' ? undefined : (this.categoryFilter() as number),
-      stockFilter: this.stockFilter()
+      categoryId:
+        this.categoryFilter() === 'Todos'
+          ? undefined
+          : (this.categoryFilter() as number),
+      stockFilter: this.stockFilter(),
     };
 
     this.apiService.getAllProducts(this.currentPage(), 16, filters).subscribe({
@@ -153,11 +135,13 @@ export class ProductsPageComponent implements OnInit {
   }
 
   onPageChange(page: number) {
+    this.currentPage.set(page);
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { page },
       queryParamsHandling: 'merge',
     });
+    this.loadProducts();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -175,9 +159,8 @@ export class ProductsPageComponent implements OnInit {
         this.apiService.deleteProduct(product.id).subscribe({
           next: () => {
             this.alertService.toast('Producto eliminado', 'success');
-            this.productsRaw.update((currentProducts) =>
-              currentProducts.filter((p) => p.id !== product.id),
-            );
+            // Recargamos desde el servidor para que la paginación se recalcule
+            this.loadProducts();
           },
         });
       }

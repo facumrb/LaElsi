@@ -10,13 +10,17 @@ import {
 } from '@ng-icons/bootstrap-icons';
 import { FilterButtonComponent } from '@shared/components/buttons/filter-button/filter-button.component';
 
-// Tipados (los mantengo igual, están bien definidos)
 export type PriceOrder = 'Defecto' | 'Menor' | 'Mayor';
 export type PopularityOrder = 'Defecto' | 'MasVentas' | 'MenosVentas';
 
 @Component({
   selector: 'app-products-filter',
-  imports: [FormsModule, ClickOutsideDirective, NgIconComponent, FilterButtonComponent],
+  imports: [
+    FormsModule,
+    ClickOutsideDirective,
+    NgIconComponent,
+    FilterButtonComponent,
+  ],
   viewProviders: provideIcons({
     bootstrapSearch,
     bootstrapX,
@@ -26,7 +30,6 @@ export type PopularityOrder = 'Defecto' | 'MasVentas' | 'MenosVentas';
   templateUrl: './products-filter.component.html',
 })
 export class ProductsFilterComponent {
-  // Models para Two-Way Binding con Signals
   priceOrder = model.required<PriceOrder>();
   brandFilter = model.required<string>();
   popularityOrder = model.required<PopularityOrder>();
@@ -59,7 +62,6 @@ export class ProductsFilterComponent {
     this.showBrandMenu.set(false);
   }
 
-  // Métodos helper para conversión de tipos en el template
   setPriceOrder(value: string) {
     this.priceOrder.set(value as PriceOrder);
   }

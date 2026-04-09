@@ -76,7 +76,13 @@ export class SearchBarComponent {
         switchMap((term) =>
           this.apiProductService.searchProducts(term).pipe(
             catchError(() => {
-              return of({ data: [], total: 0, page: 1, limit: 16, totalPages: 0 } as any);
+              return of({
+                data: [],
+                total: 0,
+                page: 1,
+                limit: 16,
+                totalPages: 0,
+              } as any);
             }),
           ),
         ),

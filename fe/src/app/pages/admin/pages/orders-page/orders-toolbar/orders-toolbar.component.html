@@ -163,6 +163,58 @@
                 </div>
               </div>
 
+              <hr class="border-gray-100" />
+
+              <div>
+                <h2
+                  class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2"
+                >
+                  Filtrar por Método de Pago
+                </h2>
+                <div class="space-y-2">
+                  <label
+                    class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded"
+                  >
+                    <input
+                      type="radio"
+                      name="payment"
+                      [checked]="paymentMethodFilter() === 'Todos'"
+                      (change)="paymentMethodFilter.set('Todos')"
+                      class="text-[#3d4494] focus:ring-[#3d4494]"
+                    />
+                    <span class="text-sm text-gray-700">Todos</span>
+                  </label>
+                  <label
+                    class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded"
+                  >
+                    <input
+                      type="radio"
+                      name="payment"
+                      [checked]="
+                        paymentMethodFilter() === PaymentMethod.Transferencia
+                      "
+                      (change)="
+                        paymentMethodFilter.set(PaymentMethod.Transferencia)
+                      "
+                      class="text-[#3d4494] focus:ring-[#3d4494]"
+                    />
+                    <span class="text-sm text-gray-700">Transferencia</span>
+                  </label>
+                  <label
+                    class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded"
+                  >
+                    <input
+                      type="radio"
+                      name="payment"
+                      [checked]="paymentMethodFilter() === PaymentMethod.Local"
+                      (change)="paymentMethodFilter.set(PaymentMethod.Local)"
+                      class="text-[#3d4494] focus:ring-[#3d4494]"
+                    />
+                    <span class="text-sm text-gray-700">Local</span>
+                  </label>
+                </div>
+              </div>
+
               <button
                 (click)="limpiar()"
                 class="cursor-pointer w-full mt-2 px-3 h-10 text-xs font-medium text-[#3d4494] bg-indigo-50 rounded hover:bg-indigo-100 transition-colors"

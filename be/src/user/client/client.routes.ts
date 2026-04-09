@@ -7,11 +7,13 @@ export const clientRouter = Router();
 
 // Rutas protegidas (Admin puede gestionar clientes)
 clientRouter.get('/', verifyToken, verifyRole([UserRole.Admin]), ClientController.findAll);
-clientRouter.get('/:id', verifyToken, verifyRole([UserRole.Admin]), ClientController.findOne);
 clientRouter.get('/search', verifyToken, verifyRole([UserRole.Admin]), ClientController.searchClientByText);
-clientRouter.post('/', verifyToken, verifyRole([UserRole.Admin]), sanitizeClientInput, ClientController.add);
-clientRouter.delete('/:id', verifyToken, verifyRole([UserRole.Admin]), ClientController.remove);
-clientRouter.patch('/:id', verifyToken, verifyRole([UserRole.Admin, UserRole.Client]), sanitizeClientInput, ClientController.update);
 
 // Usuario logueado puede ver su propia cuenta
 clientRouter.get('/account/:id', verifyToken, ClientController.getAccountInfo);
+
+// Rutas protegidas (Admin puede gestionar clientes)
+clientRouter.get('/:id', verifyToken, verifyRole([UserRole.Admin]), ClientController.findOne);
+clientRouter.post('/', verifyToken, verifyRole([UserRole.Admin]), sanitizeClientInput, ClientController.add);
+clientRouter.delete('/:id', verifyToken, verifyRole([UserRole.Admin]), ClientController.remove);
+clientRouter.patch('/:id', verifyToken, verifyRole([UserRole.Admin, UserRole.Client]), sanitizeClientInput, ClientController.update);

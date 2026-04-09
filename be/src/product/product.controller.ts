@@ -40,10 +40,10 @@ export class ProductController {
   // BÚSQUEDAS Y CATEGORÍAS
   // ============================================================================
   static searchProductsByText = asyncHandler(async (req: Request, res: Response) => {
-    const { query } = req.query;
+    const { query, brand, priceOrder, popularityOrder } = req.query;
     const { page, limit } = getPaginationParams(req);
 
-    const products = await ProductService.searchProductsByText(query as string, page, limit);
+    const products = await ProductService.searchProductsByText(query as string, page, limit, { brand: brand as string, priceOrder: priceOrder as string, popularityOrder: popularityOrder as string });
     return res.status(200).json(ApiResponse.success('Productos encontrados', products));
   });
 
@@ -60,10 +60,15 @@ export class ProductController {
   static findActiveProductsByCategory = asyncHandler(async (req: Request, res: Response) => {
     const categoryId = Number.parseInt(req.params.categoryId);
     const { page, limit } = getPaginationParams(req);
+    const { brand, priceOrder, popularityOrder } = req.query;
 
     if (isNaN(categoryId)) throw new AppError('ID de categoría inválido', 400);
 
-    const products = await ProductService.findActiveProductsByCategory(categoryId, page, limit);
+    const products = await ProductService.findActiveProductsByCategory(categoryId, page, limit, {
+      brand: brand as string,
+      priceOrder: priceOrder as string,
+      popularityOrder: popularityOrder as string
+    });
     return res.status(200).json(ApiResponse.success('Productos activos encontrados en la categoría', products));
   });
 

@@ -12,10 +12,16 @@ export class ApiAdminService {
   private http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiUrl}/admins`;
 
-  getAllAdmins(page: number = 1, limit: number = 16): Observable<IPaginatedResult<IApiAdmin>> {
+  getAllAdmins(
+    page: number = 1,
+    limit: number = 16,
+  ): Observable<IPaginatedResult<IApiAdmin>> {
     const params = new HttpParams().set('page', page).set('limit', limit);
     return this.http
-      .get<{ message: string; data: IPaginatedResult<IApiAdmin> }>(this.apiUrl, { params })
+      .get<{
+        message: string;
+        data: IPaginatedResult<IApiAdmin>;
+      }>(this.apiUrl, { params })
       .pipe(map((response) => response.data));
   }
 
@@ -29,7 +35,7 @@ export class ApiAdminService {
   searchAdmins(
     query: string,
     page: number = 1,
-    limit: number = 16
+    limit: number = 16,
   ): Observable<IPaginatedResult<IApiAdmin>> {
     const params = new HttpParams()
       .set('query', query)

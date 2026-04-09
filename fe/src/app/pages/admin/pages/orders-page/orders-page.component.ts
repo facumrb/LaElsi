@@ -1,4 +1,12 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  inject,
+  OnInit,
+  signal,
+  effect,
+  untracked,
+} from '@angular/core';
 import { IApiOrder, OrderState, DeliveryMethod } from '@models/order.model';
 import { ApiOrderService } from '@services/api-services/api-order.service';
 import { AlertService } from '@services/alert.service';
@@ -7,8 +15,11 @@ import {
   OrdersToolbarComponent,
   OrderStatusFilter,
   DeliveryMethodFilter,
+  PaymentMethodFilter,
 } from './orders-toolbar/orders-toolbar.component';
 import { OrderDetailModalComponent } from '@shared/components/order-detail-modal/order-detail-modal.component';
+import { Router, ActivatedRoute } from '@angular/router';
+import { PaginationComponent } from '@shared/components/pagination/pagination.component';
 
 @Component({
   selector: 'app-orders-page',
@@ -16,69 +27,88 @@ import { OrderDetailModalComponent } from '@shared/components/order-detail-modal
     OrdersListComponent,
     OrdersToolbarComponent,
     OrderDetailModalComponent,
+    PaginationComponent,
   ],
   templateUrl: './orders-page.component.html',
 })
 export class OrdersPageComponent implements OnInit {
   private alertService = inject(AlertService);
   private orderService = inject(ApiOrderService);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
   private ordersRaw = signal<IApiOrder[]>([]);
+  currentPage = signal(1);
+  totalPages = signal(1);
+
   searchQuery = signal<string>('');
   statusFilter = signal<OrderStatusFilter>('Todos');
   deliveryMethodFilter = signal<DeliveryMethodFilter>('Todos');
+  paymentMethodFilter = signal<PaymentMethodFilter>('Todos');
   selectedOrderForModal = signal<IApiOrder | null>(null);
 
   filtersActive = computed(() => {
     return (
       this.searchQuery() !== '' ||
       this.statusFilter() !== 'Todos' ||
-      this.deliveryMethodFilter() !== 'Todos'
+      this.deliveryMethodFilter() !== 'Todos' ||
+      this.paymentMethodFilter() !== 'Todos'
     );
   });
 
-  ordersFiltered = computed(() => {
-    const query = this.searchQuery().toLowerCase().trim();
-    const status = this.statusFilter();
-    const delivery = this.deliveryMethodFilter();
-    const orders = this.ordersRaw();
+  // Los datos ya vienen filtrados y ordenados del server
+  ordersFiltered = computed(() => [...this.ordersRaw()]);
 
-    let filtered = orders.filter((order) => {
-      // Filtro de Búsqueda
-      let matchesSearch = true;
-      if (query) {
-        const clientName =
-          `${order.client.name} ${order.client.lastName}`.toLowerCase();
-        matchesSearch =
-          clientName.includes(query) ||
-          order.id.toString().includes(query) ||
-          order.status.toLowerCase().includes(query) ||
-          order.paymentMethod.toLowerCase().includes(query);
-      }
+  private initialLoadDone = false;
 
-      // Filtro de Estado
-      const matchesStatus = status === 'Todos' || order.status === status;
-
-      // Filtro de Delivery
-      const matchesDelivery =
-        delivery === 'Todos' || order.deliveryMethod === delivery;
-
-      return matchesSearch && matchesStatus && matchesDelivery;
+  constructor() {
+    // Al cambiar cualquier filtro, resetear a página 1 y recargar del server
+    effect(() => {
+      this.searchQuery();
+      this.statusFilter();
+      this.deliveryMethodFilter();
+      this.paymentMethodFilter();
+      untracked(() => {
+        if (this.initialLoadDone) {
+          this.currentPage.set(1);
+          this.loadOrders();
+        }
+      });
     });
-
-    // Ordenamiento por defecto: más recientes primero
-    return filtered.sort((a, b) => b.id - a.id);
-  });
+  }
 
   ngOnInit() {
+    const pageParam = this.route.snapshot.queryParamMap.get('page');
+    this.currentPage.set(Number(pageParam) || 1);
     this.loadOrders();
+    this.initialLoadDone = true;
   }
+
   loadOrders() {
-    this.orderService.getAllOrders(1, 1000).subscribe({ // Temporarily fetch 1000 items until full admin pagination is done
+    const filters = {
+      query: this.searchQuery(),
+      status: this.statusFilter(),
+      deliveryMethod: this.deliveryMethodFilter(),
+      paymentMethod: this.paymentMethodFilter(),
+    };
+
+    this.orderService.getAllOrders(this.currentPage(), 10, filters).subscribe({
       next: (data) => {
         this.ordersRaw.set(data.data);
+        this.totalPages.set(data.totalPages);
       },
     });
+  }
+
+  onPageChange(page: number) {
+    this.currentPage.set(page);
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { page },
+      queryParamsHandling: 'merge',
+    });
+    this.loadOrders();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   openOrderDetail(order: IApiOrder) {

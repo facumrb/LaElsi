@@ -16,9 +16,10 @@ import {
 import { ApiOrderService } from '@services/api-services/api-order.service';
 import { ApiProductService } from '@services/api-services/api-product.service';
 import { map } from 'rxjs';
-import { filter, of, Subject, switchMap, tap } from 'rxjs';
 import { ApiClientService } from '@services/api-services/api-client.service';
 import { OrderState, IApiOrder } from '@models/order.model';
+import { IApiProduct } from '@models/product.model';
+import { IApiClient } from '@models/user.model';
 import { OrderDetailModalComponent } from '@shared/components/order-detail-modal/order-detail-modal.component';
 import { ProductImageComponent } from '@shared/components/product-image/product-image.component';
 
@@ -51,16 +52,16 @@ export class AnalyticsPageComponent {
   private clientService = inject(ApiClientService);
 
   orders = toSignal(
-    this.orderService.getAllOrders(1, 100).pipe(map((res) => res.data)), 
-    { initialValue: [] as IApiOrder[] }
+    this.orderService.getAllOrders(1, 100).pipe(map((res) => res.data)),
+    { initialValue: [] as IApiOrder[] },
   );
   products = toSignal(
-    this.productService.getAllProducts(1, 100).pipe(map(res => res.data)),
-    { initialValue: [] as any[] } // Temporarily any[] until full product type is imported if needed, wait it has them.
+    this.productService.getAllProducts(1, 100).pipe(map((res) => res.data)),
+    { initialValue: [] as IApiProduct[] },
   );
   clients = toSignal(
     this.clientService.getAllClients(1, 100).pipe(map((res) => res.data)),
-    { initialValue: [] as any[] }
+    { initialValue: [] as IApiClient[] },
   );
 
   totalRevenue = computed(() => {

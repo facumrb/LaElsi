@@ -112,18 +112,47 @@ export class OrderService {
     return order;
   }
 
-  static async findAll(page: number = 1, limit: number = DEFAULT_PAGE_SIZE): Promise<PaginatedResult<Order>> {
+  static async findAll(
+    page: number = 1,
+    limit: number = DEFAULT_PAGE_SIZE,
+    filters: { query?: string; status?: string; deliveryMethod?: string; paymentMethod?: string } = {}
+  ): Promise<PaginatedResult<Order>> {
     const em = orm.em;
     const offset = (page - 1) * limit;
-    const [data, total] = await em.findAndCount(
-      Order,
-      {},
-      {
-        populate: ['client', 'items', 'items.product', 'items.product.photos'],
-        limit,
-        offset
+
+    const where: any = {};
+
+    if (filters.status && VALID_ORDER_STATES.includes(filters.status as OrderState)) {
+      where.status = filters.status;
+    }
+
+    if (filters.deliveryMethod && VALID_DELIVERY_METHODS.includes(filters.deliveryMethod as DeliveryMethod)) {
+      where.deliveryMethod = filters.deliveryMethod;
+    }
+
+    if (filters.paymentMethod && VALID_PAYMENT_METHODS.includes(filters.paymentMethod as PaymentMethod)) {
+      where.paymentMethod = filters.paymentMethod;
+    }
+
+    if (filters.query) {
+      const q = filters.query.trim();
+      // Si es un número, buscar por ID de orden
+      if (/^\d+$/.test(q)) {
+        where.id = Number(q);
+      } else {
+        // Buscar por nombre o apellido del cliente
+        where.client = {
+          $or: [{ name: { $like: `%${q}%` } }, { lastName: { $like: `%${q}%` } }]
+        };
       }
-    );
+    }
+
+    const [data, total] = await em.findAndCount(Order, where, {
+      populate: ['client', 'items', 'items.product', 'items.product.photos'],
+      limit,
+      offset,
+      orderBy: { dateTime: 'DESC' }
+    });
     return buildPaginatedResponse(data, total, page, limit);
   }
 
@@ -151,7 +180,7 @@ export class OrderService {
       { client: { id: clientId } },
       {
         populate: ['client', 'items', 'items.product', 'items.product.photos'],
-        orderBy: { createdAt: 'DESC' },
+        orderBy: { dateTime: 'DESC' },
         limit,
         offset
       }

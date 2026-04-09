@@ -55,7 +55,8 @@ export class ClientController {
 
   static findAll = asyncHandler(async (req: Request, res: Response) => {
     const { page, limit } = getPaginationParams(req);
-    const clients = await ClientService.findAll(page, limit);
+    const fiscalCondition = req.query.fiscalCondition as string | undefined;
+    const clients = await ClientService.findAll(page, limit, fiscalCondition);
     return res.status(200).json(ApiResponse.success('Todos los Clientes fueron encontrados', clients));
   });
 

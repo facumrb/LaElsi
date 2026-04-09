@@ -3,6 +3,7 @@
     [(searchQuery)]="searchQuery"
     [(statusFilter)]="statusFilter"
     [(deliveryMethodFilter)]="deliveryMethodFilter"
+    [(paymentMethodFilter)]="paymentMethodFilter"
   />
 
   <app-orders-list
@@ -13,6 +14,12 @@
     (onUpdateDelivery)="handleUpdateDelivery($event)"
     (onCancel)="handleCancel($event)"
     (onViewDetails)="openOrderDetail($event)"
+  />
+
+  <app-pagination
+    [currentPage]="currentPage()"
+    [totalPages]="totalPages()"
+    (pageChange)="onPageChange($event)"
   />
 </div>
 

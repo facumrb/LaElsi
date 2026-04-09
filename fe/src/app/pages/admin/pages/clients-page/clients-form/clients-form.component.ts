@@ -189,7 +189,12 @@ export class ClientsFormComponent implements OnInit {
       FormUtils.uniqueFieldValidator('Client', 'dni', this.http, excludeId),
     );
     this.formClient.controls.username.setAsyncValidators(
-      FormUtils.uniqueFieldValidator('Client', 'username', this.http, excludeId),
+      FormUtils.uniqueFieldValidator(
+        'Client',
+        'username',
+        this.http,
+        excludeId,
+      ),
     );
     this.formClient.controls.email.setAsyncValidators(
       FormUtils.uniqueFieldValidator('Client', 'email', this.http, excludeId),
@@ -310,7 +315,7 @@ export class ClientsFormComponent implements OnInit {
     if (this.isEditMode() && this.clientId()) {
       request$ = this.clientService.updateClient(
         this.clientId()!,
-        clientData as Partial<ICreateClient>
+        clientData as Partial<ICreateClient>,
       );
     } else {
       request$ = this.clientService.addClient(clientData as ICreateClient);
