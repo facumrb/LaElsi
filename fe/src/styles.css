@@ -319,6 +319,32 @@
     @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6;
   }
 
+  /* ── Paginación ── */
+  .pagination-container {
+    @apply flex flex-col items-center gap-2 mt-8 mb-4;
+  }
+
+  .pagination-controls {
+    @apply flex items-center justify-center gap-2;
+  }
+
+  .pagination-btn {
+    @apply cursor-pointer flex items-center justify-center w-10 h-10 rounded-lg
+           border border-gray-200 text-gray-700 transition-colors
+           hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-200
+           disabled:opacity-50 disabled:cursor-not-allowed
+           disabled:hover:bg-transparent disabled:hover:text-gray-700 disabled:hover:border-gray-200;
+  }
+
+  .pagination-btn-active {
+    @apply cursor-default flex items-center justify-center w-10 h-10 rounded-lg
+           bg-emerald-600 text-white font-medium shadow-sm transition-colors;
+  }
+
+  .pagination-info {
+    @apply text-sm text-gray-500;
+  }
+
   /* ── Utilities ── */
   .scrollbar-hide {
     -ms-overflow-style: none; /* IE and Edge */
