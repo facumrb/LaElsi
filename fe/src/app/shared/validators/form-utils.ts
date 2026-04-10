@@ -84,6 +84,9 @@ export class FormUtils {
         case 'mustMatch':
           return `Las contraseñas no coinciden.`;
 
+        case 'passwordsNotEqual':
+          return `Las contraseñas no coinciden.`;
+
         case 'pattern':
           // Email
           if (errors['pattern'].requiredPattern === this.emailPattern) {
@@ -165,6 +168,38 @@ export class FormUtils {
 
       return field1Value === field2Value ? null : { passwordsNotEqual: true };
     };
+  }
+
+  /**
+   * Sincroniza un error de nivel de grupo con un control específico.
+   * Útil para mostrar errores de validación cruzada (ej: contraseñas no coinciden)
+   * bajo un input específico usando app-field-error.
+   *
+   * @param formGroup El grupo de formularios que contiene los controles
+   * @param errorKey La clave del error en el grupo (ej: 'passwordsNotEqual')
+   * @param controlName El nombre del control que recibirá el error
+   */
+  static syncGroupErrorToControl(
+    formGroup: FormGroup,
+    errorKey: string,
+    controlName: string,
+  ): void {
+    formGroup.valueChanges.subscribe(() => {
+      const control = formGroup.get(controlName);
+      if (!control) return;
+
+      if (formGroup.errors?.[errorKey]) {
+        control.setErrors({
+          ...control.errors,
+          [errorKey]: true,
+        });
+      } else if (control.errors) {
+        const { [errorKey]: _, ...remainingErrors } = control.errors;
+        control.setErrors(
+          Object.keys(remainingErrors).length ? remainingErrors : null,
+        );
+      }
+    });
   }
 
   static notOnlyWhiteSpace(control: AbstractControl): ValidationErrors | null {

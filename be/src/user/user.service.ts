@@ -8,10 +8,11 @@ import { AppError } from '../shared/errors/appError.js';
 import bcrypt from 'bcrypt';
 
 export interface RegisterUserDto {
-  name: string;
-  lastName: string;
-  dni: string;
-  phone: string;
+  name?: string;
+  lastName?: string;
+  dni?: string;
+  phone?: string;
+
   username: string;
   password: string;
   email: string;
