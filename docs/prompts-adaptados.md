@@ -1,6 +1,7 @@
-# Prompts Adaptados – Proyecto LaElsi
+# Prompts Adaptados – Proyecto Laelsi
 
 > **Stack del proyecto**
+>
 > - **Backend:** Express 4 + TypeScript + MikroORM 6 + MySQL, estructura por carpetas de entidad (`be/src/{entity}/`)
 > - **Frontend:** Angular 21 + Tailwind CSS 4 + Signals + Zoneless (`provideZonelessChangeDetection`), estructura `fe/src/app/`
 > - **Entidades existentes:** `Category`, `Product` (con `Price`, `PriceChangeBatch`), `User` (STI → `Admin`, `Client`), `Order` (con `OrderLine`), `ProductPhoto`, `UserPhoto`
@@ -14,7 +15,7 @@
 
 ### 1A · Backend – Modelo de datos y API
 
-En el proyecto LaElsi (`be/src/category/`), extender la entidad `Category` (`category.entity.ts`) para soportar **subcategorías jerárquicas** (self-referencing):
+En el proyecto Laelsi (`be/src/category/`), extender la entidad `Category` (`category.entity.ts`) para soportar **subcategorías jerárquicas** (self-referencing):
 
 1. **Modelo de datos (MikroORM):**
    - Agregar una propiedad `@ManyToOne(() => Category, { nullable: true })` llamada `parent` con `nullable: true` (categoría raíz = sin padre).
@@ -107,7 +108,7 @@ Reescribir completamente `fe/src/app/pages/auth/pages/register-page/` para que s
    - **SM** (< 768px): formulario en una sola columna, scroll vertical. Campos apilados.
    - **MD** (768–1024px): formulario en 2 columnas para campos relacionados (nombre/apellido, contraseña/confirmar).
    - **LG** (> 1024px): layout centrado con carta/card elevada, opcionalmente con ilustración lateral.
-   - Mínimo `min-h-screen` con fondo acorde al diseño de LaElsi.
+   - Mínimo `min-h-screen` con fondo acorde al diseño de Laelsi.
 
 2. **Accesibilidad:**
    - Todos los inputs con `<label>` asociado (atributo `for`).
@@ -124,14 +125,16 @@ El endpoint genérico `GET /api/validate-unique` ya existe en `be/src/shared/val
 ### 3A · Backend – Mejoras al ValidationController
 
 1. **Whitelist de campos permitidos:** Actualmente cualquier `field` es consultable. Agregar un mapa de campos válidos por entidad para evitar exposición de columnas internas:
+
    ```typescript
    const ALLOWED_FIELDS: Record<string, string[]> = {
-     Admin:    ['email', 'username', 'dni'],
-     Client:   ['email', 'username', 'dni', 'cuit'],
+     Admin: ['email', 'username', 'dni'],
+     Client: ['email', 'username', 'dni', 'cuit'],
      Category: ['name'],
-     Product:  ['name'],
+     Product: ['name']
    };
    ```
+
    Rechazar con `AppError 400` si el campo no está en la whitelist.
 
 2. **Normalización:** Antes de consultar, normalizar el valor (`.trim().toLowerCase()` para email/username) para evitar bypasses por casing.
@@ -150,12 +153,14 @@ El endpoint genérico `GET /api/validate-unique` ya existe en `be/src/shared/val
 ### 3B · Frontend – Validador asíncrono reutilizable
 
 1. **Crear un `AsyncValidator` genérico** (en `fe/src/app/shared/validators/unique.validator.ts`):
+
    ```typescript
    // Firma sugerida:
    export function uniqueFieldValidator(
      entity: string, field: string, http: HttpClient, excludeId?: number
    ): AsyncValidatorFn { ... }
    ```
+
    - Usar `debounceTime(400)`, `distinctUntilChanged`, `switchMap` para evitar requests innecesarios.
    - Devolver `{ [field + 'Taken']: true }` si no está disponible, o `null` si sí lo está.
 
@@ -212,6 +217,7 @@ Auditar `fe/src/app/shared/form-utils.ts` y todos los formularios del proyecto p
 Actualmente solo `Product` tiene paginación (`findPage`). Implementar paginación para las demás entidades:
 
 1. **Crear un helper genérico** en `be/src/shared/utils/pagination.ts`:
+
    ```typescript
    interface PaginationParams {
      page: number;     // default 1
@@ -219,7 +225,7 @@ Actualmente solo `Product` tiene paginación (`findPage`). Implementar paginaci�
      sortBy?: string;  // campo de ordenamiento
      sortOrder?: 'ASC' | 'DESC';
    }
-   
+
    interface PaginatedResponse<T> {
      items: T[];
      total: number;
@@ -228,7 +234,7 @@ Actualmente solo `Product` tiene paginación (`findPage`). Implementar paginaci�
      totalPages: number;
      hasMore: boolean;
    }
-   
+
    function parsePaginationParams(query: Record<string, any>): PaginationParams { ... }
    ```
 
@@ -270,6 +276,7 @@ Actualmente solo `Product` tiene paginación (`findPage`). Implementar paginaci�
    - Adaptar cantidad de ítems por página según breakpoint: SM=6, MD=9, LG=12 (por defecto).
 
 4. **Modelo de respuesta paginada en el frontend** (`fe/src/app/models/`):
+
    ```typescript
    export interface PaginatedResponse<T> {
      items: T[];
@@ -318,6 +325,7 @@ El proyecto **ya tiene implementado un sistema de histórico de precios** con la
 ### 7A · Backend – Entidad y lógica de reservas
 
 1. **Crear una entidad `Reservation`** en `be/src/reservation/reservation.entity.ts`:
+
    ```
    @Entity()
    class Reservation extends CustomBaseEntity {
@@ -328,6 +336,7 @@ El proyecto **ya tiene implementado un sistema de histórico de precios** con la
      @Property({ nullable: true }) notes?: string
    }
    ```
+
    Con el enum `ReservationState { Pending = 'Pendiente', Confirmed = 'Confirmada', Cancelled = 'Cancelada', Fulfilled = 'Cumplida' }` en `be/src/shared/enums/`.
 
 2. **Controlador** `be/src/reservation/reservation.controller.ts`:

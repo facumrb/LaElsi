@@ -1,27 +1,25 @@
-# 🚀 Plan de Migración: LaElsi
-## *Supabase + Vercel + Cloudflare R2*
+# 🚀 Plan de Migración: Laelsi
 
-Este documento detalla los pasos necesarios para migrar el proyecto **LaElsi** desde un entorno local (Express + MySQL + MikroORM) a una arquitectura moderna, escalable y serverless.
+## _Supabase + Vercel + Cloudflare R2_
+
+Este documento detalla los pasos necesarios para migrar el proyecto **Laelsi** desde un entorno local (Express + MySQL + MikroORM) a una arquitectura moderna, escalable y serverless.
 
 ---
 
 ## 📊 Resumen de Tareas
 
-| # | Bloque | Tareas | Complejidad |
-|:-:|:-------|:------:|:-----------:|
-| **0** | Preparación y Cuentas | 3 | 🟢 Baja |
-| **1** | Base de Datos (Schema + Seed + RLS) | 3 | 🟡 Media |
-| **2** | Storage R2 | 5 | 🔴 Alta |
-| **3** | Edge Functions (Backend) | 11 | 🔴 Alta |
-| **4** | Frontend Angular | 8 | 🟡 Media |
-| **5** | Despliegue | 5 | 🟢 Baja |
-| **6** | Limpieza y Optimización | 4 | 🟢 Baja |
-| | **Total** | **39** | |
+|   #   | Bloque                              | Tareas | Complejidad |
+| :---: | :---------------------------------- | :----: | :---------: |
+| **0** | Preparación y Cuentas               |   3    |   🟢 Baja   |
+| **1** | Base de Datos (Schema + Seed + RLS) |   3    |  🟡 Media   |
+| **2** | Storage R2                          |   5    |   🔴 Alta   |
+| **3** | Edge Functions (Backend)            |   11   |   🔴 Alta   |
+| **4** | Frontend Angular                    |   8    |  🟡 Media   |
+| **5** | Despliegue                          |   5    |   🟢 Baja   |
+| **6** | Limpieza y Optimización             |   4    |   🟢 Baja   |
+|       | **Total**                           | **39** |             |
 
-> [!IMPORTANT]
-> **Orden Crítico de Ejecución:**
-> `0.1 → 0.2 → 1.1 → 1.2 → 2.1 → 2.2 → 2.3 → 3.1 → (Resto de Edge Functions) → 4.x → 1.3 → 5.x → 6.x`
-> *(RLS se configura al final para no bloquear el desarrollo inicial).*
+> [!IMPORTANT] **Orden Crítico de Ejecución:** `0.1 → 0.2 → 1.1 → 1.2 → 2.1 → 2.2 → 2.3 → 3.1 → (Resto de Edge Functions) → 4.x → 1.3 → 5.x → 6.x` _(RLS se configura al final para no bloquear el desarrollo inicial)._
 
 ---
 
@@ -59,6 +57,7 @@ Este documento detalla los pasos necesarios para migrar el proyecto **LaElsi** d
 ## 🗄️ BLOQUE 1 — Base de Datos en Supabase (SQL)
 
 ### Tarea 1.1 — Crear el Schema SQL
+
 Ejecutar este script en el **SQL Editor** de Supabase para traducir las entidades de MikroORM a PostgreSQL:
 
 ```sql
@@ -220,9 +219,10 @@ CREATE TRIGGER trg_audit_log_updated_at BEFORE UPDATE ON audit_log FOR EACH ROW 
 ```
 
 ### Tarea 1.2 — Semilla de Datos (Seed)
+
 Insertar datos iniciales traduciendo el `seed.ts` a SQL.
-> [!NOTE]
-> Usar `pgcrypto` para hashear contraseñas fuera de Supabase Auth.
+
+> [!NOTE] Usar `pgcrypto` para hashear contraseñas fuera de Supabase Auth.
 
 ```sql
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
@@ -230,7 +230,7 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto;
 -- Administradores
 INSERT INTO "user" (dtype, name, last_name, dni, email, phone, username, password, role)
 VALUES
- ('Admin', 'Super', 'Admin', '11111111', 'admin@laelsi.com', '123456789', 'admin', 
+ ('Admin', 'Super', 'Admin', '11111111', 'admin@laelsi.com', '123456789', 'admin',
   crypt('admin123', gen_salt('bf')), 'Admin'),
  ('Admin', 'Julio', 'Cezar', '44222123', 'juliocezar@gmail.com', '122345678', 'admin1',
   crypt('admin123', gen_salt('bf')), 'Admin');
@@ -244,6 +244,7 @@ INSERT INTO category (name, description, state) VALUES
 ```
 
 ### Tarea 1.3 — Configurar Row Level Security (RLS)
+
 Habilitar políticas de seguridad para proteger los datos:
 
 ```sql
@@ -270,7 +271,9 @@ CREATE POLICY "Admins gestionan productos" ON product
 ## 🖼️ BLOQUE 2 — Storage en Cloudflare R2
 
 ### Tarea 2.1 — Migración de Imágenes
+
 Subir imágenes de `be/uploads/` a R2.
+
 - **Opción Rápida:** `wrangler r2 object put laelsi-products/<name> --file=./path/to/file`
 - **Script Recomendado:** Usar un script Node.js con `@aws-sdk/client-s3` para subida masiva.
 
@@ -357,7 +360,7 @@ DECLARE
   v_product RECORD;
   v_current_price NUMERIC;
 BEGIN
-  INSERT INTO "order" (client_id, delivery_method, payment_method) 
+  INSERT INTO "order" (client_id, delivery_method, payment_method)
   VALUES (p_client_id, p_delivery_method, p_payment_method)
   RETURNING id INTO v_order_id;
 
@@ -366,13 +369,13 @@ BEGIN
     IF v_product.stock < (v_item->>'quantity')::int THEN
       RAISE EXCEPTION 'Stock insuficiente';
     END IF;
-    
+
     SELECT amount INTO v_current_price FROM price WHERE product_id = v_product.id AND is_current = TRUE;
-    
+
     UPDATE product SET stock = stock - (v_item->>'quantity')::int,
                        total_sold = total_sold + (v_item->>'quantity')::int
     WHERE id = v_product.id;
-    
+
     INSERT INTO order_line (order_id, product_id, quantity, price)
     VALUES (v_order_id, v_product.id, (v_item->>'quantity')::int, v_current_price);
   END LOOP;
@@ -380,7 +383,7 @@ BEGIN
   UPDATE "order" SET total_amount = (
     SELECT SUM(quantity * price) FROM order_line WHERE order_id = v_order_id
   ) WHERE id = v_order_id;
-  
+
   RETURN v_order_id;
 END;
 $$ LANGUAGE plpgsql;
@@ -391,15 +394,19 @@ $$ LANGUAGE plpgsql;
 ## 💻 BLOQUE 4 — Frontend Angular
 
 ### Tarea 4.1 — Actualizar Environments
+
 Configurar `apiUrl` apuntando a Supabase Edge Functions y las URLs públicas de R2.
 
 ### Tarea 4.2 — Nuevo Flujo de Upload
+
 Refactorizar `api-photo.service.ts`:
+
 1. Pedir URL de subida al Backend.
 2. Hacer `PUT` binario directo a R2.
 3. Notificar al Backend para registrar la asociación en DB.
 
 ### Tarea 4.3 — Actualizar Servicios de API
+
 Cambiar los endpoints de todos los servicios para que coincidan con los nombres de las Edge Functions (ej: `/api/products` → `/functions/v1/product-list`).
 
 ---

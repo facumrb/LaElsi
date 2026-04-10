@@ -20,7 +20,7 @@
 
 ### Descripción
 
-La librería “LaElsi” es un negocio dedicado a la venta de productos de librería, juguetería, imprenta digital y sellos. El sitio web debe contemplar ventas, administración y distribución de pedidos desde cualquier parte de Rosario, con el objetivo de ofrecer y expandir los servicios del negocio a más personas.
+La librería “Laelsi” es un negocio dedicado a la venta de productos de librería, juguetería, imprenta digital y sellos. El sitio web debe contemplar ventas, administración y distribución de pedidos desde cualquier parte de Rosario, con el objetivo de ofrecer y expandir los servicios del negocio a más personas.
 
 ### Modelo
 
