@@ -24,7 +24,7 @@ La librería “Laelsi” es un negocio dedicado a la venta de productos de libr
 
 ### Modelo
 
-[Modelo de dominio](https://drive.google.com/file/d/1BKgDr1gZnPLR35idM9RRXJRmda47Xsil/view?usp=sharing)
+![Modelo de dominio](Images/MD%20-%20Regularidad.png)
 
 _Nota_: Actualizar modelo y utilizar diagramas con [Mermaid](https://mermaid.js.org).
 
