@@ -1,5 +1,6 @@
 import { Component, input, output } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { A11yModule } from '@angular/cdk/a11y';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
   bootstrapSpeedometer2,
@@ -18,7 +19,7 @@ interface menuItems {
 
 @Component({
   selector: 'app-sidebar',
-  imports: [RouterLink, RouterLinkActive, NgIconComponent],
+  imports: [RouterLink, RouterLinkActive, NgIconComponent, A11yModule],
   viewProviders: [
     provideIcons({
       bootstrapSpeedometer2,

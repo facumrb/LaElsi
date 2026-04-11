@@ -1,0 +1,86 @@
+<nav
+  class="hidden md:flex justify-around bg-[#805d8f] p-2.5 shadow-inner relative z-10"
+  aria-label="Categorías de productos"
+>
+  @for (cat of categories(); track cat.id) {
+    <div class="group relative flex items-center">
+      <a
+        [routerLink]="['/category', cat.id]"
+        class="navbar-link"
+        [class.navbar-link-active]="isCategoryActive(cat.id)"
+      >
+        {{ cat.name }}
+        @if (cat.children && cat.children.length > 0) {
+          <ng-icon
+            name="bootstrapChevronDown"
+            class="navbar-chevron"
+            aria-hidden="true"
+          ></ng-icon>
+        }
+      </a>
+
+      @if (cat.children && cat.children.length > 0) {
+        <div class="navbar-dropdown">
+          <div class="navbar-dropdown-container">
+            @for (sub of cat.children; track sub.id) {
+              <div class="relative group/sub">
+                <a
+                  [routerLink]="['/category', sub.id]"
+                  class="navbar-dropdown-item flex items-center justify-between gap-2"
+                  [class.navbar-dropdown-item-active]="isCategoryActive(sub.id)"
+                >
+                  {{ sub.name }}
+                  @if (sub.children && sub.children.length > 0) {
+                    <ng-icon
+                      name="bootstrapChevronDown"
+                      class="navbar-chevron-right"
+                      aria-hidden="true"
+                    ></ng-icon>
+                  }
+                </a>
+
+                @if (sub.children && sub.children.length > 0) {
+                  <div class="navbar-subdropdown">
+                    @for (subsub of sub.children; track subsub.id) {
+                      <a
+                        [routerLink]="['/category', subsub.id]"
+                        class="navbar-dropdown-item"
+                        [class.navbar-dropdown-item-active]="
+                          isCategoryActive(subsub.id)
+                        "
+                      >
+                        {{ subsub.name }}
+                      </a>
+                    }
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <a
+    routerLink="/impresiones"
+    routerLinkActive="text-white underline decoration-[#f4abac] decoration-2 underline-offset-4"
+    class="navbar-static-link"
+  >
+    Impresiones
+  </a>
+  <a
+    routerLink="/disenio"
+    routerLinkActive="text-white underline decoration-[#f4abac] decoration-2 underline-offset-4"
+    class="navbar-static-link"
+  >
+    Diseño Gráfico
+  </a>
+  <a
+    routerLink="/sellos"
+    routerLinkActive="text-white underline decoration-[#f4abac] decoration-2 underline-offset-4"
+    class="navbar-static-link"
+  >
+    Sellos
+  </a>
+</nav>

@@ -1,4 +1,6 @@
 <div class="animate-fadeIn container mx-auto p-4">
+  <app-breadcrumbs [steps]="breadcrumbSteps()" />
+
   <header class="mb-4 border-b-2 border-[#EA6C6C] pb-4">
     <h1 class="text-3xl font-black uppercase text-gray-900">
       Resultados para: <span class="text-[#3d4494]">"{{ searchTerm() }}"</span>
@@ -16,9 +18,7 @@
   </section>
 
   <!-- Grilla de Productos -->
-  <div
-    class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6"
-  >
+  <div class="product-grid">
     @for (product of productsFiltered(); track product.id) {
       <app-product-card [product]="product" />
     } @empty {

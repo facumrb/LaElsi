@@ -1,47 +1,28 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import {
+  Component,
+  computed,
+  DestroyRef,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
+import { NavigationEnd, Router } from '@angular/router';
+import { filter } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { IApiCategory } from '@models/category.model';
 import { ApiCategoryService } from '@services/api-services/api-category.service';
 import { AuthService } from '@services/auth.service';
-import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
-import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import {
-  bootstrapPersonCircle,
-  bootstrapCart3,
-  bootstrapList,
-  bootstrapChevronDown,
-  bootstrapBoxArrowRight,
-  bootstrapSpeedometer2,
-  bootstrapPerson,
-  bootstrapGear,
-} from '@ng-icons/bootstrap-icons';
-import { SearchBarComponent } from './search-bar/search-bar.component';
 import { CartService } from '@services/cart.service';
-import { UserAvatarComponent } from '@shared/components/user-avatar/user-avatar.component';
-import { LogoComponent } from '@shared/components/logo/logo.component';
+import { NavbarTopBarComponent } from './navbar-top-bar/navbar-top-bar.component';
+import { NavbarCategoryBarComponent } from './navbar-category-bar/navbar-category-bar.component';
+import { NavbarMobileSidebarComponent } from './navbar-mobile-sidebar/navbar-mobile-sidebar.component';
 
 @Component({
   selector: 'app-navbar',
   imports: [
-    RouterLink,
-    RouterLinkActive,
-    NgIconComponent,
-    SearchBarComponent,
-    ClickOutsideDirective,
-    UserAvatarComponent,
-    LogoComponent,
-  ],
-  viewProviders: [
-    provideIcons({
-      bootstrapPersonCircle,
-      bootstrapCart3,
-      bootstrapList,
-      bootstrapChevronDown,
-      bootstrapBoxArrowRight,
-      bootstrapSpeedometer2,
-      bootstrapPerson,
-      bootstrapGear,
-    }),
+    NavbarTopBarComponent,
+    NavbarCategoryBarComponent,
+    NavbarMobileSidebarComponent,
   ],
   templateUrl: './navbar.component.html',
 })
@@ -49,32 +30,77 @@ export class NavbarComponent implements OnInit {
   authService = inject(AuthService);
   private apiCategoryService = inject(ApiCategoryService);
   private cartService = inject(CartService);
+  private router = inject(Router);
+  private destroyRef = inject(DestroyRef);
 
-  cartSignal = this.cartService.totalItems; // Señal conectada directamente al total de items en el carrito
+  cartSignal = this.cartService.totalItems;
   showSideMenu = signal(false);
-  showUserMenu = signal(false);
 
   categories = signal<IApiCategory[]>([]);
-
   currentUser = this.authService.currentUser;
+
+  private activeCategoryId = signal<number | null>(null);
+
+  activeCategoryIds = computed(() => {
+    const activeId = this.activeCategoryId();
+    const cats = this.categories();
+    if (!activeId || !cats.length) return new Set<number>();
+
+    const activeSet = new Set<number>();
+    this.findAncestors(cats, activeId, activeSet);
+    return activeSet;
+  });
 
   ngOnInit() {
     this.apiCategoryService.getCategoryTree('Activo').subscribe({
       next: (data) => this.categories.set(data),
     });
+
+    this.extractCategoryIdFromUrl(this.router.url);
+
+    this.router.events
+      .pipe(
+        filter(
+          (event): event is NavigationEnd => event instanceof NavigationEnd,
+        ),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((event) => {
+        this.extractCategoryIdFromUrl(event.urlAfterRedirects);
+      });
   }
 
   toggleMobileMenu() {
     this.showSideMenu.update((v) => !v);
   }
 
-  toggleUserMenu() {
-    this.showUserMenu.update((v) => !v);
-  }
-
   handleLogout() {
     this.authService.logout();
-    this.showUserMenu.set(false);
-    this.showSideMenu.set(false); // Cerrar menú móvil si es que estaba abierto
+    this.showSideMenu.set(false);
+  }
+
+  private extractCategoryIdFromUrl(url: string): void {
+    const match = url.match(/\/category\/(\d+)/);
+    this.activeCategoryId.set(match ? parseInt(match[1], 10) : null);
+  }
+
+  private findAncestors(
+    cats: IApiCategory[],
+    targetId: number,
+    ancestorSet: Set<number>,
+  ): boolean {
+    for (const cat of cats) {
+      if (cat.id === targetId) {
+        ancestorSet.add(cat.id);
+        return true;
+      }
+      if (cat.children?.length) {
+        if (this.findAncestors(cat.children, targetId, ancestorSet)) {
+          ancestorSet.add(cat.id);
+          return true;
+        }
+      }
+    }
+    return false;
   }
 }

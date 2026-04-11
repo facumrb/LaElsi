@@ -6,6 +6,7 @@ import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
   bootstrapWhatsapp,
   bootstrapInfoCircle,
+  bootstrapCopy,
 } from '@ng-icons/bootstrap-icons';
 import { CartService } from '@services/cart.service';
 import { ApiOrderService } from '@services/api-services/api-order.service';
@@ -19,6 +20,7 @@ import { AlertService } from '@services/alert.service';
     provideIcons({
       bootstrapWhatsapp,
       bootstrapInfoCircle,
+      bootstrapCopy,
     }),
   ],
   templateUrl: './order-summary.component.html',

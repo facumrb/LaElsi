@@ -8,6 +8,8 @@
 
     <!-- Modal content -->
     <div
+      cdkTrapFocus
+      cdkTrapFocusAutoCapture
       class="relative bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col font-sans"
       (clickOutside)="close()"
     >
@@ -224,7 +226,7 @@
         <button
           type="button"
           (click)="close()"
-          class="cursor-pointer px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none transition-colors"
+          class="btn-secondary"
           [disabled]="isSaving()"
         >
           Cancelar
@@ -232,8 +234,8 @@
         <button
           type="button"
           (click)="save()"
-          class="cursor-pointer inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md hover:bg-indigo-700 focus:outline-none transition-colors disabled:opacity-70 disabled:cursor-not-allowed min-w-35"
-          [disabled]="isSaving() || isLoading()"
+          class="btn-primary min-w-36"
+          [disabled]="isSaving() || isLoading() || !hasRealChanges()"
         >
           @if (isSaving()) {
             <div

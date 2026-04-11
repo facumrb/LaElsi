@@ -191,6 +191,14 @@
            flex items-center gap-1.5;
   }
 
+  .navbar-link-active {
+    @apply underline decoration-[#f4abac] decoration-2 underline-offset-4;
+  }
+
+  .navbar-dropdown-item.navbar-dropdown-item-active {
+    @apply text-[#5a2a8a];
+  }
+
   .navbar-dropdown {
     @apply absolute top-full left-0 mt-0 pt-3 w-50 opacity-0 invisible
            transition-all duration-200 z-50 translate-y-2;
@@ -200,12 +208,12 @@
   }
 
   .navbar-dropdown-container {
-    @apply bg-white rounded-xl shadow-xl overflow-visible border border-black/5 ring-1 ring-black;
+    @apply bg-white rounded-xl shadow-xl overflow-visible border border-black/5 ring-1 ring-black/5;
   }
 
   .navbar-dropdown-item {
     @apply relative z-10 block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100
-           hover:text-[#3d4494] font-semibold transition-colors
+           font-semibold transition-colors
            border-b border-gray-50 last:border-0;
   }
 
@@ -220,25 +228,10 @@
     @apply border-b-0 rounded-b-xl;
   }
 
-  .navbar-mobile-item {
-    @apply flex items-center justify-between px-6 py-3 text-gray-700 font-bold
-           hover:bg-gray-100 border-b border-gray-50;
-  }
-
-  .navbar-mobile-subitem {
-    @apply flex items-center gap-2 px-10 py-2.5 text-gray-600 text-sm font-semibold
-           hover:bg-gray-100 border-b border-gray-50 bg-gray-50/30;
-  }
-
-  .navbar-mobile-subsubitem {
-    @apply flex items-center gap-2 pl-16 pr-6 py-2.5 text-gray-500 text-sm
-           hover:bg-gray-100 border-b border-gray-50 bg-gray-100/30;
-  }
-
   /* Submenu de segundo nivel (aparece a la derecha del ítem hover) */
   .navbar-subdropdown {
     @apply absolute left-full top-0 ml-2 hidden
-           w-44 bg-white rounded-xl shadow-xl border border-black/5 ring-1 ring-black z-50
+           w-44 bg-white rounded-xl shadow-xl border border-black/5 ring-1 ring-black/5 z-50
            before:absolute before:-left-3 before:top-0 before:h-full before:w-3;
   }
   .group\/sub:hover .navbar-subdropdown {
@@ -248,8 +241,9 @@
   /* Triángulo que une el menú principal con el secundario */
   .navbar-subdropdown::after {
     content: "";
-    /* Usamos un cuadrado rotado para que tenga borde negro a la izquierda y abajo */
-    @apply absolute top-3 -left-1.5 w-2 h-2 bg-white border-l border-b border-black rotate-45 z-0 transition-colors;
+    @apply absolute top-3.5 -left-1.5 w-3 h-3 bg-white border-l border-b border-black/5 ring-0 rotate-45 transition-colors;
+    z-index: 20; /* Ensure it stays above the container's border to hide the seam */
+    box-shadow: -1px 1px 1px -1px rgba(0, 0, 0, 0.1); /* Micro sombra para emparejar con el menú */
   }
 
   .navbar-subdropdown:has(> .navbar-dropdown-item:first-of-type:hover)::after {
@@ -282,11 +276,11 @@
 
   /* ── Breadcrumbs ── */
   .breadcrumb-nav {
-    @apply flex mb-4 overflow-x-auto whitespace-nowrap py-1;
+    @apply block mb-2 py-1;
   }
 
   .breadcrumb-list {
-    @apply inline-flex items-center space-x-1 md:space-x-2;
+    @apply flex flex-wrap items-center gap-x-1 gap-y-1 md:gap-x-2;
   }
 
   .breadcrumb-item {
@@ -294,16 +288,16 @@
   }
 
   .breadcrumb-link {
-    @apply inline-flex items-center text-xs md:text-sm font-medium text-gray-500
+    @apply inline-flex items-center text-sm md:text-base font-medium text-gray-500
            hover:text-[#3d4494] transition-colors;
   }
 
   .breadcrumb-separator {
-    @apply text-gray-400 text-[10px] mx-1;
+    @apply text-gray-400 text-xs mx-1;
   }
 
   .breadcrumb-current {
-    @apply ml-1 text-xs md:text-sm font-semibold text-[#3d4494] truncate max-w-37.5 md:max-w-none;
+    @apply ml-1 text-sm md:text-base font-semibold text-[#3d4494] wrap-break-word;
   }
 
   /* ── Layout & Sections ── */
@@ -316,7 +310,7 @@
   }
 
   .product-grid {
-    @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6;
+    @apply grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6;
   }
 
   /* ── Paginación ── */
@@ -357,7 +351,7 @@
 
   /* ── Client Product Components ── */
   .elsi-product-card {
-    @apply relative flex flex-col h-full bg-white rounded-xl shadow-sm hover:shadow-xl hover:-translate-y-1 border border-gray-100 transition-all duration-300 overflow-hidden;
+    @apply relative flex flex-col h-full bg-white rounded-2xl shadow-sm hover:shadow-md hover:border-neutral-300 hover:-translate-y-1 border border-neutral-200 transition-all duration-300 overflow-hidden;
   }
 
   .elsi-price {

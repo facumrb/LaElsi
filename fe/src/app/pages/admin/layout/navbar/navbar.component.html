@@ -4,7 +4,7 @@
   <div class="flex items-center gap-2">
     <button
       (click)="toggleMobileMenu.emit()"
-      class="cursor-pointer md:hidden h-10 w-10 rounded-lg hover:bg-gray-100 text-gray-600 flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-[#3d4494]"
+      class="cursor-pointer md:hidden h-10 w-10 rounded-lg hover:bg-gray-100 text-gray-600 flex items-center justify-center transition-colors"
       aria-label="Abrir menú"
     >
       <ng-icon name="bootstrapList" class="text-2xl"></ng-icon>
@@ -12,7 +12,7 @@
 
     <button
       (click)="toggleSidebar.emit()"
-      class="hidden md:flex h-10 w-10 cursor-pointer rounded-lg hover:bg-gray-100 text-gray-600 items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-[#3d4494]"
+      class="hidden md:flex h-10 w-10 cursor-pointer rounded-lg hover:bg-gray-100 text-gray-600 items-center justify-center transition-colors"
       aria-label="Colapsar menú lateral"
     >
       <ng-icon name="bootstrapList" class="text-2xl"></ng-icon>
@@ -67,18 +67,14 @@
             (click)="showUserMenu.set(false)"
             class="flex items-center gap-3 px-4 pt-3 pb-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
           >
-            <ng-icon name="bootstrapPerson" class="text-lg"></ng-icon> Mi
-            Perfil
+            <ng-icon name="bootstrapPerson" class="text-lg"></ng-icon> Mi Perfil
           </a>
           <div class="border-t border-gray-100 hidden md:block"></div>
           <button
             (click)="handleLogout()"
             class="cursor-pointer w-full text-left flex items-center gap-3 px-4 pt-2 pb-3 text-sm text-red-600 hover:bg-gray-100 transition-colors"
           >
-            <ng-icon
-              name="bootstrapBoxArrowRight"
-              class="text-lg"
-            ></ng-icon>
+            <ng-icon name="bootstrapBoxArrowRight" class="text-lg"></ng-icon>
             Cerrar Sesión
           </button>
         </div>

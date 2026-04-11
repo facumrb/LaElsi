@@ -25,6 +25,7 @@ import {
 import { PaginationComponent } from '@shared/components/pagination/pagination.component';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { bootstrapExclamationTriangle } from '@ng-icons/bootstrap-icons';
+import { A11yModule } from '@angular/cdk/a11y';
 
 @Component({
   selector: 'app-category-page',
@@ -34,6 +35,7 @@ import { bootstrapExclamationTriangle } from '@ng-icons/bootstrap-icons';
     BreadcrumbsComponent,
     PaginationComponent,
     NgIconComponent,
+    A11yModule,
   ],
   viewProviders: [provideIcons({ bootstrapExclamationTriangle })],
   templateUrl: './category-page.component.html',

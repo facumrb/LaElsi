@@ -5,12 +5,14 @@ import {
   model,
   output,
   signal,
+  computed,
 } from '@angular/core';
 import {
   CdkDragDrop,
   DragDropModule,
   moveItemInArray,
 } from '@angular/cdk/drag-drop';
+import { A11yModule } from '@angular/cdk/a11y';
 import { ApiCategoryService } from '@services/api-services/api-category.service';
 import { AlertService } from '@services/alert.service';
 import { IApiCategory } from '@models/category.model';
@@ -26,6 +28,7 @@ import { ClickOutsideDirective } from '@shared/directives/click-outside.directiv
     NgIconComponent,
     CloseModalButtonComponent,
     ClickOutsideDirective,
+    A11yModule,
   ],
   providers: [provideIcons({ bootstrapChevronDown })],
   templateUrl: './categories-order-modal.component.html',
@@ -38,9 +41,14 @@ export class CategoriesOrderModalComponent {
   private alertService = inject(AlertService);
 
   categories = signal<IApiCategory[]>([]);
+  initialCategories = signal<string>('');
   expandedMap = signal<Record<number, boolean>>({});
   isLoading = signal(false);
   isSaving = signal(false);
+
+  hasRealChanges = computed(() => {
+    return JSON.stringify(this.categories()) !== this.initialCategories();
+  });
 
   constructor() {
     effect(() => {
@@ -61,6 +69,7 @@ export class CategoriesOrderModalComponent {
       next: (data) => {
         // Por defecto el servicio devuelve todas las categorías (Activas o Inactivas) previniendo que ninguna se pierda durante el reordenamiento.
         this.categories.set(data);
+        this.initialCategories.set(JSON.stringify(data));
         this.isLoading.set(false);
       },
       error: () => {
@@ -80,6 +89,8 @@ export class CategoriesOrderModalComponent {
   drop(event: CdkDragDrop<IApiCategory[]>, list: IApiCategory[]) {
     // Intercambia posicionalmente la categoría arrastrada asegurando que se quede dentro de su nivel de origen
     moveItemInArray(list, event.previousIndex, event.currentIndex);
+    // Forzamos actualización del signal colocando una nueva referencia para que se disparen los computeds
+    this.categories.set([...this.categories()]);
   }
 
   save() {

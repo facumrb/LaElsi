@@ -4,6 +4,8 @@
 >
   <!-- Modal Content -->
   <div
+    cdkTrapFocus
+    cdkTrapFocusAutoCapture
     clickOutside
     class="bg-white rounded-3xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-300"
     (click)="$event.stopPropagation()"
@@ -185,25 +187,26 @@
         }
       </div>
 
+      <!-- Datos del pedido -->
       <div
-        class="mt-6 pt-4 border-t border-gray-100 flex flex-col sm:flex-row items-left justify-between gap-4"
+        class="mt-6 pt-4 border-t border-gray-100 flex flex-row items-start justify-between gap-4"
       >
         <div class="flex flex-col gap-1">
           <span class="text-gray-500 font-medium tracking-wide"
             >Estado:
-            <span class="text-gray-800 font-bold ml-1 uppercase">{{
+            <span class="text-gray-800 font-bold">{{
               order().status
             }}</span></span
           >
           <span class="text-gray-500 font-medium tracking-wide"
             >Entrega:
-            <span class="text-gray-800 font-bold ml-1 uppercase">{{
+            <span class="text-gray-800 font-bold">{{
               order().deliveryMethod
             }}</span></span
           >
           <span class="text-gray-500 font-medium tracking-wide"
             >Pago:
-            <span class="text-gray-800 font-bold ml-1 uppercase">{{
+            <span class="text-gray-800 font-bold">{{
               order().paymentMethod
             }}</span></span
           >

@@ -1,0 +1,61 @@
+<div class="border-b border-gray-100/80">
+  <div
+    class="flex items-center hover:bg-gray-100 transition-colors w-full cursor-pointer"
+  >
+    <!-- Zona clickeable: navegar a la categoría -->
+    <a
+      [routerLink]="['/category', category().id]"
+      (click)="onNavigate()"
+      class="flex-1 py-3 block"
+      [style.padding-left.rem]="1.5 + depth() * 1"
+      [class.font-bold]="depth() === 0"
+      [class.font-semibold]="depth() === 1"
+      [class.text-sm]="depth() > 0"
+      [class.font-medium]="depth() === 2"
+      [style.color]="isActive() ? '#5a2a8a' : null"
+      [class.text-gray-700]="!isActive() && depth() === 0"
+      [class.text-gray-600]="!isActive() && depth() === 1"
+      [class.text-gray-500]="!isActive() && depth() === 2"
+    >
+      @if (depth() > 0) {
+        <span class="text-gray-300 mr-1.5">↳</span>
+      }
+      {{ category().name }}
+    </a>
+
+    <!-- Botón acordeón: expandir/colapsar hijos -->
+    @if (hasChildren) {
+      <button
+        type="button"
+        (click)="toggleExpand()"
+        [attr.aria-expanded]="isExpanded()"
+        [attr.aria-label]="'Expandir subcategorías de ' + category().name"
+        class="cursor-pointer px-4 py-3 text-gray-400 hover:text-[#3d4494] transition-colors"
+      >
+        <ng-icon
+          name="bootstrapChevronDown"
+          class="text-sm transition-transform duration-200"
+          [class.rotate-180]="isExpanded()"
+        ></ng-icon>
+      </button>
+    }
+  </div>
+
+  <!-- Hijos del acordeón (recursivo) -->
+  @if (isExpanded() && hasChildren) {
+    <div
+      class="bg-gray-50/50 border-t border-gray-100/50"
+      role="group"
+      [attr.aria-label]="'Subcategorías de ' + category().name"
+    >
+      @for (child of category().children; track child.id) {
+        <app-navbar-accordion-item
+          [category]="child"
+          [depth]="depth() + 1"
+          [activeCategoryIds]="activeCategoryIds()"
+          (navigated)="onNavigate()"
+        />
+      }
+    </div>
+  }
+</div>

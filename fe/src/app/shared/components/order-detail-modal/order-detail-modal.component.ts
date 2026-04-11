@@ -7,6 +7,7 @@ import {
   inject,
   computed,
 } from '@angular/core';
+import { A11yModule } from '@angular/cdk/a11y';
 import { CurrencyPipe, DOCUMENT } from '@angular/common';
 import { FormatDatePipe } from '@shared/pipes/format-date.pipe';
 import { RouterModule } from '@angular/router';
@@ -32,6 +33,7 @@ import { ProductImageComponent } from '@shared/components/product-image/product-
     RouterModule,
     CloseModalButtonComponent,
     ProductImageComponent,
+    A11yModule,
   ],
   viewProviders: [
     provideIcons({

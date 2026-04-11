@@ -1,50 +1,47 @@
-<div class="animate-fadeIn pb-4">
-  <div class="container mx-auto p-4">
-    <div class="flex items-center justify-between mb-5">
-      <h1
-        class="flex items-center text-2xl md:text-3xl font-bold text-neutral-900 tracking-tight"
-      >
-        Carrito
-        <span class="ml-3 text-lg md:text-xl font-medium text-neutral-500">
-          ({{ totalItems() }}
-          {{ totalItems() === 1 ? "producto" : "productos" }})
-        </span>
-      </h1>
-    </div>
-    @if (items().length > 0) {
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
-        <!-- Items List -->
-        <app-cart-items class="lg:col-span-2 flex flex-col gap-6" />
-
-        <!-- Summary Sidebar -->
-        <app-order-summary class="lg:col-span-1" />
-      </div>
-    } @else {
-      <div
-        class="bg-white rounded-3xl shadow-sm p-20 text-center animate-in zoom-in duration-500"
-      >
-        <div
-          class="w-32 h-32 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-8"
-        >
-          <ng-icon
-            name="bootstrapCartX"
-            class="text-6xl text-neutral-300"
-          ></ng-icon>
-        </div>
-        <h1 class="text-2xl font-bold text-neutral-800 mb-4">
-          Tu carrito está vacío
-        </h1>
-        <p class="text-neutral-500 mb-6 max-w-sm mx-auto">
-          ¡Aún no has añadido nada! Explora nuestros productos y encuentra lo
-          que necesitas.
-        </p>
-        <a
-          routerLink="/"
-          class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold px-12 py-4 rounded-xl transition-all shadow-lg shadow-blue-600/30"
-        >
-          Empezar a comprar
-        </a>
-      </div>
-    }
+<div class="animate-fadeIn pb-4 container mx-auto p-4">
+  <div class="flex items-center justify-between mb-5">
+    <h1
+      class="flex items-center text-2xl md:text-3xl font-bold text-neutral-900 tracking-tight"
+    >
+      Carrito
+      <span class="ml-3 text-lg md:text-xl font-medium text-neutral-500">
+        ({{ totalItems() }} {{ totalItems() === 1 ? "producto" : "productos" }})
+      </span>
+    </h1>
   </div>
+  @if (items().length > 0) {
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+      <!-- Items List -->
+      <app-cart-items class="lg:col-span-2 flex flex-col gap-6" />
+
+      <!-- Summary Sidebar -->
+      <app-order-summary class="lg:col-span-1" />
+    </div>
+  } @else {
+    <div
+      class="bg-white rounded-2xl shadow-sm border border-neutral-200 p-20 text-center animate-in zoom-in duration-500"
+    >
+      <div
+        class="w-32 h-32 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-8"
+      >
+        <ng-icon
+          name="bootstrapCartX"
+          class="text-6xl text-neutral-300"
+        ></ng-icon>
+      </div>
+      <h1 class="text-2xl font-bold text-neutral-800 mb-4">
+        Tu carrito está vacío
+      </h1>
+      <p class="text-neutral-500 mb-6 max-w-sm mx-auto">
+        ¡Aún no has añadido nada! Explora nuestros productos y encuentra lo que
+        necesitas.
+      </p>
+      <a
+        routerLink="/"
+        class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold px-12 py-4 rounded-xl transition-all shadow-lg shadow-blue-600/30"
+      >
+        Empezar a comprar
+      </a>
+    </div>
+  }
 </div>

@@ -1,11 +1,11 @@
-<div class="container mx-auto px-4 py-6 min-h-screen">
+<div class="container animate-fadeIn mx-auto px-4 py-6">
   <!-- Breadcrumbs -->
   <app-breadcrumbs [steps]="breadcrumbSteps()" />
 
   @if (category()) {
     <header class="section-header">
       <h1 class="section-title">
-        Sección: <span class="text-[#EA6C6C]">{{ category()?.name }}</span>
+        <span class="text-[#EA6C6C]">{{ category()?.name }}</span>
       </h1>
     </header>
   }
@@ -41,7 +41,7 @@
   />
 
   @if (showInactiveCategoryModal()) {
-    <div class="elsi-modal-overlay">
+    <div cdkTrapFocus cdkTrapFocusAutoCapture class="elsi-modal-overlay">
       <div class="elsi-modal-card">
         <div class="elsi-modal-icon-container">
           <ng-icon

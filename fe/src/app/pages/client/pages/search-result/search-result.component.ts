@@ -17,10 +17,16 @@ import {
 } from '@client/components/products-filter/products-filter.component';
 import { IApiProduct } from '@models/product.model';
 import { PaginationComponent } from '@shared/components/pagination/pagination.component';
+import { BreadcrumbsComponent } from '@client/components/breadcrumbs/breadcrumbs.component';
 
 @Component({
   selector: 'app-search-result',
-  imports: [ProductCardComponent, ProductsFilterComponent, PaginationComponent],
+  imports: [
+    ProductCardComponent,
+    ProductsFilterComponent,
+    PaginationComponent,
+    BreadcrumbsComponent,
+  ],
   templateUrl: './search-result.component.html',
 })
 export class SearchResultComponent implements OnInit {
@@ -42,6 +48,16 @@ export class SearchResultComponent implements OnInit {
 
   // Los productos ya vienen filtrados y ordenados del server
   productsFiltered = computed(() => [...this.productsRaw()]);
+
+  // Breadcrumbs dinámicos
+  breadcrumbSteps = computed(() => [
+    { label: 'Búsqueda' },
+    {
+      label: this.searchTerm()
+        ? `Resultados para "${this.searchTerm()}"`
+        : 'Todos los productos',
+    },
+  ]);
 
   private initialLoadDone = false;
 

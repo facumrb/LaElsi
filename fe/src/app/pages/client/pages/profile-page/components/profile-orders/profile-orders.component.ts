@@ -9,7 +9,6 @@ import {
   bootstrapXCircle,
 } from '@ng-icons/bootstrap-icons';
 import { IApiOrder, OrderState } from '@models/order.model';
-import { environment } from 'src/environments/environment';
 import { OrderDetailModalComponent } from '@shared/components/order-detail-modal/order-detail-modal.component';
 import { PaginationComponent } from '@shared/components/pagination/pagination.component';
 import { ApiOrderService } from '@services/api-services/api-order.service';
@@ -60,6 +59,8 @@ export class ProfileOrdersComponent {
       case 'Pagado':
         return 'bg-blue-100 text-blue-700 border-blue-200';
       case 'Entregado':
+        return 'bg-emerald-100 text-emerald-700 border-emerald-200';
+      case 'Enviado':
         return 'bg-emerald-100 text-emerald-700 border-emerald-200';
       case 'Cancelado':
         return 'bg-rose-100 text-rose-700 border-rose-200';

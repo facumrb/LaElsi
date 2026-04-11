@@ -11,6 +11,7 @@ import {
 import { CurrencyPipe } from '@angular/common';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { A11yModule } from '@angular/cdk/a11y';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
   bootstrapEye,
@@ -34,6 +35,7 @@ import { CloseModalButtonComponent } from '@shared/components/buttons/close-moda
     ClickOutsideDirective,
     PriceAdjustmentInputDirective,
     CloseModalButtonComponent,
+    A11yModule,
   ],
   viewProviders: [
     provideIcons({
