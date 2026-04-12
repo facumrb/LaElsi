@@ -35,6 +35,26 @@
   <!-- Contenido scrolleable: categorías en acordeón + links estáticos -->
   <div class="flex-1 overflow-y-auto pb-2">
     <nav class="flex flex-col" aria-label="Menú móvil de categorías">
+      <!-- Menu Principal -->
+      <div
+        class="flex items-center hover:bg-gray-100 transition-colors w-full cursor-pointer border-b border-gray-100/80"
+        routerLinkActive=""
+        [routerLinkActiveOptions]="{ exact: true }"
+        #mainLink="routerLinkActive"
+      >
+        <a
+          routerLink="/"
+          (click)="close()"
+          class="flex-1 py-3 pl-6 font-bold flex items-center gap-2"
+          [style.color]="mainLink?.isActive ? '#5a2a8a' : null"
+          [class.text-gray-700]="!mainLink?.isActive"
+        >
+          <ng-icon name="bootstrapHouse" class="text-lg"></ng-icon>
+          Menu Principal
+        </a>
+      </div>
+
+      <!-- Categorías dinámicas -->
       @for (cat of categories(); track cat.id) {
         <app-navbar-accordion-item
           [category]="cat"
@@ -44,7 +64,7 @@
         />
       }
 
-      <!-- Categorías estáticas (misma estética que categorías nivel 1) -->
+      <!-- Categorías estáticas (misma estética que categorías estáticas nivel 1) -->
       <div
         class="flex items-center hover:bg-gray-100 transition-colors w-full cursor-pointer border-b border-gray-100/80"
         routerLinkActive=""

@@ -1,5 +1,5 @@
 <div
-  class="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm transition-opacity duration-300 md:hidden"
+  class="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm transition-opacity duration-300 lg:hidden"
   [class.opacity-0]="!mobileMenuOpen()"
   [class.pointer-events-none]="!mobileMenuOpen()"
   [class.opacity-100]="mobileMenuOpen()"
@@ -11,7 +11,7 @@
   [cdkTrapFocus]="mobileMenuOpen()"
   [cdkTrapFocusAutoCapture]="mobileMenuOpen()"
   id="mobile-menu"
-  class="fixed inset-y-0 left-0 z-50 w-64 max-w-[85vw] bg-slate-900 text-white shadow-2xl transition-transform duration-300 md:hidden flex flex-col"
+  class="fixed inset-y-0 left-0 z-50 w-64 max-w-[85vw] bg-slate-900 text-white shadow-2xl transition-transform duration-300 lg:hidden flex flex-col"
   [class.-translate-x-full]="!mobileMenuOpen()"
   [class.translate-x-0]="mobileMenuOpen()"
   role="dialog"
@@ -41,7 +41,7 @@
 
 <aside
   id="desktop-sidebar"
-  class="hidden md:flex flex-col bg-slate-900 text-slate-300 transition-all duration-300 ease-in-out shadow-xl z-10 shrink-0"
+  class="hidden lg:flex flex-col bg-slate-900 text-slate-300 transition-all duration-300 ease-in-out shadow-xl z-10 shrink-0"
   [class.w-64]="sidebarOpen()"
   [class.w-20]="!sidebarOpen()"
 >

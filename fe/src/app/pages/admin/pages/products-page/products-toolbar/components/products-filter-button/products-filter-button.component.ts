@@ -8,10 +8,19 @@ import {
 } from '@ng-icons/bootstrap-icons';
 import { StockFilter, StatusFilter } from '../../products-toolbar.component';
 import { IApiCategory } from '@models/category.model';
+import {
+  FilterAccordionComponent,
+  FilterOption,
+} from '@shared/components/filter-accordion/filter-accordion.component';
 
 @Component({
   selector: 'app-products-filter-button',
-  imports: [ClickOutsideDirective, FilterButtonComponent, NgIconComponent],
+  imports: [
+    ClickOutsideDirective,
+    FilterButtonComponent,
+    NgIconComponent,
+    FilterAccordionComponent,
+  ],
   viewProviders: [provideIcons({ bootstrapChevronDown, bootstrapCheckLg })],
   templateUrl: './products-filter-button.component.html',
 })
@@ -23,6 +32,21 @@ export class ProductsFilterButtonComponent {
 
   showFilterMenu = signal(false);
   showCategoryMenu = signal(false);
+
+  readonly statusOptions: FilterOption[] = [
+    { value: 'Todos', label: 'Todos' },
+    { value: 'Activo', label: 'Activos' },
+    { value: 'Inactivo', label: 'Inactivos' },
+  ];
+
+  readonly stockOptions: FilterOption[] = [
+    { value: 'Todos', label: 'Todos' },
+    { value: 'AltoStock', label: 'Stock alto (+10)' },
+    { value: 'BajoStock', label: 'Stock bajo (-10)' },
+    { value: 'SinStock', label: 'Stock agotado' },
+    { value: 'MasProductos', label: 'Mayor a menor' },
+    { value: 'MenosProductos', label: 'Menor a mayor' },
+  ];
 
   // Computada para categorías en formato árbol plano hasta 3 niveles
   hierarchicalCategories = computed(() => {
@@ -62,13 +86,12 @@ export class ProductsFilterButtonComponent {
     this.showCategoryMenu.set(false);
   }
 
-  hayFiltrosActivos() {
-    return (
+  hayFiltrosActivos = computed(
+    () =>
       this.statusFilter() !== 'Todos' ||
       this.stockFilter() !== 'Todos' ||
-      this.categoryFilter() !== 'Todos'
-    );
-  }
+      this.categoryFilter() !== 'Todos',
+  );
 
   limpiar() {
     this.statusFilter.set('Todos');

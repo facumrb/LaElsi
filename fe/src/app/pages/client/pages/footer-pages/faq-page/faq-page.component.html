@@ -1,79 +1,65 @@
-<section class="py-6">
-  <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-    <div class="mb-6 text-center">
-      <h1 class="text-4xl font-bold text-[#3d4494]">¿Tenés alguna duda?</h1>
-      <p class="mt-4 text-gray-600">
-        Acá respondemos las consultas más comunes sobre compras, envíos y
-        servicios de Laelsi.
-      </p>
-    </div>
+<section class="container animate-fadeIn mx-auto max-w-5xl p-4">
+  <div class="mb-5 text-center">
+    <h1 class="text-4xl font-bold text-[#3d4494]">¿Tenés dudas?</h1>
+    <p class="mt-3 text-gray-600">
+      Acá respondemos las consultas más comunes sobre compras, envíos y
+      servicios de Laelsi.
+    </p>
+  </div>
 
-    <div class="space-y-3">
-      <details class="group rounded-xl border border-gray-200 bg-white p-6">
-        <summary
-          class="cursor-pointer list-none text-lg font-medium text-gray-800 transition-colors group-hover:text-[#037971]"
+  <div class="space-y-4 max-w-4xl mx-auto">
+    @for (faq of faqs; track $index) {
+      <div
+        class="rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:shadow-md overflow-hidden"
+        [class.border-[#037971]]="openIndex() === $index"
+        [class.ring-1]="openIndex() === $index"
+        [class.ring-[#037971]]="openIndex() === $index"
+      >
+        <button
+          type="button"
+          (click)="toggleFaq($index)"
+          class="flex w-full items-center justify-between p-6 text-left focus:outline-none focus-visible:bg-gray-50 cursor-pointer"
+          [attr.aria-expanded]="openIndex() === $index"
+          [attr.aria-controls]="'faq-answer-' + $index"
+          [id]="'faq-question-' + $index"
         >
-          ¿Cómo realizo una compra en Laelsi?
-        </summary>
-        <p class="mt-2 text-gray-600 leading-relaxed">
-          Elegí los productos que necesitás, agregalos al carrito y seguí el
-          proceso de compra. Podés comprar como usuario registrado o continuar
-          como invitado. Una vez confirmado el pago, recibirás un email con los
-          detalles de tu pedido.
-        </p>
-      </details>
+          <span
+            class="text-lg font-bold transition-colors pr-8"
+            [class.text-[#037971]]="openIndex() === $index"
+            [class.text-gray-800]="openIndex() !== $index"
+          >
+            {{ faq.question }}
+          </span>
+          <span
+            class="flex items-center justify-center shrink-0 w-8 h-8 rounded-full bg-gray-100 transition-colors"
+            [class.bg-[#037971]/10]="openIndex() === $index"
+          >
+            <ng-icon
+              name="bootstrapChevronDown"
+              class="text-xl transition-transform duration-300"
+              [class.rotate-180]="openIndex() === $index"
+              [class.text-[#037971]]="openIndex() === $index"
+              [class.text-gray-500]="openIndex() !== $index"
+            ></ng-icon>
+          </span>
+        </button>
 
-      <details class="group rounded-xl border border-gray-200 bg-white p-6">
-        <summary
-          class="cursor-pointer list-none text-lg font-medium text-gray-800 transition-colors group-hover:text-[#037971]"
+        <div
+          [id]="'faq-answer-' + $index"
+          role="region"
+          [attr.aria-labelledby]="'faq-question-' + $index"
+          class="grid transition-all duration-300 ease-in-out"
+          [class.opacity-100]="openIndex() === $index"
+          [class.opacity-0]="openIndex() !== $index"
+          [style.grid-template-rows]="openIndex() === $index ? '1fr' : '0fr'"
         >
-          ¿Realizan envíos a todo el país?
-        </summary>
-        <p class="mt-2 text-gray-600 leading-relaxed">
-          Sí, realizamos envíos a todo el territorio argentino. Trabajamos con
-          servicios de correo confiables para que tu pedido llegue de forma
-          segura y en el menor tiempo posible.
-        </p>
-      </details>
-
-      <details class="group rounded-xl border border-gray-200 bg-white p-6">
-        <summary
-          class="cursor-pointer list-none text-lg font-medium text-gray-800 transition-colors group-hover:text-[#037971]"
-        >
-          ¿Cuáles son los medios de pago disponibles?
-        </summary>
-        <p class="mt-2 text-gray-600 leading-relaxed">
-          Aceptamos tarjetas de débito y crédito, transferencias bancarias y
-          otros medios de pago electrónicos habilitados en nuestra tienda. Todas
-          las operaciones se realizan en un entorno seguro.
-        </p>
-      </details>
-
-      <details class="group rounded-xl border border-gray-200 bg-white p-6">
-        <summary
-          class="cursor-pointer list-none text-lg font-medium text-gray-800 transition-colors group-hover:text-[#037971]"
-        >
-          ¿Puedo retirar mi compra en el local?
-        </summary>
-        <p class="mt-2 text-gray-600 leading-relaxed">
-          Sí, podés optar por retirar tu pedido en nuestro local de Rosario. Una
-          vez que la compra esté lista, te avisaremos para que puedas pasar a
-          buscarla.
-        </p>
-      </details>
-
-      <details class="group rounded-xl border border-gray-200 bg-white p-6">
-        <summary
-          class="cursor-pointer list-none text-lg font-medium text-gray-800 transition-colors group-hover:text-[#037971]"
-        >
-          ¿Qué hago si tengo un problema con mi pedido?
-        </summary>
-        <p class="mt-2 text-gray-600 leading-relaxed">
-          Si tu pedido llega con algún inconveniente o tenés una consulta
-          adicional, podés comunicarte con nuestro equipo de atención al
-          cliente. Vamos a ayudarte para resolverlo lo antes posible.
-        </p>
-      </details>
-    </div>
+          <div class="overflow-hidden">
+            <p class="px-6 pb-6 text-gray-600 leading-relaxed font-medium">
+              {{ faq.answer }}
+            </p>
+          </div>
+        </div>
+      </div>
+    }
   </div>
 </section>

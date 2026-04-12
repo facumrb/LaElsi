@@ -27,6 +27,7 @@
               <li>
                 <a
                   routerLink="/about-us"
+                  (click)="scrollToTop()"
                   class="relative inline-block w-fit cursor-pointer transition-colors hover:text-[#f4abac] after:absolute after:bottom-0 after:left-0 after:h-px after:w-0 after:bg-[#f4abac] after:transition-all after:duration-400 hover:after:w-full"
                 >
                   ¿Quiénes somos?
@@ -35,6 +36,7 @@
               <li>
                 <a
                   routerLink="/faq"
+                  (click)="scrollToTop()"
                   class="relative inline-block w-fit cursor-pointer transition-colors hover:text-[#f4abac] after:absolute after:bottom-0 after:left-0 after:h-px after:w-0 after:bg-[#f4abac] after:transition-all after:duration-400 hover:after:w-full"
                 >
                   Preguntas Frecuentes (FAQ)
@@ -94,6 +96,7 @@
         <app-logo
           [width]="128"
           [height]="48"
+          alt="Laelsi"
           customClass="h-5 w-auto object-contain"
         />
         <p>&boxh; Todos los derechos reservados.</p>

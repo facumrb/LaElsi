@@ -11,12 +11,12 @@ import { IApiOrder, OrderState, DeliveryMethod } from '@models/order.model';
 import { ApiOrderService } from '@services/api-services/api-order.service';
 import { AlertService } from '@services/alert.service';
 import { OrdersListComponent } from './orders-list/orders-list.component';
+import { OrdersToolbarComponent } from './orders-toolbar/orders-toolbar.component';
 import {
-  OrdersToolbarComponent,
   OrderStatusFilter,
   DeliveryMethodFilter,
   PaymentMethodFilter,
-} from './orders-toolbar/orders-toolbar.component';
+} from './orders-toolbar/components/orders-filter-button/orders-filter-button.component';
 import { OrderDetailModalComponent } from '@shared/components/order-detail-modal/order-detail-modal.component';
 import { Router, ActivatedRoute } from '@angular/router';
 import { PaginationComponent } from '@shared/components/pagination/pagination.component';

@@ -5,9 +5,9 @@ export const adminRoutes: Routes = [
     path: '',
     loadComponent: () =>
       import('@admin/layout/layout.component').then((m) => m.LayoutComponent),
+
     children: [
       { path: '', redirectTo: 'analytics', pathMatch: 'full' },
-
       {
         path: 'analytics',
         loadComponent: () =>

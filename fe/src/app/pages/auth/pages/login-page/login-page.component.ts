@@ -12,6 +12,7 @@ import { FieldErrorComponent } from '@shared/validators/field-error/field-error.
 import { TrimInputDirective } from '@shared/directives/trim-input.directive';
 import { PasswordToggleButtonComponent } from '@shared/components/buttons/password-toggle-button/password-toggle-button.component';
 import { LogoComponent } from '@shared/components/logo/logo.component';
+import { RecoverPasswordModalComponent } from './recover-password-modal/recover-password-modal.component';
 
 @Component({
   selector: 'app-login-page',
@@ -24,6 +25,7 @@ import { LogoComponent } from '@shared/components/logo/logo.component';
     TrimInputDirective,
     PasswordToggleButtonComponent,
     LogoComponent,
+    RecoverPasswordModalComponent,
   ],
   viewProviders: [
     provideIcons({
@@ -68,8 +70,10 @@ export class LoginPageComponent {
     return val ? val.length > 0 : false;
   });
 
+  showRecoverPasswordModal = signal(false);
+
   forgotPassword() {
-    this.alertService.recoverPassword();
+    this.showRecoverPasswordModal.set(true);
   }
 
   onSubmit() {

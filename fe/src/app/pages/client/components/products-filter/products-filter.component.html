@@ -20,219 +20,32 @@
             aria-label="Opciones de filtro"
           >
             <div class="p-4 space-y-5">
-              <fieldset class="space-y-2">
-                <legend
-                  class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2"
-                >
-                  Ordenar por Precio
-                </legend>
-
-                <div class="space-y-2">
-                  <label
-                    class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded group"
-                  >
-                    <input
-                      type="radio"
-                      name="precioOrder"
-                      value="Defecto"
-                      [checked]="priceOrder() === 'Defecto'"
-                      (change)="setPriceOrder('Defecto')"
-                      class="text-[#3d4494] focus:ring-[#3d4494]"
-                    />
-                    <span
-                      class="text-sm text-gray-700 group-hover:text-[#3d4494]"
-                      >Defecto</span
-                    >
-                  </label>
-
-                  <label
-                    class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded group"
-                  >
-                    <input
-                      type="radio"
-                      name="precioOrder"
-                      value="Menor"
-                      [checked]="priceOrder() === 'Menor'"
-                      (change)="setPriceOrder('Menor')"
-                      class="text-[#3d4494] focus:ring-[#3d4494]"
-                    />
-                    <span
-                      class="text-sm text-gray-700 group-hover:text-[#3d4494]"
-                      >Menor a mayor</span
-                    >
-                  </label>
-
-                  <label
-                    class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded group"
-                  >
-                    <input
-                      type="radio"
-                      name="precioOrder"
-                      value="Mayor"
-                      [checked]="priceOrder() === 'Mayor'"
-                      (change)="setPriceOrder('Mayor')"
-                      class="text-[#3d4494] focus:ring-[#3d4494]"
-                    />
-                    <span
-                      class="text-sm text-gray-700 group-hover:text-[#3d4494]"
-                      >Mayor a menor</span
-                    >
-                  </label>
-                </div>
-              </fieldset>
+              <app-filter-accordion
+                label="Ordenar por Precio"
+                [options]="priceOptions"
+                [(selected)]="priceOrder"
+              ></app-filter-accordion>
 
               <hr class="border-gray-100" />
 
-              <div class="relative" (clickOutside)="showBrandMenu.set(false)">
-                <h2
-                  class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2"
-                >
-                  Filtrar por Marca
-                </h2>
-
-                <button
-                  type="button"
-                  (click)="showBrandMenu.set(!showBrandMenu())"
-                  class="relative w-full cursor-pointer bg-white rounded-lg border border-gray-300 py-2.5 pl-3 pr-10 text-left shadow-sm focus:outline-none focus:ring-1 sm:text-sm transition-colors"
-                >
-                  <span class="block truncate text-gray-700">
-                    {{
-                      brandFilter() === "Todas"
-                        ? "Todas las marcas"
-                        : brandFilter()
-                    }}
-                  </span>
-                  <span
-                    class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2"
-                  >
-                    <ng-icon
-                      name="bootstrapChevronDown"
-                      class="text-sm text-gray-400 transition-transform duration-200"
-                      [class.rotate-180]="showBrandMenu()"
-                    ></ng-icon>
-                  </span>
-                </button>
-
-                @if (showBrandMenu()) {
-                  <div
-                    class="absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm animate-fadeIn"
-                  >
-                    <div
-                      (click)="selectBrand('Todas')"
-                      class="relative cursor-pointer select-none py-2 pl-3 pr-9 text-gray-900 hover:bg-gray-100 transition-colors rounded-t-md"
-                    >
-                      <span
-                        class="block truncate font-normal"
-                        [class.font-semibold]="brandFilter() === 'Todas'"
-                      >
-                        Todas las marcas
-                      </span>
-                      @if (brandFilter() === "Todas") {
-                        <span
-                          class="absolute inset-y-0 right-0 flex items-center pr-4 text-[#3d4494]"
-                        >
-                          <ng-icon
-                            name="bootstrapCheckLg"
-                            class="text-lg"
-                          ></ng-icon>
-                        </span>
-                      }
-                    </div>
-
-                    @for (brand of brands(); track brand) {
-                      <div
-                        (click)="selectBrand(brand)"
-                        class="relative cursor-pointer select-none py-2 pl-3 pr-9 text-gray-900 hover:bg-gray-100 transition-colors"
-                      >
-                        <span
-                          class="block truncate font-normal"
-                          [class.font-semibold]="brandFilter() === brand"
-                        >
-                          {{ brand }}
-                        </span>
-                        @if (brandFilter() === brand) {
-                          <span
-                            class="absolute inset-y-0 right-0 flex items-center pr-4 text-[#3d4494]"
-                          >
-                            <ng-icon
-                              name="bootstrapCheckLg"
-                              class="text-lg"
-                            ></ng-icon>
-                          </span>
-                        }
-                      </div>
-                    }
-                  </div>
-                }
-              </div>
+              <app-filter-accordion
+                label="Filtrar por Marca"
+                [options]="brandOptions()"
+                [(selected)]="brandFilter"
+              ></app-filter-accordion>
 
               <hr class="border-gray-100" />
 
-              <fieldset class="space-y-2">
-                <legend
-                  class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2"
-                >
-                  Ordenar por Popularidad
-                </legend>
-
-                <div class="space-y-2">
-                  <label
-                    class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded group"
-                  >
-                    <input
-                      type="radio"
-                      name="ventasOrder"
-                      value="Defecto"
-                      [checked]="popularityOrder() === 'Defecto'"
-                      (change)="setPopularityOrder('Defecto')"
-                      class="text-[#3d4494] focus:ring-[#3d4494]"
-                    />
-                    <span
-                      class="text-sm text-gray-700 group-hover:text-[#3d4494]"
-                      >Defecto</span
-                    >
-                  </label>
-
-                  <label
-                    class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded group"
-                  >
-                    <input
-                      type="radio"
-                      name="ventasOrder"
-                      value="MasVentas"
-                      [checked]="popularityOrder() === 'MasVentas'"
-                      (change)="setPopularityOrder('MasVentas')"
-                      class="text-[#3d4494] focus:ring-[#3d4494]"
-                    />
-                    <span
-                      class="text-sm text-gray-700 group-hover:text-[#3d4494]"
-                      >Más vendidos</span
-                    >
-                  </label>
-
-                  <label
-                    class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded group"
-                  >
-                    <input
-                      type="radio"
-                      name="ventasOrder"
-                      value="MenosVentas"
-                      [checked]="popularityOrder() === 'MenosVentas'"
-                      (change)="setPopularityOrder('MenosVentas')"
-                      class="text-[#3d4494] focus:ring-[#3d4494]"
-                    />
-                    <span
-                      class="text-sm text-gray-700 group-hover:text-[#3d4494]"
-                      >Menos vendidos</span
-                    >
-                  </label>
-                </div>
-              </fieldset>
+              <app-filter-accordion
+                label="Ordenar por Popularidad"
+                [options]="popularityOptions"
+                [(selected)]="popularityOrder"
+              ></app-filter-accordion>
 
               <button
                 type="button"
                 (click)="limpiar()"
-                class="cursor-pointer w-full mt-2 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-[#3d4494] bg-indigo-50 rounded-lg hover:bg-indigo-100 transition-colors focus:outline-none focus:ring-2 focus:ring-[#3d4494] focus:ring-offset-1"
+                class="cursor-pointer w-full mt-4 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-[#3d4494] bg-indigo-50 rounded-lg hover:bg-indigo-100 transition-colors focus:outline-none focus:ring-2 focus:ring-[#3d4494] focus:ring-offset-1"
               >
                 Limpiar todos los filtros
               </button>

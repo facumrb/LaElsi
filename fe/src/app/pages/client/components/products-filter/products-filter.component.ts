@@ -1,14 +1,10 @@
 import { Component, model, signal, computed, input } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
-import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import {
-  bootstrapSearch,
-  bootstrapX,
-  bootstrapChevronDown,
-  bootstrapCheckLg,
-} from '@ng-icons/bootstrap-icons';
 import { FilterButtonComponent } from '@shared/components/buttons/filter-button/filter-button.component';
+import {
+  FilterAccordionComponent,
+  FilterOption,
+} from '@shared/components/filter-accordion/filter-accordion.component';
 
 export type PriceOrder = 'Defecto' | 'Menor' | 'Mayor';
 export type PopularityOrder = 'Defecto' | 'MasVentas' | 'MenosVentas';
@@ -16,17 +12,10 @@ export type PopularityOrder = 'Defecto' | 'MasVentas' | 'MenosVentas';
 @Component({
   selector: 'app-products-filter',
   imports: [
-    FormsModule,
     ClickOutsideDirective,
-    NgIconComponent,
     FilterButtonComponent,
+    FilterAccordionComponent,
   ],
-  viewProviders: provideIcons({
-    bootstrapSearch,
-    bootstrapX,
-    bootstrapChevronDown,
-    bootstrapCheckLg,
-  }),
   templateUrl: './products-filter.component.html',
 })
 export class ProductsFilterComponent {
@@ -39,7 +28,29 @@ export class ProductsFilterComponent {
 
   // UI State
   showFilterMenu = signal(false);
-  showBrandMenu = signal(false);
+
+  readonly priceOptions: FilterOption[] = [
+    { value: 'Defecto', label: 'Por defecto' },
+    { value: 'Menor', label: 'Menor a mayor' },
+    { value: 'Mayor', label: 'Mayor a menor' },
+  ];
+
+  readonly popularityOptions: FilterOption[] = [
+    { value: 'Defecto', label: 'Por defecto' },
+    { value: 'MasVentas', label: 'Más vendidos' },
+    { value: 'MenosVentas', label: 'Menos vendidos' },
+  ];
+
+  /** Opciones de marca generadas dinámicamente */
+  brandOptions = computed<FilterOption[]>(() => {
+    const opts: FilterOption[] = [
+      { value: 'Todas', label: 'Todas las marcas' },
+    ];
+    for (const brand of this.brands()) {
+      opts.push({ value: brand, label: brand });
+    }
+    return opts;
+  });
 
   isAnyFilterActive = computed(() => {
     return (
@@ -54,19 +65,5 @@ export class ProductsFilterComponent {
     this.brandFilter.set('Todas');
     this.popularityOrder.set('Defecto');
     this.showFilterMenu.set(false);
-    this.showBrandMenu.set(false);
-  }
-
-  selectBrand(brand: string) {
-    this.brandFilter.set(brand);
-    this.showBrandMenu.set(false);
-  }
-
-  setPriceOrder(value: string) {
-    this.priceOrder.set(value as PriceOrder);
-  }
-
-  setPopularityOrder(value: string) {
-    this.popularityOrder.set(value as PopularityOrder);
   }
 }

@@ -27,7 +27,9 @@
 
       <tbody class="admin-table-body">
         @for (client of clients(); track client.id; let isLast = $last) {
-          <tr class="admin-table-row hover:bg-gray-50 transition-colors">
+          <tr
+            class="admin-table-row hover:bg-gray-50 transition-colors lg:h-20"
+          >
             <td
               class="admin-table-cell-first"
               [class.lg:rounded-bl-lg]="isLast"
@@ -43,7 +45,7 @@
                 />
                 <div
                   (click)="onEdit.emit(client)"
-                  class="font-semibold text-gray-900 text-base lg:text-sm cursor-pointer hover:underline"
+                  class="font-semibold text-gray-900 truncate text-base lg:text-sm cursor-pointer hover:underline"
                   title="{{ client.username }}"
                 >
                   {{ client.username }}

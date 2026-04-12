@@ -1,4 +1,7 @@
-<div class="relative w-full block" (clickOutside)="showFilterMenu.set(false)">
+<div
+  class="relative w-full lg:w-auto block"
+  (clickOutside)="showFilterMenu.set(false)"
+>
   <app-filter-button
     class="w-full block"
     [isActive]="hayFiltrosActivos()"
@@ -8,6 +11,8 @@
   @if (showFilterMenu()) {
     <div
       class="absolute left-0 lg:left-auto lg:right-0 mt-2 top-full w-72 max-w-[90vw] origin-top-left lg:origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 z-50"
+      role="region"
+      aria-label="Opciones de filtro de órdenes"
     >
       <div class="p-4 space-y-4">
         <app-filter-accordion
@@ -19,9 +24,17 @@
         <hr class="border-gray-100" />
 
         <app-filter-accordion
-          label="Filtrar por Cantidad de Productos"
-          [options]="stockOptions"
-          [(selected)]="stockFilter"
+          label="Filtrar por Método de Entrega"
+          [options]="deliveryOptions"
+          [(selected)]="deliveryMethodFilter"
+        ></app-filter-accordion>
+
+        <hr class="border-gray-100" />
+
+        <app-filter-accordion
+          label="Filtrar por Método de Pago"
+          [options]="paymentOptions"
+          [(selected)]="paymentMethodFilter"
         ></app-filter-accordion>
 
         <button

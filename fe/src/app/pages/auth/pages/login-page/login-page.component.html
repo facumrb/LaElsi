@@ -1,18 +1,20 @@
-<main class="flex min-h-screen items-center justify-center bg-gray-50 p-4">
+<main
+  class="flex min-h-screen items-start pt-12 md:pt-4 md:items-center justify-center bg-gray-50 px-4 pb-4"
+>
   <div class="w-full max-w-lg">
     <div class="mb-4 flex justify-start">
       <app-go-back-button></app-go-back-button>
     </div>
 
     <div class="rounded-xl bg-white p-8 shadow-xl border border-gray-100">
-      <div class="mb-4 flex justify-center">
+      <h1 class="mb-4 flex justify-center">
         <app-logo
           [width]="128"
           [height]="48"
           loading="eager"
           customClass="h-14 w-auto object-contain"
         />
-      </div>
+      </h1>
 
       <p class="mb-6 text-center text-gray-500 text-sm">
         Ingresa tus credenciales para acceder
@@ -71,7 +73,7 @@
             <button
               type="button"
               (click)="forgotPassword()"
-              class="cursor-pointer text-sm font-medium text-[#3d4494] hover:text-[#2a2f63]"
+              class="cursor-pointer mt-1 text-sm font-medium text-[#3d4494]"
             >
               ¿Olvidaste tu contraseña?
             </button>
@@ -107,3 +109,7 @@
     </div>
   </div>
 </main>
+
+@if (showRecoverPasswordModal()) {
+  <app-recover-password-modal (close)="showRecoverPasswordModal.set(false)" />
+}

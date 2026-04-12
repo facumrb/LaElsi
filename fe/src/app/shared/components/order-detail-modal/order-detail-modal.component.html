@@ -1,5 +1,5 @@
 <div
-  class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-100 flex items-center justify-center p-4 md:p-6 animate-in fade-in duration-300"
+  class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-100 flex items-center justify-center p-4 md:p-6 animate-fadeIn"
   (click)="onClose()"
 >
   <!-- Modal Content -->
@@ -12,7 +12,7 @@
     (clickOutside)="onClose()"
   >
     <!-- Modal Header -->
-    <div
+    <header
       class="px-6 py-5 border-b border-gray-100 flex items-center justify-between bg-gray-50/50 shrink-0"
     >
       <div>
@@ -25,7 +25,7 @@
         </p>
       </div>
       <app-close-modal-button (clicked)="onClose()"></app-close-modal-button>
-    </div>
+    </header>
 
     <!-- Modal Body -->
     <div class="p-6 overflow-y-auto grow custom-scrollbar">
@@ -186,11 +186,14 @@
           </a>
         }
       </div>
+    </div>
 
+    <!-- Modal Footer -->
+    <footer
+      class="p-6 bg-gray-50/30 border-t border-gray-100 shrink-0 relative z-10 w-full rounded-b-3xl"
+    >
       <!-- Datos del pedido -->
-      <div
-        class="mt-6 pt-4 border-t border-gray-100 flex flex-row items-start justify-between gap-4"
-      >
+      <div class="flex flex-row items-start justify-between gap-4">
         <div class="flex flex-col gap-1">
           <span class="text-gray-500 font-medium tracking-wide"
             >Estado:
@@ -225,8 +228,8 @@
         </div>
       </div>
 
-      <!-- Action Buttons -->
-      <div class="mt-6 flex justify-end gap-3">
+      <!-- Botones de acción -->
+      <div class="mt-5 flex justify-end gap-3">
         @if (order().status === OrderState.Pending) {
           <button
             (click)="onCancel.emit(order().id)"
@@ -260,6 +263,6 @@
           </a>
         }
       </div>
-    </div>
+    </footer>
   </div>
 </div>

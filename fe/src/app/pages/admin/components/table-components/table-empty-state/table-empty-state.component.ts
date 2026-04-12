@@ -2,12 +2,17 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { bootstrapSearch, bootstrapInbox } from '@ng-icons/bootstrap-icons';
 
+// Componente que se muestra cuando la tabla no tiene datos
+
 @Component({
   selector: '[app-table-empty-state]',
   imports: [NgIconComponent],
   viewProviders: [provideIcons({ bootstrapSearch, bootstrapInbox })],
   templateUrl: './table-empty-state.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    class: 'admin-table-row',
+  },
 })
 export class TableEmptyStateComponent {
   // Número de columnas que ocupará la tabla

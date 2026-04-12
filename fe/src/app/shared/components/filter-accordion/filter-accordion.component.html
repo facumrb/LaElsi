@@ -1,0 +1,57 @@
+<div class="relative" (clickOutside)="isOpen.set(false)">
+  <h2 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+    {{ label() }}
+  </h2>
+
+  <button
+    type="button"
+    (click)="toggle()"
+    class="relative w-full cursor-pointer bg-white rounded-lg border border-gray-300 py-2.5 pl-3 pr-10 text-left shadow-sm focus:outline-none focus:ring-1 sm:text-sm transition-colors"
+    [attr.aria-expanded]="isOpen()"
+    [attr.aria-label]="label()"
+  >
+    <span class="block truncate text-gray-700">
+      {{ selectedLabel() }}
+    </span>
+    <span
+      class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2"
+    >
+      <ng-icon
+        name="bootstrapChevronDown"
+        class="text-sm text-gray-400 transition-transform duration-200"
+        [class.rotate-180]="isOpen()"
+      ></ng-icon>
+    </span>
+  </button>
+
+  @if (isOpen()) {
+    <div
+      class="absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm animate-fadeIn"
+      role="listbox"
+      [attr.aria-label]="label()"
+    >
+      @for (option of options(); track option.value) {
+        <div
+          (click)="select(option.value)"
+          class="relative cursor-pointer select-none py-2 pl-3 pr-9 text-gray-900 hover:bg-gray-100 transition-colors"
+          role="option"
+          [attr.aria-selected]="selected() === option.value"
+        >
+          <span
+            class="block truncate font-normal"
+            [class.font-semibold]="selected() === option.value"
+          >
+            {{ option.label }}
+          </span>
+          @if (selected() === option.value) {
+            <span
+              class="absolute inset-y-0 right-0 flex items-center pr-4 text-[#3d4494]"
+            >
+              <ng-icon name="bootstrapCheckLg" class="text-lg"></ng-icon>
+            </span>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

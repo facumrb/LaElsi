@@ -5,6 +5,7 @@ import { IApiCategory } from '@models/category.model';
 import { UserSession } from '@models/auth.model';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
+  bootstrapHouse,
   bootstrapSpeedometer2,
   bootstrapPerson,
   bootstrapBoxArrowRight,
@@ -24,6 +25,7 @@ import { NavbarAccordionItemComponent } from '../navbar-accordion-item/navbar-ac
   ],
   viewProviders: [
     provideIcons({
+      bootstrapHouse,
       bootstrapSpeedometer2,
       bootstrapPerson,
       bootstrapBoxArrowRight,

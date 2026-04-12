@@ -12,6 +12,7 @@
       class="absolute left-0 sm:left-auto sm:right-0 mt-2 w-72 max-w-[90vw] origin-top-left sm:origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 z-50"
     >
       <div class="p-4 space-y-4">
+        <!-- Categoría: mantiene implementación custom con jerarquía -->
         <div class="relative" (clickOutside)="showCategoryMenu.set(false)">
           <h2
             class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2"
@@ -100,142 +101,26 @@
 
         <hr class="border-gray-100" />
 
-        <div>
-          <h2
-            class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2"
-          >
-            Filtrar por Estado
-          </h2>
-          <div class="space-y-2">
-            <label
-              class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded"
-            >
-              <input
-                type="radio"
-                name="estado"
-                [checked]="statusFilter() === 'Todos'"
-                (change)="statusFilter.set('Todos')"
-                class="text-[#3d4494] focus:ring-[#3d4494]"
-              />
-              <span class="text-sm text-gray-700">Todos</span>
-            </label>
-            <label
-              class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded"
-            >
-              <input
-                type="radio"
-                name="estado"
-                [checked]="statusFilter() === 'Activo'"
-                (change)="statusFilter.set('Activo')"
-                class="text-[#3d4494] focus:ring-[#3d4494]"
-              />
-              <span class="text-sm text-gray-700">Activos</span>
-            </label>
-            <label
-              class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded"
-            >
-              <input
-                type="radio"
-                name="estado"
-                [checked]="statusFilter() === 'Inactivo'"
-                (change)="statusFilter.set('Inactivo')"
-                class="text-[#3d4494] focus:ring-[#3d4494]"
-              />
-              <span class="text-sm text-gray-700">Inactivos</span>
-            </label>
-          </div>
-        </div>
+        <app-filter-accordion
+          label="Filtrar por Estado"
+          [options]="statusOptions"
+          [(selected)]="statusFilter"
+        ></app-filter-accordion>
 
         <hr class="border-gray-100" />
 
-        <div>
-          <h2
-            class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2"
-          >
-            Filtrar por Stock
-          </h2>
-          <div class="space-y-2">
-            <label
-              class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded"
-            >
-              <input
-                type="radio"
-                name="stock"
-                [checked]="stockFilter() === 'Todos'"
-                (change)="stockFilter.set('Todos')"
-                class="text-[#3d4494] focus:ring-[#3d4494]"
-              />
-              <span class="text-sm text-gray-700">Todos</span>
-            </label>
-            <label
-              class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded"
-            >
-              <input
-                type="radio"
-                name="stock"
-                [checked]="stockFilter() === 'AltoStock'"
-                (change)="stockFilter.set('AltoStock')"
-                class="text-[#3d4494] focus:ring-[#3d4494]"
-              />
-              <span class="text-sm text-gray-700">Stock alto (+10)</span>
-            </label>
-            <label
-              class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded"
-            >
-              <input
-                type="radio"
-                name="stock"
-                [checked]="stockFilter() === 'BajoStock'"
-                (change)="stockFilter.set('BajoStock')"
-                class="text-[#3d4494] focus:ring-[#3d4494]"
-              />
-              <span class="text-sm text-gray-700">Stock bajo (-10)</span>
-            </label>
-            <label
-              class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded"
-            >
-              <input
-                type="radio"
-                name="stock"
-                [checked]="stockFilter() === 'SinStock'"
-                (change)="stockFilter.set('SinStock')"
-                class="text-[#3d4494] focus:ring-[#3d4494]"
-              />
-              <span class="text-sm text-gray-700">Stock agotado</span>
-            </label>
-
-            <label
-              class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded"
-            >
-              <input
-                type="radio"
-                name="inv"
-                [checked]="stockFilter() === 'MasProductos'"
-                (change)="stockFilter.set('MasProductos')"
-                class="text-[#3d4494] focus:ring-[#3d4494]"
-              />
-              <span class="text-sm text-gray-700">Mayor a menor</span>
-            </label>
-            <label
-              class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded"
-            >
-              <input
-                type="radio"
-                name="inv"
-                [checked]="stockFilter() === 'MenosProductos'"
-                (change)="stockFilter.set('MenosProductos')"
-                class="text-[#3d4494] focus:ring-[#3d4494]"
-              />
-              <span class="text-sm text-gray-700">Menor a mayor</span>
-            </label>
-          </div>
-        </div>
+        <app-filter-accordion
+          label="Filtrar por Stock"
+          [options]="stockOptions"
+          [(selected)]="stockFilter"
+        ></app-filter-accordion>
 
         <button
+          type="button"
           (click)="limpiar()"
-          class="cursor-pointer w-full mt-2 px-3 h-10 text-xs font-medium text-[#3d4494] bg-indigo-50 rounded hover:bg-indigo-100 transition-colors"
+          class="cursor-pointer w-full mt-4 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-[#3d4494] bg-indigo-50 rounded-lg hover:bg-indigo-100 transition-colors focus:outline-none focus:ring-2 focus:ring-[#3d4494] focus:ring-offset-1"
         >
-          Limpiar Filtros
+          Limpiar todos los filtros
         </button>
       </div>
     </div>

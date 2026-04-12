@@ -4,12 +4,12 @@
       <thead class="table-header">
         <tr>
           <th class="admin-table-header-cell w-[6%] rounded-tl-lg">ID</th>
-          <th class="admin-table-header-cell w-[15%]">Cliente</th>
-          <th class="admin-table-header-cell truncate w-[24%]">Entrega</th>
-          <th class="admin-table-header-cell w-[15%]">Estado</th>
-          <th class="admin-table-header-cell w-[15%]">Pago</th>
-          <th class="admin-table-header-cell w-[12%]">Total</th>
-          <th class="admin-table-header-cell w-[13%] text-center">Acciones</th>
+          <th class="admin-table-header-cell w-[14%]">Cliente</th>
+          <th class="admin-table-header-cell truncate w-[22%]">Entrega</th>
+          <th class="admin-table-header-cell w-[16%]">Estado</th>
+          <th class="admin-table-header-cell w-[14%]">Pago</th>
+          <th class="admin-table-header-cell w-[13%]">Total</th>
+          <th class="admin-table-header-cell w-[15%] text-center">Acciones</th>
         </tr>
       </thead>
 
@@ -70,7 +70,7 @@
                     order.deliveryMethod === DeliveryMethod.RetiroSucursal
                   "
                 ></ng-icon>
-                <div class="font-medium text-gray-700 truncate">
+                <div class="font-medium text-gray-700">
                   {{
                     order.deliveryMethod === DeliveryMethod.RetiroSucursal
                       ? "Sucursal"
@@ -89,7 +89,7 @@
                             : DeliveryMethod.Envio,
                       })
                     "
-                    class="ml-2 flex items-center px-2 py-1 bg-white border border-gray-200 text-gray-600 rounded-md text-xs font-semibold hover:bg-gray-50 hover:text-[#3d4494] hover:border-[#3d4494]/30 transition-all shadow-sm cursor-pointer whitespace-nowrap"
+                    class="flex items-center px-1 py-1 bg-white border border-gray-200 text-gray-600 rounded-md text-xs font-semibold hover:bg-gray-50 hover:text-[#3d4494] hover:border-[#3d4494]/30 transition-all shadow-sm cursor-pointer"
                     title="Cambiar método de entrega"
                   >
                     Cambiar
@@ -117,7 +117,7 @@
               <span class="admin-table-mobile-label block mb-1 text-xs"
                 >Pago:</span
               >
-              <div class="font-medium text-gray-700 truncate">
+              <div class="font-medium text-gray-700">
                 {{ order.paymentMethod }}
               </div>
             </td>

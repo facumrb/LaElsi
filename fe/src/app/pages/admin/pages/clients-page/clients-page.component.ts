@@ -11,10 +11,8 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { IApiClient } from '@models/user.model';
 import { ApiClientService } from '@services/api-services/api-client.service';
 import { AlertService } from '@services/alert.service';
-import {
-  ClientsToolbarComponent,
-  FiscalConditionFilter,
-} from './clients-toolbar/clients-toolbar.component';
+import { ClientsToolbarComponent } from './clients-toolbar/clients-toolbar.component';
+import { FiscalConditionFilter } from './clients-toolbar/components/clients-filter-button/clients-filter-button.component';
 import { ClientsListComponent } from './clients-list/clients-list.component';
 import { PaginationComponent } from '@shared/components/pagination/pagination.component';
 

@@ -26,4 +26,8 @@ export class FooterComponent {
   horario1Signal = signal('Lunes a Viernes: 8:00 a 17:00');
   horario2Signal = signal('Sábados: 9:00 a 13:00');
   currentYear = signal(new Date().getFullYear());
+
+  scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 }
