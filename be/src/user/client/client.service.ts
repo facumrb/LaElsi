@@ -136,6 +136,16 @@ export class ClientService {
     client.dni = dni;
     client.role = UserRole.Client;
 
+    if (data.cuit) client.cuit = data.cuit;
+    if (data.fiscalCondition) client.fiscalCondition = data.fiscalCondition;
+    if (data.street) client.street = data.street;
+    if (data.streetNumber) client.streetNumber = data.streetNumber;
+    if (data.city) client.city = data.city;
+    if (data.province) client.province = data.province;
+    if (data.postalCode) client.postalCode = data.postalCode;
+    if (data.floor) client.floor = data.floor;
+    if (data.apartment) client.apartment = data.apartment;
+
     try {
       em.persist(client);
       await em.flush();
