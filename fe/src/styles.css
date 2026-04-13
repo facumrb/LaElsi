@@ -47,11 +47,11 @@
   }
 
   .admin-table-row {
-    @apply flex flex-col relative lg:static bg-white rounded-xl shadow border border-gray-200 mb-4 mx-4 mt-4 lg:mx-0 lg:mt-0 lg:mb-0 lg:table-row lg:shadow-none lg:border-0 lg:rounded-none;
+    @apply grid grid-cols-1 sm:grid-cols-2 gap-y-1 sm:gap-x-4 lg:gap-0 relative lg:static bg-white rounded-xl shadow border border-gray-200 mb-4 mx-4 mt-4 lg:mx-0 lg:mt-0 lg:mb-0 lg:table-row lg:shadow-none lg:border-0 lg:rounded-none;
   }
 
   .admin-table-cell-first {
-    @apply px-5 pt-6 pb-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle;
+    @apply sm:col-span-2 lg:col-span-1 px-5 pt-6 pb-2 border-b border-gray-50 lg:border-b lg:border-gray-100 lg:px-6 lg:py-4 lg:table-cell lg:align-middle;
   }
 
   .admin-table-cell {
@@ -59,7 +59,7 @@
   }
 
   .admin-table-cell-last {
-    @apply px-5 pt-2 pb-5 lg:px-6 lg:py-4 lg:table-cell lg:align-middle lg:border-b lg:border-gray-100;
+    @apply sm:col-span-2 lg:col-span-1 px-5 pt-2 pb-5 lg:px-6 lg:py-4 lg:table-cell lg:align-middle lg:border-b lg:border-gray-100;
   }
 
   .admin-table-header-cell {
