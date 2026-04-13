@@ -49,7 +49,7 @@ export class AuthService {
       );
   }
 
-  register(userData: RegisterData | IClientRegister): Observable<any> {
+  register(userData: IClientRegister): Observable<any> {
     return this.http
       .post<IApiResponse<any>>(`${this.apiUrl}/register`, userData)
       .pipe(map((response) => response.data));

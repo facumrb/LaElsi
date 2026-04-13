@@ -50,21 +50,31 @@ export class RegisterPageComponent {
     {
       username: [
         '',
-        [
-          Validators.required,
-          FormUtils.minLength(4),
-          FormUtils.maxLength(30),
-          Validators.pattern(FormUtils.usernamePattern),
-          FormUtils.notOnlyWhiteSpace,
-        ],
+        {
+          validators: [
+            Validators.required,
+            FormUtils.minLength(4),
+            FormUtils.maxLength(30),
+            Validators.pattern(FormUtils.usernamePattern),
+            FormUtils.notOnlyWhiteSpace,
+          ],
+          asyncValidators: [
+            FormUtils.uniqueFieldValidator('Client', 'username', this.http),
+          ],
+        },
       ],
       email: [
         '',
-        [
-          Validators.required,
-          FormUtils.maxLength(255),
-          Validators.pattern(FormUtils.emailPattern),
-        ],
+        {
+          validators: [
+            Validators.required,
+            FormUtils.maxLength(255),
+            Validators.pattern(FormUtils.emailPattern),
+          ],
+          asyncValidators: [
+            FormUtils.uniqueFieldValidator('Client', 'email', this.http),
+          ],
+        },
       ],
       password: [
         '',
@@ -86,28 +96,6 @@ export class RegisterPageComponent {
       ),
     },
   );
-
-  ngOnInit() {
-    this.setupAsyncValidators();
-    this.setupManualErrorLinking();
-  }
-
-  private setupAsyncValidators() {
-    this.formRegister.controls.username.setAsyncValidators(
-      FormUtils.uniqueFieldValidator('Client', 'username', this.http),
-    );
-    this.formRegister.controls.email.setAsyncValidators(
-      FormUtils.uniqueFieldValidator('Client', 'email', this.http),
-    );
-  }
-
-  private setupManualErrorLinking() {
-    FormUtils.syncGroupErrorToControl(
-      this.formRegister,
-      'passwordsNotEqual',
-      'confirmPassword',
-    );
-  }
 
 
   private formStatus = toSignal(this.formRegister.statusChanges, {

@@ -20,7 +20,6 @@ export class FormUtils {
   static usernamePattern = '^[a-zA-Z0-9._-]+$';
   // Mínimo 8 caracteres y debe tener al menos 1 letra, y 1 número.
   static passwordPattern = '^(?=.*[A-Za-z])(?=.*\\d).{8,}$';
-
   // Validadores para strings reemplazando los nativos para eliminar espacios vacios con trim
   static minLength(minLength: number) {
     return (control: AbstractControl): ValidationErrors | null => {
@@ -55,7 +54,7 @@ export class FormUtils {
           return `Mínimo de ${errors['minlength'].requiredLength} caracteres.`;
 
         case 'maxlength':
-          return `Máximo de ${errors['maxlength'].requiredLength} caracteres.`;
+          return `Límite alcanzado.`;
 
         case 'min':
           return `El valor mínimo es ${errors['min'].min}.`;
@@ -168,38 +167,6 @@ export class FormUtils {
 
       return field1Value === field2Value ? null : { passwordsNotEqual: true };
     };
-  }
-
-  /**
-   * Sincroniza un error de nivel de grupo con un control específico.
-   * Útil para mostrar errores de validación cruzada (ej: contraseñas no coinciden)
-   * bajo un input específico usando app-field-error.
-   *
-   * @param formGroup El grupo de formularios que contiene los controles
-   * @param errorKey La clave del error en el grupo (ej: 'passwordsNotEqual')
-   * @param controlName El nombre del control que recibirá el error
-   */
-  static syncGroupErrorToControl(
-    formGroup: FormGroup,
-    errorKey: string,
-    controlName: string,
-  ): void {
-    formGroup.valueChanges.subscribe(() => {
-      const control = formGroup.get(controlName);
-      if (!control) return;
-
-      if (formGroup.errors?.[errorKey]) {
-        control.setErrors({
-          ...control.errors,
-          [errorKey]: true,
-        });
-      } else if (control.errors) {
-        const { [errorKey]: _, ...remainingErrors } = control.errors;
-        control.setErrors(
-          Object.keys(remainingErrors).length ? remainingErrors : null,
-        );
-      }
-    });
   }
 
   static notOnlyWhiteSpace(control: AbstractControl): ValidationErrors | null {

@@ -68,9 +68,6 @@ export class FieldErrorComponent {
   // Determina si el componente debe mostrar feedback de validación asíncrona.
   isAsyncMode = computed(() => !!this.validLabel());
 
-  // Determina si se debe mostrar el contador de caracteres (se basa en la presencia de maxLength).
-  showCounter = computed(() => this.maxLength() !== undefined);
-
   // Calcula la longitud del valor actual para el contador.
   currentLength = computed(() => {
     const val = this.value();
@@ -83,7 +80,14 @@ export class FieldErrorComponent {
     () => this.status() === 'VALID' && !!this.value() && !this.pristine(),
   );
 
-  hasErrors = computed(() => !!this.controlErrors() && this.touched());
+  isLimitReached = computed(() => {
+    const limit = this.maxLength();
+    return limit !== undefined && this.currentLength() >= limit;
+  });
+
+  hasErrors = computed(() => {
+    return (!!this.controlErrors() || this.isLimitReached()) && this.touched();
+  });
 
   hasTakenError = computed(() => {
     const errors = this.controlErrors();
@@ -92,6 +96,7 @@ export class FieldErrorComponent {
   });
 
   errorText = computed(() => {
+    if (this.isLimitReached()) return 'Límite alcanzado.';
     const errors = this.controlErrors();
     if (!errors) return null;
     return FormUtils.getTextError(errors);

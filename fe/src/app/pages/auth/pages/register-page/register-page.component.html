@@ -1,30 +1,30 @@
 <main class="flex min-h-screen items-center justify-center bg-gray-50 p-4">
-  <div class="w-full max-w-xl">
+  <div class="w-full max-w-lg">
     <div class="mb-4 flex justify-start">
       <app-go-back-button></app-go-back-button>
     </div>
 
-    <div class="rounded-2xl bg-white p-6 md:p-12 shadow-2xl border border-gray-100">
-      <div class="mb-6 flex justify-center">
+    <div class="rounded-xl bg-white p-8 shadow-xl border border-gray-100">
+      <div class="mb-4 flex justify-center">
         <app-logo
-          [width]="144"
+          [width]="128"
           [height]="48"
           loading="eager"
-          customClass="h-16 w-auto object-contain"
+          customClass="h-14 w-auto object-contain"
         />
       </div>
 
-      <p class="mb-8 text-center text-gray-500 text-sm font-medium uppercase tracking-wider">Crea tu cuenta</p>
+      <p class="mb-6 text-center text-gray-500 text-sm">Crea tu cuenta</p>
 
       <form
         [formGroup]="formRegister"
         novalidate
         (ngSubmit)="onSubmit()"
-        class="space-y-6"
+        class="space-y-5"
       >
         <!-- Usuario -->
         <div>
-          <label for="username" class="mb-2 block text-sm font-bold text-gray-700">
+          <label for="username" class="mb-1.5 form-label font-semibold">
             Nombre de usuario <span class="text-red-500">*</span>
           </label>
           <input
@@ -35,7 +35,7 @@
             minlength="4"
             maxlength="30"
             autocomplete="username"
-            class="form-input p-3.5 focus:border-[#3d4494] focus:ring-1 focus:ring-[#3d4494] outline-none transition-all rounded-lg border-gray-300"
+            class="form-input p-3 focus:border-[#3d4494] focus:ring-1 focus:ring-[#3d4494] outline-none transition-all"
             placeholder="Ej: jperez"
           />
           <app-field-error
@@ -47,7 +47,7 @@
 
         <!-- Email -->
         <div>
-          <label for="email" class="mb-2 block text-sm font-bold text-gray-700">
+          <label for="email" class="mb-1.5 form-label font-semibold">
             Email <span class="text-red-500">*</span>
           </label>
           <input
@@ -58,7 +58,7 @@
             inputmode="email"
             maxlength="255"
             autocomplete="email"
-            class="form-input p-3.5 focus:border-[#3d4494] focus:ring-1 focus:ring-[#3d4494] outline-none transition-all rounded-lg border-gray-300"
+            class="form-input p-3 focus:border-[#3d4494] focus:ring-1 focus:ring-[#3d4494] outline-none transition-all"
             placeholder="Ej: juan@ejemplo.com"
           />
           <app-field-error
@@ -70,7 +70,7 @@
 
         <!-- Contraseña -->
         <div>
-          <label for="password" class="mb-2 block text-sm font-bold text-gray-700">
+          <label for="password" class="mb-1.5 form-label font-semibold">
             Contraseña <span class="text-red-500">*</span>
           </label>
 
@@ -82,8 +82,8 @@
               formControlName="password"
               maxlength="100"
               autocomplete="new-password"
-              class="form-input p-3.5 pr-10 focus:border-[#3d4494] focus:ring-1 focus:ring-[#3d4494] outline-none transition-all rounded-lg border-gray-300"
-              placeholder="Mínimo 8 caracteres, 1 letra, 1 número."
+              class="form-input p-3 pr-10 focus:border-[#3d4494] focus:ring-1 focus:ring-[#3d4494] outline-none transition-all"
+              placeholder="••••••••"
             />
 
             <app-password-toggle-button
@@ -100,7 +100,7 @@
 
         <!-- Confirmar Contraseña -->
         <div>
-          <label for="confirmPassword" class="mb-2 block text-sm font-bold text-gray-700">
+          <label for="confirmPassword" class="mb-1.5 form-label font-semibold">
             Confirmar Contraseña <span class="text-red-500">*</span>
           </label>
 
@@ -112,7 +112,7 @@
               formControlName="confirmPassword"
               maxlength="100"
               autocomplete="new-password"
-              class="form-input p-3.5 pr-10 focus:border-[#3d4494] focus:ring-1 focus:ring-[#3d4494] outline-none transition-all rounded-lg border-gray-300"
+              class="form-input p-3 pr-10 focus:border-[#3d4494] focus:ring-1 focus:ring-[#3d4494] outline-none transition-all"
               placeholder="Repetí tu contraseña"
             />
 
@@ -123,29 +123,32 @@
           </div>
 
           <app-field-error [control]="formRegister.controls.confirmPassword" />
+          @if (formRegister.errors?.['passwordsNotEqual'] && (formRegister.controls.confirmPassword.touched || formRegister.controls.confirmPassword.dirty)) {
+            <div class="mt-1 text-xs text-red-600">Las contraseñas no coinciden.</div>
+          }
         </div>
 
-        <div class="pt-4">
+        <div class="pt-2">
           <button
             type="submit"
             [disabled]="loading() || !isValid() || isPending()"
-            class="btn-primary w-full flex justify-center py-4 px-4 shadow-lg hover:shadow-xl focus:ring-2 focus:ring-offset-2 focus:ring-[#3d4494] transform active:scale-[0.98] font-bold text-lg rounded-xl"
+            class="btn-primary w-full flex justify-center py-3 px-4 shadow-md hover:shadow-lg focus:ring-2 focus:ring-offset-2 focus:ring-[#3d4494] transform active:scale-[0.98] font-bold"
           >
             @if (loading() || isPending()) {
               <ng-icon
                 name="bootstrapArrowClockwise"
-                class="animate-spin text-2xl mr-2"
+                class="animate-spin text-xl mr-2"
               ></ng-icon>
             }
-            Crear cuenta
+            Crear Cuenta
           </button>
         </div>
 
-        <div class="mt-8 text-center text-sm text-gray-600">
+        <div class="mt-6 text-center text-sm text-gray-600">
           ¿Ya tenés cuenta?
           <a
             routerLink="/auth/login"
-            class="cursor-pointer font-extrabold text-[#3d4494] hover:text-[#2a2f63] hover:underline transition-colors ml-1"
+            class="cursor-pointer font-bold text-[#3d4494] hover:text-[#2a2f63] hover:underline transition-colors ml-1"
           >
             Iniciar Sesión
           </a>
@@ -153,5 +156,4 @@
       </form>
     </div>
   </div>
-
 </main>
