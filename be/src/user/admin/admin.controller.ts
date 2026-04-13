@@ -9,6 +9,7 @@ function sanitizeAdminInput(req: Request, res: Response, next: NextFunction) {
   req.body.sanitizedInput = {
     email: req.body.email,
     password: req.body.password,
+    confirmPassword: req.body.confirmPassword,
     name: req.body.name,
     lastName: req.body.lastName,
     phone: req.body.phone,

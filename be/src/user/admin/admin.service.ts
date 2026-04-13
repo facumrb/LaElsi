@@ -8,6 +8,7 @@ import { buildPaginatedResponse } from '../../shared/utils/pagination.js';
 import fs from 'fs/promises';
 import path from 'path';
 import bcrypt from 'bcrypt';
+import { UserService } from '../user.service.js';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MIN_PASSWORD_LENGTH = 6;
@@ -16,6 +17,7 @@ const USERS_PATH = path.join(process.cwd(), 'uploads', 'users');
 export interface CreateAdminDto {
   email: string;
   password?: string;
+  confirmPassword?: string;
   name: string;
   lastName: string;
   phone: string;
@@ -26,6 +28,7 @@ export interface CreateAdminDto {
 export interface UpdateAdminDto {
   email?: string;
   password?: string;
+  confirmPassword?: string;
   name?: string;
   lastName?: string;
   phone?: string;
@@ -78,7 +81,9 @@ export class AdminService {
 
   static async addAdmin(data: CreateAdminDto) {
     const em = orm.em;
-    const { email, password, name, lastName, phone, username, dni } = data;
+    const { email, password, confirmPassword, name, lastName, phone, username, dni } = data;
+
+    UserService.validatePasswords(password, confirmPassword);
 
     if (!email || !password || !name || !lastName || !phone || !username || !dni) {
       throw new AppError('Todos los campos obligatorios deben ser proporcionados (email, contraseña, nombre, apellido, teléfono, nombre de usuario, DNI)', 400);
@@ -121,6 +126,8 @@ export class AdminService {
     if (input.email !== undefined && !EMAIL_REGEX.test(input.email)) {
       throw new AppError('El formato del correo electrónico es inválido', 400);
     }
+
+    UserService.validatePasswords(input.password, input.confirmPassword);
 
     if (input.password) {
       if (input.password.length < MIN_PASSWORD_LENGTH) {

@@ -12,6 +12,7 @@ function sanitizeClientInput(req: Request, res: Response, next: NextFunction) {
     phone: req.body.phone,
     username: req.body.username,
     password: req.body.password,
+    confirmPassword: req.body.confirmPassword,
     email: req.body.email,
     dni: req.body.dni,
     cuit: req.body.cuit,

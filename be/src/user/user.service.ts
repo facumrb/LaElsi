@@ -15,6 +15,7 @@ export interface RegisterUserDto {
 
   username: string;
   password: string;
+  confirmPassword: string;
   email: string;
   cuit?: string;
   fiscalCondition?: FiscalCondition;
@@ -28,6 +29,28 @@ export interface RegisterUserDto {
 }
 
 export class UserService {
+  static validatePasswords(password?: string, confirmPassword?: string) {
+    if (password && confirmPassword && password !== confirmPassword) {
+      throw new AppError('Las contraseñas no coinciden', 400);
+    }
+  }
+
+  static async verifyPassword(userId: number, passwordString: string): Promise<boolean> {
+    const em = orm.em;
+    const user = await em.findOne(User, { id: userId });
+    
+    if (!user) {
+      throw new AppError('Usuario no encontrado', 404);
+    }
+
+    const isValid = await bcrypt.compare(passwordString, user.password);
+    if (!isValid) {
+      throw new AppError('Contraseña actual incorrecta', 401);
+    }
+
+    return true;
+  }
+
   static async login(loginValue: string, passwordString: string) {
     const em = orm.em;
 
@@ -117,7 +140,9 @@ export class UserService {
 
   static async register(data: RegisterUserDto) {
     const em = orm.em;
-    const { password, ...userData } = data;
+    const { password, confirmPassword, ...userData } = data;
+
+    this.validatePasswords(password, confirmPassword);
 
     // Verificar duplicados usando la entidad User (STI abarca Admin y Client)
     const existingUser = await em.findOne(User, {

@@ -1,4 +1,4 @@
-<div class="animate-fadeIn max-w-4xl mx-auto">
+<div class="animate-fadeIn max-w-4xl mx-auto page-container-adaptive">
   <div class="mb-5 flex items-center justify-between">
     <div>
       <h1 class="page-title">
@@ -136,7 +136,7 @@
             />
           </div>
 
-          <div class="flex justify-center md:justify-start pt-2">
+          <div class="flex justify-center md:justify-start pt-2 md:col-span-2">
             <div class="w-full">
               <app-photo-manager
                 [currentPhoto]="currentPhoto()"
@@ -166,6 +166,38 @@
               }}"
             />
             <app-field-error [control]="formClient.controls.password" />
+          </div>
+
+          <div>
+            <label for="confirmPassword" class="form-label">
+              Confirmar Contraseña
+              @if (!isEditMode()) {
+                <span class="text-red-500">*</span>
+              }
+            </label>
+            <input
+              type="password"
+              id="confirmPassword"
+              name="confirmPassword"
+              formControlName="confirmPassword"
+              maxlength="100"
+              class="form-input"
+              placeholder="{{
+                isEditMode()
+                  ? 'Repetir nueva contraseña'
+                  : 'Repetir la contraseña ingresada'
+              }}"
+            />
+            <!-- El error reside en el grupo, lo mostramos aquí si las contraseñas no coinciden -->
+            @if (
+              formClient.hasError("passwordsNotEqual") &&
+              (formClient.get("confirmPassword")?.touched ||
+                formClient.get("password")?.touched)
+            ) {
+              <p class="text-red-500 text-xs mt-1">
+                Las contraseñas no coinciden.
+              </p>
+            }
           </div>
         </div>
       </div>

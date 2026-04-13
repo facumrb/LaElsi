@@ -458,6 +458,11 @@
   .elsi-hover-elevate:hover {
     @apply -translate-y-1 scale-[1.005] shadow-xl border-gray-200 z-10 bg-white;
   }
+
+  /* ── Adaptive Layouts ── */
+  .page-container-adaptive {
+     @apply min-h-[calc(100vh-theme(spacing.32))] flex flex-col;
+  }
 }
 
 /* Keyframes globales */

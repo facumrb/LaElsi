@@ -55,6 +55,12 @@ export class AuthService {
       .pipe(map((response) => response.data));
   }
 
+  verifyPassword(password: string): Observable<any> {
+    return this.http.post<IApiResponse<any>>(`${this.apiUrl}/verify-password`, {
+      password,
+    });
+  }
+
   refreshToken(): Observable<any> {
     if (this.isRefreshing()) {
       // Si ya se está refrescando, esperamos al nuevo token

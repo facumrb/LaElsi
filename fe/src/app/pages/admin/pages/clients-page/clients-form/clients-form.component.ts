@@ -146,6 +146,10 @@ export class ClientsFormComponent implements OnInit {
       '',
       [FormUtils.maxLength(100), Validators.pattern(FormUtils.passwordPattern)],
     ],
+    confirmPassword: [
+      '',
+      [FormUtils.maxLength(100), Validators.pattern(FormUtils.passwordPattern)],
+    ],
 
     // --- DATOS DE FACTURACIÓN ---
     fiscalCondition: [FiscalCondition.ConsumidorFinal],
@@ -166,6 +170,8 @@ export class ClientsFormComponent implements OnInit {
     postalCode: ['', FormUtils.maxLength(10)],
     floor: ['', FormUtils.maxLength(5)],
     apartment: ['', FormUtils.maxLength(5)],
+  }, {
+    validators: [FormUtils.isFieldOneEqualFieldTwo('password', 'confirmPassword')]
   });
 
   ngOnInit() {
@@ -307,7 +313,11 @@ export class ClientsFormComponent implements OnInit {
     };
 
     const clientData = formValue.password
-      ? { ...baseData, password: formValue.password }
+      ? {
+          ...baseData,
+          password: formValue.password,
+          confirmPassword: formValue.confirmPassword,
+        }
       : baseData;
 
     // Guardar datos

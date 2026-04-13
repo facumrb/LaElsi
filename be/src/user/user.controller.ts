@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { UserService, RegisterUserDto } from './user.service.js';
 import { asyncHandler } from '../shared/errors/asyncHandler.js';
 import { ApiResponse } from '../shared/utils/apiResponse.js';
+import { AppError } from '../shared/errors/appError.js';
 
 const login = asyncHandler(async (req: Request, res: Response) => {
   const { username, email, identifier, password } = req.body;
@@ -23,4 +24,16 @@ const refreshToken = asyncHandler(async (req: Request, res: Response) => {
   return res.status(200).json(ApiResponse.success('Token renovado', result));
 });
 
-export { login, register, refreshToken };
+const verifyPassword = asyncHandler(async (req: Request, res: Response) => {
+  const { password } = req.body;
+  const userId = req.user?.id;
+
+  if (!userId) {
+    throw new AppError('Usuario no autenticado', 401);
+  }
+
+  await UserService.verifyPassword(userId, password);
+  return res.status(200).json(ApiResponse.success('Contraseña verificada'));
+});
+
+export { login, register, refreshToken, verifyPassword };

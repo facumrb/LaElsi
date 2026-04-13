@@ -16,7 +16,9 @@ import { ApiClientService } from '@services/api-services/api-client.service';
 import { AlertService } from '@services/alert.service';
 import { PhotoManagerComponent } from '@shared/components/photo-manager/photo-manager.component';
 import { FormUtils } from '@shared/validators/form-utils';
-import { switchMap } from 'rxjs';
+import { switchMap, of, catchError } from 'rxjs';
+import { AuthService } from '@services/auth.service';
+import Swal from 'sweetalert2';
 import { FieldErrorComponent } from '@shared/validators/field-error/field-error.component';
 import { TrimInputDirective } from '@shared/directives/trim-input.directive';
 
@@ -37,6 +39,7 @@ export class ProfileUserComponent {
   private apiClientService = inject(ApiClientService);
   private http = inject(HttpClient);
   private alertService = inject(AlertService);
+  private authService = inject(AuthService);
 
   profile = input<IApiClient | null>(null);
 
@@ -44,6 +47,7 @@ export class ProfileUserComponent {
   photoManager = viewChild.required(PhotoManagerComponent);
 
   saving = signal(false);
+  isChangePasswordMode = signal(false);
 
   formUsuario = this.fb.nonNullable.group({
     username: [
@@ -60,6 +64,12 @@ export class ProfileUserComponent {
       '',
       [FormUtils.maxLength(100), Validators.pattern(FormUtils.passwordPattern)],
     ],
+    confirmPassword: [
+      '',
+      [FormUtils.maxLength(100), Validators.pattern(FormUtils.passwordPattern)],
+    ],
+  }, {
+    validators: [FormUtils.isFieldOneEqualFieldTwo('password', 'confirmPassword')]
   });
 
   constructor() {
@@ -87,6 +97,41 @@ export class ProfileUserComponent {
     );
   }
 
+  async startPasswordChange() {
+    const { value: password } = await Swal.fire({
+      title: 'Verificar identidad',
+      text: 'Por favor, ingresa tu contraseña actual para continuar.',
+      input: 'password',
+      inputPlaceholder: 'Tu contraseña actual',
+      showCancelButton: true,
+      confirmButtonText: 'Verificar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#3d4494',
+      inputAttributes: {
+        autocapitalize: 'off',
+        autocorrect: 'off',
+      },
+      inputValidator: (value) => {
+        if (!value) {
+          return 'Debes ingresar una contraseña';
+        }
+        return null;
+      },
+    });
+
+    if (password) {
+      this.authService.verifyPassword(password).subscribe({
+        next: () => {
+          this.isChangePasswordMode.set(true);
+          this.alertService.toast('Contraseña verificada correctamente', 'success');
+        },
+        error: (err) => {
+          this.alertService.error('Error de verificación', err.error?.message || 'Contraseña incorrecta');
+        },
+      });
+    }
+  }
+
   onSubmit() {
     if (!this.formUsuario.valid) {
       this.formUsuario.markAllAsTouched();
@@ -112,8 +157,10 @@ export class ProfileUserComponent {
       .subscribe({
         next: () => {
           this.saving.set(false);
+          this.isChangePasswordMode.set(false);
           this.alertService.toast('Datos de usuario actualizados', 'success');
           this.formUsuario.get('password')?.setValue('');
+          this.formUsuario.get('confirmPassword')?.setValue('');
           this.profileUpdated.emit();
         },
         error: () => {

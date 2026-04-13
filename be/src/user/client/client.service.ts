@@ -9,6 +9,7 @@ import { buildPaginatedResponse } from '../../shared/utils/pagination.js';
 import fs from 'fs/promises';
 import path from 'path';
 import bcrypt from 'bcrypt';
+import { UserService } from '../user.service.js';
 
 const USERS_PATH = path.join(process.cwd(), 'uploads', 'users');
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -19,6 +20,7 @@ import { FiscalCondition } from '../../shared/enums/fiscal-condition.enum.js';
 export interface CreateClientDto {
   email: string;
   password?: string;
+  confirmPassword?: string;
   name: string;
   lastName: string;
   phone: string;
@@ -38,6 +40,7 @@ export interface CreateClientDto {
 export interface UpdateClientDto {
   email?: string;
   password?: string;
+  confirmPassword?: string;
   name?: string;
   lastName?: string;
   phone?: string;
@@ -112,7 +115,9 @@ export class ClientService {
 
   static async addClient(data: CreateClientDto) {
     const em = orm.em;
-    const { email, password, name, lastName, phone, username, dni } = data;
+    const { email, password, confirmPassword, name, lastName, phone, username, dni } = data;
+
+    UserService.validatePasswords(password, confirmPassword);
 
     if (!email || !password || !name || !lastName || !phone || !username || !dni) {
       throw new AppError('Todos los campos obligatorios deben ser proporcionados (email, contraseña, nombre, apellido, teléfono, nombre de usuario, DNI)', 400);
@@ -178,6 +183,8 @@ export class ClientService {
     if (input.email !== undefined && !EMAIL_REGEX.test(input.email)) {
       throw new AppError('El formato del correo electrónico es inválido', 400);
     }
+
+    UserService.validatePasswords(input.password, input.confirmPassword);
 
     if (input.password) {
       if (input.password.length < MIN_PASSWORD_LENGTH) {

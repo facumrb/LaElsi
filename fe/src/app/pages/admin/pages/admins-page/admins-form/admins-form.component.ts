@@ -119,6 +119,12 @@ export class AdminsFormComponent implements OnInit {
       '',
       [FormUtils.maxLength(100), Validators.pattern(FormUtils.passwordPattern)],
     ],
+    confirmPassword: [
+      '',
+      [FormUtils.maxLength(100), Validators.pattern(FormUtils.passwordPattern)],
+    ],
+  }, {
+    validators: [FormUtils.isFieldOneEqualFieldTwo('password', 'confirmPassword')]
   });
 
   ngOnInit() {
@@ -223,7 +229,11 @@ export class AdminsFormComponent implements OnInit {
     };
 
     const adminData = formValue.password
-      ? { ...baseData, password: formValue.password }
+      ? {
+          ...baseData,
+          password: formValue.password,
+          confirmPassword: formValue.confirmPassword,
+        }
       : baseData;
 
     // Guardar datos del Usuario
