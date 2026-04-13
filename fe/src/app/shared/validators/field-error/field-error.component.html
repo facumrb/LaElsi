@@ -1,9 +1,4 @@
-<div
-  class="mt-1 min-h-5 text-xs"
-  [class.flex]="showCounter()"
-  [class.justify-between]="showCounter()"
-  [class.items-start]="showCounter()"
->
+<div class="mt-1 min-h-5 text-xs">
   <!-- Error / Estado -->
   <div>
     @if (isAsyncMode()) {
@@ -34,11 +29,4 @@
       }
     }
   </div>
-
-  <!-- Contador de caracteres (opcional) -->
-  @if (showCounter()) {
-    <div class="text-xs text-gray-500 shrink-0">
-      {{ currentLength() }} / {{ maxLength() }}
-    </div>
-  }
 </div>

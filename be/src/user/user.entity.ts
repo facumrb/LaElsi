@@ -11,17 +11,18 @@ export enum UserRole {
 // Admin y Client se guardarán en la misma tabla 'user' diferenciados por una columna 'dtype'.
 @Entity({ discriminatorColumn: 'dtype' })
 export abstract class User extends CustomBaseEntity {
-  @Property({ nullable: false, length: 100 })
-  name!: string;
+  @Property({ nullable: true, length: 100 })
+  name?: string;
 
-  @Property({ nullable: false, length: 100 })
-  lastName!: string;
+  @Property({ nullable: true, length: 100 })
+  lastName?: string;
 
-  @Property({ nullable: false, unique: true, length: 15 })
-  dni!: string;
+  @Property({ nullable: true, unique: true, length: 15 })
+  dni?: string;
 
-  @Property({ nullable: false, length: 20 })
-  phone!: string;
+  @Property({ nullable: true, length: 20 })
+  phone?: string;
+
 
   @Property({ nullable: false, unique: true, length: 30 })
   username!: string;

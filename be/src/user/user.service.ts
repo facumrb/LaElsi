@@ -8,10 +8,11 @@ import { AppError } from '../shared/errors/appError.js';
 import bcrypt from 'bcrypt';
 
 export interface RegisterUserDto {
-  name: string;
-  lastName: string;
-  dni: string;
-  phone: string;
+  name?: string;
+  lastName?: string;
+  dni?: string;
+  phone?: string;
+
   username: string;
   password: string;
   email: string;
@@ -116,47 +117,32 @@ export class UserService {
 
   static async register(data: RegisterUserDto) {
     const em = orm.em;
-    const { name, lastName, dni, phone, username, password, email, cuit, fiscalCondition, ...addressFields } = data;
+    const { password, ...userData } = data;
 
-    // Verificar duplicados (email o username) en ambas tablas
-    const existingAdmin = await em.findOne(Admin, { $or: [{ email }, { username }] });
-    const existingClient = await em.findOne(Client, { $or: [{ email }, { username }] });
+    // Verificar duplicados usando la entidad User (STI abarca Admin y Client)
+    const existingUser = await em.findOne(User, {
+      $or: [{ email: userData.email }, { username: userData.username }]
+    });
 
-    if (existingAdmin || existingClient) {
+    if (existingUser) {
       throw new AppError('El usuario o email ya existe', 400);
     }
 
-    // Crear Cliente por defecto
     const newClient = new Client();
-    newClient.name = name;
-    newClient.lastName = lastName;
-    newClient.dni = dni;
-    newClient.phone = phone;
-    newClient.username = username;
-    newClient.email = email;
-    newClient.role = UserRole.Client;
+    em.assign(newClient, {
+      ...userData,
+      password: await bcrypt.hash(password, 10),
+      role: UserRole.Client,
+      streetNumber: (userData.streetNumber !== undefined && userData.streetNumber !== null)
+        ? Number(userData.streetNumber)
+        : undefined,
+    });
 
-    // Asignar campos de facturación si vienen
-    if (cuit) newClient.cuit = cuit;
-    if (fiscalCondition) newClient.fiscalCondition = fiscalCondition;
-
-    // Asignar campos de dirección si vienen
-    if (addressFields.street) newClient.street = addressFields.street;
-    if (addressFields.streetNumber) newClient.streetNumber = Number(addressFields.streetNumber);
-    if (addressFields.city) newClient.city = addressFields.city;
-    if (addressFields.province) newClient.province = addressFields.province;
-    if (addressFields.postalCode) newClient.postalCode = addressFields.postalCode;
-    if (addressFields.floor) newClient.floor = addressFields.floor;
-    if (addressFields.apartment) newClient.apartment = addressFields.apartment;
-
-    newClient.password = await bcrypt.hash(password, 10);
-
-    em.persist(newClient);
     try {
-      await em.flush();
+      await em.persistAndFlush(newClient);
     } catch (error: any) {
-      if (error.message?.includes('unique') || error.message?.includes('duplicate') || error.code === 'ER_DUP_ENTRY' || error.code === '23505') {
-        throw new AppError('Ya existe un registro con los mismos datos únicos (email, DNI o nombre de usuario)', 409);
+      if (error.message?.includes('unique') || error.code === 'ER_DUP_ENTRY' || error.code === '23505') {
+        throw new AppError('Ya existe un registro con estos datos únicos', 409);
       }
       throw error;
     }

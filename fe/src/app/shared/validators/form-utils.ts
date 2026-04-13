@@ -20,7 +20,6 @@ export class FormUtils {
   static usernamePattern = '^[a-zA-Z0-9._-]+$';
   // Mínimo 8 caracteres y debe tener al menos 1 letra, y 1 número.
   static passwordPattern = '^(?=.*[A-Za-z])(?=.*\\d).{8,}$';
-
   // Validadores para strings reemplazando los nativos para eliminar espacios vacios con trim
   static minLength(minLength: number) {
     return (control: AbstractControl): ValidationErrors | null => {
@@ -55,7 +54,7 @@ export class FormUtils {
           return `Mínimo de ${errors['minlength'].requiredLength} caracteres.`;
 
         case 'maxlength':
-          return `Máximo de ${errors['maxlength'].requiredLength} caracteres.`;
+          return `Límite alcanzado.`;
 
         case 'min':
           return `El valor mínimo es ${errors['min'].min}.`;
@@ -82,6 +81,9 @@ export class FormUtils {
           return `Este nombre ya está en uso.`;
 
         case 'mustMatch':
+          return `Las contraseñas no coinciden.`;
+
+        case 'passwordsNotEqual':
           return `Las contraseñas no coinciden.`;
 
         case 'pattern':

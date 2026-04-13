@@ -7,6 +7,7 @@ import {
   IApiResponse,
   LoginData,
   RegisterData,
+  IClientRegister,
   UserSession,
 } from '@models/auth.model';
 import { UserRole } from '@models/user.model';
@@ -22,7 +23,7 @@ export class AuthService {
   private readonly REFRESH_TOKEN_KEY = 'auth_refresh_token';
   private readonly USER_KEY = 'auth_user';
 
-  private isRefreshing = false;
+  private isRefreshing = signal(false);
   private refreshTokenSubject = new BehaviorSubject<string | null>(null);
 
   currentUser = signal<UserSession | null>(null);
@@ -48,14 +49,14 @@ export class AuthService {
       );
   }
 
-  register(userData: RegisterData): Observable<any> {
+  register(userData: IClientRegister): Observable<any> {
     return this.http
       .post<IApiResponse<any>>(`${this.apiUrl}/register`, userData)
       .pipe(map((response) => response.data));
   }
 
   refreshToken(): Observable<any> {
-    if (this.isRefreshing) {
+    if (this.isRefreshing()) {
       // Si ya se está refrescando, esperamos al nuevo token
       return this.refreshTokenSubject.pipe(
         filter((token) => token !== null),
@@ -71,7 +72,7 @@ export class AuthService {
       );
     }
 
-    this.isRefreshing = true;
+    this.isRefreshing.set(true);
     this.refreshTokenSubject.next(null);
 
     const refreshToken = this.getRefreshToken();
@@ -83,12 +84,12 @@ export class AuthService {
       .pipe(
         map((response) => response.data),
         tap((data) => {
-          this.isRefreshing = false;
+          this.isRefreshing.set(false);
           this.saveTokens(data.token, data.refreshToken);
           this.refreshTokenSubject.next(data.token);
         }),
         catchError((err) => {
-          this.isRefreshing = false;
+          this.isRefreshing.set(false);
           this.logout();
           return throwError(() => err);
         })
