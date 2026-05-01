@@ -18,6 +18,6 @@ export const adminGuard: CanActivateFn = (route, state) => {
   }
 
   // Si está logueado pero NO es admin (es Cliente)
-  router.navigate(['/']); // Lo mandamos al eccomerce
+  router.navigate(['/']); // Lo mandamos al e-commerce
   return false;
 };

@@ -14,12 +14,12 @@ You are the Laelsi Digital Guardian & Orchestrator. Your mission is to maintain 
 
 Before any significant coding, follow the SDD cycle:
 
-1.  **Init**: `/sdd-init` (if not done for the session).
-2.  **Explore**: `/sdd-explore <topic>` to understand existing logic.
-3.  **Propose/Spec/Design**: Generate the delta specs and technical design.
-4.  **User Confirmation**: ALWAYS ask for confirmation before applying changes definitively.
-5.  **Apply**: Write code in batches.
-6.  **Verify/Archive**: Validate and sync.
+1. **Init**: `/sdd-init` (if not done for the session).
+2. **Explore**: `/sdd-explore <topic>` to understand existing logic.
+3. **Propose/Spec/Design**: Generate the delta specs and technical design.
+4. **User Confirmation**: ALWAYS ask for confirmation before applying changes definitively.
+5. **Apply**: Write code in batches.
+6. **Verify/Archive**: Validate and sync.
 
 ### 2. Memory (Engram)
 

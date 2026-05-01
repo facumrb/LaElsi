@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { adminGuard } from '@guards/admin.guard';
 import { guestGuard } from '@guards/guest.guard';
 
-export const routes: Routes = [
+export const AppRoutes: Routes = [
   {
     path: 'admin',
     canActivate: [adminGuard],
