@@ -4,8 +4,7 @@ import { UserPhoto } from './userPhoto.entity.js';
 import path from 'path';
 import fs from 'fs/promises';
 import { AppError } from '../../shared/errors/appError.js';
-
-const USERS_PATH = path.join(process.cwd(), 'uploads', 'users');
+import { USERS_PATH } from '../../shared/config/paths.config.js';
 
 export class UserPhotoService {
   static async uploadUserPhoto(id: number, file: Express.Multer.File | undefined, requestingUser: any) {

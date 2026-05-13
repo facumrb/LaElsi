@@ -5,14 +5,11 @@ import { AppError } from '../../shared/errors/appError.js';
 import { PaginatedResult } from '../../shared/utils/pagination.interface.js';
 import { DEFAULT_PAGE_SIZE } from '../../shared/config/pagination.js';
 import { buildPaginatedResponse } from '../../shared/utils/pagination.js';
+import { EMAIL_REGEX, MIN_PASSWORD_LENGTH, validatePasswords, handleUniqueConstraintError } from '../../shared/validation/user-validation.utils.js';
+import { USERS_PATH } from '../../shared/config/paths.config.js';
 import fs from 'fs/promises';
 import path from 'path';
 import bcrypt from 'bcrypt';
-import { UserService } from '../user.service.js';
-
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const MIN_PASSWORD_LENGTH = 6;
-const USERS_PATH = path.join(process.cwd(), 'uploads', 'users');
 
 export interface CreateAdminDto {
   email: string;
@@ -83,7 +80,7 @@ export class AdminService {
     const em = orm.em;
     const { email, password, confirmPassword, name, lastName, phone, username, dni } = data;
 
-    UserService.validatePasswords(password, confirmPassword);
+    validatePasswords(password, confirmPassword);
 
     if (!email || !password || !name || !lastName || !phone || !username || !dni) {
       throw new AppError('Todos los campos obligatorios deben ser proporcionados (email, contraseña, nombre, apellido, teléfono, nombre de usuario, DNI)', 400);
@@ -127,7 +124,7 @@ export class AdminService {
       throw new AppError('El formato del correo electrónico es inválido', 400);
     }
 
-    UserService.validatePasswords(input.password, input.confirmPassword);
+    validatePasswords(input.password, input.confirmPassword);
 
     if (input.password) {
       if (input.password.length < MIN_PASSWORD_LENGTH) {
@@ -167,8 +164,6 @@ export class AdminService {
   }
 
   private static handleUniqueConstraintError(error: any) {
-    if (error.message?.includes('unique') || error.message?.includes('duplicate') || error.code === 'ER_DUP_ENTRY' || error.code === '23505') {
-      throw new AppError('Ya existe un registro con los mismos datos únicos (email, DNI o nombre de usuario)', 409);
-    }
+    handleUniqueConstraintError(error, 'Ya existe un registro con los mismos datos únicos (email, DNI o nombre de usuario)');
   }
 }

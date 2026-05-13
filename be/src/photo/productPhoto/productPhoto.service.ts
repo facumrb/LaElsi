@@ -4,8 +4,8 @@ import { ProductPhoto } from './productPhoto.entity.js';
 import path from 'path';
 import fs from 'fs/promises';
 import { AppError } from '../../shared/errors/appError.js';
+import { PRODUCTS_PATH } from '../../shared/config/paths.config.js';
 
-const UPLOADS_PATH = path.join(process.cwd(), 'uploads', 'products');
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB por archivo
 
 export class ProductPhotoService {
@@ -111,7 +111,7 @@ export class ProductPhotoService {
       throw new AppError('La foto no existe', 404);
     }
 
-    const filePath = path.join(UPLOADS_PATH, photo.fileName);
+    const filePath = path.join(PRODUCTS_PATH, photo.fileName);
 
     try {
       await fs.unlink(filePath);

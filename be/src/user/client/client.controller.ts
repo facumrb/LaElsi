@@ -1,41 +1,10 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { ClientService, CreateClientDto, UpdateClientDto } from './client.service.js';
 import { asyncHandler } from '../../shared/errors/asyncHandler.js';
 import { AppError } from '../../shared/errors/appError.js';
 import { ApiResponse } from '../../shared/utils/apiResponse.js';
 import { getPaginationParams } from '../../shared/utils/pagination.js';
 
-function sanitizeClientInput(req: Request, res: Response, next: NextFunction) {
-  req.body.sanitizedInput = {
-    name: req.body.name,
-    lastName: req.body.lastName,
-    phone: req.body.phone,
-    username: req.body.username,
-    password: req.body.password,
-    confirmPassword: req.body.confirmPassword,
-    email: req.body.email,
-    dni: req.body.dni,
-    cuit: req.body.cuit,
-    fiscalCondition: req.body.fiscalCondition,
-    street: req.body.street,
-    streetNumber: req.body.streetNumber,
-    city: req.body.city,
-    province: req.body.province,
-    postalCode: req.body.postalCode,
-    floor: req.body.floor,
-    apartment: req.body.apartment
-  };
-
-  Object.keys(req.body.sanitizedInput).forEach((key) => {
-    if (
-      req.body.sanitizedInput[key] === undefined ||
-      (key === 'cuit' && req.body.sanitizedInput[key] === '')
-    ) {
-      delete req.body.sanitizedInput[key];
-    }
-  });
-  next();
-}
 
 export class ClientController {
   static getAccountInfo = asyncHandler(async (req: Request, res: Response) => {
@@ -91,5 +60,3 @@ export class ClientController {
     return res.status(200).json(ApiResponse.success('Cliente eliminado correctamente'));
   });
 }
-
-export { sanitizeClientInput };

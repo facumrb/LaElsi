@@ -11,8 +11,8 @@ import { CategoryService } from '../category/category.service.js';
 import { PaginatedResult } from '../shared/utils/pagination.interface.js';
 import { DEFAULT_PAGE_SIZE } from '../shared/config/pagination.js';
 import { buildPaginatedResponse } from '../shared/utils/pagination.js';
+import { PRODUCTS_PATH } from '../shared/config/paths.config.js';
 
-const PRODUCT_PATH = path.join(process.cwd(), 'uploads', 'products');
 const VALID_CURRENCIES = Object.values(Currency);
 const VALID_PRODUCT_STATES = Object.values(ProductState);
 
@@ -345,7 +345,7 @@ export class ProductService {
     const categoryId = (product.category as any)?.id ?? product.category;
 
     for (const photo of product.photos) {
-      const filePath = path.join(PRODUCT_PATH, photo.fileName);
+      const filePath = path.join(PRODUCTS_PATH, photo.fileName);
       try {
         await fs.unlink(filePath);
       } catch (err) {

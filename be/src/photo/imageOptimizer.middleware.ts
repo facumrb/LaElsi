@@ -3,6 +3,7 @@ import sharp from 'sharp';
 import path from 'path';
 import fs from 'fs';
 import { v4 as uuidv4 } from 'uuid';
+import { PRODUCTS_PATH, USERS_PATH } from '../shared/config/paths.config.js';
 
 export const optimizeImage = (subFolder: 'products' | 'users') => {
   return async (req: Request, res: Response, next: NextFunction) => {
@@ -12,7 +13,7 @@ export const optimizeImage = (subFolder: 'products' | 'users') => {
     }
 
     try {
-      const uploadPath = path.join(process.cwd(), 'uploads', subFolder);
+      const uploadPath = subFolder === 'products' ? PRODUCTS_PATH : USERS_PATH;
       if (!fs.existsSync(uploadPath)) {
         fs.mkdirSync(uploadPath, { recursive: true });
       }

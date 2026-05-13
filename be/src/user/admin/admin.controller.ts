@@ -1,28 +1,10 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { AdminService, CreateAdminDto, UpdateAdminDto } from './admin.service.js';
 import { asyncHandler } from '../../shared/errors/asyncHandler.js';
 import { AppError } from '../../shared/errors/appError.js';
 import { ApiResponse } from '../../shared/utils/apiResponse.js';
 import { getPaginationParams } from '../../shared/utils/pagination.js';
 
-function sanitizeAdminInput(req: Request, res: Response, next: NextFunction) {
-  req.body.sanitizedInput = {
-    email: req.body.email,
-    password: req.body.password,
-    confirmPassword: req.body.confirmPassword,
-    name: req.body.name,
-    lastName: req.body.lastName,
-    phone: req.body.phone,
-    username: req.body.username,
-    dni: req.body.dni
-  };
-  Object.keys(req.body.sanitizedInput).forEach((key) => {
-    if (req.body.sanitizedInput[key] === undefined) {
-      delete req.body.sanitizedInput[key];
-    }
-  });
-  next();
-}
 
 export class AdminController {
   static getAccountInfo = asyncHandler(async (req: Request, res: Response) => {
@@ -77,5 +59,3 @@ export class AdminController {
     return res.status(200).json(ApiResponse.success('Administrador eliminado'));
   });
 }
-
-export { sanitizeAdminInput };

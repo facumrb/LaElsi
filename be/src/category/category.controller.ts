@@ -1,25 +1,8 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { CategoryService } from './category.service.js';
 import { asyncHandler } from '../shared/errors/asyncHandler.js';
 import { ApiResponse } from '../shared/utils/apiResponse.js';
 
-function sanitizeCategoryInput(req: Request, res: Response, next: NextFunction) {
-  req.body.sanitizedInput = {
-    name: req.body.name,
-    description: req.body.description,
-    order: req.body.order,
-    state: req.body.state,
-    parentId: req.body.parentId,
-    products: req.body.products
-  };
-
-  Object.keys(req.body.sanitizedInput).forEach((key) => {
-    if (req.body.sanitizedInput[key] === undefined) {
-      delete req.body.sanitizedInput[key];
-    }
-  });
-  next();
-}
 
 export class CategoryController {
   static searchCategoriesByText = asyncHandler(async (req: Request, res: Response) => {
@@ -80,5 +63,3 @@ export class CategoryController {
     return res.status(200).json(ApiResponse.success('Orden de categorías actualizado'));
   });
 }
-
-export { sanitizeCategoryInput };

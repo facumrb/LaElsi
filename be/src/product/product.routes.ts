@@ -1,6 +1,7 @@
 import { Router } from 'express';
-import { ProductController, sanitizeProductInput } from './product.controller.js';
+import { ProductController } from './product.controller.js';
 import { BulkProductController } from './bulkProduct.controller.js';
+import { sanitizeProductInput } from '../shared/middlewares/product.middleware.js';
 import { verifyToken, verifyRole } from '../shared/middlewares/auth.middleware.js';
 import { UserRole } from '../user/user.entity.js';
 
