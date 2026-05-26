@@ -345,11 +345,18 @@ export class ProductService {
     const categoryId = (product.category as any)?.id ?? product.category;
 
     for (const photo of product.photos) {
-      const filePath = path.join(PRODUCTS_PATH, photo.fileName);
-      try {
-        await fs.unlink(filePath);
-      } catch (err) {
-        console.warn(`No se pudo borrar el archivo físico (quizás no existía): ${photo.fileName}`);
+      // Seguridad: limpiar path para prevenir salto de directorio (CWE-22)
+      const safeBasename = path.basename(photo.fileName);
+      const filePath = path.normalize(path.join(PRODUCTS_PATH, safeBasename));
+
+      if (!filePath.startsWith(PRODUCTS_PATH + path.sep) && filePath !== PRODUCTS_PATH) {
+        console.warn('Ruta de archivo inválida detectada, omitiendo eliminación.');
+      } else {
+        try {
+          await fs.unlink(filePath);
+        } catch (err) {
+          console.warn(`No se pudo borrar el archivo físico (quizás no existía): ${photo.fileName}`);
+        }
       }
     }
     em.remove(product);

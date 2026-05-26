@@ -199,17 +199,15 @@ export class ClientService {
     if (!client) throw new AppError('Cliente no encontrado', 404);
 
     if (client.photo) {
-      // Security: strip any directory components from the DB-sourced filename
-      // to prevent path traversal attacks (CWE-22). Never use raw user/DB
-      // input directly in file paths.
-      const safeBasename = path.basename(client.photo.fileName);
-      const resolvedPath = path.normalize(path.join(USERS_PATH, safeBasename));
-      // Enforce sandbox boundary — deny if the resolved path escapes USERS_PATH
-      if (!resolvedPath.startsWith(USERS_PATH + path.sep) && resolvedPath !== USERS_PATH) {
-        console.warn(`Ruta de archivo inválida detectada, omitiendo eliminación.`);
+      const joinedPath = path.join(USERS_PATH, client.photo.fileName);
+      // Normalize path, removing any '..'
+      const fullPath = path.normalize(joinedPath);
+      // Verify the fullPath is contained within our basePath
+      if (!fullPath.startsWith(USERS_PATH)) {
+        console.warn('Invalid path specified!');
       } else {
         try {
-          await fs.unlink(resolvedPath);
+          await fs.unlink(fullPath);
         } catch (err) {
           console.warn(`No se pudo borrar el archivo físico: ${err}`);
         }

@@ -209,24 +209,26 @@ export class OrderService {
   }
 
   private static validateStatusTransition(order: Order, newState: OrderState) {
-    const TRANSITIONS_ENVIO: Record<OrderState, OrderState[]> = {
-      [OrderState.Pending]: [OrderState.Paid, OrderState.Cancelled],
-      [OrderState.Paid]: [OrderState.Shipped, OrderState.Cancelled],
-      [OrderState.Shipped]: [OrderState.Delivered, OrderState.Cancelled],
-      [OrderState.Delivered]: [],
-      [OrderState.Cancelled]: []
-    };
+    // Seguridad: usar Map en lugar de un objeto plano para que las búsquedas nunca recorran la
+    // cadena de prototipos (CWE-1321).
+    const TRANSITIONS_ENVIO = new Map<OrderState, OrderState[]>([
+      [OrderState.Pending, [OrderState.Paid, OrderState.Cancelled]],
+      [OrderState.Paid, [OrderState.Shipped, OrderState.Cancelled]],
+      [OrderState.Shipped, [OrderState.Delivered, OrderState.Cancelled]],
+      [OrderState.Delivered, []],
+      [OrderState.Cancelled, []]
+    ]);
 
-    const TRANSITIONS_RETIRO: Record<OrderState, OrderState[]> = {
-      [OrderState.Pending]: [OrderState.Paid, OrderState.Cancelled],
-      [OrderState.Paid]: [OrderState.Delivered, OrderState.Cancelled],
-      [OrderState.Shipped]: [],
-      [OrderState.Delivered]: [],
-      [OrderState.Cancelled]: []
-    };
+    const TRANSITIONS_RETIRO = new Map<OrderState, OrderState[]>([
+      [OrderState.Pending, [OrderState.Paid, OrderState.Cancelled]],
+      [OrderState.Paid, [OrderState.Delivered, OrderState.Cancelled]],
+      [OrderState.Shipped, []],
+      [OrderState.Delivered, []],
+      [OrderState.Cancelled, []]
+    ]);
 
     const map = order.deliveryMethod === DeliveryMethod.Envio ? TRANSITIONS_ENVIO : TRANSITIONS_RETIRO;
-    const allowedTransitions = map[order.status] || [];
+    const allowedTransitions = map.get(order.status) || [];
 
     if (!allowedTransitions.includes(newState)) {
       const transitionsStr = allowedTransitions.length > 0 ? allowedTransitions.join(', ') : 'ninguna (estado final)';

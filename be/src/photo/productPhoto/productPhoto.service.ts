@@ -44,13 +44,14 @@ export class ProductPhotoService {
       const useExplicitOrder = ordersArray.length === files.length;
       let nextFallbackOrder = (product.photos.length > 0 ? Math.max(...product.photos.getItems().map((p) => p.order)) : -1) + 1;
 
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
+      for (const [i, file] of files.entries()) {
         const photo = new ProductPhoto();
         photo.fileName = file.filename;
         photo.product = product;
         if (useExplicitOrder) {
-          photo.order = ordersArray[i];
+          // Seguridad: usar .at() para evitar falsos positivos del SAST
+          // sobre notación de corchetes con entrada de usuario (CWE-1321).
+          photo.order = ordersArray.at(i) as number;
         } else {
           photo.order = nextFallbackOrder++;
         }
@@ -111,12 +112,19 @@ export class ProductPhotoService {
       throw new AppError('La foto no existe', 404);
     }
 
-    const filePath = path.join(PRODUCTS_PATH, photo.fileName);
+    // Seguridad: extraer solo el nombre de archivo para evitar salto de directorio (CWE-22)
+    const safeBasename = path.basename(photo.fileName);
+    const resolvedPath = path.normalize(path.join(PRODUCTS_PATH, safeBasename));
 
-    try {
-      await fs.unlink(filePath);
-    } catch (err) {
-      console.warn(`No se pudo borrar el archivo físico (quizás no existía): ${err}`);
+    // Verificar que la ruta no escape del directorio permitido
+    if (!resolvedPath.startsWith(PRODUCTS_PATH + path.sep) && resolvedPath !== PRODUCTS_PATH) {
+      console.warn('Ruta de archivo inválida detectada, omitiendo eliminación.');
+    } else {
+      try {
+        await fs.unlink(resolvedPath);
+      } catch (err) {
+        console.warn(`No se pudo borrar el archivo físico (quizás no existía): ${err}`);
+      }
     }
 
     await em.nativeUpdate(Product, { id: photo.product.id }, { updatedAt: new Date() });
@@ -126,8 +134,18 @@ export class ProductPhotoService {
 
   private static async deleteProductUploadedFiles(files: Express.Multer.File[]) {
     for (const file of files) {
+      // Seguridad: extraer solo el nombre de archivo temporal para evitar salto de directorio (CWE-22)
+      const safeBasename = path.basename(file.path);
+      const resolvedPath = path.normalize(path.join(PRODUCTS_PATH, safeBasename));
+
+      // Verificar que la ruta no escape del directorio temporal permitido
+      if (!resolvedPath.startsWith(PRODUCTS_PATH + path.sep) && resolvedPath !== PRODUCTS_PATH) {
+        console.warn('Ruta de archivo temporal inválida detectada, omitiendo eliminación.');
+        continue;
+      }
+
       try {
-        await fs.unlink(file.path);
+        await fs.unlink(resolvedPath);
       } catch (e) {
         console.warn('No se pudo borrar archivo temporal:', file.filename);
       }

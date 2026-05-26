@@ -38,11 +38,18 @@ export class UserPhotoService {
       let userPhoto = await em.findOne(UserPhoto, { user });
 
       if (userPhoto) {
-        const oldFilePath = path.join(USERS_PATH, userPhoto.fileName);
-        try {
-          await fs.unlink(oldFilePath);
-        } catch (e) {
-          console.warn('No se pudo borrar foto anterior:', userPhoto.fileName);
+        // Seguridad: limpiar path para prevenir salto de directorio (CWE-22)
+        const safeBasename = path.basename(userPhoto.fileName);
+        const oldFilePath = path.normalize(path.join(USERS_PATH, safeBasename));
+
+        if (!oldFilePath.startsWith(USERS_PATH + path.sep) && oldFilePath !== USERS_PATH) {
+          console.warn('Ruta de archivo inválida detectada, omitiendo eliminación.');
+        } else {
+          try {
+            await fs.unlink(oldFilePath);
+          } catch (e) {
+            console.warn('No se pudo borrar foto anterior:', userPhoto.fileName);
+          }
         }
 
         userPhoto.fileName = file.filename;
@@ -83,12 +90,18 @@ export class UserPhotoService {
       throw new AppError('No tienes permisos para eliminar esta foto', 403);
     }
 
-    const filePath = path.join(USERS_PATH, photo.fileName);
+    // Seguridad: limpiar path para prevenir salto de directorio (CWE-22)
+    const safeBasename = path.basename(photo.fileName);
+    const filePath = path.normalize(path.join(USERS_PATH, safeBasename));
 
-    try {
-      await fs.unlink(filePath);
-    } catch (err) {
-      console.warn(`No se pudo borrar el archivo físico: ${err}`);
+    if (!filePath.startsWith(USERS_PATH + path.sep) && filePath !== USERS_PATH) {
+      console.warn('Ruta de archivo inválida detectada, omitiendo eliminación.');
+    } else {
+      try {
+        await fs.unlink(filePath);
+      } catch (err) {
+        console.warn(`No se pudo borrar el archivo físico: ${err}`);
+      }
     }
 
     await em.nativeUpdate(User, { id: userId }, { updatedAt: new Date() });
@@ -97,8 +110,17 @@ export class UserPhotoService {
   }
 
   private static async deleteUserUploadedFile(file: Express.Multer.File) {
+    // Seguridad: extraer solo el nombre de archivo temporal para evitar salto de directorio (CWE-22)
+    const safeBasename = path.basename(file.path);
+    const resolvedPath = path.normalize(path.join(USERS_PATH, safeBasename));
+
+    if (!resolvedPath.startsWith(USERS_PATH + path.sep) && resolvedPath !== USERS_PATH) {
+      console.warn('Ruta de archivo temporal inválida detectada, omitiendo eliminación.');
+      return;
+    }
+
     try {
-      await fs.unlink(file.path);
+      await fs.unlink(resolvedPath);
     } catch (e) {
       console.warn('No se pudo borrar archivo temporal:', file.filename);
     }
