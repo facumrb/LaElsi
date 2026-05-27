@@ -5,6 +5,7 @@ import path from 'path';
 import fs from 'fs/promises';
 import { AppError } from '../../shared/errors/appError.js';
 import { PRODUCTS_PATH } from '../../shared/config/paths.config.js';
+import { FileStorageUtil } from '../../shared/utils/fileStorage.util.js';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB por archivo
 
@@ -112,20 +113,7 @@ export class ProductPhotoService {
       throw new AppError('La foto no existe', 404);
     }
 
-    // Seguridad: extraer solo el nombre de archivo para evitar salto de directorio (CWE-22)
-    const safeBasename = path.basename(photo.fileName);
-    const resolvedPath = path.normalize(path.join(PRODUCTS_PATH, safeBasename));
-
-    // Verificar que la ruta no escape del directorio permitido
-    if (!resolvedPath.startsWith(PRODUCTS_PATH + path.sep) && resolvedPath !== PRODUCTS_PATH) {
-      console.warn('Ruta de archivo inválida detectada, omitiendo eliminación.');
-    } else {
-      try {
-        await fs.unlink(resolvedPath);
-      } catch (err) {
-        console.warn(`No se pudo borrar el archivo físico (quizás no existía): ${err}`);
-      }
-    }
+    await FileStorageUtil.safeDeleteFile(PRODUCTS_PATH, photo.fileName);
 
     await em.nativeUpdate(Product, { id: photo.product.id }, { updatedAt: new Date() });
     em.remove(photo);
@@ -133,22 +121,6 @@ export class ProductPhotoService {
   }
 
   private static async deleteProductUploadedFiles(files: Express.Multer.File[]) {
-    for (const file of files) {
-      // Seguridad: extraer solo el nombre de archivo temporal para evitar salto de directorio (CWE-22)
-      const safeBasename = path.basename(file.path);
-      const resolvedPath = path.normalize(path.join(PRODUCTS_PATH, safeBasename));
-
-      // Verificar que la ruta no escape del directorio temporal permitido
-      if (!resolvedPath.startsWith(PRODUCTS_PATH + path.sep) && resolvedPath !== PRODUCTS_PATH) {
-        console.warn('Ruta de archivo temporal inválida detectada, omitiendo eliminación.');
-        continue;
-      }
-
-      try {
-        await fs.unlink(resolvedPath);
-      } catch (e) {
-        console.warn('No se pudo borrar archivo temporal:', file.filename);
-      }
-    }
+    await FileStorageUtil.deleteTempMulterFiles(PRODUCTS_PATH, files);
   }
 }

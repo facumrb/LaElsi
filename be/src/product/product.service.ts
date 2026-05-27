@@ -7,6 +7,8 @@ import { Currency } from '../shared/enums/currency.enum.js';
 import path from 'path';
 import fs from 'fs/promises';
 import { AppError } from '../shared/errors/appError.js';
+import { handleUniqueConstraintError } from '../shared/errors/dbError.utils.js';
+import { FileStorageUtil } from '../shared/utils/fileStorage.util.js';
 import { CategoryService } from '../category/category.service.js';
 import { PaginatedResult } from '../shared/utils/pagination.interface.js';
 import { DEFAULT_PAGE_SIZE } from '../shared/config/pagination.js';
@@ -97,7 +99,7 @@ export class ProductService {
     try {
       await em.flush();
     } catch (error: any) {
-      this.handleUniqueConstraintError(error);
+      handleUniqueConstraintError(error, 'Ya existe un producto con el mismo nombre');
       throw error;
     }
     return product;
@@ -312,7 +314,7 @@ export class ProductService {
     try {
       await em.flush();
     } catch (error: any) {
-      this.handleUniqueConstraintError(error);
+      handleUniqueConstraintError(error, 'Ya existe un producto con el mismo nombre');
       throw error;
     }
 
@@ -345,19 +347,7 @@ export class ProductService {
     const categoryId = (product.category as any)?.id ?? product.category;
 
     for (const photo of product.photos) {
-      // Seguridad: limpiar path para prevenir salto de directorio (CWE-22)
-      const safeBasename = path.basename(photo.fileName);
-      const filePath = path.normalize(path.join(PRODUCTS_PATH, safeBasename));
-
-      if (!filePath.startsWith(PRODUCTS_PATH + path.sep) && filePath !== PRODUCTS_PATH) {
-        console.warn('Ruta de archivo inválida detectada, omitiendo eliminación.');
-      } else {
-        try {
-          await fs.unlink(filePath);
-        } catch (err) {
-          console.warn(`No se pudo borrar el archivo físico (quizás no existía): ${photo.fileName}`);
-        }
-      }
+      await FileStorageUtil.safeDeleteFile(PRODUCTS_PATH, photo.fileName);
     }
     em.remove(product);
     await em.flush();
@@ -423,9 +413,5 @@ export class ProductService {
     );
   }
 
-  private static handleUniqueConstraintError(error: any) {
-    if (error.message?.includes('unique') || error.message?.includes('duplicate') || error.code === 'ER_DUP_ENTRY' || error.code === '23505') {
-      throw new AppError('Ya existe un producto con el mismo nombre', 409);
-    }
-  }
+
 }

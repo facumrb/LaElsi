@@ -2,6 +2,7 @@ import { Category } from './category.entity.js';
 import { orm } from '../shared/db/orm.js';
 import { CategoryState, ProductState } from '../shared/enums/state.enum.js';
 import { AppError } from '../shared/errors/appError.js';
+import { handleUniqueConstraintError } from '../shared/errors/dbError.utils.js';
 
 export class CategoryService {
   /**
@@ -109,7 +110,7 @@ export class CategoryService {
       await em.flush();
       return category;
     } catch (error: any) {
-      this.handleUniqueConstraintError(error);
+      handleUniqueConstraintError(error, 'Ya existe una categoría con este nombre');
       throw error;
     }
   }
@@ -228,7 +229,7 @@ export class CategoryService {
       await em.flush();
       return category;
     } catch (error: any) {
-      this.handleUniqueConstraintError(error);
+      handleUniqueConstraintError(error, 'Ya existe una categoría con este nombre');
       throw error;
     }
   }
@@ -459,9 +460,5 @@ export class CategoryService {
     }
   }
 
-  private static handleUniqueConstraintError(error: any) {
-    if (error.message?.includes('unique') || error.message?.includes('duplicate') || error.code === 'ER_DUP_ENTRY' || error.code === '23505') {
-      throw new AppError('Ya existe una categoría con este nombre', 409);
-    }
-  }
+
 }

@@ -5,7 +5,9 @@ import { AppError } from '../../shared/errors/appError.js';
 import { PaginatedResult } from '../../shared/utils/pagination.interface.js';
 import { DEFAULT_PAGE_SIZE } from '../../shared/config/pagination.js';
 import { buildPaginatedResponse } from '../../shared/utils/pagination.js';
-import { EMAIL_REGEX, MIN_PASSWORD_LENGTH, validatePasswords, handleUniqueConstraintError } from '../../shared/validation/user-validation.utils.js';
+import { EMAIL_REGEX, MIN_PASSWORD_LENGTH, validatePasswords } from '../../shared/validation/user-validation.utils.js';
+import { handleUniqueConstraintError } from '../../shared/errors/dbError.utils.js';
+import { FileStorageUtil } from '../../shared/utils/fileStorage.util.js';
 import { USERS_PATH } from '../../shared/config/paths.config.js';
 import fs from 'fs/promises';
 import path from 'path';
@@ -151,19 +153,7 @@ export class AdminService {
     if (!admin) throw new AppError('Administrador no encontrado', 404);
 
     if (admin.photo) {
-      const joinedPath = path.join(USERS_PATH, admin.photo.fileName);
-      // Normalize path, removing any '..'
-      const fullPath = path.normalize(joinedPath);
-      // Verify the fullPath is contained within our basePath
-      if (!fullPath.startsWith(USERS_PATH)) {
-        console.warn('Invalid path specified!');
-      } else {
-        try {
-          await fs.unlink(fullPath);
-        } catch (err) {
-          console.warn(`No se pudo borrar el archivo físico: ${err}`);
-        }
-      }
+      await FileStorageUtil.safeDeleteFile(USERS_PATH, admin.photo.fileName);
     }
 
     em.remove(admin);

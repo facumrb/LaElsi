@@ -13,18 +13,3 @@ export function validatePasswords(password?: string, confirmPassword?: string): 
   }
 }
 
-/**
- * Lanza AppError si el error es una violación de constraint UNIQUE (MySQL / Postgres).
- * @param error Error capturado en catch
- * @param message Mensaje amigable para el usuario
- */
-export function handleUniqueConstraintError(error: any, message: string): never | void {
-  if (
-    error.message?.includes('unique') ||
-    error.message?.includes('duplicate') ||
-    error.code === 'ER_DUP_ENTRY' ||
-    error.code === '23505'
-  ) {
-    throw new AppError(message, 409);
-  }
-}

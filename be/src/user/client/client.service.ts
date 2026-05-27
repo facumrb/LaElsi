@@ -5,7 +5,9 @@ import { AppError } from '../../shared/errors/appError.js';
 import { PaginatedResult } from '../../shared/utils/pagination.interface.js';
 import { DEFAULT_PAGE_SIZE } from '../../shared/config/pagination.js';
 import { buildPaginatedResponse } from '../../shared/utils/pagination.js';
-import { EMAIL_REGEX, MIN_PASSWORD_LENGTH, validatePasswords, handleUniqueConstraintError } from '../../shared/validation/user-validation.utils.js';
+import { EMAIL_REGEX, MIN_PASSWORD_LENGTH, validatePasswords } from '../../shared/validation/user-validation.utils.js';
+import { handleUniqueConstraintError } from '../../shared/errors/dbError.utils.js';
+import { FileStorageUtil } from '../../shared/utils/fileStorage.util.js';
 import fs from 'fs/promises';
 import path from 'path';
 import bcrypt from 'bcrypt';
@@ -199,19 +201,7 @@ export class ClientService {
     if (!client) throw new AppError('Cliente no encontrado', 404);
 
     if (client.photo) {
-      const joinedPath = path.join(USERS_PATH, client.photo.fileName);
-      // Normalize path, removing any '..'
-      const fullPath = path.normalize(joinedPath);
-      // Verify the fullPath is contained within our basePath
-      if (!fullPath.startsWith(USERS_PATH)) {
-        console.warn('Invalid path specified!');
-      } else {
-        try {
-          await fs.unlink(fullPath);
-        } catch (err) {
-          console.warn(`No se pudo borrar el archivo físico: ${err}`);
-        }
-      }
+      await FileStorageUtil.safeDeleteFile(USERS_PATH, client.photo.fileName);
     }
 
     em.remove(client);

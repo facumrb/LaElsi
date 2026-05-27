@@ -5,6 +5,7 @@ import path from 'path';
 import fs from 'fs/promises';
 import { AppError } from '../../shared/errors/appError.js';
 import { USERS_PATH } from '../../shared/config/paths.config.js';
+import { FileStorageUtil } from '../../shared/utils/fileStorage.util.js';
 
 export class UserPhotoService {
   static async uploadUserPhoto(id: number, file: Express.Multer.File | undefined, requestingUser: any) {
@@ -38,19 +39,7 @@ export class UserPhotoService {
       let userPhoto = await em.findOne(UserPhoto, { user });
 
       if (userPhoto) {
-        // Seguridad: limpiar path para prevenir salto de directorio (CWE-22)
-        const safeBasename = path.basename(userPhoto.fileName);
-        const oldFilePath = path.normalize(path.join(USERS_PATH, safeBasename));
-
-        if (!oldFilePath.startsWith(USERS_PATH + path.sep) && oldFilePath !== USERS_PATH) {
-          console.warn('Ruta de archivo inválida detectada, omitiendo eliminación.');
-        } else {
-          try {
-            await fs.unlink(oldFilePath);
-          } catch (e) {
-            console.warn('No se pudo borrar foto anterior:', userPhoto.fileName);
-          }
-        }
+        await FileStorageUtil.safeDeleteFile(USERS_PATH, userPhoto.fileName);
 
         userPhoto.fileName = file.filename;
       } else {
@@ -90,19 +79,7 @@ export class UserPhotoService {
       throw new AppError('No tienes permisos para eliminar esta foto', 403);
     }
 
-    // Seguridad: limpiar path para prevenir salto de directorio (CWE-22)
-    const safeBasename = path.basename(photo.fileName);
-    const filePath = path.normalize(path.join(USERS_PATH, safeBasename));
-
-    if (!filePath.startsWith(USERS_PATH + path.sep) && filePath !== USERS_PATH) {
-      console.warn('Ruta de archivo inválida detectada, omitiendo eliminación.');
-    } else {
-      try {
-        await fs.unlink(filePath);
-      } catch (err) {
-        console.warn(`No se pudo borrar el archivo físico: ${err}`);
-      }
-    }
+    await FileStorageUtil.safeDeleteFile(USERS_PATH, photo.fileName);
 
     await em.nativeUpdate(User, { id: userId }, { updatedAt: new Date() });
     em.remove(photo);
@@ -110,19 +87,6 @@ export class UserPhotoService {
   }
 
   private static async deleteUserUploadedFile(file: Express.Multer.File) {
-    // Seguridad: extraer solo el nombre de archivo temporal para evitar salto de directorio (CWE-22)
-    const safeBasename = path.basename(file.path);
-    const resolvedPath = path.normalize(path.join(USERS_PATH, safeBasename));
-
-    if (!resolvedPath.startsWith(USERS_PATH + path.sep) && resolvedPath !== USERS_PATH) {
-      console.warn('Ruta de archivo temporal inválida detectada, omitiendo eliminación.');
-      return;
-    }
-
-    try {
-      await fs.unlink(resolvedPath);
-    } catch (e) {
-      console.warn('No se pudo borrar archivo temporal:', file.filename);
-    }
+    await FileStorageUtil.deleteTempMulterFile(USERS_PATH, file);
   }
 }
