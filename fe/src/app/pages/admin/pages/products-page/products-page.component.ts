@@ -7,7 +7,7 @@ import {
   effect,
   untracked,
 } from '@angular/core';
-import { IApiProduct } from '@models/product.model';
+import { IApiProduct, ProductState } from '@models/product.model';
 import { IApiCategory } from '@models/category.model';
 import { ApiProductService } from '@services/api-services/api-product.service';
 import { ApiCategoryService } from '@services/api-services/api-category.service';
@@ -153,11 +153,18 @@ export class ProductsPageComponent implements OnInit {
   }
 
   handleDelete(product: IApiProduct) {
-    this.alertService.confirmDelete().then((confirm) => {
-      if (confirm) {
+    this.alertService.confirmEntityDelete(product.name, 'producto', true).then((choice) => {
+      if (choice === 'deactivate') {
+        this.apiService.updateProduct(product.id, { state: ProductState.Inactivo }).subscribe({
+          next: () => {
+            this.alertService.toast('Producto desactivado lógicamente', 'success');
+            this.loadProducts();
+          },
+        });
+      } else if (choice === 'delete') {
         this.apiService.deleteProduct(product.id).subscribe({
           next: () => {
-            this.alertService.toast('Producto eliminado', 'success');
+            this.alertService.toast('Producto eliminado físicamente', 'success');
             // Recargamos desde el servidor para que la paginación se recalcule
             this.loadProducts();
           },

@@ -1,6 +1,6 @@
 import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { ApiCategoryService } from '@services/api-services/api-category.service';
-import { IApiCategory } from '@models/category.model';
+import { IApiCategory, CategoryState } from '@models/category.model';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AlertService } from '@services/alert.service';
 import { CategoriesListComponent } from './categories-list/categories-list.component';
@@ -130,17 +130,24 @@ export class CategoriesPageComponent implements OnInit {
     if (cantidadProductos > 0) {
       this.alertService.error(
         'Acción Bloqueada',
-        `No puedes eliminar la categoría <b>"${category.name}"</b> porque tiene productos asociados.<br><br>💡 Primero elimine o cambie de categoría esos productos.`,
+        `No puedes eliminar la categoría "${category.name}" porque tiene productos asociados. Primero debe eliminar o cambiar de categoría esos productos.`,
       );
       return;
     }
 
-    this.alertService.confirmDelete().then((confirm) => {
-      if (confirm) {
+    this.alertService.confirmEntityDelete(category.name, 'categoría', true).then((choice) => {
+      if (choice === 'deactivate') {
+        this.apiService.updateCategory(category.id, { state: CategoryState.Inactivo }).subscribe({
+          next: () => {
+            this.loadCategories();
+            this.alertService.toast('Categoría desactivada lógicamente', 'success');
+          },
+        });
+      } else if (choice === 'delete') {
         this.apiService.deleteCategory(category.id).subscribe({
           next: () => {
             this.loadCategories(); // Recargar para sincronizar corrimiento de órdenes
-            this.alertService.toast('Categoría eliminada', 'success');
+            this.alertService.toast('Categoría eliminada físicamente', 'success');
           },
         });
       }

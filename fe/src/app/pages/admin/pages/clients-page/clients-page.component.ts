@@ -109,8 +109,8 @@ export class ClientsPageComponent implements OnInit {
   }
 
   handleDelete(client: IApiClient) {
-    this.alertService.confirmDelete().then((confirm) => {
-      if (confirm) {
+    this.alertService.confirmEntityDelete(`${client.name} ${client.lastName}`, 'cliente', false).then((choice) => {
+      if (choice === 'delete') {
         this.apiService.deleteClient(client.id).subscribe({
           next: () => {
             this.alertService.toast('Cliente eliminado', 'success');

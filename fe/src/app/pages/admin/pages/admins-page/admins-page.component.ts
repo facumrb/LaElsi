@@ -113,8 +113,8 @@ export class AdminsPageComponent implements OnInit {
       return;
     }
 
-    this.alertService.confirmDelete().then((confirm) => {
-      if (confirm) {
+    this.alertService.confirmEntityDelete(`${admin.name} ${admin.lastName}`, 'administrador', false).then((choice) => {
+      if (choice === 'delete') {
         this.apiService.deleteAdmin(admin.id).subscribe({
           next: () => {
             this.alertService.toast('Administrador eliminado', 'success');
