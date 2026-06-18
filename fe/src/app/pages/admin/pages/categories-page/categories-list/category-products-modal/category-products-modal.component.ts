@@ -1,4 +1,4 @@
-import { Component, computed, input, output, signal } from '@angular/core';
+import { Component, HostListener, computed, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IApiCategory } from '@models/category.model';
 import { IApiProduct } from '@models/product.model';
@@ -41,6 +41,12 @@ export class CategoryProductsModalComponent {
 
   // Lógica del buscador interno
   searchQuery = signal('');
+
+  // Cerrar modal con tecla Escape
+  @HostListener('document:keydown.escape')
+  onEscapeKey() {
+    this.close.emit();
+  }
 
   // Productos filtrados
   filteredProducts = computed(() => {

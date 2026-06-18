@@ -144,7 +144,7 @@
                 <!-- Ver Detalle Button -->
                 <button
                   (click)="onViewDetails.emit(order)"
-                  class="cursor-pointer w-32 h-8 flex items-center justify-center border border-gray-300 bg-gray-100 text-gray-700 rounded-lg text-xs font-semibold hover:bg-gray-200 transition-colors shadow-sm truncate"
+                  class="cursor-pointer flex-1 min-w-[6.5rem] max-w-[9rem] h-8 flex items-center justify-center border border-gray-300 bg-gray-100 text-gray-700 rounded-lg text-xs font-semibold hover:bg-gray-200 transition-colors shadow-sm truncate lg:w-32 lg:flex-none"
                   title="Ver detalle del pedido"
                 >
                   Detalle
@@ -158,7 +158,7 @@
                     "
                     [class]="
                       getActionColor(nextState) +
-                      ' cursor-pointer w-32 h-8 flex items-center justify-center gap-1 border border-solid rounded-lg text-xs font-semibold transition-colors shadow-sm'
+                      ' cursor-pointer flex-1 min-w-[6.5rem] max-w-[9rem] h-8 flex items-center justify-center gap-1 border border-solid rounded-lg text-xs font-semibold transition-colors shadow-sm lg:w-32 lg:flex-none'
                     "
                   >
                     {{ nextState }}
@@ -172,19 +172,19 @@
                 ) {
                   <button
                     (click)="onCancel.emit(order.id)"
-                    class="cursor-pointer w-32 h-8 flex items-center justify-center gap-1 border border-rose-300 text-rose-600 rounded-lg text-xs font-semibold hover:bg-rose-50 transition-colors"
+                    class="cursor-pointer flex-1 min-w-[6.5rem] max-w-[9rem] h-8 flex items-center justify-center gap-1 border border-rose-300 text-rose-600 rounded-lg text-xs font-semibold hover:bg-rose-50 transition-colors lg:w-32 lg:flex-none"
                   >
                     Cancelar
                   </button>
                 } @else if (order.status === OrderState.Delivered) {
                   <span
-                    class="w-32 h-8 flex items-center justify-center gap-1 text-xs text-emerald-600 border border-emerald-300 rounded-lg font-semibold bg-emerald-50"
+                    class="flex-1 min-w-[6.5rem] max-w-[9rem] h-8 flex items-center justify-center gap-1 text-xs text-emerald-600 border border-emerald-300 rounded-lg font-semibold bg-emerald-50 lg:w-32 lg:flex-none"
                   >
                     Finalizada
                   </span>
                 } @else {
                   <span
-                    class="w-32 h-8 flex items-center justify-center gap-1 text-xs text-rose-600 border border-rose-300 rounded-lg font-semibold bg-rose-50"
+                    class="flex-1 min-w-[6.5rem] max-w-[9rem] h-8 flex items-center justify-center gap-1 text-xs text-rose-600 border border-rose-300 rounded-lg font-semibold bg-rose-50 lg:w-32 lg:flex-none"
                   >
                     Anulada
                   </span>
