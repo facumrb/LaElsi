@@ -5,26 +5,6 @@ import { AppError } from '../shared/errors/appError.js';
 import { ApiResponse } from '../shared/utils/apiResponse.js';
 import { getPaginationParams } from '../shared/utils/pagination.js';
 
-function sanitizeProductInput(req: Request, res: Response, next: any) {
-  req.body.sanitizedInput = {
-    name: req.body.name,
-    description: req.body.description,
-    brand: req.body.brand,
-    totalSold: req.body.totalSold,
-    state: req.body.state,
-    stock: req.body.stock,
-    price: req.body.price,
-    currency: req.body.currency,
-    category: req.body.category
-  };
-
-  Object.keys(req.body.sanitizedInput).forEach((key) => {
-    if (req.body.sanitizedInput[key] === undefined) {
-      delete req.body.sanitizedInput[key];
-    }
-  });
-  next();
-}
 
 export class ProductController {
   // ============================================================================
@@ -162,5 +142,3 @@ export class ProductController {
     return res.status(200).json(ApiResponse.success('Productos más vendidos de la categoría encontrados', products));
   });
 }
-
-export { sanitizeProductInput };

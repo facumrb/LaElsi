@@ -3,6 +3,7 @@ import sharp from 'sharp';
 import path from 'path';
 import fs from 'fs';
 import { v4 as uuidv4 } from 'uuid';
+import { PRODUCTS_PATH, USERS_PATH } from '../shared/config/paths.config.js';
 
 export const optimizeImage = (subFolder: 'products' | 'users') => {
   return async (req: Request, res: Response, next: NextFunction) => {
@@ -12,7 +13,8 @@ export const optimizeImage = (subFolder: 'products' | 'users') => {
     }
 
     try {
-      const uploadPath = path.join(process.cwd(), 'uploads', subFolder);
+      const rawUploadPath = subFolder === 'products' ? PRODUCTS_PATH : USERS_PATH;
+      const uploadPath = path.normalize(rawUploadPath);
       if (!fs.existsSync(uploadPath)) {
         fs.mkdirSync(uploadPath, { recursive: true });
       }
@@ -20,7 +22,15 @@ export const optimizeImage = (subFolder: 'products' | 'users') => {
       // Función auxiliar para procesar un solo archivo
       const processFile = async (file: Express.Multer.File) => {
         const uniqueName = `${uuidv4()}.webp`;
-        const finalPath = path.join(uploadPath, uniqueName);
+        const joinedPath = path.join(uploadPath, uniqueName);
+        
+        // Normalize path, removing any '..'
+        const finalPath = path.normalize(joinedPath);
+        
+        // Verify the fullPath is contained within our basePath to prevent path traversal (CWE-22)
+        if (!finalPath.startsWith(uploadPath + path.sep) && finalPath !== uploadPath) {
+            throw new Error("Invalid path specified!");
+        }
 
         const info = await sharp(file.buffer)
           .webp({ quality: 80 }) // Se puede modificar la calidad de la imagen en 100% si es necesario, pero 80 es suficiente para que no pierda calidad.

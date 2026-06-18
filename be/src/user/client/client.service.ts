@@ -1,20 +1,17 @@
 import { Client } from './client.entity.js';
 import { orm } from '../../shared/db/orm.js';
 import { UserRole } from '../user.entity.js';
-import jwt from 'jsonwebtoken';
 import { AppError } from '../../shared/errors/appError.js';
 import { PaginatedResult } from '../../shared/utils/pagination.interface.js';
 import { DEFAULT_PAGE_SIZE } from '../../shared/config/pagination.js';
 import { buildPaginatedResponse } from '../../shared/utils/pagination.js';
+import { EMAIL_REGEX, MIN_PASSWORD_LENGTH, validatePasswords } from '../../shared/validation/user-validation.utils.js';
+import { handleUniqueConstraintError } from '../../shared/errors/dbError.utils.js';
+import { FileStorageUtil } from '../../shared/utils/fileStorage.util.js';
 import fs from 'fs/promises';
 import path from 'path';
 import bcrypt from 'bcrypt';
-import { UserService } from '../user.service.js';
-
-const USERS_PATH = path.join(process.cwd(), 'uploads', 'users');
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const MIN_PASSWORD_LENGTH = 6;
-
+import { USERS_PATH } from '../../shared/config/paths.config.js';
 import { FiscalCondition } from '../../shared/enums/fiscal-condition.enum.js';
 
 export interface CreateClientDto {
@@ -117,7 +114,7 @@ export class ClientService {
     const em = orm.em;
     const { email, password, confirmPassword, name, lastName, phone, username, dni } = data;
 
-    UserService.validatePasswords(password, confirmPassword);
+    validatePasswords(password, confirmPassword);
 
     if (!email || !password || !name || !lastName || !phone || !username || !dni) {
       throw new AppError('Todos los campos obligatorios deben ser proporcionados (email, contraseña, nombre, apellido, teléfono, nombre de usuario, DNI)', 400);
@@ -159,19 +156,12 @@ export class ClientService {
       throw error;
     }
 
-    const token = jwt.sign({ id: client.id, role: client.role }, process.env.JWT_SECRET || 'secret', {
-      expiresIn: '24h'
-    });
-
     return {
-      token,
-      user: {
-        id: client.id,
-        email: client.email,
-        firstName: client.name,
-        lastName: client.lastName,
-        role: client.role
-      }
+      id: client.id,
+      email: client.email,
+      firstName: client.name,
+      lastName: client.lastName,
+      role: client.role
     };
   }
 
@@ -184,7 +174,7 @@ export class ClientService {
       throw new AppError('El formato del correo electrónico es inválido', 400);
     }
 
-    UserService.validatePasswords(input.password, input.confirmPassword);
+    validatePasswords(input.password, input.confirmPassword);
 
     if (input.password) {
       if (input.password.length < MIN_PASSWORD_LENGTH) {
@@ -211,12 +201,7 @@ export class ClientService {
     if (!client) throw new AppError('Cliente no encontrado', 404);
 
     if (client.photo) {
-      const filePath = path.join(USERS_PATH, client.photo.fileName);
-      try {
-        await fs.unlink(filePath);
-      } catch (err) {
-        console.warn(`No se pudo borrar el archivo físico: ${err}`);
-      }
+      await FileStorageUtil.safeDeleteFile(USERS_PATH, client.photo.fileName);
     }
 
     em.remove(client);
@@ -224,8 +209,6 @@ export class ClientService {
   }
 
   private static handleUniqueConstraintError(error: any) {
-    if (error.message?.includes('unique') || error.message?.includes('duplicate') || error.code === 'ER_DUP_ENTRY' || error.code === '23505') {
-      throw new AppError('Ya existe un registro con los mismos datos únicos (email, DNI o nombre de usuario)', 409);
-    }
+    handleUniqueConstraintError(error, 'Ya existe un registro con los mismos datos únicos (email, DNI o nombre de usuario)');
   }
 }

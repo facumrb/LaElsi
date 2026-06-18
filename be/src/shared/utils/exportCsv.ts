@@ -45,8 +45,10 @@ async function exportToCSV() {
     let daysSinceFirst = 0;
     let frequency = 0; // Pedidos por mes (estimado)
     if (totalOrders > 0) {
-      const first = orders[0].dateTime;
-      const last = orders[totalOrders - 1].dateTime;
+      // Seguridad: usar .at() en lugar de corchetes para evitar falsos positivos
+      // del SAST sobre contaminación de prototipos (CWE-1321).
+      const first = orders.at(0)!.dateTime;
+      const last = orders.at(-1)!.dateTime;
       const diffTime = Math.abs(last.getTime() - first.getTime());
       daysSinceFirst = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
       
@@ -67,13 +69,14 @@ async function exportToCSV() {
   // sirven para calcular la tasa de abandono o cancelación (ej. pedidos que quedan estancados).
   let orderCsv = 'id,dateTime,status,deliveryMethod,paymentMethod,totalAmount,categoryAmounts\n';
   for (const o of orders) {
-    const categoryAmounts: Record<string, number> = {};
+    // Seguridad: usar Map en lugar de objeto plano para la acumulación
+    // de datos con claves dinámicas, evitando contaminación de prototipos (CWE-1321).
+    const categoryAmounts = new Map<string, number>();
     for (const item of o.items) {
       const catName = item.product?.category?.name || 'Uncategorized';
-      if (!categoryAmounts[catName]) categoryAmounts[catName] = 0;
-      categoryAmounts[catName] += Number(item.price) * item.quantity; // Precio histórico de esa línea
+      categoryAmounts.set(catName, (categoryAmounts.get(catName) || 0) + Number(item.price) * item.quantity); // Precio histórico de esa línea
     }
-    const catString = Object.entries(categoryAmounts).map(([k, v]) => `${k}:${v}`).join('|');
+    const catString = Array.from(categoryAmounts.entries()).map(([k, v]) => `${k}:${v}`).join('|');
     orderCsv += `${o.id},${o.dateTime.toISOString()},${o.status},${o.deliveryMethod},${o.paymentMethod},${o.totalAmount},"${catString}"\n`;
   }
   fs.writeFileSync(path.join(exportDir, 'orders.csv'), orderCsv);

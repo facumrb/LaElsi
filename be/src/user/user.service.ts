@@ -1,10 +1,10 @@
 import { orm } from '../shared/db/orm.js';
 import { User, UserRole } from './user.entity.js';
 import { Client } from './client/client.entity.js';
-import { Admin } from './admin/admin.entity.js';
 import { FiscalCondition } from '../shared/enums/fiscal-condition.enum.js';
 import { generateToken, generateRefreshToken, verifyRefreshToken } from '../shared/middlewares/auth.middleware.js';
 import { AppError } from '../shared/errors/appError.js';
+import { validatePasswords } from '../shared/validation/user-validation.utils.js';
 import bcrypt from 'bcrypt';
 
 export interface RegisterUserDto {
@@ -28,14 +28,7 @@ export interface RegisterUserDto {
   apartment?: string;
 }
 
-export class UserService {
-  static validatePasswords(password?: string, confirmPassword?: string) {
-    if (password && confirmPassword && password !== confirmPassword) {
-      throw new AppError('Las contraseñas no coinciden', 400);
-    }
-  }
-
-  static async verifyPassword(userId: number, passwordString: string): Promise<boolean> {
+export class UserService {  static async verifyPassword(userId: number, passwordString: string): Promise<boolean> {
     const em = orm.em;
     const user = await em.findOne(User, { id: userId });
     
@@ -142,7 +135,7 @@ export class UserService {
     const em = orm.em;
     const { password, confirmPassword, ...userData } = data;
 
-    this.validatePasswords(password, confirmPassword);
+    validatePasswords(password, confirmPassword);
 
     // Verificar duplicados usando la entidad User (STI abarca Admin y Client)
     const existingUser = await em.findOne(User, {

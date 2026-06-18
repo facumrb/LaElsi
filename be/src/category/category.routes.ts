@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import { CategoryController, sanitizeCategoryInput } from './category.controller.js';
+import { CategoryController } from './category.controller.js';
+import { sanitizeCategoryInput } from '../shared/middlewares/category.middleware.js';
 import { verifyToken, verifyRole } from '../shared/middlewares/auth.middleware.js';
 import { UserRole } from '../user/user.entity.js';
 

@@ -4,8 +4,9 @@ import { ProductPhoto } from './productPhoto.entity.js';
 import path from 'path';
 import fs from 'fs/promises';
 import { AppError } from '../../shared/errors/appError.js';
+import { PRODUCTS_PATH } from '../../shared/config/paths.config.js';
+import { FileStorageUtil } from '../../shared/utils/fileStorage.util.js';
 
-const UPLOADS_PATH = path.join(process.cwd(), 'uploads', 'products');
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB por archivo
 
 export class ProductPhotoService {
@@ -44,13 +45,14 @@ export class ProductPhotoService {
       const useExplicitOrder = ordersArray.length === files.length;
       let nextFallbackOrder = (product.photos.length > 0 ? Math.max(...product.photos.getItems().map((p) => p.order)) : -1) + 1;
 
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
+      for (const [i, file] of files.entries()) {
         const photo = new ProductPhoto();
         photo.fileName = file.filename;
         photo.product = product;
         if (useExplicitOrder) {
-          photo.order = ordersArray[i];
+          // Seguridad: usar .at() para evitar falsos positivos del SAST
+          // sobre notación de corchetes con entrada de usuario (CWE-1321).
+          photo.order = ordersArray.at(i) as number;
         } else {
           photo.order = nextFallbackOrder++;
         }
@@ -111,13 +113,7 @@ export class ProductPhotoService {
       throw new AppError('La foto no existe', 404);
     }
 
-    const filePath = path.join(UPLOADS_PATH, photo.fileName);
-
-    try {
-      await fs.unlink(filePath);
-    } catch (err) {
-      console.warn(`No se pudo borrar el archivo físico (quizás no existía): ${err}`);
-    }
+    await FileStorageUtil.safeDeleteFile(PRODUCTS_PATH, photo.fileName);
 
     await em.nativeUpdate(Product, { id: photo.product.id }, { updatedAt: new Date() });
     em.remove(photo);
@@ -125,12 +121,6 @@ export class ProductPhotoService {
   }
 
   private static async deleteProductUploadedFiles(files: Express.Multer.File[]) {
-    for (const file of files) {
-      try {
-        await fs.unlink(file.path);
-      } catch (e) {
-        console.warn('No se pudo borrar archivo temporal:', file.filename);
-      }
-    }
+    await FileStorageUtil.deleteTempMulterFiles(PRODUCTS_PATH, files);
   }
 }

@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import 'reflect-metadata';
 import express from 'express';
-import path from 'path';
+import { PRODUCTS_PATH, USERS_PATH } from './shared/config/paths.config.js';
 import cors from 'cors';
 import { RequestContext } from '@mikro-orm/core';
 import { adminRouter } from './user/admin/admin.routes.js';
@@ -42,11 +42,11 @@ app.use('/api/validate-unique', validationRouter);
 
 // Rutas de Fotos de Productos
 // Ejemplo URL: http://localhost:3000/uploads/products/foto.webp
-app.use('/uploads/products', express.static(path.join(process.cwd(), 'uploads/products')));
+app.use('/uploads/products', express.static(PRODUCTS_PATH));
 
 // Rutas de Fotos de Usuarios/Perfil
 // Ejemplo URL: http://localhost:3000/uploads/users/avatar.webp
-app.use('/uploads/users', express.static(path.join(process.cwd(), 'uploads/users')));
+app.use('/uploads/users', express.static(USERS_PATH));
 
 import { errorHandler } from './shared/errors/errorHandler.js';
 import { AppError } from './shared/errors/appError.js';
