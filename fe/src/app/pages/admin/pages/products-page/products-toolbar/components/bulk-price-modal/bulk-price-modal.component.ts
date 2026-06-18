@@ -7,6 +7,7 @@ import {
   computed,
   effect,
   OnDestroy,
+  HostListener,
 } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { Subject, Subscription } from 'rxjs';
@@ -183,5 +184,10 @@ export class BulkPriceModalComponent implements OnDestroy {
           this.loadingApply.set(false);
         },
       });
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscapeKey() {
+    this.close.emit();
   }
 }

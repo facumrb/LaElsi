@@ -28,7 +28,7 @@
     </header>
 
     <!-- Modal Body -->
-    <div class="p-6 overflow-y-auto grow custom-scrollbar">
+    <div class="p-6 overflow-y-auto overscroll-contain grow custom-scrollbar">
       <!-- Info de Transferencia (Solo si esta Pendiente y es Transferencia) -->
       @if (
         order().status === OrderState.Pending &&

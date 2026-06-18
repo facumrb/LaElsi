@@ -1,4 +1,4 @@
-import { Component, output } from '@angular/core';
+import { Component, HostListener, output } from '@angular/core';
 import { A11yModule } from '@angular/cdk/a11y';
 import { CloseModalButtonComponent } from '@shared/components/buttons/close-modal-button/close-modal-button.component';
 import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
@@ -32,5 +32,10 @@ export class RecoverPasswordModalComponent {
 
   get whatsappLink(): string {
     return `https://wa.me/${this.whatsappNumber}?text=${encodeURIComponent(this.whatsappMessage)}`;
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscapeKey() {
+    this.close.emit();
   }
 }

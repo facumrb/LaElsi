@@ -6,6 +6,7 @@ import {
   OnDestroy,
   inject,
   computed,
+  HostListener,
 } from '@angular/core';
 import { A11yModule } from '@angular/cdk/a11y';
 import { CurrencyPipe, DOCUMENT } from '@angular/common';
@@ -75,6 +76,11 @@ export class OrderDetailModalComponent implements OnInit, OnDestroy {
   }
 
   onClose() {
+    this.close.emit();
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscapeKey() {
     this.close.emit();
   }
 

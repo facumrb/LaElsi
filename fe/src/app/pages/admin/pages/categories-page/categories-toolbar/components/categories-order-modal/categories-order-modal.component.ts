@@ -6,6 +6,7 @@ import {
   output,
   signal,
   computed,
+  HostListener,
 } from '@angular/core';
 import {
   CdkDragDrop,
@@ -125,5 +126,10 @@ export class CategoriesOrderModalComponent {
         this.isSaving.set(false);
       },
     });
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscapeKey() {
+    this.close();
   }
 }
