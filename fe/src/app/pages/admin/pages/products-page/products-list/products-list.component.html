@@ -69,7 +69,7 @@
         @for (product of products(); track product.id; let isLast = $last) {
           <!-- Este checkbox es para la version de Listado -->
           <tr
-            class="admin-table-row hover:bg-gray-50 transition-colors"
+            class="admin-table-row"
             [class.bg-indigo-50]="isSelected(product.id)"
             [class.lg:bg-indigo-50]="isSelected(product.id)"
           >

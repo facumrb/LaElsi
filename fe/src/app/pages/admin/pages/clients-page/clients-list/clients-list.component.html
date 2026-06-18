@@ -27,9 +27,7 @@
 
       <tbody class="admin-table-body">
         @for (client of clients(); track client.id; let isLast = $last) {
-          <tr
-            class="flex flex-col relative lg:static bg-white rounded-xl shadow border border-gray-200 mb-4 mx-4 mt-4 lg:mx-0 lg:mt-0 lg:mb-0 lg:table-row lg:shadow-none lg:border-0 lg:rounded-none hover:bg-gray-50 transition-colors"
-          >
+          <tr class="admin-table-row">
             <td
               class="admin-table-cell-first"
               [class.lg:rounded-bl-lg]="isLast"
