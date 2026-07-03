@@ -1,18 +1,19 @@
-<main class="flex min-h-screen items-start py-8 md:items-center justify-center bg-gray-50 p-4 overflow-y-auto">
-  <div class="w-full max-w-lg">
+<main class="flex min-h-screen items-start py-8 md:items-center justify-center bg-gray-50 px-4 overflow-y-auto">
+  <div class="w-full max-w-lg sm:max-w-xl">
     <div class="mb-4 flex justify-start">
       <app-go-back-button></app-go-back-button>
     </div>
 
     <div class="rounded-xl bg-white p-8 shadow-xl border border-gray-100">
-      <div class="mb-4 flex justify-center">
+      <h1 class="mb-4 flex justify-center">
         <app-logo
           [width]="128"
           [height]="48"
           loading="eager"
           customClass="h-14 w-auto object-contain"
         />
-      </div>
+        <span class="sr-only">LaElsi</span>
+      </h1>
 
       <p class="mb-6 text-center text-gray-500 text-sm">Crea tu cuenta</p>
 
@@ -106,7 +107,7 @@
 
           <div class="relative">
             <input
-              [type]="passwordVisible() ? 'text' : 'password'"
+              [type]="confirmPasswordVisible() ? 'text' : 'password'"
               id="confirmPassword"
               name="confirmPassword"
               formControlName="confirmPassword"
@@ -117,8 +118,8 @@
             />
 
             <app-password-toggle-button
-              [(visible)]="passwordVisible"
-              [show]="showEyeIcon()"
+              [(visible)]="confirmPasswordVisible"
+              [show]="showConfirmEyeIcon()"
             />
           </div>
 

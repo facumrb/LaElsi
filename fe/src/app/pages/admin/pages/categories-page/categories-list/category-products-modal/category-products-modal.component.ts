@@ -1,4 +1,4 @@
-import { Component, HostListener, computed, input, output, signal } from '@angular/core';
+import { Component, HostListener, computed, input, output, signal, HostListener } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IApiCategory } from '@models/category.model';
 import { IApiProduct } from '@models/product.model';
@@ -38,6 +38,11 @@ export class CategoryProductsModalComponent {
   category = input.required<IApiCategory>();
   close = output<void>();
   onNavigateToProduct = output<IApiProduct>();
+
+  @HostListener('document:keydown.escape')
+  onEscape() {
+    this.close.emit();
+  }
 
   // Lógica del buscador interno
   searchQuery = signal('');

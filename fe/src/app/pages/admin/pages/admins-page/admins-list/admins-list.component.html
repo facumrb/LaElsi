@@ -27,7 +27,9 @@
 
       <tbody class="admin-table-body">
         @for (admin of admins(); track admin.id; let isLast = $last) {
-          <tr class="admin-table-row">
+          <tr
+            class="admin-table-row hover:bg-gray-50 transition-colors"
+          >
             <td
               class="admin-table-cell-first"
               [class.lg:rounded-bl-lg]="isLast"

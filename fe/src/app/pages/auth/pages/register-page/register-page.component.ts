@@ -45,6 +45,7 @@ export class RegisterPageComponent {
 
   loading = signal(false);
   passwordVisible = signal(false);
+  confirmPasswordVisible = signal(false);
 
   formRegister = this.fb.nonNullable.group(
     {
@@ -110,8 +111,18 @@ export class RegisterPageComponent {
     { initialValue: '' },
   );
 
+  private confirmPasswordValue = toSignal(
+    this.formRegister.get('confirmPassword')!.valueChanges,
+    { initialValue: '' },
+  );
+
   showEyeIcon = computed(() => {
     const val = this.passwordValue();
+    return !!(val && val.length > 0);
+  });
+
+  showConfirmEyeIcon = computed(() => {
+    const val = this.confirmPasswordValue();
     return !!(val && val.length > 0);
   });
 
