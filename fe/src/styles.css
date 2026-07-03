@@ -59,7 +59,7 @@
   }
 
   .admin-table-row {
-    @apply flex flex-col relative lg:static bg-white rounded-xl shadow border border-gray-200 mb-4 mx-4 mt-4 lg:mx-0 lg:mt-0 lg:mb-0 lg:table-row lg:shadow-none lg:border-0 lg:rounded-none hover:bg-gray-50 transition-colors;
+    @apply flex flex-col relative lg:static bg-white rounded-xl shadow border border-gray-200 mb-4 mt-4 lg:mt-0 lg:mb-0 lg:table-row lg:shadow-none lg:border-0 lg:rounded-none hover:bg-gray-50 transition-colors;
   }
 
   .admin-table-cell-first {
@@ -98,6 +98,19 @@
 
   .form-card {
     @apply bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden;
+  }
+
+  /* ── Admin Cards ── */
+  .admin-stat-card {
+    @apply bg-white rounded-xl shadow-sm border border-neutral-200
+           p-6 flex items-start justify-between gap-4
+           transition-all duration-300
+           hover:shadow-md hover:border-[#3d4494]/30;
+  }
+
+  .admin-section-card {
+    @apply bg-white rounded-xl shadow-sm border border-neutral-200
+           overflow-hidden flex flex-col h-full;
   }
 
   .form-body {
@@ -193,7 +206,7 @@
   /* ── Toolbar ── */
   .toolbar-container {
     @apply flex flex-col lg:flex-row justify-between items-start
-           lg:items-center gap-4 mb-6 mx-4 lg:mx-0;
+           lg:items-center gap-4 mb-6;
   }
 
   /* ── Navbar ── */
