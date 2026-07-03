@@ -1,8 +1,10 @@
 <div
   class="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm transition-opacity duration-300 lg:hidden"
   [class.opacity-0]="!mobileMenuOpen()"
+  [class.invisible]="!mobileMenuOpen()"
   [class.pointer-events-none]="!mobileMenuOpen()"
   [class.opacity-100]="mobileMenuOpen()"
+  [class.visible]="mobileMenuOpen()"
   (click)="toggleMobileMenu.emit()"
   aria-hidden="true"
 ></div>
@@ -81,7 +83,7 @@
 
         @if (!sidebarOpen()) {
           <div
-            class="absolute left-16 bg-slate-900 text-white text-xs px-2 py-1.5 rounded opacity-0 group-hover:opacity-100 transition-opacity z-50 pointer-events-none whitespace-nowrap shadow-xl border border-slate-700"
+            class="absolute left-16 bg-slate-900 text-white text-xs px-2 py-1.5 rounded opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity z-50 pointer-events-none whitespace-nowrap shadow-xl border border-slate-700"
           >
             {{ item.label }}
           </div>
