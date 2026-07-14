@@ -1,6 +1,6 @@
 <div class="table-container">
   <div class="w-full">
-    <table class="table-base border-collapse">
+    <table class="table-base">
       <thead class="table-header">
         <tr>
           <th class="admin-table-header-cell w-[5%] rounded-tl-lg">
@@ -46,7 +46,7 @@
       <tbody class="admin-table-body">
         <!-- Este checkbox en el global para la CARD -->
         <tr
-          class="flex items-center bg-white border border-gray-200 shadow-sm rounded-lg mx-4 mb-4 px-4 py-3 lg:hidden"
+          class="flex items-center bg-white border border-gray-200 shadow-sm rounded-lg mb-4 px-4 py-3 lg:hidden"
         >
           <div class="relative flex items-center justify-center shrink-0 mr-3">
             <input
@@ -128,7 +128,12 @@
                           : null
                       "
                       [altText]="product.name"
-                      containerClass="h-full w-full bg-gray-50"
+                      [containerClass]="
+                        'h-full w-full ' +
+                        (isSelected(product.id)
+                          ? 'bg-indigo-50'
+                          : 'bg-gray-50')
+                      "
                       imageClass="rounded-lg border border-gray-200"
                     />
                   </div>
