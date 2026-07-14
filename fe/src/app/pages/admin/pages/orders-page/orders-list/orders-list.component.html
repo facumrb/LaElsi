@@ -9,7 +9,7 @@
           <th class="admin-table-header-cell w-[16%]">Estado</th>
           <th class="admin-table-header-cell w-[14%]">Pago</th>
           <th class="admin-table-header-cell w-[13%]">Total</th>
-          <th class="admin-table-header-cell w-[15%] text-center">Acciones</th>
+          <th class="admin-table-header-cell w-[15%] text-center rounded-tr-lg">Acciones</th>
         </tr>
       </thead>
 
@@ -19,7 +19,11 @@
             class="admin-table-row"
           >
             <!-- ID Column -->
-            <td class="admin-table-cell-first font-bold">
+            <td
+              class="admin-table-cell-first font-bold"
+              [class.lg:rounded-bl-lg]="isLast"
+              [class.lg:border-b-0]="isLast"
+            >
               <span class="admin-table-mobile-label mb-2 block text-xs"
                 >ID Orden:</span
               >
@@ -32,7 +36,7 @@
             </td>
 
             <!-- Client Column -->
-            <td class="admin-table-cell group">
+            <td class="admin-table-cell group" [class.lg:border-b-0]="isLast">
               <span class="admin-table-mobile-label block mb-1 text-xs"
                 >Cliente:</span
               >
@@ -51,7 +55,7 @@
             </td>
 
             <!-- Delivery Method Column -->
-            <td class="admin-table-cell">
+            <td class="admin-table-cell" [class.lg:border-b-0]="isLast">
               <span class="admin-table-mobile-label block mb-1 text-xs"
                 >Método:</span
               >
@@ -99,7 +103,7 @@
             </td>
 
             <!-- Status Column -->
-            <td class="admin-table-cell">
+            <td class="admin-table-cell" [class.lg:border-b-0]="isLast">
               <span class="admin-table-mobile-label block mb-1 text-xs"
                 >Estado:</span
               >
@@ -113,7 +117,7 @@
             </td>
 
             <!-- Payment Method Column -->
-            <td class="admin-table-cell">
+            <td class="admin-table-cell" [class.lg:border-b-0]="isLast">
               <span class="admin-table-mobile-label block mb-1 text-xs"
                 >Pago:</span
               >
@@ -123,7 +127,7 @@
             </td>
 
             <!-- Total Column -->
-            <td class="admin-table-cell">
+            <td class="admin-table-cell" [class.lg:border-b-0]="isLast">
               <span class="admin-table-mobile-label block mb-1 text-xs"
                 >Total:</span
               >
@@ -133,7 +137,11 @@
             </td>
 
             <!-- Actions Column -->
-            <td class="admin-table-cell-last">
+            <td
+              class="admin-table-cell-last"
+              [class.lg:rounded-br-lg]="isLast"
+              [class.lg:border-b-0]="isLast"
+            >
               <div
                 class="flex flex-wrap items-center justify-start lg:justify-center gap-2"
               >
