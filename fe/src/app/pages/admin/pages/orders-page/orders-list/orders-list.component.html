@@ -1,5 +1,5 @@
-<div class="table-container">
-  <div class="w-full">
+<div class="table-container overflow-hidden">
+  <div class="w-full overflow-x-auto">
     <table class="table-base">
       <thead class="table-header">
         <tr>
@@ -15,7 +15,9 @@
 
       <tbody class="admin-table-body">
         @for (order of orders(); track order.id; let isLast = $last) {
-          <tr class="admin-table-row">
+          <tr
+            class="admin-table-row hover:bg-gray-50 transition-colors lg:h-36"
+          >
             <!-- ID Column -->
             <td class="admin-table-cell-first font-bold">
               <span class="admin-table-mobile-label mb-2 block text-xs"
@@ -142,7 +144,7 @@
                 <!-- Ver Detalle Button -->
                 <button
                   (click)="onViewDetails.emit(order)"
-                  class="cursor-pointer flex-1 min-w-26 max-w-26 h-8 flex items-center justify-center border border-gray-300 bg-gray-100 text-gray-700 rounded-lg text-xs font-semibold hover:bg-gray-200 transition-colors shadow-sm truncate lg:w-32 lg:flex-none"
+                  class="cursor-pointer w-32 h-8 flex items-center justify-center border border-gray-300 bg-gray-100 text-gray-700 rounded-lg text-xs font-semibold hover:bg-gray-200 transition-colors shadow-sm truncate"
                   title="Ver detalle del pedido"
                 >
                   Detalle
