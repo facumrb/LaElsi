@@ -4,11 +4,8 @@ import {
   OnInit,
   signal,
   computed,
-  effect,
-  untracked,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ApiProductService } from '@services/api-services/api-product.service';
 import { ApiCategoryService } from '@services/api-services/api-category.service';
 import { ProductCardComponent } from '@client/components/product-card/product-card.component';
 import {
@@ -17,7 +14,6 @@ import {
   PopularityOrder,
 } from '@client/components/products-filter/products-filter.component';
 import { IApiCategory, CategoryState } from '@models/category.model';
-import { IApiProduct } from '@models/product.model';
 import {
   BreadcrumbsComponent,
   BreadcrumbStep,
@@ -26,6 +22,8 @@ import { PaginationComponent } from '@shared/components/pagination/pagination.co
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { bootstrapExclamationTriangle } from '@ng-icons/bootstrap-icons';
 import { A11yModule } from '@angular/cdk/a11y';
+import { injectActiveProductsQuery } from '@services/queries/product-queries';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-category-page',
@@ -41,79 +39,54 @@ import { A11yModule } from '@angular/cdk/a11y';
   templateUrl: './category-page.component.html',
 })
 export class CategoryPageComponent implements OnInit {
-  private ApiCategoryService = inject(ApiCategoryService);
-  private ApiProductService = inject(ApiProductService);
+  private apiCategoryService = inject(ApiCategoryService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
 
   category = signal<IApiCategory | null>(null);
-  private productsRaw = signal<IApiProduct[]>([]);
-  availableBrands = signal<string[]>([]);
+  showInactiveCategoryModal = signal<boolean>(false);
 
   // Paginación
   currentPage = signal<number>(1);
-  totalPages = signal<number>(1);
-
-  // Breadcrumbs
-  breadcrumbSteps = computed<BreadcrumbStep[]>(() => {
-    const cat = this.category();
-    if (!cat) return [];
-
-    const steps: BreadcrumbStep[] = [];
-
-    // Función para construir el path hacia arriba
-    const buildPath = (current: IApiCategory) => {
-      steps.unshift({
-        label: current.name,
-        url: `/category/${current.id}`,
-      });
-      if (current.parent) {
-        buildPath(current.parent);
-      }
-    };
-
-    buildPath(cat);
-    return steps;
-  });
 
   // Filtros
   priceOrder = signal<PriceOrder>('Defecto');
   brandFilter = signal<string>('Todas');
   popularityOrder = signal<PopularityOrder>('Defecto');
+  private categoryId = signal<number>(0);
 
-  // Estado del modal para categoría inactiva
-  showInactiveCategoryModal = signal<boolean>(false);
+  // Breadcrumbs
+  breadcrumbSteps = computed<BreadcrumbStep[]>(() => {
+    const cat = this.category();
+    if (!cat) return [];
+    const steps: BreadcrumbStep[] = [];
+    const buildPath = (current: IApiCategory) => {
+      steps.unshift({ label: current.name, url: `/category/${current.id}` });
+      if (current.parent) buildPath(current.parent);
+    };
+    buildPath(cat);
+    return steps;
+  });
 
-  // Los productos ya vienen filtrados y ordenados del server
-  productsFiltered = computed(() => [...this.productsRaw()]);
+  // Computed filter bundle — TanStack Query reacts automatically to any change
+  private activeFilters = computed(() => ({
+    categoryId: this.categoryId(),
+    brand: this.brandFilter(),
+    priceOrder: this.priceOrder(),
+    popularityOrder: this.popularityOrder(),
+    page: this.currentPage(),
+    limit: 16,
+  }));
 
-  // ID de la categoría actual
-  private currentCategoryId = signal<number>(0);
-  private initialLoadDone = false;
+  // Tier 2: Query Layer
+  productsQuery = injectActiveProductsQuery(this.activeFilters);
 
-  constructor() {
-    // Reacciona a cambios en los filtros y recarga del server
-    effect(() => {
-      this.priceOrder();
-      this.brandFilter();
-      this.popularityOrder();
-      untracked(() => {
-        if (this.initialLoadDone && this.currentCategoryId() > 0) {
-          this.currentPage.set(1);
-          this.loadProducts(this.currentCategoryId());
-        }
-      });
-    });
-  }
+  productsFiltered = computed(() => this.productsQuery.data()?.data ?? []);
+  totalPages = computed(() => this.productsQuery.data()?.totalPages ?? 1);
 
-  // Effect para extraer las marcas disponibles de los productos.
-  private brandExtractor = effect(() => {
-    const products = this.productsRaw();
-    const currentBrand = this.brandFilter();
-    if (currentBrand === 'Todas') {
-      const brands = [...new Set(products.map((p) => p.brand))].sort();
-      this.availableBrands.set(brands);
-    }
+  availableBrands = computed(() => {
+    if (this.brandFilter() !== 'Todas') return [];
+    return [...new Set((this.productsQuery.data()?.data ?? []).map((p) => p.brand))].sort();
   });
 
   ngOnInit(): void {
@@ -121,45 +94,17 @@ export class CategoryPageComponent implements OnInit {
       const id = Number(params.get('id'));
       const pageParam = this.route.snapshot.queryParamMap.get('page');
       this.currentPage.set(Number(pageParam) || 1);
-      this.currentCategoryId.set(id);
-      this.cargarDatosDePagina(id);
-      this.initialLoadDone = true;
-    });
-  }
+      this.categoryId.set(id);
 
-  cargarDatosDePagina(id: number) {
-    // 1. Obtener la categoría y validar que esté activa
-    this.ApiCategoryService.getCategoryById(id).subscribe({
-      next: (data) => {
-        this.category.set(data);
-        if (data.state !== CategoryState.Activo) {
-          this.showInactiveCategoryModal.set(true);
-          return;
-        }
-      },
-      error: () => this.router.navigate(['/']),
-    });
-
-    // 2. Obtener los productos activos de la categoría con filtros
-    this.loadProducts(id);
-  }
-
-  loadProducts(categoryId: number) {
-    const filters = {
-      brand: this.brandFilter(),
-      priceOrder: this.priceOrder(),
-      popularityOrder: this.popularityOrder(),
-    };
-    this.ApiProductService.getActiveProductsByCategory(
-      categoryId,
-      this.currentPage(),
-      16,
-      filters,
-    ).subscribe({
-      next: (data) => {
-        this.productsRaw.set(data.data);
-        this.totalPages.set(data.totalPages);
-      },
+      // Load category metadata (not a list, not cached via query layer — single fetch)
+      firstValueFrom(this.apiCategoryService.getCategoryById(id))
+        .then((data) => {
+          this.category.set(data);
+          if (data.state !== CategoryState.Activo) {
+            this.showInactiveCategoryModal.set(true);
+          }
+        })
+        .catch(() => this.router.navigate(['/']));
     });
   }
 
@@ -170,7 +115,6 @@ export class CategoryPageComponent implements OnInit {
       queryParams: { page },
       queryParamsHandling: 'merge',
     });
-    this.loadProducts(this.currentCategoryId());
   }
 
   closeInactiveModal() {

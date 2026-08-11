@@ -197,3 +197,38 @@ export function injectBulkPriceMutation() {
     },
   }));
 }
+
+/**
+ * Query for global best sellers (Home Page)
+ */
+export function injectBestSellersQuery(limit: number = 10) {
+  const apiProductService = inject(ApiProductService);
+
+  return injectQuery(() => ({
+    queryKey: ['products', 'best-sellers', limit],
+    queryFn: () => firstValueFrom(apiProductService.getBestSellers(limit)),
+    staleTime: 1000 * 60 * 10, // 10 minutes — best sellers change less frequently
+  }));
+}
+
+/**
+ * Query for best sellers by category (Home Page carousels)
+ */
+export function injectBestSellersByCategoryQuery(
+  categoryIdSignal: Signal<number>,
+  limit: number = 10
+) {
+  const apiProductService = inject(ApiProductService);
+
+  return injectQuery(() => {
+    const categoryId = categoryIdSignal();
+    return {
+      queryKey: ['products', 'best-sellers', 'category', categoryId, limit],
+      queryFn: () =>
+        firstValueFrom(apiProductService.getBestSellersByCategory(categoryId, limit)),
+      enabled: categoryId > 0,
+      staleTime: 1000 * 60 * 10, // 10 minutes
+    };
+  });
+}
+
