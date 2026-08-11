@@ -1,5 +1,9 @@
-<main class="flex min-h-screen items-start py-8 md:items-center justify-center bg-gray-50 px-4 overflow-y-auto">
-  <div class="w-full max-w-lg sm:max-w-xl">
+<main
+  class="flex min-h-screen items-start py-8 lg:items-center justify-center bg-gray-50 px-4 overflow-y-auto"
+>
+  <div
+    class="w-full max-w-lg sm:max-w-xl md:max-w-2xl lg:max-w-5xl transition-all duration-300"
+  >
     <div class="mb-4 flex justify-start">
       <app-go-back-button></app-go-back-button>
     </div>
@@ -10,12 +14,10 @@
           [width]="128"
           [height]="48"
           loading="eager"
-          customClass="h-14 w-auto object-contain"
+          customClass="h-14 lg:h-18 w-auto object-contain"
         />
         <span class="sr-only">LaElsi</span>
       </h1>
-
-      <p class="mb-6 text-center text-gray-500 text-sm">Crea tu cuenta</p>
 
       <form
         [formGroup]="formRegister"
@@ -23,119 +25,132 @@
         (ngSubmit)="onSubmit()"
         class="space-y-5"
       >
-        <!-- Usuario -->
-        <div>
-          <label for="username" class="mb-1.5 form-label font-semibold">
-            Nombre de usuario <span class="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            id="username"
-            name="username"
-            formControlName="username"
-            minlength="4"
-            maxlength="30"
-            autocomplete="username"
-            class="form-input p-3 focus:border-[#3d4494] focus:ring-1 focus:ring-[#3d4494] outline-none transition-all"
-            placeholder="Ej: jperez"
-          />
-          <app-field-error
-            [control]="formRegister.controls.username"
-            [maxLength]="30"
-            validLabel="Usuario disponible"
-          />
-        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12">
+          <!-- Columna Izquierda: Usuario y Email -->
+          <div class="space-y-5">
+            <!-- Usuario -->
+            <div>
+              <label for="username" class="mb-1.5 form-label font-semibold">
+                Nombre de usuario <span class="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                id="username"
+                name="username"
+                formControlName="username"
+                minlength="4"
+                maxlength="30"
+                autocomplete="username"
+                class="form-input p-3 focus:border-[#3d4494] focus:ring-1 focus:ring-[#3d4494] outline-none transition-all"
+                placeholder="Ej: jperez"
+              />
+              <app-field-error
+                [control]="formRegister.controls.username"
+                [maxLength]="30"
+                validLabel="Usuario disponible"
+              />
+            </div>
 
-        <!-- Email -->
-        <div>
-          <label for="email" class="mb-1.5 form-label font-semibold">
-            Email <span class="text-red-500">*</span>
-          </label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            formControlName="email"
-            inputmode="email"
-            maxlength="255"
-            autocomplete="email"
-            class="form-input p-3 focus:border-[#3d4494] focus:ring-1 focus:ring-[#3d4494] outline-none transition-all"
-            placeholder="Ej: juan@ejemplo.com"
-          />
-          <app-field-error
-            [control]="formRegister.controls.email"
-            [maxLength]="255"
-            validLabel="Email disponible"
-          />
-        </div>
-
-        <!-- Contraseña -->
-        <div>
-          <label for="password" class="mb-1.5 form-label font-semibold">
-            Contraseña <span class="text-red-500">*</span>
-          </label>
-
-          <div class="relative">
-            <input
-              [type]="passwordVisible() ? 'text' : 'password'"
-              id="password"
-              name="password"
-              formControlName="password"
-              maxlength="100"
-              autocomplete="new-password"
-              class="form-input p-3 pr-10 focus:border-[#3d4494] focus:ring-1 focus:ring-[#3d4494] outline-none transition-all"
-              placeholder="••••••••"
-            />
-
-            <app-password-toggle-button
-              [(visible)]="passwordVisible"
-              [show]="showEyeIcon()"
-            />
+            <!-- Email -->
+            <div>
+              <label for="email" class="mb-1.5 form-label font-semibold">
+                Email <span class="text-red-500">*</span>
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                formControlName="email"
+                inputmode="email"
+                maxlength="255"
+                autocomplete="email"
+                class="form-input p-3 focus:border-[#3d4494] focus:ring-1 focus:ring-[#3d4494] outline-none transition-all"
+                placeholder="Ej: juan@ejemplo.com"
+              />
+              <app-field-error
+                [control]="formRegister.controls.email"
+                [maxLength]="255"
+                validLabel="Email disponible"
+              />
+            </div>
           </div>
 
-          <app-field-error 
-            [control]="formRegister.controls.password" 
-            [maxLength]="100"
-          />
-        </div>
+          <!-- Columna Derecha: Contraseñas -->
+          <div class="space-y-5">
+            <!-- Contraseña -->
+            <div>
+              <label for="password" class="mb-1.5 form-label font-semibold">
+                Contraseña <span class="text-red-500">*</span>
+              </label>
 
-        <!-- Confirmar Contraseña -->
-        <div>
-          <label for="confirmPassword" class="mb-1.5 form-label font-semibold">
-            Confirmar Contraseña <span class="text-red-500">*</span>
-          </label>
+              <div class="relative">
+                <input
+                  [type]="passwordVisible() ? 'text' : 'password'"
+                  id="password"
+                  name="password"
+                  formControlName="password"
+                  maxlength="100"
+                  autocomplete="new-password"
+                  class="form-input p-3 pr-10 focus:border-[#3d4494] focus:ring-1 focus:ring-[#3d4494] outline-none transition-all"
+                  placeholder="•••••••••••••••••"
+                />
 
-          <div class="relative">
-            <input
-              [type]="confirmPasswordVisible() ? 'text' : 'password'"
-              id="confirmPassword"
-              name="confirmPassword"
-              formControlName="confirmPassword"
-              maxlength="100"
-              autocomplete="new-password"
-              class="form-input p-3 pr-10 focus:border-[#3d4494] focus:ring-1 focus:ring-[#3d4494] outline-none transition-all"
-              placeholder="Repetí tu contraseña"
-            />
+                <app-password-toggle-button
+                  [(visible)]="passwordVisible"
+                  [show]="showEyeIcon()"
+                />
+              </div>
 
-            <app-password-toggle-button
-              [(visible)]="confirmPasswordVisible"
-              [show]="showConfirmEyeIcon()"
-            />
+              <div class="min-h-8 lg:min-h-5">
+                <app-field-error
+                  [control]="formRegister.controls.password"
+                  [maxLength]="100"
+                />
+              </div>
+            </div>
+
+            <!-- Confirmar Contraseña -->
+            <div>
+              <label
+                for="confirmPassword"
+                class="mb-1.5 form-label font-semibold"
+              >
+                Confirmar Contraseña <span class="text-red-500">*</span>
+              </label>
+
+              <div class="relative">
+                <input
+                  [type]="confirmPasswordVisible() ? 'text' : 'password'"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  formControlName="confirmPassword"
+                  maxlength="100"
+                  autocomplete="new-password"
+                  class="form-input p-3 pr-10 focus:border-[#3d4494] focus:ring-1 focus:ring-[#3d4494] outline-none transition-all"
+                  placeholder="Repetí tu contraseña"
+                />
+
+                <app-password-toggle-button
+                  [(visible)]="confirmPasswordVisible"
+                  [show]="showConfirmEyeIcon()"
+                />
+              </div>
+
+              <app-field-error
+                [control]="formRegister.controls.confirmPassword"
+              />
+            </div>
           </div>
-
-          <app-field-error [control]="formRegister.controls.confirmPassword" />
-          @if (formRegister.errors?.['passwordsNotEqual'] && (formRegister.controls.confirmPassword.touched || formRegister.controls.confirmPassword.dirty)) {
-            <div class="mt-1 text-xs text-red-600">Las contraseñas no coinciden.</div>
-          }
         </div>
 
-        <div class="pt-2">
+        <div class="pt-2 flex justify-center">
           <button
             type="submit"
+            disabled
             [disabled]="loading() || !isValid() || isPending()"
-            class="btn-primary w-full flex justify-center py-3 px-4 shadow-md hover:shadow-lg focus:ring-2 focus:ring-offset-2 focus:ring-[#3d4494] transform active:scale-[0.98] font-bold"
+            class="btn-primary w-full lg:w-72 flex justify-center py-3 px-4 shadow-md enabled:hover:shadow-lg focus:ring-2 focus:ring-offset-2 focus:ring-[#3d4494] enabled:transform enabled:active:scale-[0.98] font-bold"
           >
-            @if (loading() || isPending()) {
+            @if (loading()) {
               <ng-icon
                 name="bootstrapArrowClockwise"
                 class="animate-spin text-xl mr-2"

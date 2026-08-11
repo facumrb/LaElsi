@@ -138,7 +138,7 @@
   /* ── Botones ── */
   .btn-primary {
     @apply cursor-pointer rounded-md bg-[#3d4494] px-6 py-2.5 text-sm font-semibold
-           text-white shadow-sm hover:bg-[#2a2f63] transition-colors
+           text-white shadow-sm enabled:hover:bg-[#2a2f63] transition-colors
            focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-[#3d4494]
            disabled:bg-gray-300 disabled:cursor-not-allowed;
   }
@@ -492,7 +492,7 @@
 
   /* ── Adaptive Layouts ── */
   .page-container-adaptive {
-     @apply min-h-[calc(100vh-theme(spacing.32))] flex flex-col;
+    @apply min-h-[calc(100vh-(--spacing(32)))] flex flex-col;
   }
 }
 

@@ -163,9 +163,29 @@ export class FormUtils {
   static isFieldOneEqualFieldTwo(field1: string, field2: string) {
     return (formGroup: AbstractControl) => {
       const field1Value = formGroup.get(field1)?.value;
-      const field2Value = formGroup.get(field2)?.value;
+      const field2Control = formGroup.get(field2);
+      if (!field2Control) return null;
 
-      return field1Value === field2Value ? null : { passwordsNotEqual: true };
+      const field2Value = field2Control.value;
+
+      if (field1Value !== field2Value) {
+        if (!field2Control.hasError('passwordsNotEqual')) {
+          field2Control.setErrors({
+            ...field2Control.errors,
+            passwordsNotEqual: true,
+          });
+        }
+        return { passwordsNotEqual: true };
+      } else {
+        if (field2Control.hasError('passwordsNotEqual')) {
+          const errors = { ...field2Control.errors };
+          delete errors['passwordsNotEqual'];
+          field2Control.setErrors(
+            Object.keys(errors).length > 0 ? errors : null,
+          );
+        }
+        return null;
+      }
     };
   }
 
