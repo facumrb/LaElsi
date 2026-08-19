@@ -85,6 +85,10 @@ export class CategoriesPageComponent {
     return filtered;
   });
 
+  loadCategories() {
+    this.categoriesQuery.refetch();
+  }
+
   handleNavigateToCreate() {
     this.router.navigate(['/admin/categories/create']);
   }
