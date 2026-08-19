@@ -12,7 +12,7 @@ import { registerLocaleData } from '@angular/common';
 import localeEsAr from '@angular/common/locales/es-AR';
 import { provideServiceWorker } from '@angular/service-worker';
 import {
-  provideAngularQuery,
+  provideTanStackQuery,
   QueryClient,
 } from '@tanstack/angular-query-experimental';
 import { authInterceptor } from './interceptors/auth.interceptor';
@@ -37,7 +37,7 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
     provideHttpClient(withFetch(), withInterceptors([authInterceptor, errorInterceptor])),
-    provideAngularQuery(queryClient),
+    provideTanStackQuery(queryClient),
     provideServiceWorker('ngsw-worker.js', {
       enabled: !isDevMode(),
       registrationStrategy: 'registerWhenStable:30000',

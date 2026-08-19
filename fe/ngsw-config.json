@@ -31,8 +31,7 @@
     {
       "name": "product-uploads",
       "urls": [
-        "/uploads/**",
-        "http://localhost:3000/uploads/**"
+        "/uploads/**"
       ],
       "cacheConfig": {
         "maxSize": 200,
