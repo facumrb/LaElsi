@@ -8,8 +8,10 @@
       <app-go-back-button></app-go-back-button>
     </div>
 
-    <div class="rounded-2xl bg-white p-6 shadow-sm border border-neutral-200">
-      <h1 class="mb-4 flex justify-center">
+    <div
+      class="rounded-2xl bg-white p-8 lg:py-6 shadow-sm border border-neutral-200"
+    >
+      <h1 class="mb-2 flex justify-center">
         <app-logo
           [width]="128"
           [height]="48"
@@ -143,7 +145,7 @@
           </div>
         </div>
 
-        <div class="pt-2 flex justify-center">
+        <div class="pt-0 flex justify-center">
           <button
             type="submit"
             disabled
@@ -160,7 +162,7 @@
           </button>
         </div>
 
-        <div class="mt-6 text-center text-sm text-gray-600">
+        <div class="mt-4 text-center text-sm text-gray-600">
           ¿Ya tenés cuenta?
           <a
             routerLink="/auth/login"
