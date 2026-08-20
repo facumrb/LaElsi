@@ -8,7 +8,7 @@
       <app-go-back-button></app-go-back-button>
     </div>
 
-    <div class="rounded-xl bg-white p-8 shadow-xl border border-gray-100">
+    <div class="rounded-2xl bg-white p-6 shadow-sm border border-neutral-200">
       <h1 class="mb-4 flex justify-center">
         <app-logo
           [width]="128"
@@ -23,7 +23,7 @@
         [formGroup]="formRegister"
         novalidate
         (ngSubmit)="onSubmit()"
-        class="space-y-5"
+        class="space-y-4"
       >
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12">
           <!-- Columna Izquierda: Usuario y Email -->
@@ -164,6 +164,7 @@
           ¿Ya tenés cuenta?
           <a
             routerLink="/auth/login"
+            replaceUrl="true"
             class="cursor-pointer font-bold text-[#3d4494] hover:text-[#2a2f63] hover:underline transition-colors ml-1"
           >
             Iniciar Sesión

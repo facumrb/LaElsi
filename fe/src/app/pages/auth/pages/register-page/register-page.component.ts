@@ -144,6 +144,7 @@ export class RegisterPageComponent {
           this.alertService.toast('¡Cuenta creada exitosamente!', 'success');
           this.router.navigate(['/auth/login'], {
             queryParams: { registered: 'true' },
+            replaceUrl: true,
           });
         },
         error: (err) => {
