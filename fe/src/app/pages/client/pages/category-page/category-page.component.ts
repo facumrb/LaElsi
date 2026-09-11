@@ -4,6 +4,7 @@ import {
   OnInit,
   signal,
   computed,
+  effect,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiCategoryService } from '@services/api-services/api-category.service';
@@ -14,6 +15,7 @@ import {
   PopularityOrder,
 } from '@client/components/products-filter/products-filter.component';
 import { IApiCategory, CategoryState } from '@models/category.model';
+import { injectCategoryDetailQuery } from '@services/queries/category-queries';
 import {
   BreadcrumbsComponent,
   BreadcrumbStep,
@@ -23,7 +25,7 @@ import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { bootstrapExclamationTriangle } from '@ng-icons/bootstrap-icons';
 import { A11yModule } from '@angular/cdk/a11y';
 import { injectActiveProductsQuery } from '@services/queries/product-queries';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, combineLatest } from 'rxjs';
 
 @Component({
   selector: 'app-category-page',
@@ -43,7 +45,6 @@ export class CategoryPageComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
 
-  category = signal<IApiCategory | null>(null);
   showInactiveCategoryModal = signal<boolean>(false);
 
   // Paginación
@@ -54,6 +55,9 @@ export class CategoryPageComponent implements OnInit {
   brandFilter = signal<string>('Todas');
   popularityOrder = signal<PopularityOrder>('Defecto');
   private categoryId = signal<number>(0);
+
+  categoryQuery = injectCategoryDetailQuery(this.categoryId);
+  category = computed(() => this.categoryQuery.data() ?? null);
 
   // Breadcrumbs
   breadcrumbSteps = computed<BreadcrumbStep[]>(() => {
@@ -79,7 +83,8 @@ export class CategoryPageComponent implements OnInit {
   }));
 
   // Tier 2: Query Layer
-  productsQuery = injectActiveProductsQuery(this.activeFilters);
+  isQueryEnabled = computed(() => this.categoryId() > 0);
+  productsQuery = injectActiveProductsQuery(this.activeFilters, { enabled: this.isQueryEnabled });
 
   productsFiltered = computed(() => this.productsQuery.data()?.data ?? []);
   totalPages = computed(() => this.productsQuery.data()?.totalPages ?? 1);
@@ -89,22 +94,26 @@ export class CategoryPageComponent implements OnInit {
     return [...new Set((this.productsQuery.data()?.data ?? []).map((p) => p.brand))].sort();
   });
 
+  constructor() {
+    effect(() => {
+      const data = this.categoryQuery.data();
+      if (data) {
+        if (data.state !== CategoryState.Activo) {
+          this.showInactiveCategoryModal.set(true);
+        }
+      }
+    });
+  }
+
   ngOnInit(): void {
-    this.route.paramMap.subscribe((params) => {
+    combineLatest([
+      this.route.paramMap,
+      this.route.queryParamMap
+    ]).subscribe(([params, queryParams]) => {
       const id = Number(params.get('id'));
-      const pageParam = this.route.snapshot.queryParamMap.get('page');
+      const pageParam = queryParams.get('page');
       this.currentPage.set(Number(pageParam) || 1);
       this.categoryId.set(id);
-
-      // Load category metadata (not a list, not cached via query layer — single fetch)
-      firstValueFrom(this.apiCategoryService.getCategoryById(id))
-        .then((data) => {
-          this.category.set(data);
-          if (data.state !== CategoryState.Activo) {
-            this.showInactiveCategoryModal.set(true);
-          }
-        })
-        .catch(() => this.router.navigate(['/']));
     });
   }
 

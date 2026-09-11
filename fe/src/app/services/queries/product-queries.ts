@@ -28,7 +28,8 @@ export interface IProductQueryFilters {
  * Reactive query for active products (Public Storefront)
  */
 export function injectActiveProductsQuery(
-  filtersSignal: Signal<IProductQueryFilters>
+  filtersSignal: Signal<IProductQueryFilters>,
+  options?: { enabled?: Signal<boolean> | boolean }
 ) {
   const apiProductService = inject(ApiProductService);
 
@@ -66,6 +67,9 @@ export function injectActiveProductsQuery(
         return firstValueFrom(apiProductService.getActiveProducts(page, limit));
       },
       staleTime: 1000 * 60 * 3, // 3 minutes
+      enabled: options?.enabled !== undefined 
+        ? (typeof options.enabled === 'function' ? options.enabled() : options.enabled)
+        : true,
     };
   });
 }

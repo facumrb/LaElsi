@@ -58,8 +58,10 @@ export class SearchResultComponent implements OnInit {
     limit: 16,
   }));
 
+  isReady = signal(false);
+
   // Tier 2: Query Layer
-  productsQuery = injectActiveProductsQuery(this.activeFilters);
+  productsQuery = injectActiveProductsQuery(this.activeFilters, { enabled: this.isReady });
 
   productsFiltered = computed(() => this.productsQuery.data()?.data ?? []);
   totalPages = computed(() => this.productsQuery.data()?.totalPages ?? 1);
@@ -76,6 +78,7 @@ export class SearchResultComponent implements OnInit {
       // Signals updated → TanStack Query auto-refetches if key changed
       this.searchTerm.set(newQ);
       this.currentPage.set(newPage);
+      this.isReady.set(true);
     });
   }
 

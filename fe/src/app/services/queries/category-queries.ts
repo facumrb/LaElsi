@@ -1,4 +1,4 @@
-import { inject } from '@angular/core';
+import { inject, Signal } from '@angular/core';
 import {
   injectMutation,
   injectQuery,
@@ -32,6 +32,23 @@ export function injectCategoryTreeQuery(state?: string) {
     queryFn: () => firstValueFrom(apiCategoryService.getCategoryTree(state)),
     staleTime: 1000 * 60 * 10, // 10 minutes fresh
   }));
+}
+
+/**
+ * Reactive query for category detail
+ */
+export function injectCategoryDetailQuery(idSignal: Signal<number>) {
+  const apiCategoryService = inject(ApiCategoryService);
+
+  return injectQuery(() => {
+    const id = idSignal();
+    return {
+      queryKey: ['categories', 'detail', id],
+      queryFn: () => firstValueFrom(apiCategoryService.getCategoryById(id)),
+      enabled: id > 0,
+      staleTime: 1000 * 60 * 15, // 15 minutes fresh
+    };
+  });
 }
 
 /**

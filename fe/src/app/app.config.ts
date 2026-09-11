@@ -25,7 +25,7 @@ export const queryClient = new QueryClient({
     queries: {
       staleTime: 1000 * 60 * 3, // 3 minutes default stale time
       gcTime: 1000 * 60 * 15,   // 15 minutes garbage collection time
-      refetchOnWindowFocus: true,
+      refetchOnWindowFocus: false, // Prevents refetching when switching tabs/DevTools
       retry: 1,
     },
   },

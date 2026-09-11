@@ -42,11 +42,13 @@ app.use('/api/validate-unique', validationRouter);
 
 // Rutas de Fotos de Productos
 // Ejemplo URL: http://localhost:3000/uploads/products/foto.webp
-app.use('/uploads/products', express.static(PRODUCTS_PATH));
+// app.use('/uploads/products', express.static(PRODUCTS_PATH));
+app.use('/uploads/products', express.static(PRODUCTS_PATH, { maxAge: '30d' }));
 
 // Rutas de Fotos de Usuarios/Perfil
 // Ejemplo URL: http://localhost:3000/uploads/users/avatar.webp
-app.use('/uploads/users', express.static(USERS_PATH));
+// app.use('/uploads/users', express.static(USERS_PATH));
+app.use('/uploads/users', express.static(USERS_PATH, { maxAge: '30d' }));
 
 import { errorHandler } from './shared/errors/errorHandler.js';
 import { AppError } from './shared/errors/appError.js';
