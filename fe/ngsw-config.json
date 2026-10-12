@@ -29,15 +29,16 @@
   ],
   "dataGroups": [
     {
-      "name": "product-uploads",
+      "name": "r2-images",
       "urls": [
-        "/uploads/**"
+        "https://*.r2.dev/**"
       ],
       "cacheConfig": {
         "maxSize": 200,
         "maxAge": "30d",
         "timeout": "5s",
-        "strategy": "performance"
+        "strategy": "performance",
+        "cacheOpaqueResponses": true
       }
     }
   ]

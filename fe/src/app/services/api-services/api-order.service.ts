@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
@@ -65,9 +65,17 @@ export class ApiOrderService {
       .pipe(map((response) => response.data));
   }
 
-  createOrder(order: ICreateOrder): Observable<IApiOrder> {
+  // turnstileToken: token anti-bots del widget de Cloudflare Turnstile (el backend lo valida)
+  createOrder(
+    order: ICreateOrder,
+    turnstileToken?: string | null,
+  ): Observable<IApiOrder> {
+    const headers = turnstileToken
+      ? new HttpHeaders({ 'X-Turnstile-Token': turnstileToken })
+      : undefined;
+
     return this.http
-      .post<{ message: string; data: IApiOrder }>(this.apiUrl, order)
+      .post<{ message: string; data: IApiOrder }>(this.apiUrl, order, { headers })
       .pipe(map((response) => response.data));
   }
 

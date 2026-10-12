@@ -34,7 +34,7 @@ export class ApiErrorService {
         break;
 
       case 401:
-        const isLoginRequest = reqUrl.includes('/users/login');
+        const isLoginRequest = reqUrl.includes('/auth/login');
         if (backendMessage && !isLoginRequest) {
           // Si hay un mensaje del backend y NO estamos intentando loguearnos,
           // significa que el token es inválido o fue rechazado -> Logout forzado

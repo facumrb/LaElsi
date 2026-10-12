@@ -6,9 +6,15 @@
     "fe"
   ],
   "scripts": {
-    "start:dev": "concurrently \"npm run start:dev:be\" \"npm run start:dev:fe\"",
+    "start:dev": "npm start --prefix ./fe",
+    "start:dev:fe": "npm start --prefix ./fe",
     "start:dev:be": "npm run start:dev --prefix ./be",
-    "start:dev:fe": "npm start --prefix ./fe"
+    "db:push": "npx supabase db push",
+    "functions:secrets": "npx supabase secrets set --env-file supabase/functions/.env",
+    "functions:deploy": "npx supabase functions deploy",
+    "seed": "node --env-file=supabase/.env supabase/seed/seed.mjs",
+    "seed:demo": "node --env-file=supabase/.env supabase/seed/seed.mjs --demo",
+    "r2:subir-imagenes": "node supabase/seed/subir-imagenes-r2.mjs"
   },
   "devDependencies": {
     "concurrently": "^9.2.1"

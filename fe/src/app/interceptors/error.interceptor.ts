@@ -16,11 +16,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
       // Si es un 401 y no es la ruta de login, intentamos refrescar el token
-      if (
-        error.status === 401 &&
-        !req.url.includes('/users/login') &&
-        !req.url.includes('/users/refresh-token')
-      ) {
+      if (error.status === 401 && !req.url.includes('/auth/login')) {
         return authService.refreshToken().pipe(
           switchMap(() => {
             // Re-intentamos la petición original con el nuevo token (se adjuntará en el AuthInterceptor)

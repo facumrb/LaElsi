@@ -203,21 +203,20 @@ export class FormUtils {
       return timer(400).pipe(
         switchMap(() => {
           const value = control.value;
-          const url = `${environment.apiUrl}/validate-unique`;
-          let params: Record<string, string> = { entity, field, value };
+          // La validación la resuelve la función SQL check_field_unique, que se
+          // invoca por la API REST de Supabase (reemplaza a /api/validate-unique)
+          const url = `${environment.supabaseUrl}/rest/v1/rpc/check_field_unique`;
+          const body = {
+            p_entity: entity,
+            p_field: field,
+            p_value: value,
+            p_exclude_id: excludeId ?? null,
+          };
 
-          if (excludeId) {
-            params['excludeId'] = excludeId.toString();
-          }
-
-          return http
-            .get<{ data: { available: boolean } }>(url, { params })
-            .pipe(
-              map((res) =>
-                res.data.available ? null : { [`${field}Taken`]: true },
-              ),
-              catchError(() => of(null)),
-            );
+          return http.post<{ available: boolean }>(url, body).pipe(
+            map((res) => (res.available ? null : { [`${field}Taken`]: true })),
+            catchError(() => of(null)),
+          );
         }),
       );
     };

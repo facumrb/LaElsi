@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, viewChild } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { DeliveryMethod, PaymentMethod } from '@models/order.model';
@@ -13,10 +13,12 @@ import { ApiOrderService } from '@services/api-services/api-order.service';
 import { AuthService } from '@services/auth.service';
 import { AlertService } from '@services/alert.service';
 import { injectInvalidateCatalog } from '@services/queries/catalog-cache';
+import { TurnstileComponent } from '@shared/components/turnstile/turnstile.component';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-order-summary',
-  imports: [CurrencyPipe, NgIconComponent],
+  imports: [CurrencyPipe, NgIconComponent, TurnstileComponent],
   viewProviders: [
     provideIcons({
       bootstrapWhatsapp,
@@ -44,6 +46,11 @@ export class OrderSummaryComponent {
   shippingMethod = signal<DeliveryMethod>(DeliveryMethod.RetiroSucursal);
   paymentMethod = signal<PaymentMethod>(PaymentMethod.Transferencia);
   mpAlias = 'laelsi.libreria.mp';
+
+  // Verificación anti-bots (Cloudflare Turnstile). Solo se exige si hay una clave configurada.
+  turnstileEnabled = !!environment.turnstileSiteKey;
+  turnstileToken = signal<string | null>(null);
+  private turnstile = viewChild(TurnstileComponent);
 
   setShippingMethod(method: DeliveryMethod) {
     this.shippingMethod.set(method);
@@ -89,7 +96,16 @@ export class OrderSummaryComponent {
     );
 
     if (isConfirmed) {
-      this.apiOrderService.createOrder(orderData).subscribe({
+      if (this.turnstileEnabled && !this.turnstileToken()) {
+        this.alertService.modal(
+          'Verificación en curso',
+          'Todavía estamos verificando que no seas un robot. Esperá unos segundos y volvé a intentar.',
+          'info',
+        );
+        return;
+      }
+
+      this.apiOrderService.createOrder(orderData, this.turnstileToken()).subscribe({
         next: () => {
           // La compra descuenta stock y suma ventas: invalidamos el caché
           // para no seguir mostrando los datos viejos de los productos
@@ -105,6 +121,8 @@ export class OrderSummaryComponent {
           this.cartService.clearCart();
           this.router.navigate(['/client/profile/orders']);
         },
+        // El token de Turnstile es de un solo uso: si la compra falla, se pide uno nuevo
+        error: () => this.turnstile()?.reset(),
       });
     }
   }

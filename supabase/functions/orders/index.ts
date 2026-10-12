@@ -1,0 +1,383 @@
+// ============================================================================
+// Edge Function: orders (Tarea 3.7)
+// ============================================================================
+// Reemplaza a order.routes.ts + order.controller.ts + order.service.ts.
+//
+//   Cliente autenticado
+//     POST  /orders                        Crear orden (verifica Turnstile)
+//     GET   /orders/client/:clientId       Historial del cliente (dueño o Admin)
+//     GET   /orders/:id                    Detalle (dueño o Admin)
+//     PATCH /orders/:id/cancel             Cancelar (dueño o Admin)
+//   Solo Admin
+//     GET   /orders                        Listado con filtros
+//     PATCH /orders/:id/status             Cambiar estado (máquina de estados)
+//     PATCH /orders/:id/delivery-method    Cambiar método de entrega
+//
+// Ajuste de seguridad respecto del backend anterior: las rutas de órdenes no
+// tenían NINGUNA verificación de sesión. Cualquiera podía listar, crear,
+// modificar o cancelar órdenes de otros. Ahora cada ruta valida quién llama.
+//
+// La creación y la cancelación son atómicas: las resuelven las funciones SQL
+// create_order y cancel_order (ver migrations/..._funciones_rpc.sql).
+// ============================================================================
+import { sql, type Db } from '../_shared/db.ts';
+import { requireAdmin, requireOwnerOrAdmin, requireUser } from '../_shared/auth.ts';
+import {
+  AppError,
+  created,
+  getPagination,
+  intParam,
+  ok,
+  paginated,
+  queryParam,
+  serveRoutes,
+  type RequestContext,
+} from '../_shared/http.ts';
+import { likePattern } from '../_shared/catalogo.ts';
+import { requireTurnstile } from '../_shared/turnstile.ts';
+
+const VALID_ORDER_STATES = ['Pendiente', 'Pagado', 'Enviado', 'Entregado', 'Cancelado'];
+const VALID_DELIVERY_METHODS = ['Envío', 'Retiro en sucursal'];
+const VALID_PAYMENT_METHODS = ['Transferencia', 'Local'];
+
+// Seguridad: usar Map en lugar de un objeto plano para que las búsquedas nunca recorran la
+// cadena de prototipos (CWE-1321).
+const TRANSITIONS_ENVIO = new Map<string, string[]>([
+  ['Pendiente', ['Pagado', 'Cancelado']],
+  ['Pagado', ['Enviado', 'Cancelado']],
+  ['Enviado', ['Entregado', 'Cancelado']],
+  ['Entregado', []],
+  ['Cancelado', []],
+]);
+
+const TRANSITIONS_RETIRO = new Map<string, string[]>([
+  ['Pendiente', ['Pagado', 'Cancelado']],
+  ['Pagado', ['Entregado', 'Cancelado']],
+  ['Enviado', []],
+  ['Entregado', []],
+  ['Cancelado', []],
+]);
+
+// ─── Lectura ─────────────────────────────────────────────────────────────────
+
+/**
+ * Carga las órdenes indicadas con su cliente y sus líneas (cada línea con su
+ * producto y las fotos del producto), respetando el orden de `ids`.
+ */
+// deno-lint-ignore no-explicit-any
+async function loadOrders(ids: number[], db: Db = sql): Promise<any[]> {
+  if (ids.length === 0) return [];
+
+  const [orders, lines] = await Promise.all([
+    db`select * from "order" where id in ${db(ids)}`,
+    db`select * from order_line where order_id in ${db(ids)} order by id asc`,
+  ]);
+  if (orders.length === 0) return [];
+
+  // deno-lint-ignore no-explicit-any
+  const clientIds = [...new Set(orders.map((o: any) => o.clientId as number))];
+  // deno-lint-ignore no-explicit-any
+  const productIds = [...new Set(lines.map((l: any) => l.productId as number))];
+
+  const [clients, products, photos] = await Promise.all([
+    db`
+      select id, role, name, last_name, dni, phone, username, email, cuit, fiscal_condition,
+             street, street_number, city, province, postal_code, floor, apartment
+      from "user"
+      where id in ${db(clientIds)}
+    `,
+    productIds.length > 0 ? db`select * from product where id in ${db(productIds)}` : [],
+    productIds.length > 0
+      ? db`
+          select id, file_name, "order", product_id
+          from photo
+          where product_id in ${db(productIds)}
+          order by "order" asc, id asc
+        `
+      : [],
+  ]);
+
+  // deno-lint-ignore no-explicit-any
+  const clientsById = new Map<number, any>(clients.map((c: any) => [c.id, c]));
+  // deno-lint-ignore no-explicit-any
+  const productsById = new Map<number, any>(
+    // deno-lint-ignore no-explicit-any
+    products.map((p: any) => [p.id, { ...p, photos: photos.filter((photo: any) => photo.productId === p.id) }]),
+  );
+  // deno-lint-ignore no-explicit-any
+  const ordersById = new Map<number, any>(orders.map((o: any) => [o.id, o]));
+
+  // deno-lint-ignore no-explicit-any
+  const result: any[] = [];
+  for (const id of ids) {
+    const order = ordersById.get(id);
+    if (!order) continue;
+
+    const { clientId, ...rest } = order;
+    result.push({
+      ...rest,
+      client: clientsById.get(clientId) ?? null,
+      items: lines
+        // deno-lint-ignore no-explicit-any
+        .filter((line: any) => line.orderId === id)
+        // deno-lint-ignore no-explicit-any
+        .map(({ orderId: _orderId, productId, ...line }: any) => ({
+          ...line,
+          product: productsById.get(productId) ?? null,
+        })),
+    });
+  }
+  return result;
+}
+
+async function loadOrder(id: number) {
+  const [order] = await loadOrders([id]);
+  if (!order) throw new AppError('Orden no encontrada', 404);
+  return order;
+}
+
+/** Devuelve el ID del cliente dueño de la orden, o lanza 404 si la orden no existe. */
+async function getOrderOwnerId(id: number): Promise<number> {
+  const [order] = await sql`select client_id from "order" where id = ${id}`;
+  if (!order) throw new AppError('Orden no encontrada', 404);
+  return order.clientId;
+}
+
+// ─── Rutas ───────────────────────────────────────────────────────────────────
+
+async function create(ctx: RequestContext) {
+  const user = await requireUser(ctx.req);
+  const { items, deliveryMethod, paymentMethod } = ctx.body;
+
+  // Un cliente solo puede comprar para sí mismo. Un Admin puede cargar una orden para un cliente.
+  const clientId = user.role === 'Admin' ? Number(ctx.body.clientId) : user.id;
+  if (!Number.isInteger(clientId)) {
+    throw new AppError('ID de cliente inválido o no proporcionado', 400);
+  }
+
+  if (!items || !Array.isArray(items) || items.length === 0) {
+    throw new AppError('La orden debe contener al menos un producto', 400);
+  }
+
+  for (const item of items) {
+    if (!item?.productId || Number.isNaN(Number(item.productId))) {
+      throw new AppError('Cada item debe tener un productId válido', 400);
+    }
+    if (!Number.isInteger(item.quantity) || item.quantity <= 0) {
+      throw new AppError(`La cantidad del producto (ID: ${item.productId}) debe ser un entero positivo`, 400);
+    }
+  }
+
+  if (deliveryMethod !== undefined && !VALID_DELIVERY_METHODS.includes(deliveryMethod)) {
+    throw new AppError(
+      `Método de entrega inválido. Los métodos válidos son: ${VALID_DELIVERY_METHODS.join(', ')}`,
+      400,
+    );
+  }
+
+  if (!paymentMethod || !VALID_PAYMENT_METHODS.includes(paymentMethod)) {
+    throw new AppError(
+      `Método de pago inválido o no proporcionado. Los métodos válidos son: ${VALID_PAYMENT_METHODS.join(', ')}`,
+      400,
+    );
+  }
+
+  const finalDeliveryMethod = deliveryMethod || 'Retiro en sucursal';
+
+  // Anti-bots: se verifica recién cuando los datos son válidos, porque el token es de un solo uso
+  await requireTurnstile(ctx.req);
+
+  const cleanItems = items.map((item: { productId: number; quantity: number }) => ({
+    productId: Number(item.productId),
+    quantity: item.quantity,
+  }));
+
+  // Transacción atómica: valida stock, lo descuenta y crea la orden con sus líneas
+  const [{ orderId }] = await sql`
+    select create_order(
+      ${clientId},
+      ${finalDeliveryMethod}::delivery_method,
+      ${paymentMethod}::payment_method,
+      ${sql.json(cleanItems)}::jsonb
+    ) as order_id
+  `;
+
+  return created('Orden creada exitosamente', await loadOrder(orderId));
+}
+
+async function findAll(ctx: RequestContext) {
+  await requireAdmin(ctx.req);
+  const { page, limit, offset } = getPagination(ctx);
+
+  const status = queryParam(ctx, 'status');
+  const deliveryMethod = queryParam(ctx, 'deliveryMethod');
+  const paymentMethod = queryParam(ctx, 'paymentMethod');
+  const query = queryParam(ctx, 'query');
+
+  // Los filtros con valores desconocidos se ignoran (igual que en el backend anterior)
+  const where = () => sql`
+    true
+    ${status && VALID_ORDER_STATES.includes(status) ? sql`and o.status = ${status}::order_state` : sql``}
+    ${
+      deliveryMethod && VALID_DELIVERY_METHODS.includes(deliveryMethod)
+        ? sql`and o.delivery_method = ${deliveryMethod}::delivery_method`
+        : sql``
+    }
+    ${
+      paymentMethod && VALID_PAYMENT_METHODS.includes(paymentMethod)
+        ? sql`and o.payment_method = ${paymentMethod}::payment_method`
+        : sql``
+    }
+    ${
+      !query
+        ? sql``
+        : /^\d+$/.test(query)
+          ? // Si es un número, buscar por ID de orden
+            sql`and o.id = ${Number(query)}`
+          : // Buscar por nombre o apellido del cliente
+            sql`and (u.name ilike ${likePattern(query)} or u.last_name ilike ${likePattern(query)})`
+    }
+  `;
+
+  const rows = await sql`
+    select o.id
+    from "order" o
+    join "user" u on u.id = o.client_id
+    where ${where()}
+    order by o.id desc
+    limit ${limit} offset ${offset}
+  `;
+  const [{ total }] = await sql`
+    select count(*)::int as total
+    from "order" o
+    join "user" u on u.id = o.client_id
+    where ${where()}
+  `;
+
+  const orders = await loadOrders(rows.map((r) => r.id));
+  return ok('Todas las órdenes encontradas', paginated(orders, total, page, limit));
+}
+
+async function findOne(ctx: RequestContext) {
+  const id = intParam(ctx, 'id', 'ID de orden inválido');
+  await requireOwnerOrAdmin(ctx.req, await getOrderOwnerId(id));
+  return ok('Orden encontrada', await loadOrder(id));
+}
+
+async function findByClient(ctx: RequestContext) {
+  const clientId = intParam(ctx, 'clientId', 'ID de cliente inválido');
+  await requireOwnerOrAdmin(ctx.req, clientId);
+
+  const { page, limit, offset } = getPagination(ctx);
+
+  const rows = await sql`
+    select id from "order" where client_id = ${clientId}
+    order by id desc
+    limit ${limit} offset ${offset}
+  `;
+  const [{ total }] = await sql`select count(*)::int as total from "order" where client_id = ${clientId}`;
+
+  const orders = await loadOrders(rows.map((r) => r.id));
+  return ok('Órdenes del cliente encontradas', paginated(orders, total, page, limit));
+}
+
+function validateStatusTransition(order: { status: string; deliveryMethod: string }, newState: string) {
+  const map = order.deliveryMethod === 'Envío' ? TRANSITIONS_ENVIO : TRANSITIONS_RETIRO;
+  const allowedTransitions = map.get(order.status) || [];
+
+  if (!allowedTransitions.includes(newState)) {
+    const transitionsStr = allowedTransitions.length > 0 ? allowedTransitions.join(', ') : 'ninguna (estado final)';
+    throw new AppError(
+      `No se puede cambiar el estado de "${order.status}" a "${newState}" para una orden de tipo "${order.deliveryMethod}". Transiciones válidas: ${transitionsStr}`,
+      400,
+    );
+  }
+}
+
+async function updateStatus(ctx: RequestContext) {
+  await requireAdmin(ctx.req);
+  const id = intParam(ctx, 'id', 'ID de orden inválido');
+  const status = ctx.body.status;
+
+  if (!status || !VALID_ORDER_STATES.includes(status)) {
+    throw new AppError(`Estado inválido. Los estados válidos son: ${VALID_ORDER_STATES.join(', ')}`, 400);
+  }
+
+  if (status === 'Cancelado') {
+    // Cancelar siempre pasa por cancel_order, que además de cambiar el estado
+    // restaura el stock. El backend anterior, por esta ruta, no lo devolvía.
+    await sql`select cancel_order(${id})`;
+  } else {
+    await sql.begin(async (tx: Db) => {
+      const [order] = await tx`select status, delivery_method from "order" where id = ${id} for update`;
+      if (!order) throw new AppError('Orden no encontrada', 404);
+
+      validateStatusTransition(order, status);
+      await tx`update "order" set status = ${status}::order_state where id = ${id}`;
+    });
+  }
+
+  return ok('Estado de la orden actualizado', await loadOrder(id));
+}
+
+async function updateDeliveryMethod(ctx: RequestContext) {
+  await requireAdmin(ctx.req);
+  const id = intParam(ctx, 'id', 'ID de orden inválido');
+  const deliveryMethod = ctx.body.deliveryMethod;
+
+  if (!deliveryMethod || !VALID_DELIVERY_METHODS.includes(deliveryMethod)) {
+    throw new AppError(
+      `Método de entrega inválido. Los métodos válidos son: ${VALID_DELIVERY_METHODS.join(', ')}`,
+      400,
+    );
+  }
+
+  await sql.begin(async (tx: Db) => {
+    const [order] = await tx`select status from "order" where id = ${id} for update`;
+    if (!order) throw new AppError('Orden no encontrada', 404);
+
+    if (['Enviado', 'Entregado', 'Cancelado'].includes(order.status)) {
+      throw new AppError(
+        `No se puede cambiar el método de entrega de una orden en estado "${order.status}"`,
+        400,
+      );
+    }
+
+    await tx`update "order" set delivery_method = ${deliveryMethod}::delivery_method where id = ${id}`;
+  });
+
+  return ok('Método de entrega actualizado', await loadOrder(id));
+}
+
+async function cancel(ctx: RequestContext) {
+  const id = intParam(ctx, 'id', 'ID de orden inválido');
+  await requireOwnerOrAdmin(ctx.req, await getOrderOwnerId(id));
+
+  // Transacción atómica: restaura el stock y marca la orden como cancelada
+  await sql`select cancel_order(${id})`;
+
+  return ok('Orden cancelada correctamente', await loadOrder(id));
+}
+
+serveRoutes('orders', [
+  // 1. Crear Orden (POST /orders)
+  ['POST', '/', create],
+
+  // 2. Obtener todas las órdenes (GET /orders)
+  ['GET', '/', findAll],
+
+  // 3. Obtener órdenes por Cliente (GET /orders/client/:clientId)
+  ['GET', '/client/:clientId', findByClient],
+
+  // 4. Obtener una orden por ID (GET /orders/:id)
+  ['GET', '/:id', findOne],
+
+  // 5. Actualizar Estado (PATCH /orders/:id/status)
+  ['PATCH', '/:id/status', updateStatus],
+
+  // 6. Actualizar Método de Entrega (PATCH /orders/:id/delivery-method)
+  ['PATCH', '/:id/delivery-method', updateDeliveryMethod],
+
+  // 7. Cancelar Orden (PATCH /orders/:id/cancel)
+  ['PATCH', '/:id/cancel', cancel],
+]);

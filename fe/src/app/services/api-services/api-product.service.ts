@@ -15,6 +15,8 @@ import { environment } from 'src/environments/environment';
 export class ApiProductService {
   private http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiUrl}/products`;
+  // Los cambios masivos de precio tienen su propia Edge Function
+  private readonly bulkUrl = `${environment.apiUrl}/bulk-prices`;
 
   // Obtener todos los productos
   getAllProducts(
@@ -198,7 +200,7 @@ export class ApiProductService {
       .post<{
         message: string;
         data: any[];
-      }>(`${this.apiUrl}/bulk/preview`, {
+      }>(`${this.bulkUrl}/preview`, {
         productIds,
         adjustmentType,
         adjustmentValue,
@@ -217,7 +219,7 @@ export class ApiProductService {
       .post<{
         message: string;
         data: any;
-      }>(`${this.apiUrl}/bulk/apply`, {
+      }>(`${this.bulkUrl}/apply`, {
         productIds,
         adjustmentType,
         adjustmentValue,
@@ -228,13 +230,13 @@ export class ApiProductService {
 
   rollbackBulkPriceChange(batchId: number): Observable<void> {
     return this.http
-      .post<{ message: string }>(`${this.apiUrl}/bulk/rollback/${batchId}`, {})
+      .post<{ message: string }>(`${this.bulkUrl}/rollback/${batchId}`, {})
       .pipe(map(() => void 0));
   }
 
   getBulkHistory(): Observable<any[]> {
     return this.http
-      .get<{ message: string; data: any[] }>(`${this.apiUrl}/bulk/history`)
+      .get<{ message: string; data: any[] }>(`${this.bulkUrl}/history`)
       .pipe(map((res) => res.data));
   }
 

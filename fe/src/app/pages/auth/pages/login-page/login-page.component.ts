@@ -3,7 +3,10 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '@services/auth.service';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { bootstrapArrowClockwise } from '@ng-icons/bootstrap-icons';
+import {
+  bootstrapArrowClockwise,
+  bootstrapGoogle,
+} from '@ng-icons/bootstrap-icons';
 import { FormUtils } from '@shared/validators/form-utils';
 import { AlertService } from '@services/alert.service';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -30,6 +33,7 @@ import { RecoverPasswordModalComponent } from './recover-password-modal/recover-
   viewProviders: [
     provideIcons({
       bootstrapArrowClockwise,
+      bootstrapGoogle,
     }),
   ],
   templateUrl: './login-page.component.html',
@@ -74,6 +78,21 @@ export class LoginPageComponent {
 
   forgotPassword() {
     this.showRecoverPasswordModal.set(true);
+  }
+
+  // Inicio de sesión con Google: redirige a Google y vuelve a la tienda con la sesión iniciada
+  loginWithGoogle() {
+    this.loading.set(true);
+
+    this.authService.loginWithGoogle().subscribe({
+      error: () => {
+        this.loading.set(false);
+        this.alertService.error(
+          'Error',
+          'No se pudo iniciar sesión con Google. Intentá de nuevo.',
+        );
+      },
+    });
   }
 
   onSubmit() {

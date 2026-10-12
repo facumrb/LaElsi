@@ -1,0 +1,43 @@
+# Configuración del proyecto para la CLI de Supabase.
+# El proyecto remoto se vincula con: supabase link --project-ref <project-ref>
+project_id = "laelsi"
+
+# ----------------------------------------------------------------------------
+# Edge Functions
+# ----------------------------------------------------------------------------
+# verify_jwt = false en todas: el gateway de Supabase NO exige un JWT para
+# dejar pasar la petición. Es necesario porque el catálogo es público (se
+# consulta sin iniciar sesión).
+#
+# Esto NO deja las rutas privadas sin protección: cada función valida el token
+# y el rol por su cuenta con requireUser / requireAdmin (ver _shared/auth.ts).
+
+[functions.auth]
+verify_jwt = false
+
+[functions.categories]
+verify_jwt = false
+
+[functions.products]
+verify_jwt = false
+
+[functions.bulk-prices]
+verify_jwt = false
+
+[functions.photos]
+verify_jwt = false
+
+[functions.get-upload-url]
+verify_jwt = false
+
+[functions.delete-r2-object]
+verify_jwt = false
+
+[functions.clients]
+verify_jwt = false
+
+[functions.admins]
+verify_jwt = false
+
+[functions.orders]
+verify_jwt = false

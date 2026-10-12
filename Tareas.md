@@ -655,3 +655,52 @@ Bloque 5 (Despliegue: Secrets + Supabase CLI + vercel.json + Cloudflare WAF)
   ↓
 Bloque 6 (Limpieza de Express y cierre)
 ```
+
+---
+
+## Ajustes aplicados al ejecutar el plan
+
+Al auditar el código (Prompts 1 a 4) aparecieron diferencias entre este plan y lo que la aplicación hace realmente. El código del repositorio ya refleja estos ajustes; los bloques SQL de más arriba quedan como borrador histórico y **la fuente de verdad es `supabase/migrations/`**.
+
+### Bloque 1 — Base de datos
+
+| Tarea | Ajuste | Motivo |
+| --- | --- | --- |
+| 1.1 | Los ENUM usan los valores reales: `'Envío'`, `'Retiro en sucursal'`, `'Consumidor Final'`, `'Responsable Inscripto'`; `currency` incluye `EUR` | Son los textos que envía y espera el frontend. Con los del borrador, toda orden o cliente fallaba |
+| 1.1 | `category` suma `parent_id` y `depth`; `"order"` suma `payment_method` | Existían en las entidades y faltaban en el borrador (sin ellos no hay subcategorías) |
+| 1.1 | `"user"` no tiene `password` ni `dtype` | Las contraseñas las guarda Supabase Auth; `dtype` era el discriminador del ORM, redundante con `role` |
+| 1.1 | Unicidad sin distinguir mayúsculas (`lower(name)`, `lower(email)`...) e índice de "un solo precio vigente por producto" | MySQL comparaba sin distinguir mayúsculas; PostgreSQL no |
+| 1.2 | El trigger toma el rol solo de `raw_app_meta_data` y genera un `username` que no choque | `raw_user_meta_data` lo controla el usuario: leer el rol de ahí permitía registrarse como Admin. Además, dos emails con la misma parte local rompían el alta con Google |
+| 1.3 | `check_field_unique` recibe la entidad y cubre `Category.name` y `Product.name`; devuelve `{ available, message }` | El borrador solo validaba campos de usuario |
+| 1.3 | `create_order` y `cancel_order` reciben el cliente por parámetro y solo las ejecuta la service role | Si fueran públicas, un bot las llamaría directo y se saltearía Turnstile |
+| 1.4 | Las políticas RLS son solo de lectura (`FOR SELECT`) | La política `FOR ALL` sobre `"user"` permitía que un cliente hiciera `UPDATE "user" SET role = 'Admin'` sobre su propia fila |
+| 1.5 | El seed es un script (`supabase/seed/seed.mjs`) y las contraseñas salen de variables de entorno | Los usuarios deben crearse con la API de Supabase Auth; y un sitio público no puede tener contraseñas conocidas |
+
+### Bloque 2 — Almacenamiento
+
+| Tarea | Ajuste | Motivo |
+| --- | --- | --- |
+| 2.4 | Se usa `aws4fetch` en lugar de `@aws-sdk/*`; la URL firma `Content-Type` y `Cache-Control` | Es la librería que recomienda Cloudflare para Deno/Workers. Firmar los headers impide subir otra cosa que no sea WebP y deja las imágenes cacheables por un año |
+| 2.5 | `delete-r2-object` solo borra archivos huérfanos | Las fotos registradas se borran desde `photos`, que elimina el registro y el archivo juntos |
+
+### Bloque 3 — Backend
+
+| Tarea | Ajuste | Motivo |
+| --- | --- | --- |
+| 3.1 | Se agrega la Edge Function `auth` (`login`, `register`, `me`, `verify-password`) | La app permite entrar con nombre de usuario y Supabase Auth solo acepta email. Resolverlo en el servidor evita exponer los emails. Google OAuth sí va directo desde el navegador |
+| 3.x | Las funciones se conectan a PostgreSQL con `postgres.js` (`SUPABASE_DB_URL`) | Permite transacciones reales para las operaciones que antes dependían de `em.flush()` (categorías, productos, precios masivos) |
+| 3.x | Las funciones conservan las rutas y respuestas del backend Express | El frontend casi no cambia: solo cambia la URL base. Excepción: `/products/bulk/*` pasa a `/bulk-prices/*` |
+| 3.6 / 3.7 | Se agregan validaciones de permisos que el backend anterior no tenía | Las rutas de órdenes no verificaban la sesión, y un cliente podía ver o editar la cuenta de otro |
+| 3.7 | Cancelar una orden cambiando su estado también devuelve el stock | Antes solo lo hacía la ruta `/cancel` |
+
+### Bloque 5 — Despliegue
+
+| Tarea | Ajuste | Motivo |
+| --- | --- | --- |
+| 5.1 | Los secrets van en `supabase/functions/.env`; se suman `ALLOWED_ORIGINS` y `MAX_BULK_DISCOUNT_PERCENTAGE` | — |
+| 5.2 | Se agrega la función `auth`; todas se despliegan con `verify_jwt = false` (`supabase/config.toml`) | El catálogo es público. Cada función valida el token por su cuenta |
+| 5.4 | **Las reglas de WAF no protegen la API** | Las Edge Functions se sirven desde `*.supabase.co`, que no pasa por la zona de Cloudflare. Solo protegen el sitio. La API se protege con Turnstile, el límite de intentos de login y las validaciones de cada función |
+
+### Bloque 6 — Limpieza
+
+No se eliminó `be/` ni sus dependencias (Tareas 6.1 y 6.2): `be/uploads/` es el origen de la migración de imágenes y conviene conservar el backend hasta verificar el nuevo entorno. El `.env.example` (Tarea 6.3) se reemplazó por las plantillas del README.

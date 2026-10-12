@@ -97,6 +97,23 @@
           </button>
         </div>
 
+        <!-- Inicio de sesión con Google (Supabase Auth) -->
+        <div class="flex items-center gap-3">
+          <div class="grow border-t border-gray-200"></div>
+          <span class="text-xs font-medium uppercase text-gray-400">o</span>
+          <div class="grow border-t border-gray-200"></div>
+        </div>
+
+        <button
+          type="button"
+          (click)="loginWithGoogle()"
+          [disabled]="loading()"
+          class="cursor-pointer w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg border border-gray-300 bg-white font-semibold text-gray-700 shadow-sm hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3d4494]"
+        >
+          <ng-icon name="bootstrapGoogle" class="text-lg"></ng-icon>
+          Continuar con Google
+        </button>
+
         <div class="mt-6 text-center text-sm text-gray-600">
           ¿No tenés cuenta aún?
           <a
