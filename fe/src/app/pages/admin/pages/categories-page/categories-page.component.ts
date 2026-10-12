@@ -10,10 +10,11 @@ import {
 } from './categories-toolbar/categories-toolbar.component';
 import { Router } from '@angular/router';
 import {
-  injectCategoryTreeQuery,
+  injectAllCategoriesQuery,
   injectUpdateCategoryMutation,
   injectDeleteCategoryMutation,
 } from '@services/queries/category-queries';
+import { injectInvalidateCatalog } from '@services/queries/catalog-cache';
 
 @Component({
   selector: 'app-categories-page',
@@ -32,61 +33,93 @@ export class CategoriesPageComponent {
   stockFilter = signal<StockFilter>('Todos');
   searchQuery = signal('');
 
-  // Tier 2: Query Layer
-  categoriesQuery = injectCategoryTreeQuery();
+  // Capa de queries (TanStack Query): el listado queda en caché y las mutaciones lo invalidan
+  private categoriesQuery = injectAllCategoriesQuery();
   private updateMutation = injectUpdateCategoryMutation();
   private deleteMutation = injectDeleteCategoryMutation();
+  private invalidateCatalog = injectInvalidateCatalog();
 
+  // Listado plano de todas las categorías (cada una con su padre y sus productos asociados)
   private categoriesRaw = computed(() => this.categoriesQuery.data() ?? []);
 
-  filtersActive = computed(() =>
-    this.searchQuery() !== '' ||
-    this.statusFilter() !== 'Todos' ||
-    this.stockFilter() !== 'Todos'
-  );
+  filtersActive = computed(() => {
+    return (
+      this.searchQuery() !== '' ||
+      this.statusFilter() !== 'Todos' ||
+      this.stockFilter() !== 'Todos'
+    );
+  });
 
   categoriesFiltered = computed(() => {
+    // Obtenemos los valores actuales de los signals
     const currentCategories = this.categoriesRaw();
     const query = this.searchQuery().toLowerCase().trim();
     const status = this.statusFilter();
     const stockType = this.stockFilter();
 
+    // Helper para obtener parentId de forma consistente
     const getParentId = (c: IApiCategory): number | null =>
       c.parentId ?? c.parent?.id ?? null;
 
+    // Aplicamos filtros (Search, Status, Stock)
     let filtered = currentCategories.filter((cat) => {
+      // Filtro de Búsqueda
       const matchesSearch =
         cat.name.toLowerCase().includes(query) ||
         (cat.description || '').toLowerCase().includes(query);
+
+      // Filtro de Estado
       const matchesStatus = status === 'Todos' || cat.state === status;
+
+      // Filtro de Cantidad de Productos asociados
       const cant = cat.products?.length || 0;
       let matchesStock = true;
       if (stockType === 'ConProductos') matchesStock = cant > 0;
       if (stockType === 'SinProductos') matchesStock = cant === 0;
+
       return matchesSearch && matchesStatus && matchesStock;
     });
 
+    // Ordenamiento
     if (stockType === 'MasProductos') {
-      filtered = filtered.sort((a, b) => (b.products?.length || 0) - (a.products?.length || 0));
+      // Ordenar de Mayor a Menor
+      filtered = filtered.sort(
+        (a, b) => (b.products?.length || 0) - (a.products?.length || 0),
+      );
     } else if (stockType === 'MenosProductos') {
-      filtered = filtered.sort((a, b) => (a.products?.length || 0) - (b.products?.length || 0));
+      // Ordenar de Menor a Mayor
+      filtered = filtered.sort(
+        (a, b) => (a.products?.length || 0) - (b.products?.length || 0),
+      );
     } else {
+      // ORDENAMIENTO JERÁRQUICO (POR DEFECTO)
+      // Si hay filtros activos (búsqueda), no podemos mantener la jerarquía estricta,
+      // pero si no hay filtros, ordenamos: Padre -> Hijos (por orden)
       if (this.filtersActive()) {
         filtered.sort((a, b) => a.order - b.order);
       } else {
-        const buildTree = (list: IApiCategory[], parentId: number | null = null): IApiCategory[] =>
-          list
+        const buildTree = (
+          list: IApiCategory[],
+          parentId: number | null = null,
+        ): IApiCategory[] => {
+          return list
             .filter((c) => getParentId(c) === parentId)
             .sort((a, b) => a.order - b.order)
-            .reduce((acc: IApiCategory[], cat) => [...acc, cat, ...buildTree(list, cat.id)], []);
+            .reduce((acc: IApiCategory[], cat) => {
+              return [...acc, cat, ...buildTree(list, cat.id)];
+            }, []);
+        };
         return buildTree(currentCategories);
       }
     }
+
     return filtered;
   });
 
   loadCategories() {
-    this.categoriesQuery.refetch();
+    // Invalidamos el caché para que el listado se vuelva a pedir al server
+    // (ej: después de reordenar las categorías desde el toolbar)
+    this.invalidateCatalog();
   }
 
   handleNavigateToCreate() {
@@ -97,12 +130,13 @@ export class CategoriesPageComponent {
     this.router.navigate(['/admin/categories/edit', category.id]);
   }
 
+  // --- Lógica para borrar la categoria ---
   handleDelete(category: IApiCategory) {
     const cantidadProductos = category.products?.length || 0;
     if (cantidadProductos > 0) {
       this.alertService.error(
         'Acción Bloqueada',
-        `No puedes eliminar la categoría "${category.name}" porque tiene productos asociados. Primero debe eliminar o cambiar de categoría esos productos.`
+        `No puedes eliminar la categoría "${category.name}" porque tiene productos asociados. Primero debe eliminar o cambiar de categoría esos productos.`,
       );
       return;
     }
@@ -111,11 +145,18 @@ export class CategoriesPageComponent {
       if (choice === 'deactivate') {
         this.updateMutation.mutate(
           { id: category.id, category: { state: CategoryState.Inactivo } },
-          { onSuccess: () => this.alertService.toast('Categoría desactivada lógicamente', 'success') }
+          {
+            onSuccess: () => {
+              this.alertService.toast('Categoría desactivada lógicamente', 'success');
+            },
+          },
         );
       } else if (choice === 'delete') {
+        // La mutación invalida el caché: el listado se recarga para sincronizar el corrimiento de órdenes
         this.deleteMutation.mutate(category.id, {
-          onSuccess: () => this.alertService.toast('Categoría eliminada físicamente', 'success'),
+          onSuccess: () => {
+            this.alertService.toast('Categoría eliminada físicamente', 'success');
+          },
         });
       }
     });

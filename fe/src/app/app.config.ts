@@ -23,10 +23,12 @@ registerLocaleData(localeEsAr);
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 3, // 3 minutes default stale time
-      gcTime: 1000 * 60 * 15,   // 15 minutes garbage collection time
-      refetchOnWindowFocus: false, // Prevents refetching when switching tabs/DevTools
-      retry: 1,
+      staleTime: 1000 * 60 * 3, // 3 minutos: tiempo por defecto en que un dato se considera fresco
+      gcTime: 1000 * 60 * 15,   // 15 minutos: tiempo que un dato sin uso permanece en memoria
+      refetchOnWindowFocus: false, // Evita recargar al cambiar de pestaña o abrir las DevTools
+      // Sin reintentos automáticos: el errorInterceptor muestra una alerta por cada
+      // petición fallida, así que reintentar duplicaría el mensaje de error.
+      retry: false,
     },
   },
 });

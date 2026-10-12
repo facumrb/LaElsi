@@ -13,6 +13,7 @@ import { OrderDetailModalComponent } from '@shared/components/order-detail-modal
 import { PaginationComponent } from '@shared/components/pagination/pagination.component';
 import { ApiOrderService } from '@services/api-services/api-order.service';
 import { AlertService } from '@services/alert.service';
+import { injectInvalidateCatalog } from '@services/queries/catalog-cache';
 
 @Component({
   selector: 'app-profile-orders',
@@ -40,6 +41,7 @@ export class ProfileOrdersComponent {
   pageChange = output<number>();
   private orderService = inject(ApiOrderService);
   private alertService = inject(AlertService);
+  private invalidateCatalog = injectInvalidateCatalog();
   profileUpdated = output<void>();
 
   selectedOrder = signal<IApiOrder | null>(null);
@@ -76,6 +78,8 @@ export class ProfileOrdersComponent {
         if (confirm) {
           this.orderService.cancelOrder(id).subscribe({
             next: () => {
+              // Al cancelar se restaura el stock: invalidamos el caché de productos
+              this.invalidateCatalog();
               this.alertService.toast(
                 'Pedido cancelado correctamente',
                 'success',

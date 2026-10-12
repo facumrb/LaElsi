@@ -2,9 +2,11 @@ import {
   Component,
   computed,
   inject,
+  linkedSignal,
   signal,
 } from '@angular/core';
 import { IApiProduct, ProductState } from '@models/product.model';
+import { IApiCategory } from '@models/category.model';
 import { AlertService } from '@services/alert.service';
 import { ProductsListComponent } from './products-list/products-list.component';
 import {
@@ -19,9 +21,9 @@ import {
   injectAllProductsQuery,
   injectUpdateProductMutation,
   injectDeleteProductMutation,
-  injectBulkPriceMutation,
 } from '@services/queries/product-queries';
-import { injectActiveCategoriesQuery } from '@services/queries/category-queries';
+import { injectAllCategoriesQuery } from '@services/queries/category-queries';
+import { injectInvalidateCatalog } from '@services/queries/catalog-cache';
 
 @Component({
   selector: 'app-products-page',
@@ -38,48 +40,68 @@ export class ProductsPageComponent {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
 
-  currentPage = signal(1);
   searchQuery = signal('');
   statusFilter = signal<StatusFilter>('Todos');
   stockFilter = signal<StockFilter>('Todos');
   categoryFilter = signal<number | 'Todos'>('Todos');
-  showBulkModal = signal(false);
-  selectedIds = signal<number[]>([]);
 
-  // Computed filter bundle consumed by TanStack Query
+  // Al cambiar cualquier filtro, reseteamos a página 1. No hace falta recargar a mano:
+  // la página forma parte de la queryKey y TanStack Query pide los datos al server.
+  // La primera vez (cuando todavía no hay valor previo) se toma la página de la URL.
+  currentPage = linkedSignal<unknown, number>({
+    source: () => [
+      this.searchQuery(),
+      this.statusFilter(),
+      this.stockFilter(),
+      this.categoryFilter(),
+    ],
+    computation: (_filters, previous) =>
+      previous ? 1 : Number(this.route.snapshot.queryParamMap.get('page')) || 1,
+  });
+
+  showBulkModal = signal(false);
+
+  // Filtros agrupados que consume la query (cada combinación se cachea por separado)
   private activeFilters = computed(() => ({
     query: this.searchQuery(),
     state: this.statusFilter(),
-    categoryId: this.categoryFilter() === 'Todos' ? undefined : (this.categoryFilter() as number),
+    categoryId:
+      this.categoryFilter() === 'Todos'
+        ? undefined
+        : (this.categoryFilter() as number),
     stockFilter: this.stockFilter(),
     page: this.currentPage(),
     limit: 16,
   }));
 
-  // Tier 2: Query Layer
-  productsQuery = injectAllProductsQuery(this.activeFilters);
-  categoriesQuery = injectActiveCategoriesQuery();
+  // Capa de queries (TanStack Query): los listados quedan en caché y las mutaciones los invalidan
+  private productsQuery = injectAllProductsQuery(this.activeFilters);
+  private categoriesQuery = injectAllCategoriesQuery();
   private updateMutation = injectUpdateProductMutation();
   private deleteMutation = injectDeleteProductMutation();
-  private bulkMutation = injectBulkPriceMutation();
+  private invalidateCatalog = injectInvalidateCatalog();
 
-  // Derived signals from query results
-  productsFiltered = computed(() => this.productsQuery.data()?.data ?? []);
+  private productsRaw = computed(() => this.productsQuery.data()?.data ?? []);
   totalPages = computed(() => this.productsQuery.data()?.totalPages ?? 1);
-  availableCategories = computed(() => this.categoriesQuery.data() ?? []);
 
-  filtersActive = computed(() =>
-    this.searchQuery() !== '' ||
-    this.statusFilter() !== 'Todos' ||
-    this.stockFilter() !== 'Todos' ||
-    this.categoryFilter() !== 'Todos'
+  availableCategories = computed<IApiCategory[]>(
+    () => this.categoriesQuery.data() ?? [],
   );
 
-  constructor() {
-    // Sync page from URL on init
-    const pageParam = this.route.snapshot.queryParamMap.get('page');
-    this.currentPage.set(Number(pageParam) || 1);
-  }
+  filtersActive = computed(() => {
+    return (
+      this.searchQuery() !== '' ||
+      this.statusFilter() !== 'Todos' ||
+      this.stockFilter() !== 'Todos' ||
+      this.categoryFilter() !== 'Todos'
+    );
+  });
+
+  productsFiltered = computed(() => {
+    return [...this.productsRaw()];
+  });
+
+  selectedIds = signal<number[]>([]);
 
   handleBulkPriceUpdate() {
     if (this.selectedIds().length === 0) {
@@ -91,8 +113,10 @@ export class ProductsPageComponent {
 
   handleBulkSuccess() {
     this.showBulkModal.set(false);
-    this.selectedIds.set([]);
-    // Cache is automatically invalidated by injectBulkPriceMutation onSuccess
+    // El modal aplica los precios llamando a la API directamente,
+    // así que invalidamos el caché para recargar los productos.
+    this.invalidateCatalog();
+    this.selectedIds.set([]); // Limpiar selección tras éxito
   }
 
   onPageChange(page: number) {
@@ -118,12 +142,17 @@ export class ProductsPageComponent {
         this.updateMutation.mutate(
           { id: product.id, product: { state: ProductState.Inactivo } },
           {
-            onSuccess: () => this.alertService.toast('Producto desactivado lógicamente', 'success'),
-          }
+            onSuccess: () => {
+              this.alertService.toast('Producto desactivado lógicamente', 'success');
+            },
+          },
         );
       } else if (choice === 'delete') {
+        // La mutación invalida el caché: se recarga desde el servidor para que la paginación se recalcule
         this.deleteMutation.mutate(product.id, {
-          onSuccess: () => this.alertService.toast('Producto eliminado físicamente', 'success'),
+          onSuccess: () => {
+            this.alertService.toast('Producto eliminado físicamente', 'success');
+          },
         });
       }
     });

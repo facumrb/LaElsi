@@ -12,6 +12,7 @@ import { CartService } from '@services/cart.service';
 import { ApiOrderService } from '@services/api-services/api-order.service';
 import { AuthService } from '@services/auth.service';
 import { AlertService } from '@services/alert.service';
+import { injectInvalidateCatalog } from '@services/queries/catalog-cache';
 
 @Component({
   selector: 'app-order-summary',
@@ -31,6 +32,7 @@ export class OrderSummaryComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
   private alertService = inject(AlertService);
+  private invalidateCatalog = injectInvalidateCatalog();
 
   totalItems = this.cartService.totalItems;
   totalAmount = this.cartService.totalAmount;
@@ -89,6 +91,10 @@ export class OrderSummaryComponent {
     if (isConfirmed) {
       this.apiOrderService.createOrder(orderData).subscribe({
         next: () => {
+          // La compra descuenta stock y suma ventas: invalidamos el caché
+          // para no seguir mostrando los datos viejos de los productos
+          this.invalidateCatalog();
+
           const isTransfer =
             this.paymentMethod() === PaymentMethod.Transferencia;
           const successText = isTransfer

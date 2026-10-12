@@ -2,15 +2,12 @@ import { inject, Signal } from '@angular/core';
 import {
   injectMutation,
   injectQuery,
-  injectQueryClient,
+  keepPreviousData,
 } from '@tanstack/angular-query-experimental';
 import { firstValueFrom } from 'rxjs';
 import { ApiProductService } from '../api-services/api-product.service';
-import {
-  IApiProduct,
-  ICreateProduct,
-  IUpdateProduct,
-} from '../../models/product.model';
+import { ICreateProduct, IUpdateProduct } from '../../models/product.model';
+import { injectInvalidateCatalog } from './catalog-cache';
 
 export interface IProductQueryFilters {
   query?: string;
@@ -25,7 +22,7 @@ export interface IProductQueryFilters {
 }
 
 /**
- * Reactive query for active products (Public Storefront)
+ * Query reactiva de productos activos (Tienda pública)
  */
 export function injectActiveProductsQuery(
   filtersSignal: Signal<IProductQueryFilters>,
@@ -66,8 +63,12 @@ export function injectActiveProductsQuery(
         }
         return firstValueFrom(apiProductService.getActiveProducts(page, limit));
       },
-      staleTime: 1000 * 60 * 3, // 3 minutes
-      enabled: options?.enabled !== undefined 
+      staleTime: 1000 * 60 * 3, // 3 minutos
+      // Mientras llega la página (o el filtro) nuevo se siguen mostrando los datos
+      // anteriores. Sin esto la grilla queda vacía un instante en cada cambio de
+      // página y la transición se ve brusca.
+      placeholderData: keepPreviousData,
+      enabled: options?.enabled !== undefined
         ? (typeof options.enabled === 'function' ? options.enabled() : options.enabled)
         : true,
     };
@@ -75,7 +76,7 @@ export function injectActiveProductsQuery(
 }
 
 /**
- * Reactive query for all products (Admin Panel)
+ * Query reactiva de todos los productos (Panel Admin)
  */
 export function injectAllProductsQuery(
   filtersSignal: Signal<IProductQueryFilters>
@@ -98,83 +99,85 @@ export function injectAllProductsQuery(
             stockFilter: filters.stockFilter,
           })
         ),
-      staleTime: 1000 * 60 * 2, // 2 minutes
+      staleTime: 1000 * 60 * 2, // 2 minutos
+      // Mantiene la tabla con los datos anteriores hasta que llega la página nueva
+      placeholderData: keepPreviousData,
     };
   });
 }
 
 /**
- * Reactive query for a single active product detail
+ * Query reactiva para el detalle de un producto (Página de producto).
+ * Trae el producto aunque esté inactivo: la página muestra el aviso de "no disponible".
  */
-export function injectActiveProductDetailQuery(idSignal: Signal<number>) {
+export function injectProductDetailQuery(idSignal: Signal<number>) {
   const apiProductService = inject(ApiProductService);
 
   return injectQuery(() => {
     const id = idSignal();
     return {
       queryKey: ['products', 'detail', id],
-      queryFn: () => firstValueFrom(apiProductService.getActiveProductById(id)),
+      queryFn: () => firstValueFrom(apiProductService.getProductById(id)),
       enabled: id > 0,
-      staleTime: 1000 * 60 * 5, // 5 minutes
+      staleTime: 1000 * 60 * 5, // 5 minutos
     };
   });
 }
 
 /**
- * Mutation for adding a new product
+ * Mutación para crear un producto
  */
 export function injectAddProductMutation() {
   const apiProductService = inject(ApiProductService);
-  const queryClient = injectQueryClient();
+  const invalidateCatalog = injectInvalidateCatalog();
 
   return injectMutation(() => ({
     mutationFn: (newProduct: ICreateProduct) =>
       firstValueFrom(apiProductService.addProduct(newProduct)),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['products'] });
+      invalidateCatalog();
     },
   }));
 }
 
 /**
- * Mutation for updating an existing product
+ * Mutación para actualizar un producto existente
  */
 export function injectUpdateProductMutation() {
   const apiProductService = inject(ApiProductService);
-  const queryClient = injectQueryClient();
+  const invalidateCatalog = injectInvalidateCatalog();
 
   return injectMutation(() => ({
     mutationFn: ({ id, product }: { id: number; product: IUpdateProduct }) =>
       firstValueFrom(apiProductService.updateProduct(id, product)),
-    onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: ['products'] });
-      queryClient.invalidateQueries({ queryKey: ['products', 'detail', id] });
+    onSuccess: () => {
+      invalidateCatalog();
     },
   }));
 }
 
 /**
- * Mutation for deleting a product
+ * Mutación para eliminar un producto
  */
 export function injectDeleteProductMutation() {
   const apiProductService = inject(ApiProductService);
-  const queryClient = injectQueryClient();
+  const invalidateCatalog = injectInvalidateCatalog();
 
   return injectMutation(() => ({
     mutationFn: (id: number) =>
       firstValueFrom(apiProductService.deleteProduct(id)),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['products'] });
+      invalidateCatalog();
     },
   }));
 }
 
 /**
- * Mutation for bulk price changes
+ * Mutación para el cambio masivo de precios
  */
 export function injectBulkPriceMutation() {
   const apiProductService = inject(ApiProductService);
-  const queryClient = injectQueryClient();
+  const invalidateCatalog = injectInvalidateCatalog();
 
   return injectMutation(() => ({
     mutationFn: ({
@@ -197,13 +200,13 @@ export function injectBulkPriceMutation() {
         )
       ),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['products'] });
+      invalidateCatalog();
     },
   }));
 }
 
 /**
- * Query for global best sellers (Home Page)
+ * Query de los más vendidos generales (Página principal)
  */
 export function injectBestSellersQuery(limit: number = 10) {
   const apiProductService = inject(ApiProductService);
@@ -211,12 +214,12 @@ export function injectBestSellersQuery(limit: number = 10) {
   return injectQuery(() => ({
     queryKey: ['products', 'best-sellers', limit],
     queryFn: () => firstValueFrom(apiProductService.getBestSellers(limit)),
-    staleTime: 1000 * 60 * 10, // 10 minutes — best sellers change less frequently
+    staleTime: 1000 * 60 * 10, // 10 minutos: los más vendidos cambian con poca frecuencia
   }));
 }
 
 /**
- * Query for best sellers by category (Home Page carousels)
+ * Query de los más vendidos por categoría (Carruseles de la página principal)
  */
 export function injectBestSellersByCategoryQuery(
   categoryIdSignal: Signal<number>,
@@ -231,8 +234,7 @@ export function injectBestSellersByCategoryQuery(
       queryFn: () =>
         firstValueFrom(apiProductService.getBestSellersByCategory(categoryId, limit)),
       enabled: categoryId > 0,
-      staleTime: 1000 * 60 * 10, // 10 minutes
+      staleTime: 1000 * 60 * 10, // 10 minutos
     };
   });
 }
-

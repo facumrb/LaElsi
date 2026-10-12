@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, effect } from '@angular/core';
+import { Component, computed } from '@angular/core';
 import { IApiProduct } from '@models/product.model';
 import { IApiCategory } from '@models/category.model';
 import { ProductCardComponent } from '../../components/product-card/product-card.component';
@@ -22,73 +22,81 @@ import { injectActiveCategoriesQuery } from '@services/queries/category-queries'
   templateUrl: './main-page.component.html',
 })
 export class MainPageComponent {
-  // Tier 2: Query Layer — all data fetching delegated to TanStack Query
-  bestSellersQuery = injectBestSellersQuery(10);
-  categoriesQuery = injectActiveCategoriesQuery();
+  // Capa de queries (TanStack Query): toda la carga de datos queda en caché
+
+  // 1. Obtener los más vendidos generales
+  private bestSellersQuery = injectBestSellersQuery(10);
+
+  // 2. Obtener categorías activas y sus más vendidos
+  private categoriesQuery = injectActiveCategoriesQuery();
 
   globalBestSellers = computed(() => this.bestSellersQuery.data() ?? []);
 
-  // Top 5 active categories
-  topCategories = computed<IApiCategory[]>(() =>
-    (this.categoriesQuery.data() ?? []).slice(0, 5)
+  // Limitamos a algunas categorías para la home
+  private topCategories = computed<IApiCategory[]>(() =>
+    (this.categoriesQuery.data() ?? []).slice(0, 5),
   );
 
-  // One signal per category slot (supports up to 5)
-  private categoryId0 = signal(0);
-  private categoryId1 = signal(0);
-  private categoryId2 = signal(0);
-  private categoryId3 = signal(0);
-  private categoryId4 = signal(0);
+  // Un ID por cada lugar de categoría de la home (hasta 5).
+  // Vale 0 mientras no haya categoría para ese lugar, y en ese caso la query queda deshabilitada.
+  private categoryId0 = computed(() => this.topCategories()[0]?.id ?? 0);
+  private categoryId1 = computed(() => this.topCategories()[1]?.id ?? 0);
+  private categoryId2 = computed(() => this.topCategories()[2]?.id ?? 0);
+  private categoryId3 = computed(() => this.topCategories()[3]?.id ?? 0);
+  private categoryId4 = computed(() => this.topCategories()[4]?.id ?? 0);
 
-  // Best sellers per category — each independently cached by TanStack Query
-  bestSellers0 = injectBestSellersByCategoryQuery(this.categoryId0, 10);
-  bestSellers1 = injectBestSellersByCategoryQuery(this.categoryId1, 10);
-  bestSellers2 = injectBestSellersByCategoryQuery(this.categoryId2, 10);
-  bestSellers3 = injectBestSellersByCategoryQuery(this.categoryId3, 10);
-  bestSellers4 = injectBestSellersByCategoryQuery(this.categoryId4, 10);
+  // Más vendidos de cada categoría: TanStack Query cachea cada una por separado
+  private categoryBestSellersQueries = [
+    injectBestSellersByCategoryQuery(this.categoryId0, 10),
+    injectBestSellersByCategoryQuery(this.categoryId1, 10),
+    injectBestSellersByCategoryQuery(this.categoryId2, 10),
+    injectBestSellersByCategoryQuery(this.categoryId3, 10),
+    injectBestSellersByCategoryQuery(this.categoryId4, 10),
+  ];
 
-  constructor() {
-    // When categories load, update the individual category ID signals
-    effect(() => {
-      const cats = this.topCategories();
-      this.categoryId0.set(cats[0]?.id ?? 0);
-      this.categoryId1.set(cats[1]?.id ?? 0);
-      this.categoryId2.set(cats[2]?.id ?? 0);
-      this.categoryId3.set(cats[3]?.id ?? 0);
-      this.categoryId4.set(cats[4]?.id ?? 0);
-    });
-  }
-
-  // Derived: categories with their best seller products (replaces forkJoin pattern)
-  categoriesWithBestSellers = computed<{ category: IApiCategory; products: IApiProduct[] }[]>(() => {
-    const cats = this.topCategories();
-    const queries = [
-      this.bestSellers0,
-      this.bestSellers1,
-      this.bestSellers2,
-      this.bestSellers3,
-      this.bestSellers4,
-    ];
-    return cats
-      .map((cat, i) => ({ category: cat, products: queries[i]?.data() ?? [] }))
-      .filter((r) => r.products.length > 0);
+  categoriesWithBestSellers = computed<
+    { category: IApiCategory; products: IApiProduct[] }[]
+  >(() => {
+    return (
+      this.topCategories()
+        .map((cat, i) => ({
+          category: cat,
+          products: this.categoryBestSellersQueries[i].data() ?? [],
+        }))
+        // Mostramos solo categorías con productos vendidos
+        .filter((r) => r.products.length > 0)
+    );
   });
 
-  // True only while initial data is still being fetched
-  loading = computed(() =>
-    this.bestSellersQuery.isPending() || this.categoriesQuery.isPending()
-  );
+  // Mostramos el spinner hasta tener todos los datos iniciales. También esperamos a los
+  // más vendidos de cada categoría para que los carruseles aparezcan todos juntos.
+  loading = computed(() => {
+    const categoriesPending = this.topCategories().some((_, i) =>
+      this.categoryBestSellersQueries[i].isPending(),
+    );
+
+    return (
+      this.bestSellersQuery.isPending() ||
+      this.categoriesQuery.isPending() ||
+      categoriesPending
+    );
+  });
 
   scrollCarousel(
     container: HTMLElement,
     direction: 'left' | 'right',
-    tracker: any
+    tracker: any,
   ) {
     const width = container.clientWidth;
     const targetLeft = container.scrollLeft + (direction === 'left' ? -width : width);
+
     const atStart = targetLeft <= 5;
     const atEnd = targetLeft + width >= container.scrollWidth - 5;
-    if (atStart || atEnd) tracker.forceState(atStart, atEnd);
+
+    if (atStart || atEnd) {
+      tracker.forceState(atStart, atEnd);
+    }
+
     container.scrollTo({ left: targetLeft });
   }
 }

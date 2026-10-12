@@ -25,6 +25,7 @@ import {
 import { AuditInfoComponent } from '@admin/components/audit-info/audit-info.component';
 import { FieldErrorComponent } from '@shared/validators/field-error/field-error.component';
 import { TrimInputDirective } from '@shared/directives/trim-input.directive';
+import { injectInvalidateCatalog } from '@services/queries/catalog-cache';
 
 @Component({
   selector: 'app-products-form',
@@ -60,6 +61,7 @@ export class ProductsFormComponent implements OnInit {
   private alertService = inject(AlertService);
   private draftService = inject(ProductDraftService);
   private http = inject(HttpClient);
+  private invalidateCatalog = injectInvalidateCatalog();
 
   formUtils = FormUtils;
 
@@ -319,6 +321,10 @@ export class ProductsFormComponent implements OnInit {
 
       productObs.subscribe({
         next: (responseProduct) => {
+          // El producto ya se guardó: invalidamos el caché para que los listados
+          // se recarguen (aunque después falle la subida de las fotos)
+          this.invalidateCatalog();
+
           const finalId = this.isEditMode()
             ? this.productId()!
             : responseProduct.id;
@@ -326,6 +332,8 @@ export class ProductsFormComponent implements OnInit {
           // DELEGAR FOTOS AL HIJO
           this.photoManager.saveChanges(finalId).subscribe({
             next: () => {
+              // Las fotos también forman parte de los datos en caché del producto
+              this.invalidateCatalog();
               this.alertService.toast('Guardado exitosamente', 'success');
               this.router.navigate(['/admin/products']);
             },

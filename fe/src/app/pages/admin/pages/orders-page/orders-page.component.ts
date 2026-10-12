@@ -20,6 +20,7 @@ import {
 import { OrderDetailModalComponent } from '@shared/components/order-detail-modal/order-detail-modal.component';
 import { Router, ActivatedRoute } from '@angular/router';
 import { PaginationComponent } from '@shared/components/pagination/pagination.component';
+import { injectInvalidateCatalog } from '@services/queries/catalog-cache';
 
 @Component({
   selector: 'app-orders-page',
@@ -36,6 +37,7 @@ export class OrdersPageComponent implements OnInit {
   private orderService = inject(ApiOrderService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private invalidateCatalog = injectInvalidateCatalog();
 
   private ordersRaw = signal<IApiOrder[]>([]);
   currentPage = signal(1);
@@ -151,6 +153,8 @@ export class OrdersPageComponent implements OnInit {
         if (confirm) {
           this.orderService.cancelOrder(id).subscribe({
             next: (updatedOrder) => {
+              // Al cancelar se restaura el stock: invalidamos el caché de productos
+              this.invalidateCatalog();
               this.alertService.toast(
                 'Orden cancelada correctamente',
                 'success',

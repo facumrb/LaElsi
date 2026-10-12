@@ -3,6 +3,8 @@ import {
   inject,
   signal,
   computed,
+  effect,
+  linkedSignal,
   OnInit,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -29,14 +31,26 @@ import { injectActiveProductsQuery } from '@services/queries/product-queries';
 export class SearchResultComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
-
+  availableBrands = signal<string[]>([]);
   searchTerm = signal<string>('');
-  currentPage = signal<number>(1);
 
   // Filtros
   priceOrder = signal<PriceOrder>('Defecto');
   brandFilter = signal<string>('Todas');
   popularityOrder = signal<PopularityOrder>('Defecto');
+
+  // Paginación
+  // Reacciona a cambios en los filtros y recarga del server: al cambiar cualquiera,
+  // reseteamos a página 1. No hace falta recargar a mano porque la página forma
+  // parte de la queryKey y TanStack Query pide los datos por su cuenta.
+  currentPage = linkedSignal<unknown, number>({
+    source: () => [
+      this.priceOrder(),
+      this.brandFilter(),
+      this.popularityOrder(),
+    ],
+    computation: () => 1,
+  });
 
   // Breadcrumbs dinámicos
   breadcrumbSteps = computed(() => [
@@ -48,7 +62,7 @@ export class SearchResultComponent implements OnInit {
     },
   ]);
 
-  // Computed filter bundle — TanStack Query reacts automatically to any change
+  // Filtros agrupados que consume la query (cada combinación se cachea por separado)
   private activeFilters = computed(() => ({
     query: this.searchTerm(),
     brand: this.brandFilter(),
@@ -58,24 +72,39 @@ export class SearchResultComponent implements OnInit {
     limit: 16,
   }));
 
-  isReady = signal(false);
+  // La query se habilita recién cuando leímos los parámetros de la URL
+  private isReady = signal(false);
 
-  // Tier 2: Query Layer
-  productsQuery = injectActiveProductsQuery(this.activeFilters, { enabled: this.isReady });
+  // Capa de queries (TanStack Query)
+  private productsQuery = injectActiveProductsQuery(this.activeFilters, {
+    enabled: this.isReady,
+  });
 
-  productsFiltered = computed(() => this.productsQuery.data()?.data ?? []);
+  private productsRaw = computed(() => this.productsQuery.data()?.data ?? []);
   totalPages = computed(() => this.productsQuery.data()?.totalPages ?? 1);
 
-  availableBrands = computed(() => {
-    if (this.brandFilter() !== 'Todas') return [];
-    return [...new Set((this.productsQuery.data()?.data ?? []).map((p) => p.brand))].sort();
+  // Los productos ya vienen filtrados y ordenados del server
+  productsFiltered = computed(() => [...this.productsRaw()]);
+
+  // Effect para extraer las marcas disponibles de los productos.
+  private brandExtractor = effect(() => {
+    const products = this.productsRaw();
+    const currentBrand = this.brandFilter();
+    // Ignoramos los datos "de relleno": son los de la consulta anterior,
+    // que se siguen mostrando mientras llega la nueva.
+    if (currentBrand === 'Todas' && !this.productsQuery.isPlaceholderData()) {
+      const brands = [...new Set(products.map((p) => p.brand))].sort();
+      this.availableBrands.set(brands);
+    }
   });
 
   ngOnInit() {
     this.route.queryParams.subscribe((params) => {
       const newQ = params['q'] || '';
       const newPage = Number(params['page']) || 1;
-      // Signals updated → TanStack Query auto-refetches if key changed
+
+      // Solo recargar si cambió el query de búsqueda o la página: de eso se encarga
+      // TanStack Query, porque ambos signals forman parte de la queryKey
       this.searchTerm.set(newQ);
       this.currentPage.set(newPage);
       this.isReady.set(true);

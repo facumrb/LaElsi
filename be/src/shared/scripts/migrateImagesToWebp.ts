@@ -1,10 +1,11 @@
 /**
- * One-time migration script: converts all non-WebP images in uploads/ to WebP,
- * updates the database records (ProductPhoto and UserPhoto), and deletes the originals.
+ * Script de migración de única ejecución: convierte a WebP todas las imágenes de uploads/
+ * que no lo sean, actualiza los registros de la base de datos (ProductPhoto y UserPhoto)
+ * y elimina los archivos originales.
  *
- * Usage (from the `be/` directory):
+ * Uso (desde el directorio `be/`):
  *   npx ts-node --esm src/shared/scripts/migrateImagesToWebp.ts
- *   OR after compiling: node dist/shared/scripts/migrateImagesToWebp.js
+ *   O después de compilar: node dist/shared/scripts/migrateImagesToWebp.js
  */
 
 import 'dotenv/config';
@@ -45,10 +46,10 @@ async function migrate() {
   let errors = 0;
 
   for (const folder of FOLDERS) {
-    console.log(`\n📁 Processing folder: ${folder.label}`);
+    console.log(`\n📁 Procesando carpeta: ${folder.label}`);
 
     if (!fs.existsSync(folder.path)) {
-      console.log(`   ⚠️  Folder not found, skipping: ${folder.path}`);
+      console.log(`   ⚠️  Carpeta no encontrada, se omite: ${folder.path}`);
       continue;
     }
 
@@ -57,14 +58,14 @@ async function migrate() {
     for (const fileName of files) {
       const ext = path.extname(fileName).toLowerCase();
 
-      // Skip already-WebP, hidden files, and gitkeep
+      // Omitir los que ya son WebP, los archivos ocultos y el .gitkeep
       if (ext === '.webp' || fileName.startsWith('.')) {
         skipped++;
         continue;
       }
 
       if (!CONVERTIBLE_EXTENSIONS.has(ext)) {
-        console.log(`   ⏭️  Unsupported extension, skipping: ${fileName}`);
+        console.log(`   ⏭️  Extensión no soportada, se omite: ${fileName}`);
         skipped++;
         continue;
       }
@@ -74,28 +75,28 @@ async function migrate() {
       const newPath = path.join(folder.path, newFileName);
 
       try {
-        // Convert to WebP
+        // Convertir a WebP
         await sharp(originalPath)
           .webp({ quality: 80 })
           .toFile(newPath);
 
-        // Update DB record: find the Photo by its old fileName and rename it
+        // Actualizar el registro en la DB: buscar la Photo por su fileName anterior y renombrarla
         const photo = await em.findOne(Photo, { fileName });
         if (photo) {
           photo.fileName = newFileName;
           await em.flush();
-          console.log(`   ✅  ${fileName} → ${newFileName} (DB updated)`);
+          console.log(`   ✅  ${fileName} → ${newFileName} (DB actualizada)`);
         } else {
-          // File on disk but no DB record — convert anyway, leave original for safety
-          console.log(`   ✅  ${fileName} → ${newFileName} (no DB record found, file converted)`);
+          // El archivo está en disco pero no tiene registro en la DB: se convierte igual
+          console.log(`   ✅  ${fileName} → ${newFileName} (sin registro en la DB, archivo convertido)`);
         }
 
-        // Delete original only after successful conversion + DB update
+        // Eliminar el original recién después de convertir y actualizar la DB con éxito
         fs.unlinkSync(originalPath);
         converted++;
       } catch (err) {
-        console.error(`   ❌  Failed to convert ${fileName}:`, err);
-        // Clean up failed output if it was partially written
+        console.error(`   ❌  Error al convertir ${fileName}:`, err);
+        // Limpiar el archivo de salida si quedó escrito a medias
         if (fs.existsSync(newPath)) fs.unlinkSync(newPath);
         errors++;
       }
@@ -105,13 +106,13 @@ async function migrate() {
   await orm.close();
 
   console.log('\n========================================');
-  console.log(`✅  Converted : ${converted}`);
-  console.log(`⏭️  Skipped   : ${skipped}`);
-  console.log(`❌  Errors    : ${errors}`);
+  console.log(`✅  Convertidas : ${converted}`);
+  console.log(`⏭️  Omitidas    : ${skipped}`);
+  console.log(`❌  Errores     : ${errors}`);
   console.log('========================================');
 }
 
 migrate().catch((err) => {
-  console.error('Fatal error during migration:', err);
+  console.error('Error fatal durante la migración:', err);
   process.exit(1);
 });

@@ -24,6 +24,7 @@ import { AuditInfoComponent } from '@admin/components/audit-info/audit-info.comp
 import { FieldErrorComponent } from '@shared/validators/field-error/field-error.component';
 import { TrimInputDirective } from '@shared/directives/trim-input.directive';
 import { CategoryParentSelectComponent } from './components/category-parent-select/category-parent-select.component';
+import { injectInvalidateCatalog } from '@services/queries/catalog-cache';
 
 @Component({
   selector: 'app-categories-form',
@@ -54,6 +55,7 @@ export class CategoriesFormComponent implements OnInit {
   private alertService = inject(AlertService);
   private draftService = inject(ProductDraftService);
   private http = inject(HttpClient);
+  private invalidateCatalog = injectInvalidateCatalog();
 
   // Estados
   isEditMode = signal(false);
@@ -215,6 +217,9 @@ export class CategoriesFormComponent implements OnInit {
 
     request$.subscribe({
       next: (response: IApiCategory) => {
+        // La categoría cambió: invalidamos el caché para que los listados se recarguen
+        this.invalidateCatalog();
+
         this.alertService.toast(
           this.isEditMode() ? 'Categoría actualizada' : 'Categoría creada',
           'success',
