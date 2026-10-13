@@ -1,5 +1,5 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { from, map, Observable, switchMap } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Router } from '@angular/router';
@@ -7,6 +7,7 @@ import {
   IApiResponse,
   LoginData,
   IClientRegister,
+  ResetTokenStatus,
   UserSession,
 } from '@models/auth.model';
 import { UserRole } from '@models/user.model';
@@ -111,6 +112,56 @@ export class AuthService {
   }
 
   /**
+   * Pide el enlace para recuperar la contraseña. El backend lo envía por email.
+   * La respuesta es siempre la misma, exista o no la cuenta: no permite
+   * averiguar qué emails están registrados.
+   *
+   * @param identifier Email, DNI o nombre de usuario
+   * @param turnstileToken Token anti-bots del widget de Cloudflare Turnstile
+   */
+  requestPasswordReset(
+    identifier: string,
+    turnstileToken?: string | null,
+  ): Observable<void> {
+    const headers = turnstileToken
+      ? new HttpHeaders({ 'X-Turnstile-Token': turnstileToken })
+      : undefined;
+
+    return this.http
+      .post<IApiResponse<null>>(
+        `${this.apiUrl}/forgot-password`,
+        { identifier },
+        { headers },
+      )
+      .pipe(map(() => void 0));
+  }
+
+  /** Consulta si el enlace de recuperación sigue vigente (sin gastarlo). */
+  validateResetToken(token: string): Observable<ResetTokenStatus> {
+    return this.http
+      .post<IApiResponse<ResetTokenStatus>>(
+        `${this.apiUrl}/reset-password/validate`,
+        { token },
+      )
+      .pipe(map((response) => response.data));
+  }
+
+  /** Canjea el enlace de recuperación y define la contraseña nueva. */
+  resetPassword(
+    token: string,
+    password: string,
+    confirmPassword: string,
+  ): Observable<void> {
+    return this.http
+      .post<IApiResponse<null>>(`${this.apiUrl}/reset-password`, {
+        token,
+        password,
+        confirmPassword,
+      })
+      .pipe(map(() => void 0));
+  }
+
+  /**
    * Renueva el access token. El cliente de Supabase ya lo hace automáticamente
    * antes de que venza; esto queda para el caso en que el backend responda 401
    * (lo usa el errorInterceptor antes de reintentar la petición).
@@ -128,11 +179,12 @@ export class AuthService {
     );
   }
 
-  logout(): void {
+  // redirectUrl: a dónde llevar a la persona después de cerrar la sesión
+  logout(redirectUrl: string = '/'): void {
     // No hace falta esperar la respuesta: la sesión local se borra de inmediato
     void supabase.auth.signOut();
     this.clearSession();
-    this.router.navigate(['/']);
+    this.router.navigateByUrl(redirectUrl);
   }
 
   // Método auxiliar para obtener el token (usado por el interceptor)

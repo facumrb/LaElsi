@@ -71,13 +71,12 @@
               <app-field-error [control]="formLogin.controls.password" />
             </div>
 
-            <button
-              type="button"
-              (click)="forgotPassword()"
-              class="cursor-pointer mt-1 text-sm font-medium text-[#3d4494]"
+            <a
+              routerLink="/auth/recover-password"
+              class="cursor-pointer mt-1 text-sm font-medium text-[#3d4494] hover:underline"
             >
               ¿Olvidaste tu contraseña?
-            </button>
+            </a>
           </div>
         </div>
 
@@ -127,7 +126,3 @@
     </div>
   </div>
 </main>
-
-@if (showRecoverPasswordModal()) {
-  <app-recover-password-modal (close)="showRecoverPasswordModal.set(false)" />
-}

@@ -11,9 +11,10 @@ La librería “Laelsi” es un negocio dedicado a la venta de productos de libr
 | Base de datos | **Supabase** (PostgreSQL con RLS) | `supabase/migrations/` |
 | Backend | **Supabase Edge Functions** (TypeScript sobre Deno) | `supabase/functions/` |
 | Imágenes | **Cloudflare R2** (subida directa desde el navegador) | `supabase/functions/_shared/r2.ts` |
-| Anti-bots | **Cloudflare Turnstile** en el checkout | `fe/src/app/shared/components/turnstile/` |
+| Correos | **Resend** (enlace para recuperar la contraseña) | `supabase/functions/_shared/correo.ts` |
+| Anti-bots | **Cloudflare Turnstile** en el checkout y en "Recuperar contraseña" | `fe/src/app/shared/components/turnstile/` |
 
-El navegador habla con dos servicios: las Edge Functions (toda la lógica de negocio) y Cloudflare R2 (solo para subir y mostrar imágenes). La carpeta `be/` contiene el backend Express anterior, que ya no se usa (ver [Backend anterior](#backend-anterior-be)).
+El navegador habla con dos servicios: las Edge Functions (toda la lógica de negocio) y Cloudflare R2 (solo para subir y mostrar imágenes). Resend nunca se llama desde el navegador: los correos los envían las Edge Functions. La carpeta `be/` contiene el backend Express anterior, que ya no se usa (ver [Backend anterior](#backend-anterior-be)).
 
 ## Requisitos previos
 
@@ -123,7 +124,35 @@ Esto se hace **una sola vez**, al crear el entorno.
 3. Crear un API Token de R2 con permiso de lectura y escritura sobre los dos buckets.
 4. Crear un widget de Turnstile para el dominio del sitio.
 
-### 3. Variables secretas
+### 3. Resend (correos de recuperación de contraseña)
+
+[Resend](https://resend.com/) envía el correo con el enlace de "¿Olvidaste tu contraseña?" y el aviso de que la contraseña se cambió. El plan gratuito alcanza para este uso: 3.000 correos por mes, con un tope de 100 por día.
+
+**No hay que tocar código para conectar la cuenta.** Los datos de Resend van como _secrets_ de las Edge Functions (paso 4).
+
+1. Crear la cuenta en [resend.com](https://resend.com/).
+2. **Domains → Add Domain**: agregar un dominio propio. Resend recomienda usar un subdominio (por ejemplo `correo.tu-dominio.com`) para no mezclar la reputación de los envíos con la del dominio principal.
+3. Cargar en el proveedor de DNS del dominio los registros que muestra Resend y esperar a que el dominio figure como **Verified**.
+4. **API Keys → Create API Key** con permiso _Sending access_. La clave empieza con `re_` y se muestra una sola vez.
+5. Completar en `supabase/functions/.env`:
+
+   | Variable | Qué poner |
+   | --- | --- |
+   | `RESEND_API_KEY` | La clave del paso 4 |
+   | `RESEND_FROM` | El remitente, con el formato `Laelsi <no-reply@correo.tu-dominio.com>`. El dominio tiene que ser **exactamente** el verificado |
+   | `SITE_URL` | La URL pública del sitio, sin barra final. Con ella se arma el enlace del correo |
+
+**Sin dominio propio** (los dominios `*.vercel.app` no se pueden verificar) solo se puede probar: con `RESEND_FROM="Laelsi <onboarding@resend.dev>"` Resend entrega los correos únicamente a la casilla con la que creaste la cuenta, y rechaza cualquier otro destinatario.
+
+Qué se puede ajustar y dónde:
+
+| Qué | Archivo |
+| --- | --- |
+| Textos y diseño de los correos | `supabase/functions/_shared/correo-plantillas.ts` |
+| Vigencia del enlace (60 min) y límites de envío | constantes al inicio de la sección "Recuperación de contraseña" en `supabase/functions/auth/index.ts` |
+| Número de WhatsApp de ayuda | `fe/src/app/pages/auth/pages/recover-password-page/recover-password-page.component.ts` |
+
+### 4. Variables secretas
 
 Estas claves dan acceso total a los datos: no van en el frontend ni en Vercel, y los archivos que las contienen no se suben al repositorio (están cubiertos por `.gitignore`).
 
@@ -139,6 +168,13 @@ R2_BUCKET_USERS=laelsi-users
 
 # Cloudflare Turnstile (clave PRIVADA). Vacía = no se exige la verificación anti-bots.
 TURNSTILE_SECRET_KEY=
+
+# Resend (API Keys → Create API Key). Sin estas dos, "Recuperar contraseña" responde con error.
+RESEND_API_KEY=
+RESEND_FROM="Laelsi <no-reply@correo.tu-dominio.com>"
+
+# URL pública del sitio, sin barra final. Es el destino de los enlaces que van por email.
+SITE_URL=https://tu-dominio.com
 
 # Orígenes que pueden llamar a las funciones, separados por coma.
 # http://localhost:4200 y los dominios *.vercel.app ya están permitidos.
@@ -162,7 +198,7 @@ SEED_DEMO_PASSWORD=
 
 `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` y `SUPABASE_DB_URL` no se cargan como secrets: Supabase las inyecta sola en las funciones desplegadas.
 
-### 4. Base de datos, funciones y datos iniciales
+### 5. Base de datos, funciones y datos iniciales
 
 Desde la raíz del repo:
 
@@ -188,7 +224,9 @@ npm run seed:demo     # además: usuarios, productos y órdenes de prueba
 
 Si preferís no usar la CLI para la base, los archivos de `supabase/migrations/` se pueden pegar en el SQL Editor de Supabase, **en orden numérico**.
 
-### 5. Vercel
+Cada vez que se agrega una migración o cambia un secret hay que repetir el paso que corresponda: `npm run db:push` aplica solo las migraciones nuevas, y `npm run functions:secrets` + `npm run functions:deploy` actualizan las funciones.
+
+### 6. Vercel
 
 1. Importar el repositorio y elegir `fe` como **Root Directory** (framework: Angular).
 2. No hacen falta variables de entorno: la configuración pública está en `fe/src/environments/environment.ts`.
@@ -200,6 +238,12 @@ Si preferís no usar la CLI para la base, los archivos de `supabase/migrations/`
 - **Las contraseñas las guarda Supabase Auth**, nunca nuestras tablas. El rol (Admin / Client) vive en la tabla `user` y solo lo puede asignar el backend.
 - **Las imágenes se suben con URLs prefirmadas** que vencen a los 5 minutos y solo aceptan WebP. El nombre del archivo lo decide el servidor.
 - **Límite de intentos de login**: 5 intentos fallidos por IP cada 15 minutos.
+- **Recuperación de contraseña**:
+  - La respuesta es siempre la misma, exista o no la cuenta: no se puede usar para averiguar qué emails están registrados.
+  - El enlace vence a la hora, sirve una sola vez y queda anulado si se pide otro. En la base se guarda su hash, no el enlace.
+  - El destino del enlace sale de `SITE_URL`, nunca de un dato que envíe el navegador.
+  - Límites: 3 correos por hora por cuenta y 5 solicitudes cada 15 minutos por IP, más Turnstile si está configurado. Protegen la cuota de Resend.
+- **Pantallas de acceso**: si la persona sale y vuelve, se conserva el usuario o email que había escrito (en `sessionStorage`, hasta cerrar la pestaña). La contraseña nunca se guarda: la completa el navegador o el gestor de contraseñas.
 - **Las reglas de WAF de Cloudflare protegen el sitio, no la API**: las Edge Functions se sirven desde `*.supabase.co`, que no pasa por tu zona de Cloudflare. La protección de la API es la de arriba (validaciones, Turnstile y límite de login).
 
 ## Backend anterior (`be/`)

@@ -73,6 +73,31 @@ function isAllowedOrigin(origin: string): boolean {
   }
 }
 
+/**
+ * Devuelve la URL base del sitio para armar los enlaces que se envían por email
+ * (por ejemplo, el de recuperación de contraseña).
+ *
+ * SEGURIDAD: el enlace lleva un token secreto, así que su destino NO puede
+ * salir de un dato que controle quien hace la petición. Si se usara el header
+ * Origin tal cual, un atacante podría pedir la recuperación de la cuenta de
+ * otra persona indicando su propio sitio, y el token le llegaría a él cuando
+ * la víctima hiciera clic.
+ *
+ * Por eso el Origin solo se respeta si figura en la lista EXPLÍCITA de orígenes
+ * (ALLOWED_ORIGINS + localhost). El comodín *.vercel.app queda afuera a
+ * propósito: cualquiera puede publicar un sitio ahí. En el resto de los casos
+ * se usa SITE_URL.
+ */
+export function resolveSiteUrl(req: Request): string {
+  const origin = (req.headers.get('Origin') ?? '').trim().replace(/\/$/, '');
+  if (origin && getAllowedOrigins().includes(origin)) return origin;
+
+  const siteUrl = (Deno.env.get('SITE_URL') ?? '').trim().replace(/\/$/, '');
+  if (siteUrl) return siteUrl;
+
+  throw new AppError('El sitio no está configurado para enviar correos', 500);
+}
+
 export function buildCorsHeaders(req: Request): Record<string, string> {
   const origin = req.headers.get('Origin') ?? '';
   const headers: Record<string, string> = {
@@ -169,6 +194,34 @@ export function getPagination(ctx: RequestContext): { page: number; limit: numbe
 /** Construye el objeto de respuesta estructurado para la paginación. */
 export function paginated<T>(data: T[], total: number, page: number, limit: number) {
   return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
+}
+
+// ─── Tareas en segundo plano ─────────────────────────────────────────────────
+
+/**
+ * Ejecuta una tarea sin hacer esperar a quien llamó: la respuesta HTTP sale
+ * enseguida y la tarea termina después.
+ *
+ * Se usa para enviar correos. Además de responder más rápido, hace que la
+ * petición tarde lo mismo exista o no la cuenta consultada: si el envío se
+ * esperara, medir el tiempo de respuesta alcanzaría para saber qué emails
+ * están registrados.
+ *
+ * EdgeRuntime.waitUntil es la API de Supabase para que la función siga viva
+ * hasta que la tarea termine. Si no está disponible, la tarea se espera.
+ */
+export async function runInBackground(task: Promise<unknown>): Promise<void> {
+  // Los errores se registran acá: en segundo plano ya no hay a quién devolvérselos
+  const safeTask = task.catch((err) => console.error('Falló una tarea en segundo plano', err));
+
+  // deno-lint-ignore no-explicit-any
+  const runtime = (globalThis as any).EdgeRuntime;
+  if (typeof runtime?.waitUntil === 'function') {
+    runtime.waitUntil(safeTask);
+    return;
+  }
+
+  await safeTask;
 }
 
 // ─── Servidor ────────────────────────────────────────────────────────────────

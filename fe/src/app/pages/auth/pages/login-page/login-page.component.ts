@@ -15,7 +15,7 @@ import { FieldErrorComponent } from '@shared/validators/field-error/field-error.
 import { TrimInputDirective } from '@shared/directives/trim-input.directive';
 import { PasswordToggleButtonComponent } from '@shared/components/buttons/password-toggle-button/password-toggle-button.component';
 import { LogoComponent } from '@shared/components/logo/logo.component';
-import { RecoverPasswordModalComponent } from './recover-password-modal/recover-password-modal.component';
+import { injectAccessDraft } from '@services/access-draft';
 
 @Component({
   selector: 'app-login-page',
@@ -28,7 +28,6 @@ import { RecoverPasswordModalComponent } from './recover-password-modal/recover-
     TrimInputDirective,
     PasswordToggleButtonComponent,
     LogoComponent,
-    RecoverPasswordModalComponent,
   ],
   viewProviders: [
     provideIcons({
@@ -63,6 +62,10 @@ export class LoginPageComponent {
     password: ['', [FormUtils.maxLength(100), Validators.required]],
   });
 
+  // Conserva el usuario ingresado si la persona sale de la pantalla y vuelve.
+  // La contraseña no se guarda: la completa el navegador o el gestor de contraseñas.
+  private draft = injectAccessDraft('login', this.formLogin, ['username']);
+
   // Lógica UI para el input de contraseña
   private passwordValue = toSignal(
     this.formLogin.get('password')!.valueChanges,
@@ -73,12 +76,6 @@ export class LoginPageComponent {
     const val = this.passwordValue();
     return val ? val.length > 0 : false;
   });
-
-  showRecoverPasswordModal = signal(false);
-
-  forgotPassword() {
-    this.showRecoverPasswordModal.set(true);
-  }
 
   // Inicio de sesión con Google: redirige a Google y vuelve a la tienda con la sesión iniciada
   loginWithGoogle() {
@@ -107,6 +104,8 @@ export class LoginPageComponent {
     this.authService.login(username!, password!).subscribe({
       next: () => {
         this.loading.set(false);
+        // La pantalla se envió bien: el borrador ya no hace falta
+        this.draft.clear();
         this.alertService.toast('¡Bienvenido de nuevo!', 'success');
 
         // Lógica de redireccionamiento post-login

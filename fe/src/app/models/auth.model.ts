@@ -39,3 +39,9 @@ export interface IClientRegister {
   password: string;
 }
 
+// Estado de un enlace de recuperación de contraseña
+export interface ResetTokenStatus {
+  valid: boolean; // false si el enlace venció, ya se usó o no existe
+  username?: string; // Cuenta a la que pertenece (solo si es válido)
+}
+

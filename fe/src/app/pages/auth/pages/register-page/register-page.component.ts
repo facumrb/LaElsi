@@ -15,6 +15,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { AlertService } from '@services/alert.service';
 import { finalize } from 'rxjs';
 import { IClientRegister } from '@models/auth.model';
+import { injectAccessDraft } from '@services/access-draft';
 
 
 @Component({
@@ -99,6 +100,13 @@ export class RegisterPageComponent {
   );
 
 
+  // Conserva el usuario y el email si la persona sale de la pantalla y vuelve.
+  // Las contraseñas no se guardan: las completa el navegador o el gestor de contraseñas.
+  private draft = injectAccessDraft('register', this.formRegister, [
+    'username',
+    'email',
+  ]);
+
   private formStatus = toSignal(this.formRegister.statusChanges, {
     initialValue: this.formRegister.status,
   });
@@ -141,6 +149,8 @@ export class RegisterPageComponent {
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
         next: () => {
+          // La pantalla se envió bien: el borrador ya no hace falta
+          this.draft.clear();
           this.alertService.toast('¡Cuenta creada exitosamente!', 'success');
           this.router.navigate(['/auth/login'], {
             queryParams: { registered: 'true' },

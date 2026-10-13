@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import { adminGuard } from '@guards/admin.guard';
-import { guestGuard } from '@guards/guest.guard';
 
 export const routes: Routes = [
   {
@@ -9,8 +8,9 @@ export const routes: Routes = [
     loadChildren: () => import('./pages/admin/admin.routes'),
   },
   {
+    // El guestGuard se aplica pantalla por pantalla en auth.routes.ts, porque
+    // la de restablecer contraseña tiene que abrirse aunque haya una sesión iniciada
     path: 'auth',
-    canActivate: [guestGuard],
     loadChildren: () => import('./pages/auth/auth.routes'),
   },
   {
