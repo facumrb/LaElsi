@@ -19,7 +19,6 @@ import {
   bootstrapWhatsapp,
 } from '@ng-icons/bootstrap-icons';
 import { IApiOrder, OrderState, PaymentMethod } from '@models/order.model';
-import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
 import { AuthService } from 'src/app/services/auth.service';
 import { CloseModalButtonComponent } from '@shared/components/buttons/close-modal-button/close-modal-button.component';
 import { ProductImageComponent } from '@shared/components/product-image/product-image.component';
@@ -30,7 +29,6 @@ import { ProductImageComponent } from '@shared/components/product-image/product-
     NgIconComponent,
     CurrencyPipe,
     FormatDatePipe,
-    ClickOutsideDirective,
     RouterModule,
     CloseModalButtonComponent,
     ProductImageComponent,
@@ -81,6 +79,10 @@ export class OrderDetailModalComponent implements OnInit, OnDestroy {
 
   @HostListener('document:keydown.escape')
   onEscapeKey() {
+    // Si hay un modal de cancelación abierto en primer plano, no cerramos este modal
+    if (this.document.querySelector('app-cancel-order-modal')) {
+      return;
+    }
     this.close.emit();
   }
 

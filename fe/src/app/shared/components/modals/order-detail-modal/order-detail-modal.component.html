@@ -6,10 +6,8 @@
   <div
     cdkTrapFocus
     cdkTrapFocusAutoCapture
-    clickOutside
     class="bg-white rounded-3xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-300"
     (click)="$event.stopPropagation()"
-    (clickOutside)="onClose()"
   >
     <!-- Modal Header -->
     <header

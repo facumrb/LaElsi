@@ -1,4 +1,4 @@
-import { Component, input, signal, inject, output } from '@angular/core';
+import { Component, input, signal, output } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { FormatDatePipe } from '@shared/pipes/format-date.pipe';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
@@ -9,11 +9,9 @@ import {
   bootstrapXCircle,
 } from '@ng-icons/bootstrap-icons';
 import { IApiOrder, OrderState } from '@models/order.model';
-import { OrderDetailModalComponent } from '@shared/components/order-detail-modal/order-detail-modal.component';
+import { OrderDetailModalComponent } from '@shared/components/modals/order-detail-modal/order-detail-modal.component';
 import { PaginationComponent } from '@shared/components/pagination/pagination.component';
-import { ApiOrderService } from '@services/api-services/api-order.service';
-import { AlertService } from '@services/alert.service';
-import { injectInvalidateCatalog } from '@services/queries/catalog-cache';
+import { CancelOrderModalComponent } from '@shared/components/modals/cancel-order-modal/cancel-order-modal.component';
 
 @Component({
   selector: 'app-profile-orders',
@@ -23,6 +21,7 @@ import { injectInvalidateCatalog } from '@services/queries/catalog-cache';
     FormatDatePipe,
     OrderDetailModalComponent,
     PaginationComponent,
+    CancelOrderModalComponent,
   ],
   viewProviders: [
     provideIcons({
@@ -39,12 +38,10 @@ export class ProfileOrdersComponent {
   currentPage = input<number>(1);
   totalPages = input<number>(1);
   pageChange = output<number>();
-  private orderService = inject(ApiOrderService);
-  private alertService = inject(AlertService);
-  private invalidateCatalog = injectInvalidateCatalog();
   profileUpdated = output<void>();
 
   selectedOrder = signal<IApiOrder | null>(null);
+  orderIdToCancel = signal<number | null>(null);
 
   openModal(order: IApiOrder) {
     this.selectedOrder.set(order);
@@ -72,24 +69,13 @@ export class ProfileOrdersComponent {
   }
 
   handleCancel(id: number) {
-    this.alertService
-      .confirmDelete('¿Estás seguro que deseas cancelar tu pedido?')
-      .then((confirm) => {
-        if (confirm) {
-          this.orderService.cancelOrder(id).subscribe({
-            next: () => {
-              // Al cancelar se restaura el stock: invalidamos el caché de productos
-              this.invalidateCatalog();
-              this.alertService.toast(
-                'Pedido cancelado correctamente',
-                'success',
-              );
-              this.profileUpdated.emit();
-              this.closeModal();
-            },
-          });
-        }
-      });
+    this.orderIdToCancel.set(id);
+  }
+
+  handleOrderCancelled() {
+    this.orderIdToCancel.set(null);
+    this.closeModal();
+    this.profileUpdated.emit();
   }
 
   onPageChange(page: number) {

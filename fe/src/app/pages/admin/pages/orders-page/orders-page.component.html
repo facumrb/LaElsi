@@ -28,6 +28,15 @@
     [order]="selectedOrderForModal()!"
     [showClientInfo]="true"
     (close)="closeOrderDetail()"
-    (onCancel)="handleCancel($event); closeOrderDetail()"
+    (onCancel)="handleCancel($event)"
+  />
+}
+
+@if (orderIdToCancel()) {
+  <app-cancel-order-modal
+    [orderId]="orderIdToCancel()!"
+    variant="admin"
+    (orderCancelled)="handleOrderCancelled($event)"
+    (close)="orderIdToCancel.set(null)"
   />
 }

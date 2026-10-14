@@ -10,6 +10,7 @@ import {
 import { IApiOrder, OrderState, DeliveryMethod } from '@models/order.model';
 import { ApiOrderService } from '@services/api-services/api-order.service';
 import { AlertService } from '@services/alert.service';
+import { CancelOrderModalComponent } from '@shared/components/modals/cancel-order-modal/cancel-order-modal.component';
 import { OrdersListComponent } from './orders-list/orders-list.component';
 import { OrdersToolbarComponent } from './orders-toolbar/orders-toolbar.component';
 import {
@@ -17,7 +18,7 @@ import {
   DeliveryMethodFilter,
   PaymentMethodFilter,
 } from './orders-toolbar/components/orders-filter-button/orders-filter-button.component';
-import { OrderDetailModalComponent } from '@shared/components/order-detail-modal/order-detail-modal.component';
+import { OrderDetailModalComponent } from '@shared/components/modals/order-detail-modal/order-detail-modal.component';
 import { Router, ActivatedRoute } from '@angular/router';
 import { PaginationComponent } from '@shared/components/pagination/pagination.component';
 import { injectInvalidateCatalog } from '@services/queries/catalog-cache';
@@ -28,6 +29,7 @@ import { injectInvalidateCatalog } from '@services/queries/catalog-cache';
     OrdersListComponent,
     OrdersToolbarComponent,
     OrderDetailModalComponent,
+    CancelOrderModalComponent,
     PaginationComponent,
   ],
   templateUrl: './orders-page.component.html',
@@ -48,6 +50,7 @@ export class OrdersPageComponent implements OnInit {
   deliveryMethodFilter = signal<DeliveryMethodFilter>('Todos');
   paymentMethodFilter = signal<PaymentMethodFilter>('Todos');
   selectedOrderForModal = signal<IApiOrder | null>(null);
+  orderIdToCancel = signal<number | null>(null);
 
   filtersActive = computed(() => {
     return (
@@ -145,25 +148,13 @@ export class OrdersPageComponent implements OnInit {
   }
 
   handleCancel(id: number) {
-    this.alertService
-      .confirmDelete(
-        'Esta acción cancelará la orden y restaurará el stock de los productos.',
-      )
-      .then((confirm) => {
-        if (confirm) {
-          this.orderService.cancelOrder(id).subscribe({
-            next: (updatedOrder) => {
-              // Al cancelar se restaura el stock: invalidamos el caché de productos
-              this.invalidateCatalog();
-              this.alertService.toast(
-                'Orden cancelada correctamente',
-                'success',
-              );
-              this.updateOrderInList(updatedOrder);
-            },
-          });
-        }
-      });
+    this.orderIdToCancel.set(id);
+  }
+
+  handleOrderCancelled(updatedOrder: IApiOrder) {
+    this.updateOrderInList(updatedOrder);
+    this.orderIdToCancel.set(null);
+    this.selectedOrderForModal.set(null);
   }
 
   private updateOrderInList(updatedOrder: IApiOrder) {
