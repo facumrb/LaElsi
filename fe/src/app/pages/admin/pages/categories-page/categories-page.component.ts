@@ -16,6 +16,7 @@ import {
 } from '@services/queries/category-queries';
 import { injectInvalidateCatalog } from '@services/queries/catalog-cache';
 import { ConfirmDeleteModalComponent } from '@admin/components/confirm-delete-modal/confirm-delete-modal.component';
+import { CategoryDeleteBlockedModalComponent } from './categories-list/category-delete-blocked-modal/category-delete-blocked-modal.component';
 
 @Component({
   selector: 'app-categories-page',
@@ -24,6 +25,7 @@ import { ConfirmDeleteModalComponent } from '@admin/components/confirm-delete-mo
     CategoriesListComponent,
     CategoriesToolbarComponent,
     ConfirmDeleteModalComponent,
+    CategoryDeleteBlockedModalComponent,
   ],
   templateUrl: './categories-page.component.html',
 })
@@ -35,6 +37,7 @@ export class CategoriesPageComponent {
   stockFilter = signal<StockFilter>('Todos');
   searchQuery = signal('');
   categoryToDelete = signal<IApiCategory | null>(null);
+  categoryBlocked = signal<IApiCategory | null>(null);
 
   // Capa de queries (TanStack Query): el listado queda en caché y las mutaciones lo invalidan
   private categoriesQuery = injectAllCategoriesQuery();
@@ -137,10 +140,7 @@ export class CategoriesPageComponent {
   handleDelete(category: IApiCategory) {
     const cantidadProductos = category.products?.length || 0;
     if (cantidadProductos > 0) {
-      this.alertService.error(
-        'Acción Bloqueada',
-        `No puedes eliminar la categoría "${category.name}" porque tiene productos asociados. Primero debes eliminar o cambiar de categoría esos productos.`,
-      );
+      this.categoryBlocked.set(category);
       return;
     }
 

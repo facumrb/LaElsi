@@ -149,6 +149,7 @@
                 >
                 @let count = category.products?.length || 0;
                 <button
+                  type="button"
                   (click)="count > 0 ? openProductsModal(category) : null"
                   [disabled]="count === 0"
                   class="w-32 justify-center whitespace-nowrap shrink-0 flex items-center gap-1.5 py-1 rounded text-xs font-medium border transition-colors duration-200"

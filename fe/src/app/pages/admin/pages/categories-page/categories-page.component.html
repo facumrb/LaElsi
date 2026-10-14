@@ -26,4 +26,11 @@
       (close)="categoryToDelete.set(null)"
     />
   }
+
+  @if (categoryBlocked()) {
+    <app-category-delete-blocked-modal
+      [category]="categoryBlocked()!"
+      (close)="categoryBlocked.set(null)"
+    />
+  }
 </div>
