@@ -15,6 +15,8 @@ import { AdminsListComponent } from './admins-list/admins-list.component';
 import { AdminsToolbarComponent } from './admins-toolbar/admins-toolbar.component';
 import { PaginationComponent } from '@shared/components/pagination/pagination.component';
 import { ConfirmDeleteModalComponent } from '@admin/components/confirm-delete-modal/confirm-delete-modal.component';
+import { AdminSelfDeleteBlockedModalComponent } from './admins-list/components/admin-self-delete-blocked-modal/admin-self-delete-blocked-modal.component';
+import { AuthService } from '@services/auth.service';
 
 @Component({
   selector: 'app-admins-page',
@@ -23,12 +25,14 @@ import { ConfirmDeleteModalComponent } from '@admin/components/confirm-delete-mo
     AdminsToolbarComponent,
     PaginationComponent,
     ConfirmDeleteModalComponent,
+    AdminSelfDeleteBlockedModalComponent,
   ],
   templateUrl: './admins-page.component.html',
 })
 export class AdminsPageComponent implements OnInit {
   private alertService = inject(AlertService);
   private apiService = inject(ApiAdminService);
+  private authService = inject(AuthService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
 
@@ -37,6 +41,7 @@ export class AdminsPageComponent implements OnInit {
   totalPages = signal<number>(1);
   totalItems = signal<number>(0); // Total real del servidor, para el guard de 'único admin'
   adminToDelete = signal<IApiAdmin | null>(null);
+  showSelfDeleteBlockedModal = signal<boolean>(false);
 
   searchQuery = signal<string>('');
 
@@ -111,6 +116,12 @@ export class AdminsPageComponent implements OnInit {
   }
 
   handleDelete(admin: IApiAdmin) {
+    // Bloquear auto-eliminación
+    if (admin.id === this.authService.currentUser()?.id) {
+      this.showSelfDeleteBlockedModal.set(true);
+      return;
+    }
+
     // Usamos totalItems (del servidor) para no depender de los datos de la página actual
     if (this.totalItems() <= 1) {
       this.alertService.toast(

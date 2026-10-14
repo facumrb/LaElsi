@@ -27,4 +27,10 @@
       (close)="adminToDelete.set(null)"
     />
   }
+
+  @if (showSelfDeleteBlockedModal()) {
+    <app-admin-self-delete-blocked-modal
+      (close)="showSelfDeleteBlockedModal.set(false)"
+    />
+  }
 </div>
