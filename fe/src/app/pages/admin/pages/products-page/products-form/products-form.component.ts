@@ -55,7 +55,7 @@ export class ProductsFormComponent implements OnInit {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private routeActive = inject(ActivatedRoute);
-  private location = inject(Location);
+  location = inject(Location);
   private categoryService = inject(ApiCategoryService);
   private productService = inject(ApiProductService);
   private alertService = inject(AlertService);

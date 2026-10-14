@@ -51,7 +51,7 @@ export class ClientsFormComponent implements OnInit {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private routeActive = inject(ActivatedRoute);
-  private location = inject(Location);
+  location = inject(Location);
   private clientService = inject(ApiClientService);
   private alertService = inject(AlertService);
   private http = inject(HttpClient);
