@@ -34,4 +34,16 @@
       (success)="handleBulkSuccess()"
     ></app-bulk-price-modal>
   }
+
+  @if (productToDelete()) {
+    <app-confirm-delete-modal
+      [entityName]="productToDelete()!.name"
+      entityType="producto"
+      [canDeactivate]="true"
+      [isDeactivated]="productToDelete()!.state === 'Inactivo'"
+      (confirmDelete)="confirmDeleteProduct()"
+      (confirmDeactivate)="confirmDeactivateProduct()"
+      (close)="productToDelete.set(null)"
+    />
+  }
 </div>

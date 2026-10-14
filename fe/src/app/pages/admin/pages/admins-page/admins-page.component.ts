@@ -14,10 +14,16 @@ import { AlertService } from '@services/alert.service';
 import { AdminsListComponent } from './admins-list/admins-list.component';
 import { AdminsToolbarComponent } from './admins-toolbar/admins-toolbar.component';
 import { PaginationComponent } from '@shared/components/pagination/pagination.component';
+import { ConfirmDeleteModalComponent } from '@admin/components/confirm-delete-modal/confirm-delete-modal.component';
 
 @Component({
   selector: 'app-admins-page',
-  imports: [AdminsListComponent, AdminsToolbarComponent, PaginationComponent],
+  imports: [
+    AdminsListComponent,
+    AdminsToolbarComponent,
+    PaginationComponent,
+    ConfirmDeleteModalComponent,
+  ],
   templateUrl: './admins-page.component.html',
 })
 export class AdminsPageComponent implements OnInit {
@@ -30,6 +36,7 @@ export class AdminsPageComponent implements OnInit {
   currentPage = signal<number>(1);
   totalPages = signal<number>(1);
   totalItems = signal<number>(0); // Total real del servidor, para el guard de 'único admin'
+  adminToDelete = signal<IApiAdmin | null>(null);
 
   searchQuery = signal<string>('');
 
@@ -113,16 +120,23 @@ export class AdminsPageComponent implements OnInit {
       return;
     }
 
-    this.alertService.confirmEntityDelete(`${admin.name} ${admin.lastName}`, 'administrador', false).then((choice) => {
-      if (choice === 'delete') {
-        this.apiService.deleteAdmin(admin.id).subscribe({
-          next: () => {
-            this.alertService.toast('Administrador eliminado', 'success');
-            // Recargamos desde el servidor para que la paginación se recalcule
-            this.loadAdmins();
-          },
-        });
-      }
+    this.adminToDelete.set(admin);
+  }
+
+  confirmDeleteAdmin() {
+    const admin = this.adminToDelete();
+    if (!admin) return;
+
+    this.apiService.deleteAdmin(admin.id).subscribe({
+      next: () => {
+        this.alertService.toast(
+          'Administrador eliminado permanentemente',
+          'success',
+        );
+        this.adminToDelete.set(null);
+        // Recargamos desde el servidor para que la paginación se recalcule
+        this.loadAdmins();
+      },
     });
   }
 }
