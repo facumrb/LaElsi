@@ -38,7 +38,6 @@ import { injectInvalidateCatalog } from '@services/queries/catalog-cache';
     AuditInfoComponent,
     GoBackButtonComponent,
     FieldErrorComponent,
-    RouterLink,
     TrimInputDirective,
     ProductCategorySelectComponent,
   ],
