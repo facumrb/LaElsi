@@ -18,7 +18,6 @@ import { PhotoManagerComponent } from '@shared/components/photo-manager/photo-ma
 import { FormUtils } from '@shared/validators/form-utils';
 import { switchMap, of, catchError } from 'rxjs';
 import { AuthService } from '@services/auth.service';
-import Swal from 'sweetalert2';
 import { FieldErrorComponent } from '@shared/validators/field-error/field-error.component';
 import { TrimInputDirective } from '@shared/directives/trim-input.directive';
 
@@ -98,6 +97,8 @@ export class ProfileUserComponent {
   }
 
   async startPasswordChange() {
+    // Se carga bajo demanda para mantener sweetalert2 fuera del bundle inicial
+    const { default: Swal } = await import('sweetalert2');
     const { value: password } = await Swal.fire({
       title: 'Verificar identidad',
       text: 'Por favor, ingresa tu contraseña actual para continuar.',

@@ -1,9 +1,14 @@
 import { Injectable } from '@angular/core';
-import Swal, { SweetAlertIcon } from 'sweetalert2';
+import type { SweetAlertIcon } from 'sweetalert2';
+
+// sweetalert2 se carga bajo demanda: queda fuera del bundle inicial (~79 kB)
+// y solo se descarga la primera vez que se muestra una alerta.
+const cargarSwal = () => import('sweetalert2').then((m) => m.default);
 
 @Injectable({ providedIn: 'root' })
 export class AlertService {
-  toast(title: string, icon: SweetAlertIcon = 'success', text?: string) {
+  async toast(title: string, icon: SweetAlertIcon = 'success', text?: string) {
+    const Swal = await cargarSwal();
     Swal.fire({
       toast: true,
       position: 'top-end',
@@ -29,7 +34,8 @@ export class AlertService {
   }
 
   //Modal util para mensajes como "Sesión Expirada" o "Error de Red Crítico".
-  modal(title: string, html: string, icon: SweetAlertIcon = 'info') {
+  async modal(title: string, html: string, icon: SweetAlertIcon = 'info') {
+    const Swal = await cargarSwal();
     return Swal.fire({
       title,
       html,
@@ -39,7 +45,8 @@ export class AlertService {
     });
   }
 
-  confirmDelete(message: string = 'No podrás revertir esto'): Promise<boolean> {
+  async confirmDelete(message: string = 'No podrás revertir esto'): Promise<boolean> {
+    const Swal = await cargarSwal();
     return Swal.fire({
       title: '¿Estás seguro?',
       text: message,
@@ -52,11 +59,12 @@ export class AlertService {
     }).then((result) => result.isConfirmed);
   }
 
-  confirmAction(
+  async confirmAction(
     title: string,
     message: string,
     confirmButtonText: string = 'Sí, confirmar',
   ): Promise<boolean> {
+    const Swal = await cargarSwal();
     return Swal.fire({
       title: title,
       text: message,
