@@ -12,16 +12,11 @@
   <div class="form-card">
     <form [formGroup]="formAdmin" (ngSubmit)="onSubmit()" class="form-body">
       <div class="mb-2">
-        <h2 class="form-section-title">
-          Datos Personales
-        </h2>
+        <h2 class="form-section-title">Datos Personales</h2>
 
         <div class="form-grid-2">
           <div>
-            <label
-              for="name"
-              class="form-label"
-            >
+            <label for="name" class="form-label">
               Nombre <span class="text-red-500">*</span>
             </label>
             <input
@@ -38,10 +33,7 @@
           </div>
 
           <div>
-            <label
-              for="lastName"
-              class="form-label"
-            >
+            <label for="lastName" class="form-label">
               Apellido <span class="text-red-500">*</span>
             </label>
             <input
@@ -58,10 +50,7 @@
           </div>
 
           <div>
-            <label
-              for="dni"
-              class="form-label"
-            >
+            <label for="dni" class="form-label">
               DNI <span class="text-red-500">*</span>
             </label>
             <input
@@ -83,10 +72,7 @@
           </div>
 
           <div>
-            <label
-              for="phone"
-              class="form-label"
-            >
+            <label for="phone" class="form-label">
               Teléfono <span class="text-red-500">*</span>
             </label>
             <input
@@ -107,16 +93,11 @@
       </div>
 
       <div class="mb-6">
-        <h2 class="form-section-title">
-          Cuenta de Usuario
-        </h2>
+        <h2 class="form-section-title">Cuenta de Usuario</h2>
 
         <div class="form-grid-2">
           <div>
-            <label
-              for="username"
-              class="form-label"
-            >
+            <label for="username" class="form-label">
               Nombre de Usuario <span class="text-red-500">*</span>
             </label>
             <input
@@ -136,10 +117,7 @@
           </div>
 
           <div>
-            <label
-              for="email"
-              class="form-label"
-            >
+            <label for="email" class="form-label">
               Email <span class="text-red-500">*</span>
             </label>
             <input
@@ -158,20 +136,8 @@
             />
           </div>
 
-          <div class="flex justify-center md:justify-start pt-2 md:col-span-2">
-            <div class="w-full">
-              <app-photo-manager
-                [currentPhoto]="currentPhoto()"
-                [userFullName]="fullName"
-              ></app-photo-manager>
-            </div>
-          </div>
-
           <div>
-            <label
-              for="password"
-              class="form-label"
-            >
+            <label for="password" class="form-label">
               Contraseña
               @if (!isEditMode()) {
                 <span class="text-red-500">*</span>
@@ -190,7 +156,9 @@
                   : 'Mínimo 8 caracteres, 1 letra, 1 número.'
               }}"
             />
-            <app-field-error [control]="formAdmin.controls.password" />
+            <div class="min-h-8">
+              <app-field-error [control]="formAdmin.controls.password" />
+            </div>
           </div>
 
           <div>
@@ -213,16 +181,16 @@
                   : 'Repetir la contraseña ingresada'
               }}"
             />
-            <!-- El error reside en el grupo, lo mostramos aquí si las contraseñas no coinciden -->
-            @if (
-              formAdmin.hasError("passwordsNotEqual") &&
-              (formAdmin.get("confirmPassword")?.touched ||
-                formAdmin.get("password")?.touched)
-            ) {
-              <p class="text-red-500 text-xs mt-1">
-                Las contraseñas no coinciden.
-              </p>
-            }
+            <app-field-error [control]="formAdmin.controls.confirmPassword" />
+          </div>
+
+          <div class="flex justify-center md:justify-start pt-2 md:col-span-2">
+            <div class="w-full">
+              <app-photo-manager
+                [currentPhoto]="currentPhoto()"
+                [userFullName]="fullName"
+              ></app-photo-manager>
+            </div>
           </div>
         </div>
       </div>
@@ -237,11 +205,7 @@
       }
 
       <div class="form-footer">
-        <button
-          type="button"
-          routerLink="/admin/admins"
-          class="btn-secondary"
-        >
+        <button type="button" routerLink="/admin/admins" class="btn-secondary">
           Cancelar
         </button>
 

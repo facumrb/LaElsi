@@ -44,62 +44,77 @@ export class EditProfilePageComponent implements OnInit {
   currentPhoto = signal<IApiUserPhoto | null>(null);
   initialFormValue = signal<string>('');
 
-  formEditProfile = this.fb.group({
-    name: [
-      '',
-      [
-        Validators.required,
-        FormUtils.minLength(2),
-        FormUtils.maxLength(100),
-        FormUtils.notOnlyWhiteSpace,
+  formEditProfile = this.fb.group(
+    {
+      name: [
+        '',
+        [
+          Validators.required,
+          FormUtils.minLength(2),
+          FormUtils.maxLength(100),
+          FormUtils.notOnlyWhiteSpace,
+        ],
       ],
-    ],
-    lastName: [
-      '',
-      [
-        Validators.required,
-        FormUtils.minLength(2),
-        FormUtils.maxLength(100),
-        FormUtils.notOnlyWhiteSpace,
+      lastName: [
+        '',
+        [
+          Validators.required,
+          FormUtils.minLength(2),
+          FormUtils.maxLength(100),
+          FormUtils.notOnlyWhiteSpace,
+        ],
       ],
-    ],
-    phone: [
-      '',
-      [
-        Validators.required,
-        FormUtils.minLength(7),
-        FormUtils.maxLength(20),
-        Validators.pattern(FormUtils.phonePattern),
+      phone: [
+        '',
+        [
+          Validators.required,
+          FormUtils.minLength(7),
+          FormUtils.maxLength(20),
+          Validators.pattern(FormUtils.phonePattern),
+        ],
       ],
-    ],
-    dni: [
-      '',
-      [
-        Validators.required,
-        FormUtils.minLength(7),
-        FormUtils.maxLength(15),
-        Validators.pattern(FormUtils.numberPattern),
+      dni: [
+        '',
+        [
+          Validators.required,
+          FormUtils.minLength(7),
+          FormUtils.maxLength(15),
+          Validators.pattern(FormUtils.numberPattern),
+        ],
       ],
-    ],
-    username: [
-      '',
-      [
-        Validators.required,
-        FormUtils.minLength(4),
-        FormUtils.maxLength(30),
-        Validators.pattern(FormUtils.usernamePattern),
-        FormUtils.notOnlyWhiteSpace,
+      username: [
+        '',
+        [
+          Validators.required,
+          FormUtils.minLength(4),
+          FormUtils.maxLength(30),
+          Validators.pattern(FormUtils.usernamePattern),
+          FormUtils.notOnlyWhiteSpace,
+        ],
       ],
-    ],
-    email: [
-      '',
-      [
-        Validators.required,
-        FormUtils.maxLength(255),
-        Validators.pattern(FormUtils.emailPattern),
+      email: [
+        '',
+        [
+          Validators.required,
+          FormUtils.maxLength(255),
+          Validators.pattern(FormUtils.emailPattern),
+        ],
       ],
-    ],
-  });
+      password: [
+        '',
+        [
+          FormUtils.maxLength(100),
+          Validators.pattern(FormUtils.passwordPattern),
+        ],
+      ],
+      confirmPassword: ['', [FormUtils.maxLength(100)]],
+    },
+    {
+      validators: [
+        FormUtils.isFieldOneEqualFieldTwo('password', 'confirmPassword'),
+      ],
+    },
+  );
 
   ngOnInit(): void {
     this.fetchAdmin(this.authService.currentUser()!.id);
@@ -154,7 +169,7 @@ export class EditProfilePageComponent implements OnInit {
 
     const userId = this.authService.currentUser()?.id;
     const formValue = this.formEditProfile.getRawValue();
-    const adminData: ICreateAdmin = {
+    const baseData = {
       name: formValue.name!,
       lastName: formValue.lastName!,
       dni: formValue.dni!,
@@ -162,14 +177,18 @@ export class EditProfilePageComponent implements OnInit {
       username: formValue.username!,
       email: formValue.email!,
       role: UserRole.Admin,
-      password: '', // We don't change password here
     };
 
-    // We don't want to send an empty password to the update
-    delete (adminData as any).password;
+    const adminData = formValue.password
+      ? {
+          ...baseData,
+          password: formValue.password,
+          confirmPassword: formValue.confirmPassword,
+        }
+      : baseData;
 
     this.apiService
-      .updateAdmin(userId!, adminData)
+      .updateAdmin(userId!, adminData as Partial<ICreateAdmin>)
       .pipe(
         switchMap(() => {
           return this.photoManager().saveChanges(userId!);

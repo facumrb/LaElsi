@@ -149,13 +149,7 @@ export class ClientsFormComponent implements OnInit {
           Validators.pattern(FormUtils.passwordPattern),
         ],
       ],
-      confirmPassword: [
-        '',
-        [
-          FormUtils.maxLength(100),
-          Validators.pattern(FormUtils.passwordPattern),
-        ],
-      ],
+      confirmPassword: ['', [FormUtils.maxLength(100)]],
 
       // --- DATOS DE FACTURACIÓN ---
       fiscalCondition: [FiscalCondition.ConsumidorFinal],
@@ -188,6 +182,9 @@ export class ClientsFormComponent implements OnInit {
     this.checkEditMode();
     if (!this.isEditMode()) {
       this.formClient.get('password')?.addValidators(Validators.required);
+      this.formClient
+        .get('confirmPassword')
+        ?.addValidators(Validators.required);
     }
   }
 

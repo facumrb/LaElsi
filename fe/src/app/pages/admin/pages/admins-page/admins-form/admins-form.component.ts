@@ -57,80 +57,86 @@ export class AdminsFormComponent implements OnInit {
   auditUpdatedAt = signal<string | null>(null);
   auditStatusDate = signal<string | null>(null);
 
-  formAdmin = this.fb.group({
-    name: [
-      '',
-      [
-        Validators.required,
-        FormUtils.minLength(2),
-        FormUtils.maxLength(100),
-        FormUtils.notOnlyWhiteSpace,
+  formAdmin = this.fb.group(
+    {
+      name: [
+        '',
+        [
+          Validators.required,
+          FormUtils.minLength(2),
+          FormUtils.maxLength(100),
+          FormUtils.notOnlyWhiteSpace,
+        ],
       ],
-    ],
-    lastName: [
-      '',
-      [
-        Validators.required,
-        FormUtils.minLength(2),
-        FormUtils.maxLength(100),
-        FormUtils.notOnlyWhiteSpace,
+      lastName: [
+        '',
+        [
+          Validators.required,
+          FormUtils.minLength(2),
+          FormUtils.maxLength(100),
+          FormUtils.notOnlyWhiteSpace,
+        ],
       ],
-    ],
-    dni: [
-      '',
-      [
-        Validators.required,
-        FormUtils.minLength(7),
-        FormUtils.maxLength(15),
-        Validators.pattern(FormUtils.numberPattern),
+      dni: [
+        '',
+        [
+          Validators.required,
+          FormUtils.minLength(7),
+          FormUtils.maxLength(15),
+          Validators.pattern(FormUtils.numberPattern),
+        ],
       ],
-    ],
-    phone: [
-      '',
-      [
-        Validators.required,
-        FormUtils.minLength(7),
-        FormUtils.maxLength(20),
-        Validators.pattern(FormUtils.phonePattern),
+      phone: [
+        '',
+        [
+          Validators.required,
+          FormUtils.minLength(7),
+          FormUtils.maxLength(20),
+          Validators.pattern(FormUtils.phonePattern),
+        ],
       ],
-    ],
 
-    // --- CUENTA DE USUARIO ---
-    username: [
-      '',
-      [
-        Validators.required,
-        FormUtils.minLength(4),
-        FormUtils.maxLength(30),
-        Validators.pattern(FormUtils.usernamePattern),
-        FormUtils.notOnlyWhiteSpace,
+      // --- CUENTA DE USUARIO ---
+      username: [
+        '',
+        [
+          Validators.required,
+          FormUtils.minLength(4),
+          FormUtils.maxLength(30),
+          Validators.pattern(FormUtils.usernamePattern),
+          FormUtils.notOnlyWhiteSpace,
+        ],
       ],
-    ],
-    email: [
-      '',
-      [
-        Validators.required,
-        FormUtils.maxLength(255),
-        Validators.pattern(FormUtils.emailPattern),
+      email: [
+        '',
+        [
+          Validators.required,
+          FormUtils.maxLength(255),
+          Validators.pattern(FormUtils.emailPattern),
+        ],
       ],
-    ],
-    // Password: Obligatorio al crear, opcional al editar
-    password: [
-      '',
-      [FormUtils.maxLength(100), Validators.pattern(FormUtils.passwordPattern)],
-    ],
-    confirmPassword: [
-      '',
-      [FormUtils.maxLength(100), Validators.pattern(FormUtils.passwordPattern)],
-    ],
-  }, {
-    validators: [FormUtils.isFieldOneEqualFieldTwo('password', 'confirmPassword')]
-  });
+      // Password: Obligatorio al crear, opcional al editar
+      password: [
+        '',
+        [
+          FormUtils.maxLength(100),
+          Validators.pattern(FormUtils.passwordPattern),
+        ],
+      ],
+      confirmPassword: ['', [FormUtils.maxLength(100)]],
+    },
+    {
+      validators: [
+        FormUtils.isFieldOneEqualFieldTwo('password', 'confirmPassword'),
+      ],
+    },
+  );
 
   ngOnInit() {
     this.checkEditMode();
     if (!this.isEditMode()) {
       this.formAdmin.get('password')?.addValidators(Validators.required);
+      this.formAdmin.get('confirmPassword')?.addValidators(Validators.required);
     }
   }
 
@@ -241,7 +247,7 @@ export class AdminsFormComponent implements OnInit {
     if (this.isEditMode() && this.adminId()) {
       userRequest$ = this.adminService.updateAdmin(
         this.adminId()!,
-        adminData as Partial<ICreateAdmin>
+        adminData as Partial<ICreateAdmin>,
       );
     } else {
       userRequest$ = this.adminService.addAdmin(adminData as ICreateAdmin);
