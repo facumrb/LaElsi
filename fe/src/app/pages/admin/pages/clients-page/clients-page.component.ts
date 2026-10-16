@@ -15,10 +15,16 @@ import { ClientsToolbarComponent } from './clients-toolbar/clients-toolbar.compo
 import { FiscalConditionFilter } from './clients-toolbar/components/clients-filter-button/clients-filter-button.component';
 import { ClientsListComponent } from './clients-list/clients-list.component';
 import { PaginationComponent } from '@shared/components/pagination/pagination.component';
+import { ConfirmDeleteModalComponent } from '@admin/components/confirm-delete-modal/confirm-delete-modal.component';
 
 @Component({
   selector: 'app-clients-page',
-  imports: [ClientsListComponent, ClientsToolbarComponent, PaginationComponent],
+  imports: [
+    ClientsListComponent,
+    ClientsToolbarComponent,
+    PaginationComponent,
+    ConfirmDeleteModalComponent,
+  ],
   templateUrl: './clients-page.component.html',
 })
 export class ClientsPageComponent implements OnInit {
@@ -30,6 +36,7 @@ export class ClientsPageComponent implements OnInit {
   private clientsRaw = signal<IApiClient[]>([]);
   currentPage = signal<number>(1);
   totalPages = signal<number>(1);
+  clientToDelete = signal<IApiClient | null>(null);
 
   searchQuery = signal<string>('');
   fiscalFilter = signal<FiscalConditionFilter>('Todos');
@@ -109,16 +116,20 @@ export class ClientsPageComponent implements OnInit {
   }
 
   handleDelete(client: IApiClient) {
-    this.alertService.confirmEntityDelete(`${client.name} ${client.lastName}`, 'cliente', false).then((choice) => {
-      if (choice === 'delete') {
-        this.apiService.deleteClient(client.id).subscribe({
-          next: () => {
-            this.alertService.toast('Cliente eliminado', 'success');
-            // Recargamos desde el servidor para que la paginación se recalcule
-            this.loadClients();
-          },
-        });
-      }
+    this.clientToDelete.set(client);
+  }
+
+  confirmDeleteClient() {
+    const client = this.clientToDelete();
+    if (!client) return;
+
+    this.apiService.deleteClient(client.id).subscribe({
+      next: () => {
+        this.alertService.toast('Cliente eliminado permanentemente', 'success');
+        this.clientToDelete.set(null);
+        // Recargamos desde el servidor para que la paginación se recalcule
+        this.loadClients();
+      },
     });
   }
 }

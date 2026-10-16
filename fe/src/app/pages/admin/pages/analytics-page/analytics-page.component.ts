@@ -20,7 +20,7 @@ import { ApiClientService } from '@services/api-services/api-client.service';
 import { OrderState, IApiOrder } from '@models/order.model';
 import { IApiProduct } from '@models/product.model';
 import { IApiClient } from '@models/user.model';
-import { OrderDetailModalComponent } from '@shared/components/order-detail-modal/order-detail-modal.component';
+import { OrderDetailModalComponent } from '@shared/components/modals/order-detail-modal/order-detail-modal.component';
 import { ProductImageComponent } from '@shared/components/product-image/product-image.component';
 
 @Component({

@@ -1,5 +1,13 @@
-import { Component, HostListener, computed, input, output, signal } from '@angular/core';
+import {
+  Component,
+  HostListener,
+  computed,
+  input,
+  output,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { A11yModule } from '@angular/cdk/a11y';
 import { IApiCategory } from '@models/category.model';
 import { IApiProduct } from '@models/product.model';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
@@ -9,7 +17,6 @@ import {
   bootstrapPencilSquare,
   bootstrapArrowRightShort,
 } from '@ng-icons/bootstrap-icons';
-import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
 import { CloseModalButtonComponent } from '@shared/components/buttons/close-modal-button/close-modal-button.component';
 import { SearchInputComponent } from '@admin/components/toolbar-components/search-input/search-input.component';
 import { ProductImageComponent } from '@shared/components/product-image/product-image.component';
@@ -18,8 +25,8 @@ import { ProductImageComponent } from '@shared/components/product-image/product-
   selector: 'app-category-products-modal',
   imports: [
     FormsModule,
+    A11yModule,
     NgIconComponent,
-    ClickOutsideDirective,
     CloseModalButtonComponent,
     SearchInputComponent,
     ProductImageComponent,
@@ -46,12 +53,6 @@ export class CategoryProductsModalComponent {
 
   // Lógica del buscador interno
   searchQuery = signal('');
-
-  // Cerrar modal con tecla Escape
-  @HostListener('document:keydown.escape')
-  onEscapeKey() {
-    this.close.emit();
-  }
 
   // Productos filtrados
   filteredProducts = computed(() => {

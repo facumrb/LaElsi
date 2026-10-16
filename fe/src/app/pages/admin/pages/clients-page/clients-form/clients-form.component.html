@@ -136,15 +136,6 @@
             />
           </div>
 
-          <div class="flex justify-center md:justify-start pt-2 md:col-span-2">
-            <div class="w-full">
-              <app-photo-manager
-                [currentPhoto]="currentPhoto()"
-                [userFullName]="fullName"
-              ></app-photo-manager>
-            </div>
-          </div>
-
           <div>
             <label for="password" class="form-label">
               Contraseña
@@ -165,7 +156,9 @@
                   : 'Mínimo 8 caracteres, 1 letra, 1 número.'
               }}"
             />
-            <app-field-error [control]="formClient.controls.password" />
+            <div class="min-h-8">
+              <app-field-error [control]="formClient.controls.password" />
+            </div>
           </div>
 
           <div>
@@ -188,16 +181,16 @@
                   : 'Repetir la contraseña ingresada'
               }}"
             />
-            <!-- El error reside en el grupo, lo mostramos aquí si las contraseñas no coinciden -->
-            @if (
-              formClient.hasError("passwordsNotEqual") &&
-              (formClient.get("confirmPassword")?.touched ||
-                formClient.get("password")?.touched)
-            ) {
-              <p class="text-red-500 text-xs mt-1">
-                Las contraseñas no coinciden.
-              </p>
-            }
+            <app-field-error [control]="formClient.controls.confirmPassword" />
+          </div>
+
+          <div class="flex justify-center md:justify-start pt-2 md:col-span-2">
+            <div class="w-full">
+              <app-photo-manager
+                [currentPhoto]="currentPhoto()"
+                [userFullName]="fullName"
+              ></app-photo-manager>
+            </div>
           </div>
         </div>
       </div>
@@ -415,7 +408,7 @@
       }
 
       <div class="form-footer">
-        <button type="button" routerLink="/admin/clients" class="btn-secondary">
+        <button type="button" (click)="location.back()" class="btn-secondary">
           Cancelar
         </button>
 

@@ -15,6 +15,8 @@ import {
   injectDeleteCategoryMutation,
 } from '@services/queries/category-queries';
 import { injectInvalidateCatalog } from '@services/queries/catalog-cache';
+import { ConfirmDeleteModalComponent } from '@admin/components/confirm-delete-modal/confirm-delete-modal.component';
+import { CategoryDeleteBlockedModalComponent } from './categories-list/category-delete-blocked-modal/category-delete-blocked-modal.component';
 
 @Component({
   selector: 'app-categories-page',
@@ -22,6 +24,8 @@ import { injectInvalidateCatalog } from '@services/queries/catalog-cache';
     ReactiveFormsModule,
     CategoriesListComponent,
     CategoriesToolbarComponent,
+    ConfirmDeleteModalComponent,
+    CategoryDeleteBlockedModalComponent,
   ],
   templateUrl: './categories-page.component.html',
 })
@@ -32,6 +36,8 @@ export class CategoriesPageComponent {
   statusFilter = signal<StatusFilter>('Todos');
   stockFilter = signal<StockFilter>('Todos');
   searchQuery = signal('');
+  categoryToDelete = signal<IApiCategory | null>(null);
+  categoryBlocked = signal<IApiCategory | null>(null);
 
   // Capa de queries (TanStack Query): el listado queda en caché y las mutaciones lo invalidan
   private categoriesQuery = injectAllCategoriesQuery();
@@ -134,31 +140,41 @@ export class CategoriesPageComponent {
   handleDelete(category: IApiCategory) {
     const cantidadProductos = category.products?.length || 0;
     if (cantidadProductos > 0) {
-      this.alertService.error(
-        'Acción Bloqueada',
-        `No puedes eliminar la categoría "${category.name}" porque tiene productos asociados. Primero debe eliminar o cambiar de categoría esos productos.`,
-      );
+      this.categoryBlocked.set(category);
       return;
     }
 
-    this.alertService.confirmEntityDelete(category.name, 'categoría', true).then((choice) => {
-      if (choice === 'deactivate') {
-        this.updateMutation.mutate(
-          { id: category.id, category: { state: CategoryState.Inactivo } },
-          {
-            onSuccess: () => {
-              this.alertService.toast('Categoría desactivada lógicamente', 'success');
-            },
-          },
+    this.categoryToDelete.set(category);
+  }
+
+  confirmDeactivateCategory() {
+    const category = this.categoryToDelete();
+    if (!category) return;
+
+    this.updateMutation.mutate(
+      { id: category.id, category: { state: CategoryState.Inactivo } },
+      {
+        onSuccess: () => {
+          this.alertService.toast('Categoría desactivada', 'success');
+          this.categoryToDelete.set(null);
+        },
+      },
+    );
+  }
+
+  confirmDeleteCategory() {
+    const category = this.categoryToDelete();
+    if (!category) return;
+
+    // La mutación invalida el caché: el listado se recarga para sincronizar el corrimiento de órdenes
+    this.deleteMutation.mutate(category.id, {
+      onSuccess: () => {
+        this.alertService.toast(
+          'Categoría eliminada permanentemente',
+          'success',
         );
-      } else if (choice === 'delete') {
-        // La mutación invalida el caché: el listado se recarga para sincronizar el corrimiento de órdenes
-        this.deleteMutation.mutate(category.id, {
-          onSuccess: () => {
-            this.alertService.toast('Categoría eliminada físicamente', 'success');
-          },
-        });
-      }
+        this.categoryToDelete.set(null);
+      },
     });
   }
 }

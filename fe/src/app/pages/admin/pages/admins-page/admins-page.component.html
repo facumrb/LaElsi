@@ -17,4 +17,20 @@
     [totalPages]="totalPages()"
     (pageChange)="onPageChange($event)"
   />
+
+  @if (adminToDelete()) {
+    <app-confirm-delete-modal
+      [entityName]="adminToDelete()!.name + ' ' + adminToDelete()!.lastName"
+      entityType="administrador"
+      [canDeactivate]="false"
+      (confirmDelete)="confirmDeleteAdmin()"
+      (close)="adminToDelete.set(null)"
+    />
+  }
+
+  @if (showSelfDeleteBlockedModal()) {
+    <app-admin-self-delete-blocked-modal
+      (close)="showSelfDeleteBlockedModal.set(false)"
+    />
+  }
 </div>

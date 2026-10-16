@@ -18,4 +18,14 @@
     [totalPages]="totalPages()"
     (pageChange)="onPageChange($event)"
   />
+
+  @if (clientToDelete()) {
+    <app-confirm-delete-modal
+      [entityName]="clientToDelete()!.name + ' ' + clientToDelete()!.lastName"
+      entityType="cliente"
+      [canDeactivate]="false"
+      (confirmDelete)="confirmDeleteClient()"
+      (close)="clientToDelete.set(null)"
+    />
+  }
 </div>

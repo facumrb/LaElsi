@@ -165,6 +165,42 @@
               validLabel="Email disponible"
             />
           </div>
+
+          <!-- Contraseña -->
+          <div>
+            <label for="password" class="form-label"> Contraseña </label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              formControlName="password"
+              maxlength="100"
+              class="form-input"
+              placeholder="Dejar vacío para mantener la actual"
+            />
+            <div class="min-h-8">
+              <app-field-error [control]="formEditProfile.controls.password" />
+            </div>
+          </div>
+
+          <!-- Confirmar Contraseña -->
+          <div>
+            <label for="confirmPassword" class="form-label">
+              Confirmar Contraseña
+            </label>
+            <input
+              type="password"
+              id="confirmPassword"
+              name="confirmPassword"
+              formControlName="confirmPassword"
+              maxlength="100"
+              class="form-input"
+              placeholder="Repetir nueva contraseña"
+            />
+            <app-field-error
+              [control]="formEditProfile.controls.confirmPassword"
+            />
+          </div>
         </div>
       </div>
 

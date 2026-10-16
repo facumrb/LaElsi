@@ -36,21 +36,6 @@
 
 /* 4. Estilos de componentes compartidos */
 @layer components {
-  .admin-table-container {
-    @apply w-full bg-gray-50 lg:bg-white lg:rounded-lg lg:shadow-md lg:border lg:border-gray-200;
-  }
-
-  .admin-table {
-    @apply w-full text-left text-sm text-gray-500 border-separate border-spacing-0 table-fixed;
-  }
-
-  .admin-table-header {
-    @apply hidden bg-[#3d4494] text-white;
-    @media (min-width: 1024px) {
-      display: table-header-group;
-    }
-  }
-
   .admin-table-body {
     @apply block;
     @media (min-width: 1024px) {
@@ -106,7 +91,7 @@
     @apply bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden;
   }
 
-  /* ── Admin Cards ── */
+  /* ── Tarjetas Admin ── */
   .admin-stat-card {
     @apply bg-white rounded-xl shadow-sm border border-neutral-200
            p-6 flex items-start justify-between gap-4
@@ -154,7 +139,7 @@
     @apply text-2xl font-bold text-[#3d4494];
   }
 
-  /* ── Dropdown Select ── */
+  /* ── Select desplegable ── */
   .select-trigger {
     @apply relative w-full cursor-pointer bg-white rounded-2xl border border-gray-300
            py-2.5 pl-4 pr-10 text-left shadow-sm transition-all duration-200 sm:text-sm
@@ -201,21 +186,17 @@
     @apply flex flex-col;
   }
 
-  .table-subcategory-indicator {
-    @apply text-gray-400 text-xs;
-  }
-
   .table-parent-info {
     @apply text-[10px] text-gray-500 font-medium ml-4;
   }
 
-  /* ── Toolbar ── */
+  /* ── Barra de herramientas (toolbar) ── */
   .toolbar-container {
     @apply flex flex-col lg:flex-row justify-between items-start
            lg:items-center gap-4 mb-6;
   }
 
-  /* ── Navbar ── */
+  /* ── Barra de navegación (navbar) ── */
   .navbar-link {
     @apply text-sm font-bold text-white tracking-wide drop-shadow-sm transition-colors
            hover:text-[#f4abac] focus:outline-none focus:underline decoration-[#f4abac]
@@ -273,7 +254,7 @@
   .navbar-subdropdown::after {
     content: "";
     @apply absolute top-3.5 -left-1.5 w-3 h-3 bg-white border-l border-b border-black/5 ring-0 rotate-45 transition-colors;
-    z-index: 20; /* Ensure it stays above the container's border to hide the seam */
+    z-index: 20; /* Se mantiene por encima del borde del contenedor para ocultar la unión */
     box-shadow: -1px 1px 1px -1px rgba(0, 0, 0, 0.1); /* Micro sombra para emparejar con el menú */
   }
 
@@ -300,12 +281,7 @@
            hover:text-[#f4abac] focus:outline-none focus:underline decoration-[#f4abac];
   }
 
-  /* Icono check en select de formulario */
-  .select-check-icon {
-    @apply absolute inset-y-0 right-0 flex items-center pr-4;
-  }
-
-  /* ── Breadcrumbs ── */
+  /* ── Migas de pan (breadcrumbs) ── */
   .breadcrumb-nav {
     @apply block mb-2 py-1;
   }
@@ -331,7 +307,7 @@
     @apply ml-1 text-sm md:text-base font-semibold text-[#3d4494] wrap-break-word;
   }
 
-  /* ── Layout & Sections ── */
+  /* ── Estructura y secciones ── */
   .section-header {
     @apply mb-4 border-b-2 border-[#EA6C6C] pb-4;
   }
@@ -370,17 +346,17 @@
     @apply text-sm text-gray-500;
   }
 
-  /* ── Utilities ── */
+  /* ── Utilidades ── */
   .scrollbar-hide {
-    -ms-overflow-style: none; /* IE and Edge */
+    -ms-overflow-style: none; /* IE y Edge */
     scrollbar-width: none; /* Firefox */
   }
 
   .scrollbar-hide::-webkit-scrollbar {
-    display: none; /* Chrome, Safari and Opera */
+    display: none; /* Chrome, Safari y Opera */
   }
 
-  /* ── Client Product Components ── */
+  /* ── Componentes de producto (cliente) ── */
   .elsi-product-card {
     @apply relative flex flex-col h-full bg-white rounded-2xl shadow-sm hover:shadow-md hover:border-neutral-300 hover:-translate-y-1 border border-neutral-200 transition-all duration-300 overflow-hidden;
   }
@@ -391,12 +367,6 @@
 
   .elsi-brand-label {
     @apply text-xs font-bold text-[#037971] uppercase tracking-wide mb-1 truncate;
-  }
-
-  .elsi-btn-cart {
-    @apply py-5 rounded-xl font-black text-lg text-white transition-all duration-300 transform active:scale-95
-           disabled:bg-gray-400 disabled:text-gray-100 disabled:cursor-not-allowed
-           bg-gray-900 hover:bg-[#f4abac] shadow-lg cursor-pointer flex items-center justify-center gap-2;
   }
 
   .elsi-glass-nav {
@@ -433,7 +403,7 @@
     @apply w-full bg-[#3d4494] hover:bg-[#2a2f63] text-white font-bold py-3 px-4 rounded-xl transition-colors cursor-pointer;
   }
 
-  /* ── Add To Cart Control Shared Styles ── */
+  /* ── Estilos compartidos del control de agregar al carrito ── */
   .elsi-add-to-cart-container {
     @apply flex justify-center items-center;
   }
@@ -490,7 +460,7 @@
     @apply -translate-y-1 scale-[1.005] shadow-xl border-gray-200 z-10 bg-white;
   }
 
-  /* ── Adaptive Layouts ── */
+  /* ── Layouts adaptables ── */
   .page-container-adaptive {
     @apply min-h-[calc(100vh-(--spacing(32)))] flex flex-col;
   }

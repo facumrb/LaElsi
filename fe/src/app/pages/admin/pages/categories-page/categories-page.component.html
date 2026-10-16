@@ -14,4 +14,23 @@
     (onEdit)="handleNavigateToEdit($event)"
     (onDelete)="handleDelete($event)"
   />
+
+  @if (categoryToDelete()) {
+    <app-confirm-delete-modal
+      [entityName]="categoryToDelete()!.name"
+      entityType="categoría"
+      [canDeactivate]="true"
+      [isDeactivated]="categoryToDelete()!.state === 'Inactivo'"
+      (confirmDelete)="confirmDeleteCategory()"
+      (confirmDeactivate)="confirmDeactivateCategory()"
+      (close)="categoryToDelete.set(null)"
+    />
+  }
+
+  @if (categoryBlocked()) {
+    <app-category-delete-blocked-modal
+      [category]="categoryBlocked()!"
+      (close)="categoryBlocked.set(null)"
+    />
+  }
 </div>

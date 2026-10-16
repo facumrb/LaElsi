@@ -17,6 +17,7 @@ import {
 import { Router, ActivatedRoute } from '@angular/router';
 import { PaginationComponent } from '@shared/components/pagination/pagination.component';
 import { BulkPriceModalComponent } from './products-toolbar/components/bulk-price-modal/bulk-price-modal.component';
+import { ConfirmDeleteModalComponent } from '@admin/components/confirm-delete-modal/confirm-delete-modal.component';
 import {
   injectAllProductsQuery,
   injectUpdateProductMutation,
@@ -32,6 +33,7 @@ import { injectInvalidateCatalog } from '@services/queries/catalog-cache';
     ProductsToolbarComponent,
     BulkPriceModalComponent,
     PaginationComponent,
+    ConfirmDeleteModalComponent,
   ],
   templateUrl: './products-page.component.html',
 })
@@ -44,6 +46,7 @@ export class ProductsPageComponent {
   statusFilter = signal<StatusFilter>('Todos');
   stockFilter = signal<StockFilter>('Todos');
   categoryFilter = signal<number | 'Todos'>('Todos');
+  productToDelete = signal<IApiProduct | null>(null);
 
   // Al cambiar cualquier filtro, reseteamos a página 1. No hace falta recargar a mano:
   // la página forma parte de la queryKey y TanStack Query pide los datos al server.
@@ -137,24 +140,37 @@ export class ProductsPageComponent {
   }
 
   handleDelete(product: IApiProduct) {
-    this.alertService.confirmEntityDelete(product.name, 'producto', true).then((choice) => {
-      if (choice === 'deactivate') {
-        this.updateMutation.mutate(
-          { id: product.id, product: { state: ProductState.Inactivo } },
-          {
-            onSuccess: () => {
-              this.alertService.toast('Producto desactivado lógicamente', 'success');
-            },
-          },
+    this.productToDelete.set(product);
+  }
+
+  confirmDeactivateProduct() {
+    const product = this.productToDelete();
+    if (!product) return;
+
+    this.updateMutation.mutate(
+      { id: product.id, product: { state: ProductState.Inactivo } },
+      {
+        onSuccess: () => {
+          this.alertService.toast('Producto desactivado', 'success');
+          this.productToDelete.set(null);
+        },
+      },
+    );
+  }
+
+  confirmDeleteProduct() {
+    const product = this.productToDelete();
+    if (!product) return;
+
+    // La mutación invalida el caché: se recarga desde el servidor para que la paginación se recalcule
+    this.deleteMutation.mutate(product.id, {
+      onSuccess: () => {
+        this.alertService.toast(
+          'Producto eliminado permanentemente',
+          'success',
         );
-      } else if (choice === 'delete') {
-        // La mutación invalida el caché: se recarga desde el servidor para que la paginación se recalcule
-        this.deleteMutation.mutate(product.id, {
-          onSuccess: () => {
-            this.alertService.toast('Producto eliminado físicamente', 'success');
-          },
-        });
-      }
+        this.productToDelete.set(null);
+      },
     });
   }
 }

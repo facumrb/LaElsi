@@ -36,7 +36,6 @@ import { TrimInputDirective } from '@shared/directives/trim-input.directive';
     AuditInfoComponent,
     GoBackButtonComponent,
     FieldErrorComponent,
-    RouterLink,
     TrimInputDirective,
   ],
   viewProviders: [
@@ -51,7 +50,7 @@ export class ClientsFormComponent implements OnInit {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private routeActive = inject(ActivatedRoute);
-  private location = inject(Location);
+  location = inject(Location);
   private clientService = inject(ApiClientService);
   private alertService = inject(AlertService);
   private http = inject(HttpClient);
@@ -84,100 +83,108 @@ export class ClientsFormComponent implements OnInit {
     this.isFiscalMenuOpen.set(false);
   }
 
-  formClient = this.fb.group({
-    // --- DATOS PERSONALES ---
-    name: [
-      '',
-      [
-        Validators.required,
-        FormUtils.minLength(2),
-        FormUtils.maxLength(100),
-        FormUtils.notOnlyWhiteSpace,
+  formClient = this.fb.group(
+    {
+      // --- DATOS PERSONALES ---
+      name: [
+        '',
+        [
+          Validators.required,
+          FormUtils.minLength(2),
+          FormUtils.maxLength(100),
+          FormUtils.notOnlyWhiteSpace,
+        ],
       ],
-    ],
-    lastName: [
-      '',
-      [
-        Validators.required,
-        FormUtils.minLength(2),
-        FormUtils.maxLength(100),
-        FormUtils.notOnlyWhiteSpace,
+      lastName: [
+        '',
+        [
+          Validators.required,
+          FormUtils.minLength(2),
+          FormUtils.maxLength(100),
+          FormUtils.notOnlyWhiteSpace,
+        ],
       ],
-    ],
-    dni: [
-      '',
-      [
-        Validators.required,
-        FormUtils.minLength(7),
-        FormUtils.maxLength(15),
-        Validators.pattern(FormUtils.numberPattern),
+      dni: [
+        '',
+        [
+          Validators.required,
+          FormUtils.minLength(7),
+          FormUtils.maxLength(15),
+          Validators.pattern(FormUtils.numberPattern),
+        ],
       ],
-    ],
-    phone: [
-      '',
-      [
-        Validators.required,
-        FormUtils.minLength(7),
-        FormUtils.maxLength(20),
-        Validators.pattern(FormUtils.phonePattern),
+      phone: [
+        '',
+        [
+          Validators.required,
+          FormUtils.minLength(7),
+          FormUtils.maxLength(20),
+          Validators.pattern(FormUtils.phonePattern),
+        ],
       ],
-    ],
 
-    // --- CUENTA DE USUARIO ---
-    username: [
-      '',
-      [
-        Validators.required,
-        FormUtils.minLength(4),
-        FormUtils.maxLength(30),
-        Validators.pattern(FormUtils.usernamePattern),
-        FormUtils.notOnlyWhiteSpace,
+      // --- CUENTA DE USUARIO ---
+      username: [
+        '',
+        [
+          Validators.required,
+          FormUtils.minLength(4),
+          FormUtils.maxLength(30),
+          Validators.pattern(FormUtils.usernamePattern),
+          FormUtils.notOnlyWhiteSpace,
+        ],
       ],
-    ],
-    email: [
-      '',
-      [
-        Validators.required,
-        FormUtils.maxLength(255),
-        Validators.pattern(FormUtils.emailPattern),
+      email: [
+        '',
+        [
+          Validators.required,
+          FormUtils.maxLength(255),
+          Validators.pattern(FormUtils.emailPattern),
+        ],
       ],
-    ],
-    password: [
-      '',
-      [FormUtils.maxLength(100), Validators.pattern(FormUtils.passwordPattern)],
-    ],
-    confirmPassword: [
-      '',
-      [FormUtils.maxLength(100), Validators.pattern(FormUtils.passwordPattern)],
-    ],
+      password: [
+        '',
+        [
+          FormUtils.maxLength(100),
+          Validators.pattern(FormUtils.passwordPattern),
+        ],
+      ],
+      confirmPassword: ['', [FormUtils.maxLength(100)]],
 
-    // --- DATOS DE FACTURACIÓN ---
-    fiscalCondition: [FiscalCondition.ConsumidorFinal],
-    cuit: [
-      '',
-      [
-        FormUtils.minLength(11),
-        FormUtils.maxLength(11),
-        Validators.pattern(FormUtils.cuitPattern),
+      // --- DATOS DE FACTURACIÓN ---
+      fiscalCondition: [FiscalCondition.ConsumidorFinal],
+      cuit: [
+        '',
+        [
+          FormUtils.minLength(11),
+          FormUtils.maxLength(11),
+          Validators.pattern(FormUtils.cuitPattern),
+        ],
       ],
-    ],
 
-    // --- DIRECCIÓN ---
-    street: ['', FormUtils.maxLength(100)],
-    streetNumber: ['', FormUtils.maxLength(10)],
-    city: ['', FormUtils.maxLength(100)],
-    province: ['', FormUtils.maxLength(100)],
-    postalCode: ['', FormUtils.maxLength(10)],
-    floor: ['', FormUtils.maxLength(5)],
-    apartment: ['', FormUtils.maxLength(5)],
-  }, {
-    validators: [FormUtils.isFieldOneEqualFieldTwo('password', 'confirmPassword')]
-  });
+      // --- DIRECCIÓN ---
+      street: ['', FormUtils.maxLength(100)],
+      streetNumber: ['', FormUtils.maxLength(10)],
+      city: ['', FormUtils.maxLength(100)],
+      province: ['', FormUtils.maxLength(100)],
+      postalCode: ['', FormUtils.maxLength(10)],
+      floor: ['', FormUtils.maxLength(5)],
+      apartment: ['', FormUtils.maxLength(5)],
+    },
+    {
+      validators: [
+        FormUtils.isFieldOneEqualFieldTwo('password', 'confirmPassword'),
+      ],
+    },
+  );
 
   ngOnInit() {
     this.checkEditMode();
     if (!this.isEditMode()) {
       this.formClient.get('password')?.addValidators(Validators.required);
+      this.formClient
+        .get('confirmPassword')
+        ?.addValidators(Validators.required);
     }
   }
 

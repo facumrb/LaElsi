@@ -1,0 +1,129 @@
+<div
+  class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-110 flex items-center justify-center p-4 animate-fadeIn duration-200"
+  (click)="onClose()"
+>
+  <div
+    cdkTrapFocus
+    cdkTrapFocusAutoCapture
+    (click)="$event.stopPropagation()"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="confirm-delete-modal-title"
+    class="bg-white rounded-2xl shadow-xl w-full max-w-xl md:max-w-2xl animate-in zoom-in-95 duration-200 overflow-hidden flex flex-col"
+  >
+    <!-- Header -->
+    <header
+      class="flex items-center justify-between px-6 py-5 border-b border-gray-100 bg-gray-50/50"
+    >
+      <div class="flex items-center gap-3 min-w-0 pr-2">
+        <div
+          class="w-10 h-10 rounded-xl bg-red-50 text-red-600 flex items-center justify-center border border-red-100/80 shadow-xs shrink-0"
+        >
+          <ng-icon
+            name="bootstrapExclamationTriangle"
+            class="text-xl"
+          ></ng-icon>
+        </div>
+        <div class="min-w-0">
+          <h2
+            id="confirm-delete-modal-title"
+            class="text-lg font-bold text-gray-900 leading-tight truncate"
+            [title]="entityName()"
+          >
+            Eliminar {{ entityType() }}: "{{ entityName() }}"
+          </h2>
+          <p class="text-xs text-gray-500 font-medium mt-0.5">
+            Esta acción requiere confirmación
+          </p>
+        </div>
+      </div>
+      <app-close-modal-button (clicked)="onClose()" />
+    </header>
+
+    <!-- Body -->
+    <div class="px-6 py-6 space-y-4">
+      <!-- Alerta de riesgo de pérdida permanente -->
+      <div
+        class="p-4 bg-rose-50/80 border border-rose-200/80 rounded-xl text-rose-950 text-xs sm:text-sm leading-relaxed"
+      >
+        <div class="font-bold text-rose-900 mb-1.5">
+          Riesgo de pérdida permanente de datos
+        </div>
+        <p class="text-rose-900/90 text-xs sm:text-sm">
+          La eliminación definitiva borrará el registro de la base de datos de
+          manera permanente. Si este {{ entityType() }} está vinculado a otros
+          procesos (como ventas, facturas, historial de pedidos o estadísticas),
+          su eliminación física podría generar errores o inconsistencias en los
+          datos históricos.
+        </p>
+      </div>
+
+      <!-- Alternativa recomendada o nota informativa -->
+      @if (canDeactivate()) {
+        <div
+          class="p-4 bg-indigo-50/80 border border-indigo-200/80 rounded-xl text-indigo-950 text-xs sm:text-sm leading-relaxed"
+        >
+          <div class="font-bold text-[#3d4494] mb-1.5">
+            Recomendación del sistema
+          </div>
+          @if (isDeactivated()) {
+            <p class="text-indigo-900/90 text-xs sm:text-sm">
+              Este {{ entityType() }} ya se encuentra desactivada. Se recomienda
+              mantenerla desactivada como está actualmente, en lugar de
+              eliminarla, para preservar la integridad del historial de
+              operaciones y evitar fallos imprevistos en el sistema.
+            </p>
+          } @else {
+            <p class="text-indigo-900/90 text-xs sm:text-sm">
+              En lugar de eliminarlo definitivamente, se recomienda realizar una
+              <strong>desactivación</strong> (marcarlo como inactivo). Esto
+              preservará la integridad del historial de operaciones y evitará
+              fallos imprevistos en el sistema.
+            </p>
+          }
+        </div>
+      } @else {
+        <div
+          class="p-3.5 bg-amber-50/80 border border-amber-200 rounded-xl text-amber-900 text-xs sm:text-sm leading-relaxed"
+        >
+          <p class="text-amber-900/90 text-xs sm:text-sm">
+            <strong>Nota:</strong> Este {{ entityType() }} no soporta la
+            desactivación directa desde esta sección. Si decides eliminarlo,
+            asegúrate de que no tenga operaciones asociadas.
+          </p>
+        </div>
+      }
+    </div>
+
+    <!-- Footer -->
+    <footer
+      class="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2.5 sm:gap-3 px-6 py-4 border-t border-gray-100 bg-gray-50/50"
+    >
+      <button
+        type="button"
+        (click)="onClose()"
+        class="w-full sm:w-auto btn-secondary"
+      >
+        Cancelar
+      </button>
+
+      @if (canDeactivate() && !isDeactivated()) {
+        <button
+          type="button"
+          (click)="onConfirmDeactivate()"
+          class="w-full sm:w-auto cursor-pointer rounded-md bg-[#3d4494] px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#2a2f63] transition-colors focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-[#3d4494]"
+        >
+          Desactivar (Recomendado)
+        </button>
+      }
+
+      <button
+        type="button"
+        (click)="onConfirmDelete()"
+        class="w-full sm:w-auto cursor-pointer rounded-md bg-rose-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-rose-700 transition-colors focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-rose-600"
+      >
+        Eliminar permanentemente
+      </button>
+    </footer>
+  </div>
+</div>
