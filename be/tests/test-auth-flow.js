@@ -1,3 +1,6 @@
+// Contraseña aleatoria en cada ejecución: no se versiona ninguna contraseña en el repositorio
+const PASSWORD = `Test-${crypto.randomUUID()}`;
+
 async function testFullFlow() {
   console.log('=== PRUEBA COMPLETA DE AUTENTICACIÓN ===\n');
 
@@ -11,8 +14,8 @@ async function testFullFlow() {
       lastName: 'Prueba',
       phone: '999888777',
       user: 'admintest2',
-      password: 'mipassword123',
-      email: 'admintest2@gmail.com'
+      password: PASSWORD,
+      email: 'admintest2@example.com'
     })
   });
   console.log('   Status:', createRes.status);
@@ -26,7 +29,7 @@ async function testFullFlow() {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       user: 'admintest2',
-      password: 'mipassword123'
+      password: PASSWORD
     })
   });
   console.log('   Status:', loginRes.status);

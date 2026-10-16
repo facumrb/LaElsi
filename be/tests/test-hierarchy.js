@@ -7,7 +7,7 @@ async function login() {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       username: 'admin',
-      password: 'adminPassword123'
+      password: process.env.SEED_PASSWORD
     })
   });
   const data = await res.json();

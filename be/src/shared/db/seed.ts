@@ -20,16 +20,26 @@ import { PRODUCTS_DATA } from './seed-data/products.js';
 
 const createPhoto = (u: any, fn: string) => Object.assign(new UserPhoto(), { fileName: fn, user: u });
 
+// La contraseña de los usuarios de prueba no se versiona: se lee de SEED_PASSWORD (be/.env)
+function getSeedPassword() {
+  const password = process.env.SEED_PASSWORD ?? '';
+  if (password.length < 12) {
+    throw new Error('Definí SEED_PASSWORD con al menos 12 caracteres para cargar los usuarios de prueba');
+  }
+  return password;
+}
+
 async function seedUsers(em: EntityManager) {
   if ((await em.count(Admin, {})) > 0) return;
+  const seedPassword = getSeedPassword();
   for (const d of ADMINS_DATA) {
-    const password = await bcrypt.hash(d.password, 10);
+    const password = await bcrypt.hash(seedPassword, 10);
     const a = Object.assign(new Admin(), { ...d, role: UserRole.Admin, password });
     if (d.photoFileName) em.persist(createPhoto(a, d.photoFileName));
     em.persist(a);
   }
   for (const d of CLIENTS_DATA) {
-    const password = await bcrypt.hash(d.password || 'password123', 10);
+    const password = await bcrypt.hash(seedPassword, 10);
     const c = Object.assign(new Client(), {
       ...d,
       city: d.city || 'Rosario',

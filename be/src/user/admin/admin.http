@@ -1,3 +1,7 @@
+# La contraseña de prueba no se versiona: se lee de la variable de entorno SEED_PASSWORD
+# (definila en tu sistema antes de abrir VS Code, con al menos 12 caracteres).
+@password = {{$processEnv SEED_PASSWORD}}
+
 ### GET ALL Administradores
 GET http://localhost:3000/api/admins
 
@@ -8,11 +12,11 @@ Content-Type: application/json
 
 {
   "name": "AdminSeguro",
-  "lastName": "Ramírez",
+  "lastName": "Prueba",
   "phone": "423423423",
   "username": "admin1",
-  "password": "12345",
-  "email": "admin1@gmail.com"
+  "password": "{{password}}",
+  "email": "admin.prueba@example.com"
 }
 
 ### POST Iniciar Sesión (Login)
@@ -21,7 +25,7 @@ Content-Type: application/json
 
 {
   "identifier": "admin1",
-  "password": "password123"
+  "password": "{{password}}"
 }
 
 ### ID del Administrador creado
@@ -35,10 +39,10 @@ PATCH http://localhost:3000/api/admins/{{id}}
 Content-Type: application/json
 
 {
-  "name": "Cesar Actualizado",
-  "lastName": "Ramírez Actualizado",
+  "name": "Admin Actualizado",
+  "lastName": "Prueba Actualizado",
   "phone": "123456789",
-  "email": "nuevoemail@gmail.com"
+  "email": "nuevo.email@example.com"
 }
 
 ### DELETE Eliminar un Administrador

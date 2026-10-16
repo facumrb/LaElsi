@@ -190,10 +190,17 @@ MAX_BULK_DISCOUNT_PERCENTAGE=90
 SUPABASE_URL=https://<project-ref>.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=
 
-# Contraseña del administrador principal (admin@laelsi.com). Mínimo 8 caracteres.
+# Email REAL del administrador principal: recibe el correo de "Recuperar contraseña".
+# No se versiona en el repositorio a propósito.
+SEED_ADMIN_EMAIL=
+# Contraseña del administrador principal. Mínimo 12 caracteres.
 SEED_ADMIN_PASSWORD=
-# Contraseña de los usuarios de prueba. Solo hace falta con "npm run seed:demo".
+# Contraseña de los usuarios de prueba (mínimo 12 caracteres y distinta de la del administrador).
+# Solo hace falta con "npm run seed:demo".
 SEED_DEMO_PASSWORD=
+# Confirmación para cargar los datos de demostración. Poné "yes" SOLO en un proyecto de pruebas:
+# en producción dejala vacía, así "npm run seed:demo" se niega a correr.
+SEED_ALLOW_DEMO=
 ```
 
 `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` y `SUPABASE_DB_URL` no se cargan como secrets: Supabase las inyecta sola en las funciones desplegadas.
@@ -219,7 +226,7 @@ npm run r2:subir-imagenes
 
 # 4. Cargar los datos iniciales
 npm run seed          # administrador principal + categorías + productos
-npm run seed:demo     # además: usuarios, productos y órdenes de prueba
+npm run seed:demo     # además: usuarios, productos y órdenes de prueba (solo en un proyecto de pruebas: exige SEED_ALLOW_DEMO=yes)
 ```
 
 Si preferís no usar la CLI para la base, los archivos de `supabase/migrations/` se pueden pegar en el SQL Editor de Supabase, **en orden numérico**.
@@ -252,5 +259,7 @@ La carpeta `be/` conserva el backend Express + MikroORM + MySQL. Ya no forma par
 
 - `be/uploads/` es el origen de las imágenes que sube `npm run r2:subir-imagenes`.
 - `be/src/` sirve de referencia: cada Edge Function indica en su encabezado a qué archivos reemplaza.
+
+En `be/` no hay credenciales versionadas: el seed (`be/src/shared/db/seed.ts`), los archivos `.http` y los scripts de `be/tests/` leen la contraseña de los usuarios de prueba de la variable de entorno `SEED_PASSWORD` (mínimo 12 caracteres; va en `be/.env`, que git ignora).
 
 Cuando ya no haga falta, se puede archivar en una rama (`legacy/express-backend`) y quitar `"be"` de `workspaces` en el `package.json` raíz.

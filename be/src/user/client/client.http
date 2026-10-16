@@ -1,3 +1,7 @@
+# La contraseña de prueba no se versiona: se lee de la variable de entorno SEED_PASSWORD
+# (definila en tu sistema antes de abrir VS Code, con al menos 12 caracteres).
+@password = {{$processEnv SEED_PASSWORD}}
+
 ### GET ALL Clientes
 GET http://localhost:3000/api/clients
 
@@ -7,12 +11,12 @@ POST http://localhost:3000/api/clients
 Content-Type: application/json
 
 {
-  "name": "Jorge",
-  "lastName": "Quinoa",
-  "phone": "3415044454",
-  "username": "jorge_quinoa",
-  "password": "papasfritas",
-  "email": "jorgequinoa@gmail.com"
+  "name": "Cliente",
+  "lastName": "Prueba",
+  "phone": "0000000000",
+  "username": "cliente_prueba",
+  "password": "{{password}}",
+  "email": "cliente.prueba@example.com"
 }
 
 ### ID del Cliente creado
@@ -26,8 +30,8 @@ PATCH http://localhost:3000/api/clients/{{id}}
 Content-Type: application/json
 
 {
-  "name": "Jorge Actualizado",
-  "lastName": "Quinoa Actualizado",
+  "name": "Cliente Actualizado",
+  "lastName": "Prueba Actualizado",
 }
 
 ### DELETE Eliminar un Cliente

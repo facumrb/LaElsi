@@ -1,16 +1,15 @@
 CREATE DATABASE IF NOT EXISTS laelsi;
 
-CREATE USER IF NOT EXISTS admin@'%' IDENTIFIED BY 'admin';
-GRANT ALL ON laelsi.* TO admin@'%';
+-- El usuario de la base NO se crea desde este archivo: así no se versiona su contraseña.
+-- Crealo a mano en tu MySQL local, con la contraseña que va en DB_PASSWORD (be/.env) y
+-- limitado a localhost ('%' acepta conexiones desde cualquier host):
+--   CREATE USER IF NOT EXISTS 'admin'@'localhost' IDENTIFIED BY '<tu-contraseña>';
+--   GRANT ALL ON laelsi.* TO 'admin'@'localhost';
+-- Si ya existía el usuario admin@'%' con la contraseña 'admin' (la de versiones anteriores
+-- de este archivo), eliminalo o cambiale la contraseña.
 
 /*
-INSERT INTO admin (nombre, apellido, password, email, telefono, usuario)
-VALUES 
-('Cesar', 'Ramírez', '9dejulio2325', 'tintapapelymusica@gmail.com', '3415076254', 'cramirez'),
-('María', 'Gómez', 'securePass456', 'maria.gomez@example.com', '987654321', 'mgomez'),
-('Carlos', 'López', 'mypassword789', 'carlos.lopez@example.com', '567890123', 'clopez'),
-('Ana', 'Martínez', 'password321', 'ana.martinez@example.com', '345678901', 'amartinez'),
-('Luis', 'Ramírez', 'adminPass001', 'luis.ramirez@example.com', '876543210', 'lramirez');
+-- (Se quitó el INSERT de administradores: llevaba datos personales y contraseñas. Los usuarios los crea el seed.)
 
 INSERT INTO categoria (nombre, descripcion, estado) VALUES
 ('Juguetería', 'Amplia variedad de juguetes y juegos educativos para niños de todas las edades.', 'Activo'),

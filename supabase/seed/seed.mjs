@@ -16,11 +16,16 @@
 //
 // Variables de entorno (van en supabase/.env; ver la plantilla en el README):
 //   SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
-//   SEED_ADMIN_PASSWORD   Contraseña del administrador principal (obligatoria)
-//   SEED_DEMO_PASSWORD    Contraseña de los usuarios de prueba (obligatoria con --demo)
+//   SEED_ADMIN_EMAIL      Email real del administrador principal (obligatoria): recibe el correo de recuperación
+//   SEED_ADMIN_PASSWORD   Contraseña del administrador principal (obligatoria, mínimo 12 caracteres)
+//   SEED_DEMO_PASSWORD    Contraseña de los usuarios de prueba (obligatoria con --demo, mínimo 12 y distinta de la del admin)
+//   SEED_ALLOW_DEMO       Tiene que valer "yes" para usar --demo (evita cargar datos de prueba en producción por error)
 //
 // Las contraseñas NO están en el repositorio a propósito: el sitio es público y
 // una contraseña conocida equivale a dejar el panel de administración abierto.
+// Por la misma razón tampoco está el email del administrador principal, y los
+// usuarios de demostración usan el dominio reservado example.com, que nunca recibe
+// correo: nadie puede quedarse con una de esas cuentas usando "Recuperar contraseña".
 //
 // El script es idempotente: se puede volver a ejecutar y omite lo que ya existe.
 // ============================================================================
@@ -29,7 +34,10 @@ import { createClient } from '@supabase/supabase-js';
 
 const isDemo = process.argv.includes('--demo');
 
-const { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, SEED_ADMIN_PASSWORD, SEED_DEMO_PASSWORD } = process.env;
+const { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, SEED_ADMIN_EMAIL, SEED_ADMIN_PASSWORD, SEED_DEMO_PASSWORD, SEED_ALLOW_DEMO } =
+  process.env;
+
+const MIN_PASSWORD_LENGTH = 12;
 
 function fail(message) {
   console.error(`❌ ${message}`);
@@ -39,11 +47,20 @@ function fail(message) {
 if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
   fail('Faltan SUPABASE_URL o SUPABASE_SERVICE_ROLE_KEY (¿usaste --env-file=supabase/.env?)');
 }
-if (!SEED_ADMIN_PASSWORD || SEED_ADMIN_PASSWORD.length < 8) {
-  fail('Definí SEED_ADMIN_PASSWORD con al menos 8 caracteres');
+if (!SEED_ADMIN_EMAIL || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(SEED_ADMIN_EMAIL)) {
+  fail('Definí SEED_ADMIN_EMAIL con el email real del administrador principal (recibe el correo de "Recuperar contraseña")');
 }
-if (isDemo && (!SEED_DEMO_PASSWORD || SEED_DEMO_PASSWORD.length < 8)) {
-  fail('Con --demo hay que definir SEED_DEMO_PASSWORD con al menos 8 caracteres');
+if (!SEED_ADMIN_PASSWORD || SEED_ADMIN_PASSWORD.length < MIN_PASSWORD_LENGTH) {
+  fail(`Definí SEED_ADMIN_PASSWORD con al menos ${MIN_PASSWORD_LENGTH} caracteres`);
+}
+if (isDemo && SEED_ALLOW_DEMO !== 'yes') {
+  fail('--demo crea decenas de cuentas con datos públicos: no lo uses en producción. Si es un proyecto de pruebas, definí SEED_ALLOW_DEMO=yes');
+}
+if (isDemo && SEED_DEMO_PASSWORD === SEED_ADMIN_PASSWORD) {
+  fail('SEED_DEMO_PASSWORD tiene que ser distinta de SEED_ADMIN_PASSWORD (la primera se comparte entre muchas cuentas)');
+}
+if (isDemo && (!SEED_DEMO_PASSWORD || SEED_DEMO_PASSWORD.length < MIN_PASSWORD_LENGTH)) {
+  fail(`Con --demo hay que definir SEED_DEMO_PASSWORD con al menos ${MIN_PASSWORD_LENGTH} caracteres`);
 }
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
@@ -117,19 +134,28 @@ async function ensureUser(user, role, password) {
   return true;
 }
 
+/**
+ * Los usuarios de demostración usan siempre el dominio reservado example.com (RFC 2606):
+ * nunca recibe correo, así que nadie puede quedarse con una de esas cuentas usando
+ * "Recuperar contraseña". Se conserva la parte local del email original.
+ */
+const demoEmail = (email) => email.replace(/@.+$/, '@example.com');
+
 async function seedUsers() {
   const [mainAdmin, ...demoAdmins] = data.admins;
 
-  let created = (await ensureUser(mainAdmin, 'Admin', SEED_ADMIN_PASSWORD)) ? 1 : 0;
+  // El email del administrador principal viene del entorno: no se versiona en seed-data.json
+  let created = (await ensureUser({ ...mainAdmin, email: SEED_ADMIN_EMAIL }, 'Admin', SEED_ADMIN_PASSWORD)) ? 1 : 0;
 
   if (isDemo) {
     for (const admin of demoAdmins) {
-      if (await ensureUser(admin, 'Admin', SEED_DEMO_PASSWORD)) created++;
+      if (await ensureUser({ ...admin, email: demoEmail(admin.email) }, 'Admin', SEED_DEMO_PASSWORD)) created++;
     }
     for (const client of data.clients) {
       // Mismos valores por defecto de dirección que usaba el seed anterior
       const withDefaults = {
         ...client,
+        email: demoEmail(client.email),
         city: client.city || 'Rosario',
         province: client.province || 'Santa Fe',
         postalCode: client.postalCode || '2000',

@@ -38,7 +38,7 @@ async function runTest() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
       },
-      { identifier: 'admin', password: 'admin123' }
+      { identifier: 'admin', password: process.env.SEED_PASSWORD }
     );
 
     const token = loginRes.body.token;

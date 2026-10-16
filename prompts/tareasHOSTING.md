@@ -228,12 +228,9 @@ Insertar datos iniciales traduciendo el `seed.ts` a SQL.
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 -- Administradores
-INSERT INTO "user" (dtype, name, last_name, dni, email, phone, username, password, role)
-VALUES
- ('Admin', 'Super', 'Admin', '11111111', 'admin@laelsi.com', '123456789', 'admin',
-  crypt('admin123', gen_salt('bf')), 'Admin'),
- ('Admin', 'Julio', 'Cezar', '44222123', 'juliocezar@gmail.com', '122345678', 'admin1',
-  crypt('admin123', gen_salt('bf')), 'Admin');
+-- Los administradores NO se insertan con SQL: los crea `npm run seed` con la API de administración
+-- de Supabase Auth, tomando el email y la contraseña de SEED_ADMIN_EMAIL y SEED_ADMIN_PASSWORD
+-- (variables que no se versionan). Una contraseña escrita acá quedaría publicada en el repositorio.
 
 -- Categorías
 INSERT INTO category (name, description, state) VALUES

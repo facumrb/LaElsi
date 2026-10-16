@@ -1,3 +1,6 @@
+// Contraseña aleatoria en cada ejecución: no se versiona ninguna contraseña en el repositorio
+const PASSWORD = `Test-${crypto.randomUUID()}`;
+
 async function test() {
   // 1. Crear Admin
   const createRes = await fetch('http://localhost:3000/api/admins', {
@@ -8,8 +11,8 @@ async function test() {
       lastName: 'Ramirez',
       phone: '423423423',
       user: 'admin1',
-      password: 'password123',
-      email: 'admin1@gmail.com'
+      password: PASSWORD,
+      email: 'admin1@example.com'
     })
   });
   console.log('Crear Admin Status:', createRes.status);
@@ -22,7 +25,7 @@ async function test() {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       user: 'admin1',
-      password: 'password123'
+      password: PASSWORD
     })
   });
   console.log('Login Status:', loginRes.status);

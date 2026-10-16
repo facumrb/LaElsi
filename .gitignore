@@ -6,6 +6,8 @@ yarn-error.log*
 
 # --- Variables de Entorno ---
 .env
+.env.*
+!.env.example
 
 # --- Supabase CLI (archivos locales que genera al vincular el proyecto) ---
 supabase/.temp/

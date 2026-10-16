@@ -1,3 +1,7 @@
+# La contraseña de prueba no se versiona: se lee de la variable de entorno SEED_PASSWORD
+# (la misma con la que se cargó el seed; definila en tu sistema antes de abrir VS Code).
+@password = {{$processEnv SEED_PASSWORD}}
+
 ### 1. LOGIN DE ADMIN (Creado por el Seed)
 # @name loginRequest
 POST http://localhost:3000/api/admins/login
@@ -5,7 +9,7 @@ Content-Type: application/json
 
 {
   "identifier": "admin", 
-  "password": "admin123"
+  "password": "{{password}}"
 }
 
 ### (Usa el token del paso 1 automáticamente)

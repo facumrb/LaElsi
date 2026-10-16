@@ -39,7 +39,7 @@ async function runTest() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
       },
-      { identifier: 'admin', password: 'admin123' }
+      { identifier: 'admin', password: process.env.SEED_PASSWORD }
     );
 
     if (!adminLoginRes.body.token) throw new Error('Falló login admin');
@@ -74,8 +74,8 @@ async function runTest() {
       dni: `${nonce}`.substring(0, 8),
       phone: '12345678',
       username: `client_${nonce}`,
-      email: `test_${nonce}@laelsi.com`,
-      password: 'password123'
+      email: `test_${nonce}@example.com`,
+      password: `Test-${crypto.randomUUID()}`
     };
 
     const regRes = await request(

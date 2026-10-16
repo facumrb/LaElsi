@@ -4,7 +4,6 @@
       "name": "Super",
       "lastName": "Admin",
       "dni": "11111111",
-      "email": "admin@laelsi.com",
       "phone": "123456789",
       "username": "admin",
       "photoFileName": "adminprincipal.webp"
@@ -13,7 +12,7 @@
       "name": "Julio",
       "lastName": "Cezar",
       "dni": "44222123",
-      "email": "juliocezar@gmail.com",
+      "email": "juliocezar@example.com",
       "phone": "122345678",
       "username": "admin1"
     },
