@@ -33,8 +33,8 @@ Este documento establece la lista completa y ordenada de tareas técnicas para m
    * `laelsi-products` (fotos del catálogo de productos)
    * `laelsi-users` (avatares y fotos de perfil de usuarios)
 3. En cada bucket, habilitar **Public Access** (Settings → Public Access → Allow Access / Custom Domain) y anotar las URLs base:
-   * `R2_PUBLIC_URL_PRODUCTS` (ej: `https://pub-xxxx.r2.dev` o `https://fotos-productos.laelsi.com`)
-   * `R2_PUBLIC_URL_USERS` (ej: `https://pub-xxxx.r2.dev` o `https://fotos-usuarios.laelsi.com`)
+   * `R2_PUBLIC_URL_PRODUCTS` (ej: `https://pub-xxxx.r2.dev` o `https://fotos-productos.laelsi.com.ar`)
+   * `R2_PUBLIC_URL_USERS` (ej: `https://pub-xxxx.r2.dev` o `https://fotos-usuarios.laelsi.com.ar`)
 4. Generar un **API Token de R2** con permisos de lectura y escritura (*Admin Read & Write* en R2 Storage). Guardar:
    * `R2_ACCOUNT_ID`
    * `R2_ACCESS_KEY_ID`
