@@ -70,7 +70,7 @@ export class OrdersListComponent {
       case OrderState.Shipped:
         return 'bg-indigo-600 text-white hover:bg-indigo-700 border-transparent';
       case OrderState.Delivered:
-        return 'bg-emerald-600 text-white hover:bg-emerald-700 border-transparent';
+        return 'bg-emerald-700 text-white hover:bg-emerald-800 border-transparent';
       default:
         return 'bg-gray-600 text-white hover:bg-gray-700 border-transparent';
     }

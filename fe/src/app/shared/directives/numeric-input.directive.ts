@@ -1,11 +1,12 @@
-import { Directive, HostListener } from '@angular/core';
+import { Directive, ElementRef, HostListener, inject } from '@angular/core';
 
 @Directive({
   selector: '[appNumericInput]',
 })
 export class NumericInputDirective {
-  // Teclas de navegación permitidas
-  private specialKeys: Array<string> = [
+  private el = inject(ElementRef);
+
+  private readonly specialKeys = [
     'Backspace',
     'Tab',
     'End',
@@ -19,12 +20,12 @@ export class NumericInputDirective {
 
   @HostListener('keydown', ['$event'])
   onKeyDown(event: KeyboardEvent) {
-    // Permitir teclas especiales de navegación
-    if (this.specialKeys.indexOf(event.key) !== -1) {
-      return;
-    }
+    if (this.specialKeys.includes(event.key)) return;
 
-    // Permitir combinaciones con Ctrl o Command (Copiar, Pegar, Seleccionar todo)
+    // Permitir todas las teclas no imprimibles (F1-F12, Shift, Alt, CapsLock, etc.)
+    if (event.key.length > 1) return;
+
+    // Permitir Ctrl/Cmd + a, c, v, x, z
     if (
       (event.ctrlKey || event.metaKey) &&
       ['a', 'c', 'v', 'x', 'z'].includes(event.key.toLowerCase())
@@ -32,22 +33,23 @@ export class NumericInputDirective {
       return;
     }
 
-    // Validar si es un número
-    // Si NO es un número del 0 al 9, prevenimos la escritura
+    // Bloquear cualquier carácter que no sea dígito del 0 al 9
     if (!/^[0-9]$/.test(event.key)) {
       event.preventDefault();
     }
   }
 
-  // Prevenir pegar texto que no sea numérico
-  @HostListener('paste', ['$event'])
-  onPaste(event: ClipboardEvent) {
-    const clipboardData = event.clipboardData;
-    const pastedText = clipboardData?.getData('text') || '';
-
-    // Si el texto pegado contiene algo que no sea número, bloqueamos
-    if (!/^[0-9]+$/.test(pastedText)) {
-      event.preventDefault();
-    }
+  @HostListener('paste')
+  onPaste() {
+    // No se llama a preventDefault() para cumplir con las buenas prácticas de accesibilidad.
+    // Se sanitiza el valor resultante en el siguiente tick eliminando todo lo que no sea dígito.
+    setTimeout(() => {
+      const input = this.el.nativeElement as HTMLInputElement;
+      const sanitized = input.value.replace(/[^0-9]/g, '');
+      if (input.value !== sanitized) {
+        input.value = sanitized;
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    }, 0);
   }
 }

@@ -1,14 +1,17 @@
 <div class="relative w-full" (clickOutside)="showCategoryMenu.set(false)">
-  <label class="form-label"
+  <label id="category-label" class="form-label"
     >Categoría <span class="text-red-500">*</span></label
   >
 
   <button
     type="button"
     (click)="toggleMenu()"
+    aria-labelledby="category-label"
+    [attr.aria-expanded]="showCategoryMenu()"
+    aria-haspopup="listbox"
     class="select-trigger focus:border-gray-900 focus:ring-1 focus:ring-gray-900 w-full"
   >
-    <span class="block truncate" [class.text-gray-400]="!control().value">
+    <span class="block truncate" [class.text-gray-500]="!control().value">
       {{ selectedCategoryName }}
     </span>
     <span class="select-chevron-wrapper">

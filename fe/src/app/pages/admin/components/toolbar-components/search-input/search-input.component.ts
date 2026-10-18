@@ -16,4 +16,5 @@ import { bootstrapSearch } from '@ng-icons/bootstrap-icons';
 export class SearchInputComponent {
   query = model.required<string>();
   placeholder = input<string>('Buscar...');
+  maxLength = input<number>(70);
 }

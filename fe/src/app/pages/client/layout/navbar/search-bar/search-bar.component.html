@@ -8,6 +8,7 @@
     <input
       id="search-input"
       type="text"
+      maxlength="80"
       [ngModel]="query()"
       (ngModelChange)="onSearch($event)"
       (keyup.enter)="handleFullSearch()"

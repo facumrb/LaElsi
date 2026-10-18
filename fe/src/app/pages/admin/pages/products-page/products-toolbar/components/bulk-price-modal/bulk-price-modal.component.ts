@@ -132,8 +132,10 @@ export class BulkPriceModalComponent implements OnDestroy {
 
   onValueInput(event: Event) {
     const rawValue = (event.target as HTMLInputElement).value;
-    // Si está vacío o es un '-', se parsea a 0 para no disparar llamadas fallidas a la API.
-    let parsedValue = rawValue ? Number(rawValue) : 0;
+    // Normalizar separador decimal: coma → punto
+    const normalized = rawValue.replace(',', '.');
+    // Si está vacío o es solo '-', se parsea a 0 para no disparar llamadas fallidas a la API.
+    let parsedValue = normalized ? Number(normalized) : 0;
     if (isNaN(parsedValue)) {
       parsedValue = 0;
     }
