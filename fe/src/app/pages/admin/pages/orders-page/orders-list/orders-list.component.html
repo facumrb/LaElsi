@@ -180,19 +180,19 @@
                 ) {
                   <button
                     (click)="onCancel.emit(order.id)"
-                    class="cursor-pointer w-32 h-8 flex items-center justify-center gap-1 border border-rose-300 text-rose-600 rounded-lg text-xs font-semibold hover:bg-rose-50 transition-colors"
+                    class="cursor-pointer w-32 h-8 flex items-center justify-center gap-1 border border-rose-300 text-rose-700 rounded-lg text-xs font-semibold hover:bg-rose-50 transition-colors"
                   >
                     Cancelar
                   </button>
                 } @else if (order.status === OrderState.Delivered) {
                   <span
-                    class="w-32 h-8 flex items-center justify-center gap-1 text-xs text-emerald-600 border border-emerald-300 rounded-lg font-semibold bg-emerald-50"
+                    class="w-32 h-8 flex items-center justify-center gap-1 text-xs text-emerald-800 border border-emerald-300 rounded-lg font-semibold bg-emerald-100"
                   >
                     Finalizada
                   </span>
                 } @else {
                   <span
-                    class="w-32 h-8 flex items-center justify-center gap-1 text-xs text-rose-600 border border-rose-300 rounded-lg font-semibold bg-rose-50"
+                    class="w-32 h-8 flex items-center justify-center gap-1 text-xs text-rose-800 border border-rose-300 rounded-lg font-semibold bg-rose-100"
                   >
                     Anulada
                   </span>

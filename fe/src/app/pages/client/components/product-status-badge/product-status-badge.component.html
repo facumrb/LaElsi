@@ -1,17 +1,87 @@
-@if (status().isPaused) {
-  <div [class]="status().classes">
-    <span class="uppercase tracking-wider">Publicación pausada</span>
-  </div>
-} @else if (status().isOutOfStock) {
-  <div [class]="status().classes">
-    <span class="uppercase tracking-widest">Agotado</span>
-    @if (mode() === "banner") {
-      <span class="ml-1 font-medium">(temporalmente)</span>
+<!-- 1. PUBLICACIÓN PAUSADA -->
+@if (isPaused()) {
+  @switch (mode()) {
+    @case ("banner") {
+      <div
+        class="flex items-center justify-center transition-all duration-300 w-full py-3 px-4 rounded-xl border border-amber-300 bg-amber-50 text-sm font-bold text-amber-900"
+      >
+        <span class="uppercase tracking-wider">Publicación pausada</span>
+      </div>
     }
-  </div>
-} @else if (showStock() && productStock() > 0) {
-  <div [class]="status().classes">
-    <span class="font-bold">Stock Disponible:&nbsp;</span>
-    {{ productStock() }} unidades.
-  </div>
+    @case ("overlay") {
+      <div
+        class="flex items-center justify-center transition-all duration-300 px-4 py-1.5 rounded-md shadow-sm bg-amber-700 text-xs font-bold tracking-widest text-white"
+      >
+        <span class="uppercase tracking-wider">Publicación pausada</span>
+      </div>
+    }
+    @default {
+      <!-- badge -->
+      <div
+        class="flex items-center justify-center transition-all duration-300 px-2.5 py-1 rounded-lg border border-amber-300 bg-amber-50 text-[11px] font-black text-amber-900"
+      >
+        <span class="uppercase tracking-wider">Publicación pausada</span>
+      </div>
+    }
+  }
+}
+
+<!-- 2. AGOTADO -->
+@else if (isOutOfStock()) {
+  @switch (mode()) {
+    @case ("banner") {
+      <div
+        class="flex items-center justify-center transition-all duration-300 w-full py-3 px-4 rounded-xl border border-red-200 bg-red-50 text-sm font-bold text-red-700"
+      >
+        <span class="uppercase tracking-widest">Agotado</span>
+        <span class="ml-1 font-medium">(temporalmente)</span>
+      </div>
+    }
+    @case ("overlay") {
+      <div
+        class="flex items-center justify-center transition-all duration-300 px-4 py-1.5 rounded-md shadow-sm bg-gray-800 text-xs font-bold tracking-widest text-white"
+      >
+        <span class="uppercase tracking-widest">Agotado</span>
+      </div>
+    }
+    @default {
+      <!-- badge -->
+      <div
+        class="flex items-center justify-center transition-all duration-300 px-2.5 py-1 rounded-lg border border-red-200 bg-red-50 text-[11px] font-black text-red-700"
+      >
+        <span class="uppercase tracking-widest">Agotado</span>
+      </div>
+    }
+  }
+}
+
+<!-- 3. STOCK DISPONIBLE -->
+@else if (showStock() && productStock() > 0) {
+  @switch (mode()) {
+    @case ("banner") {
+      <div
+        class="flex items-center justify-center transition-all duration-300 w-full py-3 px-4 rounded-xl border border-green-200 bg-green-50 text-sm font-bold text-green-700"
+      >
+        <span class="font-bold">Stock Disponible:&nbsp;</span>
+        {{ productStock() }} unidades.
+      </div>
+    }
+    @case ("overlay") {
+      <div
+        class="flex items-center justify-center transition-all duration-300 px-4 py-1.5 rounded-md shadow-sm border border-green-200 bg-green-50 text-xs font-bold tracking-widest text-green-700"
+      >
+        <span class="font-bold">Stock Disponible:&nbsp;</span>
+        {{ productStock() }} unidades.
+      </div>
+    }
+    @default {
+      <!-- badge -->
+      <div
+        class="flex items-center justify-center transition-all duration-300 px-2.5 py-1 rounded-lg border border-green-200 bg-green-50 text-[11px] font-black text-green-700"
+      >
+        <span class="font-bold">Stock Disponible:&nbsp;</span>
+        {{ productStock() }} unidades.
+      </div>
+    }
+  }
 }
