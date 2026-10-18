@@ -9,6 +9,10 @@ export const clientRoutes: Routes = [
     children: [
       {
         path: '',
+        data: {
+          description:
+            'Librería y papelería Laelsi en Rosario. Artículos escolares, comerciales, fotocopias, impresiones y confección de sellos.',
+        },
         loadComponent: () =>
           import('./pages/main-page/main-page.component').then(
             (m) => m.MainPageComponent,
@@ -16,6 +20,10 @@ export const clientRoutes: Routes = [
       },
       {
         path: 'category/:id',
+        data: {
+          description:
+            'Explora nuestra variedad de artículos de librería, papelería y oficina por categoría en Laelsi.',
+        },
         loadComponent: () =>
           import('./pages/category-page/category-page.component').then(
             (m) => m.CategoryPageComponent,
@@ -23,6 +31,10 @@ export const clientRoutes: Routes = [
       },
       {
         path: 'product/:id',
+        data: {
+          description:
+            'Consulta detalles, precios y disponibilidad de artículos de librería y oficina en Laelsi.',
+        },
         loadComponent: () =>
           import('./pages/product-page/product-page.component').then(
             (m) => m.ProductPageComponent,
@@ -30,6 +42,10 @@ export const clientRoutes: Routes = [
       },
       {
         path: 'impresiones',
+        data: {
+          description:
+            'Impresiones blanco y negro, color, anillados, plastificados y fotocopias en Rosario con Laelsi.',
+        },
         loadComponent: () =>
           import('./pages/impresiones-page/impresiones-page.component').then(
             (m) => m.ImpresionesPageComponent,
@@ -37,6 +53,10 @@ export const clientRoutes: Routes = [
       },
       {
         path: 'sellos',
+        data: {
+          description:
+            'Confección de sellos para profesionales, empresas e instituciones en Rosario.',
+        },
         loadComponent: () =>
           import('./pages/sellos-page/sellos-page.component').then(
             (m) => m.SellosPageComponent,
@@ -44,6 +64,10 @@ export const clientRoutes: Routes = [
       },
       {
         path: 'disenio',
+        data: {
+          description:
+            'Servicios de diseño gráfico para folletería, tarjetas personales, cartelería y papelería comercial en Rosario.',
+        },
         loadComponent: () =>
           import('./pages/diseno-grafico-page/diseno-grafico-page.component').then(
             (m) => m.DisenoGraficoPageComponent,
@@ -51,6 +75,10 @@ export const clientRoutes: Routes = [
       },
       {
         path: 'about-us',
+        data: {
+          description:
+            'Conocé la historia, trayectoria y compromiso de la Librería Laelsi en Rosario.',
+        },
         loadComponent: () =>
           import('./pages/footer-pages/about-us-page/about-us-page.component').then(
             (m) => m.AboutUsPageComponent,
@@ -58,6 +86,10 @@ export const clientRoutes: Routes = [
       },
       {
         path: 'faq',
+        data: {
+          description:
+            'Respuestas a dudas comunes sobre compras, envíos, métodos de pago e impresiones en Laelsi.',
+        },
         loadComponent: () =>
           import('./pages/footer-pages/faq-page/faq-page.component').then(
             (m) => m.FaqPageComponent,
@@ -65,6 +97,10 @@ export const clientRoutes: Routes = [
       },
       {
         path: 'search',
+        data: {
+          description:
+            'Encuentra productos escolares, de papelería, oficina e impresiones en el catálogo de Laelsi.',
+        },
         loadComponent: () =>
           import('./pages/search-result/search-result.component').then(
             (m) => m.SearchResultComponent,
@@ -72,6 +108,10 @@ export const clientRoutes: Routes = [
       },
       {
         path: 'cart',
+        data: {
+          description:
+            'Revisa tu pedido y finaliza tu compra de artículos de librería en Laelsi.',
+        },
         loadComponent: () =>
           import('./pages/cart-page/cart-page.component').then(
             (m) => m.CartPageComponent,
@@ -80,6 +120,10 @@ export const clientRoutes: Routes = [
       // Ruta Protegida
       {
         path: 'profile',
+        data: {
+          description:
+            'Gestiona tus datos personales y pedidos en Librería Laelsi.',
+        },
         loadComponent: () =>
           import('./pages/profile-page/profile-page.component').then(
             (m) => m.ProfilePageComponent,
