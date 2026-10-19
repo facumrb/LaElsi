@@ -5,18 +5,18 @@
 // las Edge Functions. Lo que NUNCA va acá es la service role key ni las claves de R2.
 //
 // Dónde conseguir cada valor: ver "Puesta en marcha" en el README.
-const supabaseUrl = 'https://TU-PROYECTO.supabase.co';
+const supabaseUrl = 'https://tdcvpakvwstdwpbjwjpn.supabase.co';
 
 export const environment = {
   production: true,
-  // Supabase: Project Settings → API
+  // Supabase: Project Settings → API (la "publishable key" es la nueva versión de la anon key)
   supabaseUrl,
-  supabaseAnonKey: 'TU_SUPABASE_ANON_KEY',
+  supabaseAnonKey: 'sb_publishable_A0r8lk013cxidyCRrXRJDQ_KkeRuNxX',
   // Las Edge Functions reemplazan al backend Express (antes http://localhost:3000/api)
   apiUrl: `${supabaseUrl}/functions/v1`,
   // Cloudflare R2: URL pública de cada bucket (con la barra final)
-  productImagesUrl: 'https://pub-XXXXXXXX.r2.dev/',
-  userImagesUrl: 'https://pub-YYYYYYYY.r2.dev/',
+  productImagesUrl: 'https://pub-1fc0bb065d494bc9a6200ac532949c40.r2.dev/',
+  userImagesUrl: 'https://pub-f0b2684301ec4dec9af3dabf5f73e7de.r2.dev/',
   // Cloudflare Turnstile: clave pública del widget anti-bots del checkout
-  turnstileSiteKey: '',
+  turnstileSiteKey: '0x4AAAAAAFWEnT36p2VGxVYN',
 };
