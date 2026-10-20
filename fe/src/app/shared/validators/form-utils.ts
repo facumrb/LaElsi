@@ -18,6 +18,9 @@ export class FormUtils {
   static cuitPattern = '^[0-9]{11}$';
   static phonePattern = '^[+]?[0-9\\-\\s]*$';
   static usernamePattern = '^[a-zA-Z0-9._-]+$';
+  // Solo para el login: el campo acepta un nombre de usuario O un email, así que
+  // admite además @, % y +. Solo filtra caracteres: quien resuelve la cuenta es el backend.
+  static loginIdentifierPattern = '^[a-zA-Z0-9._%+@-]+$';
   // Mínimo 8 caracteres y debe tener al menos 1 letra, y 1 número.
   static passwordPattern = '^(?=.*[A-Za-z])(?=.*\\d).{8,}$';
   // Validadores para strings reemplazando los nativos para eliminar espacios vacios con trim
@@ -105,6 +108,11 @@ export class FormUtils {
           // Nombre de Usuario (Username)
           if (errors['pattern'].requiredPattern === this.usernamePattern) {
             return 'Solo se permiten letras, números, puntos (.) y guiones bajos (_) y guiones medios (-).';
+          }
+
+          // Usuario o email (login)
+          if (errors['pattern'].requiredPattern === this.loginIdentifierPattern) {
+            return 'Ingresá un email o un nombre de usuario válido, sin espacios.';
           }
 
           // CUIT

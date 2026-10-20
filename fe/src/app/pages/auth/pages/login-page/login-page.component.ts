@@ -49,13 +49,15 @@ export class LoginPageComponent {
   passwordVisible = signal(false);
 
   formLogin = this.fb.group({
+    // Acepta nombre de usuario o email (el backend resuelve la cuenta por cualquiera
+    // de los dos). El máximo es el mismo que usa forgot-password.
     username: [
       '',
       [
         Validators.required,
         FormUtils.minLength(4),
-        FormUtils.maxLength(30),
-        Validators.pattern(FormUtils.usernamePattern),
+        FormUtils.maxLength(255),
+        Validators.pattern(FormUtils.loginIdentifierPattern),
         FormUtils.notOnlyWhiteSpace,
       ],
     ],

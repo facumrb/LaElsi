@@ -33,6 +33,12 @@ const FOLDERS = [
 // cambian nunca, así que el navegador puede guardarlos por un año.
 const CACHE_CONTROL = 'public, max-age=31536000, immutable';
 
+// En Windows se usa shell: true (ver más abajo) y Node concatena los argumentos sin
+// comillas: una ruta con espacios (ej. "Desarrollo LaElsi") o el Cache-Control se
+// partirían en varios argumentos. Se entrecomillan los que tengan espacios.
+const useShell = process.platform === 'win32';
+const arg = (value) => (useShell && /\s/.test(value) ? `"${value}"` : value);
+
 let uploaded = 0;
 let failed = 0;
 
@@ -62,16 +68,16 @@ for (const { dir, bucket } of FOLDERS) {
           'put',
           `${bucket}/${fileName}`,
           '--file',
-          join(dir, fileName),
+          arg(join(dir, fileName)),
           '--content-type',
           'image/webp',
           '--cache-control',
-          CACHE_CONTROL,
+          arg(CACHE_CONTROL),
           // Sin --remote, Wrangler escribe en un bucket simulado local
           '--remote',
         ],
         // shell: true es necesario en Windows para poder ejecutar npx
-        { stdio: 'pipe', shell: process.platform === 'win32' },
+        { stdio: 'pipe', shell: useShell },
       );
       console.log(`   ✅ ${fileName}`);
       uploaded++;
