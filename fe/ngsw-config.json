@@ -31,7 +31,8 @@
     {
       "name": "r2-images",
       "urls": [
-        "https://*.r2.dev/**"
+        "https://productos.laelsi.com.ar/**",
+        "https://usuarios.laelsi.com.ar/**"
       ],
       "cacheConfig": {
         "maxSize": 200,

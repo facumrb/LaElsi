@@ -15,8 +15,8 @@ export const environment = {
   // Las Edge Functions reemplazan al backend Express (antes http://localhost:3000/api)
   apiUrl: `${supabaseUrl}/functions/v1`,
   // Cloudflare R2: URL pública de cada bucket (con la barra final)
-  productImagesUrl: 'https://pub-1fc0bb065d494bc9a6200ac532949c40.r2.dev/',
-  userImagesUrl: 'https://pub-f0b2684301ec4dec9af3dabf5f73e7de.r2.dev/',
+  productImagesUrl: 'https://productos.laelsi.com.ar/',
+  userImagesUrl: 'https://usuarios.laelsi.com.ar/',
   // Cloudflare Turnstile: si queda vacío, el checkout no muestra el widget anti-bots
   turnstileSiteKey: '0x4AAAAAAFWEnT36p2VGxVYN',
 };
