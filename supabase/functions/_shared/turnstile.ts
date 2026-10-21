@@ -9,10 +9,34 @@ import { AppError } from './http.ts';
 
 const VERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 
-/** IP real del cliente (Supabase la informa en X-Forwarded-For). */
+/** Una IP v4 o v6 en texto: solo dígitos hexadecimales, puntos y dos puntos (45 caracteres como máximo). */
+const IP_PATTERN = /^[0-9a-fA-F:.]{3,45}$/;
+
+/**
+ * IP real del cliente. Con ella se limitan los intentos de login y las solicitudes de recuperación.
+ *
+ * SEGURIDAD: el navegador controla el header X-Forwarded-For, así que su PRIMER valor no es
+ * confiable: cada proxy agrega la IP que ve al FINAL de la lista. Un reporte de la comunidad de
+ * Supabase (sobre la API de datos; para las Edge Functions no hay nada documentado) muestra que
+ * `X-Forwarded-For: falsa` llega como `falsa, <ip real>`. Por eso se usa, en este orden:
+ *   1. CF-Connecting-IP, que escribe Cloudflare y descarta el valor que mande el cliente.
+ *   2. El ÚLTIMO valor de X-Forwarded-For, el que agregó el proxy de confianza.
+ *
+ * Todo valor que no parezca una IP se descarta ('desconocida'): además de no ser confiable,
+ * se guarda en una columna VARCHAR(64) y uno enorme haría fallar el INSERT del intento,
+ * con lo cual el intento ni siquiera quedaría registrado.
+ */
 export function getClientIp(req: Request): string {
-  const forwarded = req.headers.get('X-Forwarded-For') ?? '';
-  return forwarded.split(',').at(0)?.trim() || 'desconocida';
+  const candidates = [
+    req.headers.get('CF-Connecting-IP') ?? '',
+    (req.headers.get('X-Forwarded-For') ?? '').split(',').at(-1) ?? '',
+  ];
+
+  for (const candidate of candidates) {
+    const ip = candidate.trim();
+    if (IP_PATTERN.test(ip)) return ip;
+  }
+  return 'desconocida';
 }
 
 /**

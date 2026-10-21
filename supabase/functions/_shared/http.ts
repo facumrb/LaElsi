@@ -137,11 +137,15 @@ async function readJsonBody(req: Request): Promise<any> {
   if (req.method === 'GET' || req.method === 'HEAD') return {};
   if (!(req.headers.get('Content-Type') ?? '').includes('application/json')) return {};
 
+  // Un cuerpo vacío es válido (ej: PATCH /orders/:id/cancel); uno mal formado es un error del cliente
+  const text = await req.text();
+  if (text.trim() === '') return {};
+
   try {
-    const body = await req.json();
+    const body = JSON.parse(text);
     return body !== null && typeof body === 'object' ? trimStrings(body) : {};
   } catch {
-    return {};
+    throw new AppError('El cuerpo de la petición no es un JSON válido', 400);
   }
 }
 
@@ -160,10 +164,14 @@ export function pickFields(body: any, allowed: string[]): Record<string, any> {
   return Object.fromEntries(result);
 }
 
-/** Lee un parámetro numérico de la ruta o lanza un 400 con el mensaje indicado. */
+/**
+ * Lee un ID numérico de la ruta o lanza un 400 con el mensaje indicado.
+ * Es estricto: "12abc" no se interpreta como 12 (parseInt lo aceptaría).
+ */
 export function intParam(ctx: RequestContext, name: string, errorMessage: string): number {
-  const value = Number.parseInt(ctx.params[name] ?? '', 10);
-  if (Number.isNaN(value)) throw new AppError(errorMessage, 400);
+  const raw = ctx.params[name] ?? '';
+  const value = Number(raw);
+  if (!/^\d+$/.test(raw) || !Number.isSafeInteger(value)) throw new AppError(errorMessage, 400);
   return value;
 }
 
@@ -233,6 +241,15 @@ function jsonResponse(body: unknown, status: number, cors: Record<string, string
   });
 }
 
+/** Decodifica un segmento de la URL. Un percent-encoding inválido es un error del cliente (400), no del servidor. */
+function decodeSegment(segment: string): string {
+  try {
+    return decodeURIComponent(segment);
+  } catch {
+    throw new AppError('La URL contiene caracteres inválidos', 400);
+  }
+}
+
 /** Compara la ruta declarada (ej: /:id/children) con los segmentos recibidos. */
 function matchPath(pattern: string, segments: string[]): Record<string, string> | null {
   const patternSegments = pattern.split('/').filter(Boolean);
@@ -298,7 +315,7 @@ export function serveRoutes(functionName: string, routes: Route[]): void {
 
     try {
       const url = new URL(req.url);
-      const segments = url.pathname.split('/').filter(Boolean).map(decodeURIComponent);
+      const segments = url.pathname.split('/').filter(Boolean).map(decodeSegment);
       // La ruta llega como /<función>/... (o con el prefijo /functions/v1 en algunos entornos)
       const functionIndex = segments.indexOf(functionName);
       const rest = functionIndex >= 0 ? segments.slice(functionIndex + 1) : segments;

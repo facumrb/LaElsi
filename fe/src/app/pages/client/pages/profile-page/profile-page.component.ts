@@ -73,7 +73,14 @@ export class ProfilePageComponent implements OnInit {
         this.loading.set(false);
       },
     });
+  }
 
+  // Vuelve a pedir el perfil y los pedidos (ej: después de cancelar un pedido o de editar los datos)
+  private refresh(): void {
+    const id = this.currentUserSignal()?.id;
+    if (!id) return;
+
+    this.loadFullProfile(id);
     this.loadOrders(id);
   }
 
@@ -106,7 +113,7 @@ export class ProfilePageComponent implements OnInit {
     }
     if (componentRef.profileUpdated) {
       componentRef.profileUpdated.subscribe(() => {
-        this.loadFullProfile();
+        this.refresh();
       });
     }
     this.loading.set(false);

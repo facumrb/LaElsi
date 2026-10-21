@@ -9,16 +9,23 @@
 //     GET    /categories/active          Categorías raíz activas (home)
 //     GET    /categories/tree?state=     Árbol jerárquico (navbar y reordenamiento)
 //     GET    /categories/:id/children    Subcategorías directas
-//     GET    /categories                 Listado plano completo (panel admin)
-//     GET    /categories/:id             Detalle con sus productos
+//     GET    /categories/:id             Detalle con la cadena de padres (breadcrumbs)
 //   Solo Admin
+//     GET    /categories                 Listado plano completo, con el resumen de sus productos
 //     POST   /categories
 //     PATCH  /categories/reorder         Orden y padre en lote
 //     PATCH  /categories/:id
 //     DELETE /categories/:id
+//
+// Qué ve cada quien: sin sesión de administrador, /tree y /:id/children muestran solo las
+// categorías activas (las inactivas son material de trabajo del panel admin).
+//
+// Ninguna ruta pública devuelve los productos de una categoría con todos sus datos: la tienda los
+// pide paginados a /products. Antes /active y /:id los cargaban TODOS (con fotos y precios) para
+// que la home y la página de categoría leyeran apenas el nombre.
 // ============================================================================
 import { sql, type Db } from '../_shared/db.ts';
-import { requireAdmin } from '../_shared/auth.ts';
+import { isAdminRequest, requireAdmin } from '../_shared/auth.ts';
 import {
   AppError,
   created,
@@ -36,7 +43,7 @@ import {
   likePattern,
   loadActiveProductCounts,
   loadCategories,
-  loadProducts,
+  loadFirstPhotos,
   withParents,
   type CategoryRow,
 } from '../_shared/catalogo.ts';
@@ -47,34 +54,28 @@ const MAX_DEPTH = 2; // 3 niveles: 0, 1 y 2
 // ─── Lectura ─────────────────────────────────────────────────────────────────
 
 /**
- * Trae los productos agrupados por categoría, cada uno con sus fotos (ordenadas)
- * y su precio vigente.
+ * Resumen de los productos agrupados por categoría: ID, nombre y primera foto. Es lo que necesita
+ * el panel admin para contarlos y listarlos en el modal de cada categoría. No trae descripción,
+ * stock, precios ni el resto de las fotos: antes se cargaba el producto completo de TODO el catálogo.
  */
 // deno-lint-ignore no-explicit-any
-async function loadProductsByCategory(onlyActive: boolean): Promise<Map<number, any[]>> {
-  const [products, photos, prices] = await Promise.all([
-    onlyActive
-      ? sql`select * from product where state = 'Activo' order by id asc`
-      : sql`select * from product order by id asc`,
-    sql`
-      select id, file_name, "order", product_id
-      from photo
-      where product_id is not null
-      order by "order" asc, id asc
-    `,
-    sql`select id, amount, currency, valid_from, is_current, product_id from price where is_current`,
-  ]);
+async function loadProductSummariesByCategory(onlyActive: boolean): Promise<Map<number, any[]>> {
+  const products = await sql`
+    select id, name, category_id
+    from product
+    ${onlyActive ? sql`where state = 'Activo'` : sql``}
+    order by id asc
+  `;
+  // Una sola foto por producto: la primera de su galería
+  const firstPhotos = await loadFirstPhotos(products.map((product) => product.id as number));
 
   // deno-lint-ignore no-explicit-any
   const groups = new Map<number, any[]>();
-  for (const product of products) {
-    const list = groups.get(product.categoryId) ?? [];
-    list.push({
-      ...product,
-      photos: photos.filter((photo) => photo.productId === product.id),
-      prices: prices.filter((price) => price.productId === product.id),
-    });
-    groups.set(product.categoryId, list);
+  for (const { categoryId, ...product } of products) {
+    const list = groups.get(categoryId) ?? [];
+    const photo = firstPhotos.get(product.id);
+    list.push({ ...product, photos: photo ? [photo] : [] });
+    groups.set(categoryId, list);
   }
   return groups;
 }
@@ -101,7 +102,8 @@ async function searchCategories(ctx: RequestContext) {
   const [categories, activeCounts, productsByCategory] = await Promise.all([
     loadCategories(),
     loadActiveProductCounts(),
-    loadProductsByCategory(false),
+    // Es una ruta pública: solo los productos activos (antes devolvía también los inactivos)
+    loadProductSummariesByCategory(true),
   ]);
   const byParent = groupByParent(categories);
   const text = query.toLowerCase();
@@ -116,12 +118,16 @@ async function searchCategories(ctx: RequestContext) {
   return ok('Categorías encontradas', result);
 }
 
-async function findAll() {
-  const [categories, productsByCategory] = await Promise.all([loadCategories(), loadProductsByCategory(false)]);
+async function findAll(ctx: RequestContext) {
+  await requireAdmin(ctx.req);
+  const [categories, productsByCategory] = await Promise.all([
+    loadCategories(),
+    loadProductSummariesByCategory(false),
+  ]);
   const byId = indexById(categories);
   const byParent = groupByParent(categories);
 
-  // Listado plano: cada categoría con su padre, sus hijas directas y sus productos
+  // Listado plano: cada categoría con su padre, sus hijas directas y el resumen de sus productos
   const result = categories.map((c) => ({
     ...withParents(c, byId),
     children: byParent.get(c.id) ?? [],
@@ -138,17 +144,16 @@ async function findOne(ctx: RequestContext) {
   const category = byId.get(id);
   if (!category) throw new AppError('Categoría no encontrada', 404);
 
-  const products = await sql`select id from product where category_id = ${id} order by id asc`;
-
-  return ok('Categoría encontrada', {
-    ...withParents(category, byId),
-    products: await loadProducts(products.map((p) => p.id)),
-  });
+  // Es público a propósito: la página de categoría muestra el aviso de "categoría inactiva"
+  return ok('Categoría encontrada', withParents(category, byId));
 }
 
 async function getTree(ctx: RequestContext) {
   const depthLimit = Number.parseInt(ctx.query.get('depth') ?? '', 10) || 5;
-  const state = queryParam(ctx, 'state');
+  let state = queryParam(ctx, 'state');
+  // Sin sesión de administrador solo se ven las activas, se pida el filtro o no. Cuando ya se pide
+  // "Activo" (la llamada de la tienda) no hace falta averiguar quién consulta.
+  if (state !== 'Activo' && !(await isAdminRequest(ctx.req))) state = 'Activo';
   const onlyActive = state === 'Activo';
 
   const categories = await loadCategories();
@@ -170,27 +175,26 @@ async function getTree(ctx: RequestContext) {
 async function getChildren(ctx: RequestContext) {
   const id = intParam(ctx, 'id', 'ID de categoría inválido');
   const byParent = groupByParent(await loadCategories());
-  const children = (byParent.get(id) ?? []).map((c) => ({ ...c, children: byParent.get(c.id) ?? [] }));
+
+  // Sin sesión de administrador las subcategorías inactivas no se ven
+  const isAdmin = await isAdminRequest(ctx.req);
+  const isVisible = (category: CategoryRow) => isAdmin || category.state === 'Activo';
+  const children = (byParent.get(id) ?? [])
+    .filter(isVisible)
+    .map((c) => ({ ...c, children: (byParent.get(c.id) ?? []).filter(isVisible) }));
   return ok('Subcategorías encontradas', children);
 }
 
 async function findAllActive() {
-  const [categories, activeCounts, productsByCategory] = await Promise.all([
-    loadCategories(),
-    loadActiveProductCounts(),
-    loadProductsByCategory(true),
-  ]);
+  const [categories, activeCounts] = await Promise.all([loadCategories(), loadActiveProductCounts()]);
   const byParent = groupByParent(categories);
 
   const result = (byParent.get(null) ?? [])
     .filter((c) => c.state === 'Activo')
     // Filtrar categorías que no tienen productos activos en su subárbol
     .filter((c) => hasActiveProductsInSubtree(c.id, byParent, activeCounts))
-    .map((c) => ({
-      // Las subcategorías inactivas se excluyen en todos los niveles
-      ...buildTreeNode(c, byParent, 2, true),
-      products: productsByCategory.get(c.id) ?? [],
-    }));
+    // Las subcategorías inactivas se excluyen en todos los niveles
+    .map((c) => buildTreeNode(c, byParent, 2, true));
 
   return ok('Categorías activas encontradas', result);
 }

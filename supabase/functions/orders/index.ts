@@ -34,11 +34,16 @@ import {
   type RequestContext,
 } from '../_shared/http.ts';
 import { likePattern } from '../_shared/catalogo.ts';
+import { loadOrders } from '../_shared/pedidos.ts';
 import { requireTurnstile } from '../_shared/turnstile.ts';
 
 const VALID_ORDER_STATES = ['Pendiente', 'Pagado', 'Enviado', 'Entregado', 'Cancelado'];
 const VALID_DELIVERY_METHODS = ['Envío', 'Retiro en sucursal'];
 const VALID_PAYMENT_METHODS = ['Transferencia', 'Local'];
+
+// Tope de líneas por orden. create_order bloquea (FOR UPDATE) una fila de producto por cada línea:
+// una petición con miles de líneas las retendría durante mucho tiempo y frenaría las demás compras.
+const MAX_ORDER_ITEMS = 100;
 
 // Seguridad: usar Map en lugar de un objeto plano para que las búsquedas nunca recorran la
 // cadena de prototipos (CWE-1321).
@@ -59,76 +64,6 @@ const TRANSITIONS_RETIRO = new Map<string, string[]>([
 ]);
 
 // ─── Lectura ─────────────────────────────────────────────────────────────────
-
-/**
- * Carga las órdenes indicadas con su cliente y sus líneas (cada línea con su
- * producto y las fotos del producto), respetando el orden de `ids`.
- */
-// deno-lint-ignore no-explicit-any
-async function loadOrders(ids: number[], db: Db = sql): Promise<any[]> {
-  if (ids.length === 0) return [];
-
-  const [orders, lines] = await Promise.all([
-    db`select * from "order" where id in ${db(ids)}`,
-    db`select * from order_line where order_id in ${db(ids)} order by id asc`,
-  ]);
-  if (orders.length === 0) return [];
-
-  // deno-lint-ignore no-explicit-any
-  const clientIds = [...new Set(orders.map((o: any) => o.clientId as number))];
-  // deno-lint-ignore no-explicit-any
-  const productIds = [...new Set(lines.map((l: any) => l.productId as number))];
-
-  const [clients, products, photos] = await Promise.all([
-    db`
-      select id, role, name, last_name, dni, phone, username, email, cuit, fiscal_condition,
-             street, street_number, city, province, postal_code, floor, apartment
-      from "user"
-      where id in ${db(clientIds)}
-    `,
-    productIds.length > 0 ? db`select * from product where id in ${db(productIds)}` : [],
-    productIds.length > 0
-      ? db`
-          select id, file_name, "order", product_id
-          from photo
-          where product_id in ${db(productIds)}
-          order by "order" asc, id asc
-        `
-      : [],
-  ]);
-
-  // deno-lint-ignore no-explicit-any
-  const clientsById = new Map<number, any>(clients.map((c: any) => [c.id, c]));
-  // deno-lint-ignore no-explicit-any
-  const productsById = new Map<number, any>(
-    // deno-lint-ignore no-explicit-any
-    products.map((p: any) => [p.id, { ...p, photos: photos.filter((photo: any) => photo.productId === p.id) }]),
-  );
-  // deno-lint-ignore no-explicit-any
-  const ordersById = new Map<number, any>(orders.map((o: any) => [o.id, o]));
-
-  // deno-lint-ignore no-explicit-any
-  const result: any[] = [];
-  for (const id of ids) {
-    const order = ordersById.get(id);
-    if (!order) continue;
-
-    const { clientId, ...rest } = order;
-    result.push({
-      ...rest,
-      client: clientsById.get(clientId) ?? null,
-      items: lines
-        // deno-lint-ignore no-explicit-any
-        .filter((line: any) => line.orderId === id)
-        // deno-lint-ignore no-explicit-any
-        .map(({ orderId: _orderId, productId, ...line }: any) => ({
-          ...line,
-          product: productsById.get(productId) ?? null,
-        })),
-    });
-  }
-  return result;
-}
 
 async function loadOrder(id: number) {
   const [order] = await loadOrders([id]);
@@ -157,6 +92,10 @@ async function create(ctx: RequestContext) {
 
   if (!items || !Array.isArray(items) || items.length === 0) {
     throw new AppError('La orden debe contener al menos un producto', 400);
+  }
+
+  if (items.length > MAX_ORDER_ITEMS) {
+    throw new AppError(`La orden no puede tener más de ${MAX_ORDER_ITEMS} productos`, 400);
   }
 
   for (const item of items) {

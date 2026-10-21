@@ -4,6 +4,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { environment } from 'src/environments/environment';
+import { UserSession } from '@models/auth.model';
 import { UserRole } from '@models/user.model';
 import { AuthService } from './auth.service';
 import { supabase } from './supabase.client';
@@ -101,5 +102,67 @@ describe('AuthService: inicio de sesión', () => {
     const resultado = new Promise((_resolve, reject) => servicio.loginWithGoogle().subscribe({ error: reject }));
 
     await expect(resultado).rejects.toThrow('proveedor deshabilitado');
+  });
+});
+
+// En localStorage solo debe quedar lo que necesita la sesión. La pantalla de perfil le pasa al
+// servicio el perfil completo del cliente (TypeScript lo acepta por tipado estructural): DNI,
+// CUIT, domicilio y hasta el historial de órdenes terminaban guardados en el navegador.
+describe('AuthService: datos de la sesión guardados en el navegador', () => {
+  const perfilCompleto = {
+    id: 2,
+    name: 'Ana',
+    lastName: 'Pérez',
+    role: UserRole.Client,
+    photo: null,
+    dni: '30111222',
+    cuit: '20301112223',
+    street: 'Mitre',
+    orders: [{ id: 1 }],
+  };
+
+  beforeEach(() => {
+    localStorage.clear();
+    // No se le habla al Supabase real: solo se comprueba qué queda guardado
+    vi.spyOn(supabase.auth, 'onAuthStateChange').mockReturnValue({
+      data: { subscription: { unsubscribe: () => undefined } },
+    } as never);
+    TestBed.configureTestingModule({ providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()] });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('updateCurrentUser guarda solo los campos de la sesión, aunque reciba un perfil completo', () => {
+    localStorage.setItem('auth_user', JSON.stringify({ id: 2, name: 'Ana', lastName: 'Pérez', role: UserRole.Client }));
+    const servicio = TestBed.inject(AuthService);
+
+    servicio.updateCurrentUser({ ...perfilCompleto, name: 'Ana María' } as Partial<UserSession>);
+
+    const guardado = JSON.parse(localStorage.getItem('auth_user')!);
+    expect(Object.keys(guardado).sort()).toEqual(['id', 'lastName', 'name', 'photo', 'role']);
+    expect(guardado.name).toBe('Ana María');
+    expect(servicio.currentUser()).toEqual(guardado);
+  });
+
+  it('al arrancar elimina los datos personales que dejaron las versiones anteriores', () => {
+    localStorage.setItem('auth_user', JSON.stringify(perfilCompleto));
+
+    const servicio = TestBed.inject(AuthService);
+
+    const sesion = { id: 2, name: 'Ana', lastName: 'Pérez', role: UserRole.Client, photo: null };
+    expect(servicio.currentUser()).toEqual(sesion);
+    expect(JSON.parse(localStorage.getItem('auth_user')!)).toEqual(sesion);
+  });
+
+  it('una sesión que ya está limpia no se vuelve a escribir', () => {
+    const sesion = JSON.stringify({ id: 2, name: 'Ana', lastName: 'Pérez', role: UserRole.Client });
+    localStorage.setItem('auth_user', sesion);
+    const guardar = vi.spyOn(Storage.prototype, 'setItem');
+
+    TestBed.inject(AuthService);
+
+    expect(guardar).not.toHaveBeenCalled();
   });
 });

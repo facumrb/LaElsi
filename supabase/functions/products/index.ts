@@ -5,20 +5,24 @@
 // Mantiene las mismas rutas y respuestas que consumía el frontend:
 //
 //   Públicas
-//     GET    /products                              Todos (panel admin, con filtros)
 //     GET    /products/active                       Activos con categoría activa
 //     GET    /products/page                         Ídem (paginado para el cliente final)
 //     GET    /products/search?query=                Búsqueda por texto
 //     GET    /products/best-sellers                 Más vendidos
 //     GET    /products/best-sellers/category/:categoryId
-//     GET    /products/category/:categoryId         Todos los de una categoría
 //     GET    /products/active/category/:categoryId  Activos de una categoría
 //     GET    /products/active/:id                   Detalle (solo si está activo)
-//     GET    /products/:id                          Detalle
+//     GET    /products/:id                          Detalle (también de un producto inactivo: la página
+//                                                   de producto muestra el aviso de "no disponible")
 //   Solo Admin
+//     GET    /products                              Todos, con filtros (panel admin)
+//     GET    /products/category/:categoryId         Todos los de una categoría, activos o no
 //     POST   /products
 //     PATCH  /products/:id
 //     DELETE /products/:id
+//
+// Los listados "Todos" eran públicos y exponían a cualquiera los productos inactivos, el stock y las
+// ventas de todo el catálogo. Ninguna pantalla de la tienda los usa: solo el panel admin.
 //
 // Los cambios masivos de precio (antes /products/bulk/*) viven en la función bulk-prices.
 // ============================================================================
@@ -77,6 +81,23 @@ function clientOrderBy(filters: ClientFilters) {
   return sql`p.id asc`;
 }
 
+/**
+ * Marcas para el filtro de la tienda. Salen de TODOS los productos del resultado, no solo de la
+ * página que se muestra (con 16 por página, el filtro ofrecía únicamente las marcas de esos 16), y
+ * sin aplicar la marca ya elegida, para que la persona pueda cambiar de marca.
+ */
+// deno-lint-ignore no-explicit-any
+async function loadBrands(where: () => any): Promise<string[]> {
+  const rows = await sql`
+    select distinct p.brand
+    from product p
+    join category c on c.id = p.category_id
+    where ${where()}
+    order by p.brand asc
+  `;
+  return rows.map((row) => row.brand as string);
+}
+
 // ─── Búsquedas y categorías ──────────────────────────────────────────────────
 
 async function searchProductsByText(ctx: RequestContext) {
@@ -86,20 +107,21 @@ async function searchProductsByText(ctx: RequestContext) {
   const { page, limit } = getPagination(ctx);
   const filters = readClientFilters(ctx);
 
-  const products = await paginateProducts({
-    where: () => sql`
-      ${activeOnly()} and ${matchesText(query)}
-      ${filters.brand ? sql`and p.brand = ${filters.brand}` : sql``}
-    `,
-    orderBy: () => clientOrderBy(filters),
-    page,
-    limit,
-    onlyCurrentPrices: true,
-  });
-  return ok('Productos encontrados', products);
+  const matching = () => sql`${activeOnly()} and ${matchesText(query)}`;
+  const [products, brands] = await Promise.all([
+    paginateProducts({
+      where: () => sql`${matching()} ${filters.brand ? sql`and p.brand = ${filters.brand}` : sql``}`,
+      orderBy: () => clientOrderBy(filters),
+      page,
+      limit,
+    }),
+    loadBrands(matching),
+  ]);
+  return ok('Productos encontrados', { ...products, brands });
 }
 
 async function findProductsByCategory(ctx: RequestContext) {
+  await requireAdmin(ctx.req);
   const categoryId = intParam(ctx, 'categoryId', 'ID de categoría inválido');
   const { page, limit } = getPagination(ctx);
 
@@ -117,22 +139,23 @@ async function findActiveProductsByCategory(ctx: RequestContext) {
   const { page, limit } = getPagination(ctx);
   const filters = readClientFilters(ctx);
 
-  const products = await paginateProducts({
-    where: () => sql`
-      ${activeOnly()} and p.category_id = ${categoryId}
-      ${filters.brand ? sql`and p.brand = ${filters.brand}` : sql``}
-    `,
-    orderBy: () => clientOrderBy(filters),
-    page,
-    limit,
-    onlyCurrentPrices: true,
-  });
-  return ok('Productos activos encontrados en la categoría', products);
+  const inCategory = () => sql`${activeOnly()} and p.category_id = ${categoryId}`;
+  const [products, brands] = await Promise.all([
+    paginateProducts({
+      where: () => sql`${inCategory()} ${filters.brand ? sql`and p.brand = ${filters.brand}` : sql``}`,
+      orderBy: () => clientOrderBy(filters),
+      page,
+      limit,
+    }),
+    loadBrands(inCategory),
+  ]);
+  return ok('Productos activos encontrados en la categoría', { ...products, brands });
 }
 
 // ─── Consultas generales ─────────────────────────────────────────────────────
 
 async function findAll(ctx: RequestContext) {
+  await requireAdmin(ctx.req);
   const { page, limit } = getPagination(ctx);
   const query = queryParam(ctx, 'query');
   const state = queryParam(ctx, 'state');
@@ -191,7 +214,7 @@ async function findOneActive(ctx: RequestContext) {
   `;
   if (!row) throw new AppError('Producto no encontrado', 404);
 
-  const [product] = await loadProducts([id], { onlyCurrentPrices: true });
+  const [product] = await loadProducts([id]);
   return ok('Producto encontrado', product);
 }
 
@@ -205,7 +228,6 @@ async function findAllActive(ctx: RequestContext) {
     orderBy: () => sql`p.id asc`,
     page,
     limit,
-    onlyCurrentPrices: true,
   });
   return products;
 }
@@ -222,10 +244,7 @@ async function bestSellers(limit: number, categoryId?: number) {
     order by p.total_sold desc, p.id asc
     limit ${limit}
   `;
-  return await loadProducts(
-    rows.map((r) => r.id),
-    { onlyCurrentPrices: true },
-  );
+  return await loadProducts(rows.map((r) => r.id));
 }
 
 function bestSellersLimit(ctx: RequestContext): number {
@@ -243,6 +262,40 @@ async function findBestSellersByCategory(ctx: RequestContext) {
     'Productos más vendidos de la categoría encontrados',
     await bestSellers(bestSellersLimit(ctx), categoryId),
   );
+}
+
+// ─── Validación ──────────────────────────────────────────────────────────────
+
+const isNonNegativeInteger = (value: unknown) => typeof value === 'number' && Number.isInteger(value) && value >= 0;
+
+/**
+ * Valida el formato de los campos del producto que vinieron en la petición; los ausentes se ignoran.
+ * Lo comparten el alta y la edición, que antes tenían cada una su copia de las mismas reglas.
+ * Qué campos son obligatorios lo decide cada una por su cuenta.
+ */
+// deno-lint-ignore no-explicit-any
+function validateProductFields(fields: Record<string, any>): void {
+  const { price, stock, totalSold, currency, state } = fields;
+
+  if (price !== undefined && (typeof price !== 'number' || !Number.isFinite(price) || price <= 0)) {
+    throw new AppError('El precio debe ser un número positivo', 400);
+  }
+
+  if (stock !== undefined && !isNonNegativeInteger(stock)) {
+    throw new AppError('El stock debe ser un número entero mayor o igual a 0', 400);
+  }
+
+  if (totalSold !== undefined && !isNonNegativeInteger(totalSold)) {
+    throw new AppError('El total vendido debe ser un número entero mayor o igual a 0', 400);
+  }
+
+  if (currency !== undefined && !VALID_CURRENCIES.includes(currency)) {
+    throw new AppError(`Moneda inválida. Las monedas válidas son: ${VALID_CURRENCIES.join(', ')}`, 400);
+  }
+
+  if (state !== undefined && !VALID_PRODUCT_STATES.includes(state)) {
+    throw new AppError(`Estado de producto inválido. Los estados válidos son: ${VALID_PRODUCT_STATES.join(', ')}`, 400);
+  }
 }
 
 // ─── Creación ────────────────────────────────────────────────────────────────
@@ -268,31 +321,7 @@ async function addProduct(ctx: RequestContext) {
     throw new AppError('Los campos nombre, descripción, marca, stock y precio son obligatorios', 400);
   }
 
-  if (typeof price !== 'number' || price <= 0) {
-    throw new AppError('El precio debe ser un número positivo', 400);
-  }
-
-  if (typeof productData.stock !== 'number' || productData.stock < 0 || !Number.isInteger(productData.stock)) {
-    throw new AppError('El stock debe ser un número entero mayor o igual a 0', 400);
-  }
-
-  if (productData.totalSold !== undefined) {
-    if (
-      typeof productData.totalSold !== 'number' ||
-      productData.totalSold < 0 ||
-      !Number.isInteger(productData.totalSold)
-    ) {
-      throw new AppError('El total vendido debe ser un número entero mayor o igual a 0', 400);
-    }
-  }
-
-  if (currency !== undefined && !VALID_CURRENCIES.includes(currency)) {
-    throw new AppError(`Moneda inválida. Las monedas válidas son: ${VALID_CURRENCIES.join(', ')}`, 400);
-  }
-
-  if (productData.state !== undefined && !VALID_PRODUCT_STATES.includes(productData.state)) {
-    throw new AppError(`Estado de producto inválido. Los estados válidos son: ${VALID_PRODUCT_STATES.join(', ')}`, 400);
-  }
+  validateProductFields({ price, currency, ...productData });
 
   if (!productData.category) {
     throw new AppError('La categoría es obligatoria', 400);
@@ -345,31 +374,7 @@ async function updateProduct(ctx: RequestContext) {
   const id = intParam(ctx, 'id', 'ID de producto inválido');
   const { price, currency, ...updateData } = pickFields(ctx.body, PRODUCT_FIELDS);
 
-  if (price !== undefined && (typeof price !== 'number' || price <= 0)) {
-    throw new AppError('El precio debe ser un número positivo', 400);
-  }
-
-  if (
-    updateData.stock !== undefined &&
-    (typeof updateData.stock !== 'number' || updateData.stock < 0 || !Number.isInteger(updateData.stock))
-  ) {
-    throw new AppError('El stock debe ser un número entero mayor o igual a 0', 400);
-  }
-
-  if (
-    updateData.totalSold !== undefined &&
-    (typeof updateData.totalSold !== 'number' || updateData.totalSold < 0 || !Number.isInteger(updateData.totalSold))
-  ) {
-    throw new AppError('El total vendido debe ser un número entero mayor o igual a 0', 400);
-  }
-
-  if (currency !== undefined && !VALID_CURRENCIES.includes(currency)) {
-    throw new AppError(`Moneda inválida. Las monedas válidas son: ${VALID_CURRENCIES.join(', ')}`, 400);
-  }
-
-  if (updateData.state !== undefined && !VALID_PRODUCT_STATES.includes(updateData.state)) {
-    throw new AppError(`Estado de producto inválido. Los estados válidos son: ${VALID_PRODUCT_STATES.join(', ')}`, 400);
-  }
+  validateProductFields({ price, currency, ...updateData });
 
   const newCategoryId = updateData.category !== undefined ? Number(updateData.category) : undefined;
   if (newCategoryId !== undefined) {

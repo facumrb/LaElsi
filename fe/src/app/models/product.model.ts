@@ -1,5 +1,6 @@
 import { IApiCategory } from './category.model';
 import { IApiProductPhoto } from './photo.model';
+import { IPaginatedResult } from './pagination.model';
 
 export enum ProductState {
   Activo = 'Activo',
@@ -28,6 +29,43 @@ export interface IApiProduct {
   createdAt: string;
   updatedAt: string;
   deletedAt?: string | null;
+}
+
+/**
+ * Página de productos de la tienda. `brands` trae TODAS las marcas del resultado (no solo las de
+ * esta página) para el filtro; el servidor la manda en la búsqueda y en los productos de una categoría.
+ */
+export interface IPaginatedProducts extends IPaginatedResult<IApiProduct> {
+  brands?: string[];
+}
+
+/**
+ * Resumen de un producto dentro de una categoría (GET /categories, panel admin). Es lo justo para
+ * contarlos y listarlos con su miniatura: no trae precio, stock ni descripción.
+ */
+export interface IProductSummary {
+  id: number;
+  name: string;
+  photos: Pick<IApiProductPhoto, 'id' | 'fileName'>[]; // Solo la primera foto de la galería
+}
+
+// Una fila de la vista previa de un cambio masivo de precios (POST /bulk-prices/preview)
+export interface IBulkPricePreviewItem {
+  productId: number;
+  name: string;
+  currentPrice: number;
+  newPrice: number;
+  diff: number;
+  isValid: boolean;
+  error: string | null; // Motivo por el que el precio nuevo no es válido
+}
+
+// Resultado de aplicar un cambio masivo de precios (POST /bulk-prices/apply)
+export interface IBulkPriceResult {
+  batchId: number;
+  updatedCount: number;
+  errorCount: number;
+  errors: { productId: number; name: string; error: string }[];
 }
 
 export type ICreateProduct = Omit<

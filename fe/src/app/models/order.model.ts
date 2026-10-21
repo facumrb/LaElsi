@@ -44,7 +44,8 @@ export interface IApiOrder {
     name: string;
     lastName: string;
     email: string;
-    phone: string;
+    // Puede ser null: el registro rápido y el acceso con Google no piden teléfono
+    phone: string | null;
   };
   items: IApiOrderLine[];
   createdAt: string;

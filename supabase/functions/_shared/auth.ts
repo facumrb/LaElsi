@@ -66,6 +66,15 @@ export async function requireAdmin(req: Request): Promise<AuthUser> {
   return user;
 }
 
+/**
+ * Indica si la petición viene de un administrador, SIN exigir sesión: una petición anónima
+ * (o con un token inválido) simplemente devuelve false. Sirve para las rutas públicas cuyo
+ * contenido cambia según quién consulta (el público ve solo lo activo; el admin ve todo).
+ */
+export async function isAdminRequest(req: Request): Promise<boolean> {
+  return (await getAuthUser(req))?.role === 'Admin';
+}
+
 /** Exige que el usuario autenticado sea el dueño del recurso o un administrador. */
 export async function requireOwnerOrAdmin(req: Request, ownerId: number): Promise<AuthUser> {
   const user = await requireUser(req);

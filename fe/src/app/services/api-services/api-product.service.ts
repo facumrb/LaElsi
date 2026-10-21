@@ -3,7 +3,10 @@ import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import {
   IApiProduct,
+  IBulkPricePreviewItem,
+  IBulkPriceResult,
   ICreateProduct,
+  IPaginatedProducts,
   IUpdateProduct,
 } from '@models/product.model';
 import { IPaginatedResult } from '../../models/pagination.model';
@@ -51,12 +54,12 @@ export class ApiProductService {
   getActiveProducts(
     page: number = 1,
     limit: number = 16,
-  ): Observable<IPaginatedResult<IApiProduct>> {
+  ): Observable<IPaginatedProducts> {
     const params = new HttpParams().set('page', page).set('limit', limit);
     return this.http
       .get<{
         message: string;
-        data: IPaginatedResult<IApiProduct>;
+        data: IPaginatedProducts;
       }>(`${this.apiUrl}/active`, { params })
       .pipe(map((response) => response.data));
   }
@@ -105,7 +108,7 @@ export class ApiProductService {
       priceOrder?: string;
       popularityOrder?: string;
     } = {},
-  ): Observable<IPaginatedResult<IApiProduct>> {
+  ): Observable<IPaginatedProducts> {
     let params = new HttpParams()
       .set('query', query)
       .set('page', page)
@@ -119,7 +122,7 @@ export class ApiProductService {
     return this.http
       .get<{
         message: string;
-        data: IPaginatedResult<IApiProduct>;
+        data: IPaginatedProducts;
       }>(`${this.apiUrl}/search`, { params })
       .pipe(map((response) => response.data));
   }
@@ -149,7 +152,7 @@ export class ApiProductService {
       priceOrder?: string;
       popularityOrder?: string;
     } = {},
-  ): Observable<IPaginatedResult<IApiProduct>> {
+  ): Observable<IPaginatedProducts> {
     let params = new HttpParams().set('page', page).set('limit', limit);
     if (filters.brand && filters.brand !== 'Todas')
       params = params.set('brand', filters.brand);
@@ -160,7 +163,7 @@ export class ApiProductService {
     return this.http
       .get<{
         message: string;
-        data: IPaginatedResult<IApiProduct>;
+        data: IPaginatedProducts;
       }>(`${this.apiUrl}/active/category/${categoryId}`, { params })
       .pipe(map((response) => response.data));
   }
@@ -195,11 +198,11 @@ export class ApiProductService {
     adjustmentType: string,
     adjustmentValue: number,
     roundingRule?: string,
-  ): Observable<any[]> {
+  ): Observable<IBulkPricePreviewItem[]> {
     return this.http
       .post<{
         message: string;
-        data: any[];
+        data: IBulkPricePreviewItem[];
       }>(`${this.bulkUrl}/preview`, {
         productIds,
         adjustmentType,
@@ -214,11 +217,11 @@ export class ApiProductService {
     adjustmentType: string,
     adjustmentValue: number,
     roundingRule?: string,
-  ): Observable<any> {
+  ): Observable<IBulkPriceResult> {
     return this.http
       .post<{
         message: string;
-        data: any;
+        data: IBulkPriceResult;
       }>(`${this.bulkUrl}/apply`, {
         productIds,
         adjustmentType,

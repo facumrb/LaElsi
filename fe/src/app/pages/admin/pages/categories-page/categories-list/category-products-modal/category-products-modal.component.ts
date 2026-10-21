@@ -9,7 +9,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { A11yModule } from '@angular/cdk/a11y';
 import { IApiCategory } from '@models/category.model';
-import { IApiProduct } from '@models/product.model';
+import { IProductSummary } from '@models/product.model';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
   bootstrapSearch,
@@ -44,7 +44,7 @@ import { ProductImageComponent } from '@shared/components/product-image/product-
 export class CategoryProductsModalComponent {
   category = input.required<IApiCategory>();
   close = output<void>();
-  onNavigateToProduct = output<IApiProduct>();
+  onNavigateToProduct = output<IProductSummary>();
 
   @HostListener('document:keydown.escape')
   onEscape() {

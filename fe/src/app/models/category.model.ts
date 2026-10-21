@@ -1,4 +1,4 @@
-import { IApiProduct } from './product.model';
+import { IProductSummary } from './product.model';
 
 export enum CategoryState {
   Activo = 'Activo',
@@ -15,7 +15,7 @@ export interface IApiCategory {
   parent?: IApiCategory | null;
   children?: IApiCategory[];
   depth?: number;
-  products?: IApiProduct[];
+  products?: IProductSummary[]; // Solo en GET /categories (panel admin)
   createdAt: string;
   updatedAt: string;
   deletedAt?: string | null;

@@ -111,8 +111,11 @@ export class OrderDetailModalComponent implements OnInit, OnDestroy {
     return `https://wa.me/${storePhone}?text=${encodeURIComponent(message)}`;
   }
 
-  getClientWhatsappLink(): string {
-    const clientPhone = this.order().client.phone.replace(/\D/g, '');
+  // Null si el cliente no tiene teléfono (el registro rápido y el acceso con Google no lo piden)
+  getClientWhatsappLink(): string | null {
+    const clientPhone = this.order().client.phone?.replace(/\D/g, '');
+    if (!clientPhone) return null;
+
     const adminName = this.currentUserName();
     const orderId = this.order().id;
     const message = `Hola, soy ${adminName}, de la librería Laelsi. Quisiera preguntarle con respecto al pedido de ID ${orderId}.`;

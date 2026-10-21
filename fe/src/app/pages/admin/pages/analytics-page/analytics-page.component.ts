@@ -1,5 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { Component, computed, signal } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { FormatDatePipe } from '@shared/pipes/format-date.pipe';
 import { RouterModule } from '@angular/router';
@@ -13,15 +12,10 @@ import {
   bootstrapBagCheck,
   bootstrapReceipt,
 } from '@ng-icons/bootstrap-icons';
-import { ApiOrderService } from '@services/api-services/api-order.service';
-import { ApiProductService } from '@services/api-services/api-product.service';
-import { map } from 'rxjs';
-import { ApiClientService } from '@services/api-services/api-client.service';
 import { OrderState, IApiOrder } from '@models/order.model';
-import { IApiProduct } from '@models/product.model';
-import { IApiClient } from '@models/user.model';
 import { OrderDetailModalComponent } from '@shared/components/modals/order-detail-modal/order-detail-modal.component';
 import { ProductImageComponent } from '@shared/components/product-image/product-image.component';
+import { injectAnalyticsSummaryQuery } from '@services/queries/analytics-queries';
 
 @Component({
   selector: 'app-analytics-page',
@@ -47,43 +41,30 @@ import { ProductImageComponent } from '@shared/components/product-image/product-
   templateUrl: './analytics-page.component.html',
 })
 export class AnalyticsPageComponent {
-  private orderService = inject(ApiOrderService);
-  private productService = inject(ApiProductService);
-  private clientService = inject(ApiClientService);
+  // Capa de queries (TanStack Query): el servidor entrega el resumen ya calculado
+  // (totales, últimas órdenes y más vendidos), sin traer listados completos para contarlos acá
+  private summaryQuery = injectAnalyticsSummaryQuery();
 
-  orders = toSignal(
-    this.orderService.getAllOrders(1, 100).pipe(map((res) => res.data)),
-    { initialValue: [] as IApiOrder[] },
-  );
-  products = toSignal(
-    this.productService.getAllProducts(1, 100).pipe(map((res) => res.data)),
-    { initialValue: [] as IApiProduct[] },
-  );
-  clients = toSignal(
-    this.clientService.getAllClients(1, 100).pipe(map((res) => res.data)),
-    { initialValue: [] as IApiClient[] },
-  );
+  // Estados de la pantalla. Si la carga falla, el errorInterceptor ya avisó con un toast;
+  // el error solo se muestra cuando no hay ningún dato anterior que seguir mostrando.
+  loading = computed(() => this.summaryQuery.isPending());
+  failed = computed(() => this.summaryQuery.isError() && !this.summaryQuery.data());
 
-  totalRevenue = computed(() => {
-    const incomesStatuses = [
-      OrderState.Paid,
-      OrderState.Shipped,
-      OrderState.Delivered,
-    ];
-    return this.orders()
-      .filter((o) => incomesStatuses.includes(o.status))
-      .reduce((acc, order) => acc + Number(order.totalAmount || 0), 0);
-  });
+  private summary = computed(() => this.summaryQuery.data());
 
-  totalOrders = computed(() => this.orders().length);
-  totalProducts = computed(() => this.products().length);
-  totalClients = computed(() => this.clients().length);
+  totalRevenue = computed(() => this.summary()?.totalRevenue ?? 0);
+  totalOrders = computed(() => this.summary()?.totalOrders ?? 0);
+  totalProducts = computed(() => this.summary()?.totalProducts ?? 0);
+  totalClients = computed(() => this.summary()?.totalClients ?? 0);
 
-  recentOrders = computed(() => {
-    return this.orders().slice(0, 5);
-  });
+  recentOrders = computed(() => this.summary()?.recentOrders ?? []);
+  bestSellingProducts = computed(() => this.summary()?.bestSellingProducts ?? []);
 
   selectedOrder = signal<IApiOrder | null>(null);
+
+  retry() {
+    this.summaryQuery.refetch();
+  }
 
   openOrderModal(order: IApiOrder) {
     this.selectedOrder.set(order);
@@ -92,12 +73,6 @@ export class AnalyticsPageComponent {
   closeOrderModal() {
     this.selectedOrder.set(null);
   }
-
-  bestSellingProducts = computed(() => {
-    return [...this.products()]
-      .sort((a, b) => (b.totalSold || 0) - (a.totalSold || 0))
-      .slice(0, 5);
-  });
 
   // Utils
   getOrderStatusColor(status: OrderState): string {

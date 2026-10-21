@@ -38,6 +38,29 @@ async function assertUploaded(scope: PhotoScope, key: string, maxSize: number): 
   }
 }
 
+/**
+ * Borra de R2 los archivos recién subidos que quedaron sin registrar (porque el registro falló).
+ *
+ * Nunca toca una key que ya figura en la tabla photo: si el registro falló justamente porque esa
+ * key ya pertenece a otra foto (violación de unicidad), borrarla destruiría el archivo de otra
+ * persona. Las keys son UUID, pero las URLs de las imágenes son públicas y las incluyen.
+ */
+async function discardUnregistered(scope: PhotoScope, fileNames: string[]): Promise<void> {
+  let inUse: Set<string>;
+  try {
+    const registered = await sql`select file_name from photo where file_name in ${sql(fileNames)}`;
+    inUse = new Set(registered.map((row) => row.fileName as string));
+  } catch (err) {
+    // Ante la duda se conserva el archivo: un huérfano cuesta centavos, uno ajeno borrado no se recupera
+    console.error('No se pudo verificar qué archivos están registrados; no se borra ninguno de R2', err);
+    return;
+  }
+
+  await Promise.all(
+    fileNames.filter((fileName) => !inUse.has(fileName)).map((fileName) => deleteObject(scope, fileName)),
+  );
+}
+
 // ─── Fotos de producto ───────────────────────────────────────────────────────
 
 async function registerProductPhotos(ctx: RequestContext) {
@@ -53,9 +76,7 @@ async function registerProductPhotos(ctx: RequestContext) {
   const ordersArray: number[] = Array.isArray(ctx.body.orders) ? ctx.body.orders.map(Number) : [];
 
   try {
-    for (const fileName of fileNames) {
-      await assertUploaded('product', fileName, MAX_PRODUCT_FILE_SIZE);
-    }
+    await Promise.all(fileNames.map((fileName) => assertUploaded('product', fileName, MAX_PRODUCT_FILE_SIZE)));
 
     const photos = await sql.begin(async (tx: Db) => {
       const [product] = await tx`select id from product where id = ${productId} for update`;
@@ -88,7 +109,7 @@ async function registerProductPhotos(ctx: RequestContext) {
     return created('Fotos subidas correctamente', photos);
   } catch (err) {
     // Si el registro falla, los archivos ya subidos quedarían huérfanos: se limpian
-    await Promise.all(fileNames.map((fileName) => deleteObject('product', fileName as string)));
+    await discardUnregistered('product', fileNames as string[]);
     throw err;
   }
 }
@@ -188,8 +209,9 @@ async function registerUserPhoto(ctx: RequestContext) {
       return { userPhoto: row, previousFileName: (existing?.fileName ?? null) as string | null };
     });
 
-    // El archivo anterior se borra recién cuando el reemplazo quedó confirmado en la base
-    if (previousFileName) await deleteObject('user', previousFileName);
+    // El archivo anterior se borra recién cuando el reemplazo quedó confirmado en la base.
+    // Si se registró la misma key que ya tenía, es el archivo vigente: no se toca.
+    if (previousFileName && previousFileName !== fileName) await deleteObject('user', previousFileName);
 
     return created('Foto de perfil actualizada correctamente', {
       fileName: userPhoto.fileName,
@@ -197,7 +219,7 @@ async function registerUserPhoto(ctx: RequestContext) {
     });
   } catch (err) {
     // Si el registro falla, el archivo recién subido quedaría huérfano: se limpia
-    await deleteObject('user', fileName);
+    await discardUnregistered('user', [fileName]);
     throw err;
   }
 }

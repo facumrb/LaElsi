@@ -110,23 +110,32 @@
               </a>
             </div>
             <div class="flex items-center md:justify-end">
-              <a
-                [href]="getClientWhatsappLink()"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="inline-flex items-center gap-2 group cursor-pointer"
-                title="Enviar WhatsApp"
-              >
-                <ng-icon
-                  name="bootstrapWhatsapp"
-                  class="text-gray-600"
-                ></ng-icon>
-                <span
-                  class="text-sm font-medium text-gray-600 group-hover:underline group-hover:text-gray-800 transition-colors truncate max-w-50"
+              @if (getClientWhatsappLink(); as whatsappLink) {
+                <a
+                  [href]="whatsappLink"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center gap-2 group cursor-pointer"
+                  title="Enviar WhatsApp"
                 >
-                  {{ order().client.phone }}
+                  <ng-icon
+                    name="bootstrapWhatsapp"
+                    class="text-gray-600"
+                  ></ng-icon>
+                  <span
+                    class="text-sm font-medium text-gray-600 group-hover:underline group-hover:text-gray-800 transition-colors truncate max-w-50"
+                  >
+                    {{ order().client.phone }}
+                  </span>
+                </a>
+              } @else {
+                <span
+                  class="inline-flex items-center gap-2 text-sm font-medium text-gray-400"
+                >
+                  <ng-icon name="bootstrapWhatsapp"></ng-icon>
+                  Sin teléfono
                 </span>
-              </a>
+              }
             </div>
           </div>
         </div>

@@ -3,7 +3,6 @@ import {
   inject,
   signal,
   computed,
-  effect,
   linkedSignal,
   OnInit,
 } from '@angular/core';
@@ -31,7 +30,9 @@ import { injectActiveProductsQuery } from '@services/queries/product-queries';
 export class SearchResultComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
-  availableBrands = signal<string[]>([]);
+  // Todas las marcas de la búsqueda: las informa el servidor, porque con la paginación los
+  // productos de la página actual no alcanzan para armar la lista completa
+  availableBrands = computed(() => this.productsQuery.data()?.brands ?? []);
   searchTerm = signal<string>('');
 
   // Filtros
@@ -85,18 +86,6 @@ export class SearchResultComponent implements OnInit {
 
   // Los productos ya vienen filtrados y ordenados del server
   productsFiltered = computed(() => [...this.productsRaw()]);
-
-  // Effect para extraer las marcas disponibles de los productos.
-  private brandExtractor = effect(() => {
-    const products = this.productsRaw();
-    const currentBrand = this.brandFilter();
-    // Ignoramos los datos "de relleno": son los de la consulta anterior,
-    // que se siguen mostrando mientras llega la nueva.
-    if (currentBrand === 'Todas' && !this.productsQuery.isPlaceholderData()) {
-      const brands = [...new Set(products.map((p) => p.brand))].sort();
-      this.availableBrands.set(brands);
-    }
-  });
 
   ngOnInit() {
     this.route.queryParams.subscribe((params) => {

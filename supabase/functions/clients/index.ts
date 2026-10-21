@@ -34,28 +34,19 @@ import { createUser, findUser, listUsers, removeUser, sanitizeUserInput, updateU
 
 const NOT_FOUND = 'Cliente no encontrado';
 
-/** Cliente con su foto y el listado de sus órdenes. */
-async function findClientWithOrders(id: number) {
-  const client = await findUser(id, 'Client', NOT_FOUND);
-  const orders = await sql`
-    select id, status, delivery_method, payment_method, total_amount, date_time, created_at, updated_at
-    from "order"
-    where client_id = ${id}
-    order by id desc
-  `;
-  return { ...client, orders };
-}
+// El historial de órdenes NO viaja con el cliente: crece con cada compra, ninguna pantalla lo lee de
+// acá y ya se pide aparte y paginado en GET /orders/client/:clientId.
 
 async function getAccountInfo(ctx: RequestContext) {
   const id = intParam(ctx, 'id', 'ID de cliente inválido');
   await requireOwnerOrAdmin(ctx.req, id);
-  return ok('Cuenta encontrada', await findClientWithOrders(id));
+  return ok('Cuenta encontrada', await findUser(id, 'Client', NOT_FOUND));
 }
 
 async function findOne(ctx: RequestContext) {
   await requireAdmin(ctx.req);
   const id = intParam(ctx, 'id', 'ID de cliente inválido');
-  return ok('Cliente encontrado', await findClientWithOrders(id));
+  return ok('Cliente encontrado', await findUser(id, 'Client', NOT_FOUND));
 }
 
 async function findAll(ctx: RequestContext) {

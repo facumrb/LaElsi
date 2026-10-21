@@ -41,3 +41,6 @@ verify_jwt = false
 
 [functions.orders]
 verify_jwt = false
+
+[functions.analytics]
+verify_jwt = false

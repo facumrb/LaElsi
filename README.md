@@ -244,7 +244,9 @@ Cada vez que se agrega una migración o cambia un secret hay que repetir el paso
 - **Las escrituras pasan siempre por las Edge Functions**, que validan la sesión y el rol antes de tocar datos. Las políticas RLS son la segunda barrera: con la clave pública solo se puede _leer_ lo que corresponde a cada usuario.
 - **Las contraseñas las guarda Supabase Auth**, nunca nuestras tablas. El rol (Admin / Client) vive en la tabla `user` y solo lo puede asignar el backend.
 - **Las imágenes se suben con URLs prefirmadas** que vencen a los 5 minutos y solo aceptan WebP. El nombre del archivo lo decide el servidor.
-- **Límite de intentos de login**: 5 intentos fallidos por IP cada 15 minutos.
+- **Límite de intentos de login**: 5 intentos fallidos por IP cada 15 minutos. La IP sale de `CF-Connecting-IP` o, si no está, del último valor de `X-Forwarded-For`, nunca del primero, que controla el navegador. Un login correcto no reinicia el contador.
+- **Validación en vivo de los formularios** (`check_field_unique`, que el navegador llama directo a la API REST): 30 consultas por minuto por IP.
+- **Listados completos de productos y categorías** (con inactivos, stock y ventas): solo para administradores. La tienda usa los endpoints de productos activos.
 - **Recuperación de contraseña**:
   - La respuesta es siempre la misma, exista o no la cuenta: no se puede usar para averiguar qué emails están registrados.
   - El enlace vence a la hora, sirve una sola vez y queda anulado si se pide otro. En la base se guarda su hash, no el enlace.

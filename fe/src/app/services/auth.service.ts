@@ -13,6 +13,20 @@ import {
 import { UserRole } from '@models/user.model';
 import { supabase } from './supabase.client';
 
+// Lo único que se guarda del usuario en el navegador (localStorage)
+const SESSION_FIELDS = ['id', 'name', 'lastName', 'role', 'photo'] as const;
+
+/**
+ * Deja solo los campos de UserSession. Se usa antes de guardar el usuario en localStorage: otras
+ * pantallas pueden entregar un perfil completo (con DNI, CUIT, domicilio...) porque TypeScript lo
+ * acepta por tipado estructural, y esos datos personales no tienen por qué quedar guardados ahí.
+ */
+function pickSessionFields(source: Partial<UserSession>): Partial<UserSession> {
+  return Object.fromEntries(
+    SESSION_FIELDS.filter((field) => field in source).map((field) => [field, source[field]]),
+  );
+}
+
 /**
  * Autenticación con Supabase Auth.
  *
@@ -99,14 +113,14 @@ export class AuthService {
     );
   }
 
-  register(userData: IClientRegister): Observable<any> {
+  register(userData: IClientRegister): Observable<{ id: number }> {
     return this.http
-      .post<IApiResponse<any>>(`${this.apiUrl}/register`, userData)
+      .post<IApiResponse<{ id: number }>>(`${this.apiUrl}/register`, userData)
       .pipe(map((response) => response.data));
   }
 
-  verifyPassword(password: string): Observable<any> {
-    return this.http.post<IApiResponse<any>>(`${this.apiUrl}/verify-password`, {
+  verifyPassword(password: string): Observable<IApiResponse<null>> {
+    return this.http.post<IApiResponse<null>>(`${this.apiUrl}/verify-password`, {
       password,
     });
   }
@@ -166,7 +180,7 @@ export class AuthService {
    * antes de que venza; esto queda para el caso en que el backend responda 401
    * (lo usa el errorInterceptor antes de reintentar la petición).
    */
-  refreshToken(): Observable<any> {
+  refreshToken(): Observable<boolean> {
     return from(supabase.auth.refreshSession()).pipe(
       map(({ data, error }) => {
         if (error || !data.session) {
@@ -253,7 +267,14 @@ export class AuthService {
     if (storedUser) {
       try {
         const parsedUser = JSON.parse(storedUser);
-        this.currentUser.set(parsedUser);
+        const sessionUser = pickSessionFields(parsedUser) as UserSession;
+        this.currentUser.set(sessionUser);
+
+        // Versiones anteriores guardaban el perfil completo (DNI, domicilio, órdenes...):
+        // se reescribe solo con lo necesario para no dejar esos datos en el navegador
+        if (Object.keys(parsedUser).length !== Object.keys(sessionUser).length) {
+          localStorage.setItem(this.USER_KEY, JSON.stringify(sessionUser));
+        }
       } catch (e) {
         // Si el JSON está corrupto, limpiamos todo
         this.clearSession();
@@ -265,10 +286,10 @@ export class AuthService {
     const currentUser = this.currentUser();
 
     if (currentUser) {
-      // 1. Creamos el nuevo objeto mezclando lo actual con los cambios
+      // 1. Creamos el nuevo objeto mezclando lo actual con los cambios (solo los campos de la sesión)
       const updatedUser: UserSession = {
         ...currentUser,
-        ...updates,
+        ...pickSessionFields(updates),
       };
 
       // 2. Actualizamos el Signal (Reactividad en la UI)

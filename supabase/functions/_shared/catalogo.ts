@@ -102,15 +102,14 @@ export async function checkAndDeactivateCategory(categoryId: number, db: Db = sq
 // ─── Productos ───────────────────────────────────────────────────────────────
 
 /**
- * Carga los productos indicados con su categoría, fotos y precios, respetando
+ * Carga los productos indicados con su categoría, fotos y precio vigente, respetando
  * el orden de `ids`.
  *
- * @param onlyCurrentPrices true para la tienda (solo el precio vigente);
- *                          false para el panel admin (historial completo).
+ * Solo trae el precio VIGENTE: ninguna pantalla (tienda ni panel admin) consume el historial,
+ * que además crece con cada cambio masivo de precios y se multiplicaba por cada producto de la página.
  */
 export async function loadProducts(
   ids: number[],
-  options: { onlyCurrentPrices?: boolean } = {},
   db: Db = sql,
   // deno-lint-ignore no-explicit-any
 ): Promise<any[]> {
@@ -124,18 +123,11 @@ export async function loadProducts(
       where product_id in ${db(ids)}
       order by "order" asc, id asc
     `,
-    options.onlyCurrentPrices
-      ? db`
-          select id, amount, currency, valid_from, is_current, product_id
-          from price
-          where product_id in ${db(ids)} and is_current
-        `
-      : db`
-          select id, amount, currency, valid_from, is_current, product_id
-          from price
-          where product_id in ${db(ids)}
-          order by valid_from asc, id asc
-        `,
+    db`
+      select id, amount, currency, valid_from, is_current, product_id
+      from price
+      where product_id in ${db(ids)} and is_current
+    `,
     loadCategories(db),
   ]);
 
@@ -164,11 +156,34 @@ export async function loadProducts(
 }
 
 /**
+ * Primera foto (la de menor orden) de cada uno de los productos indicados.
+ *
+ * Es lo que muestran los resúmenes (miniaturas del panel admin, líneas de una orden): traer toda
+ * la galería de cada producto para mostrar una sola imagen es traer hasta 10 veces lo necesario.
+ */
+export async function loadFirstPhotos(
+  productIds: number[],
+  db: Db = sql,
+): Promise<Map<number, { id: number; fileName: string }>> {
+  if (productIds.length === 0) return new Map();
+
+  const rows = await db`
+    select distinct on (product_id) id, file_name, product_id
+    from photo
+    where product_id in ${db(productIds)}
+    order by product_id, "order" asc, id asc
+  `;
+  // deno-lint-ignore no-explicit-any
+  return new Map(rows.map((row: any) => [row.productId, { id: row.id, fileName: row.fileName }]));
+}
+
+/**
  * Lista productos paginados.
  *
  * `where` y `orderBy` son funciones que devuelven un fragmento SQL nuevo cada
  * vez, porque el mismo filtro se usa en dos consultas (la página y el total).
- * En ambas están disponibles los alias: p (product), c (category) y cp (precio vigente).
+ * Los alias disponibles son: p (product) y c (category) en ambas consultas, y
+ * cp (precio vigente) SOLO en la de la página: el `where` no puede filtrar por precio.
  */
 export async function paginateProducts(options: {
   // deno-lint-ignore no-explicit-any
@@ -177,33 +192,31 @@ export async function paginateProducts(options: {
   orderBy: () => any;
   page: number;
   limit: number;
-  onlyCurrentPrices?: boolean;
 }) {
   const { page, limit } = options;
   const offset = (page - 1) * limit;
 
-  const rows = await sql`
-    select p.id
-    from product p
-    join category c on c.id = p.category_id
-    left join price cp on cp.product_id = p.id and cp.is_current
-    where ${options.where()}
-    order by ${options.orderBy()}
-    limit ${limit} offset ${offset}
-  `;
+  // La página y el total son independientes: se piden a la vez
+  const [rows, [{ total }]] = await Promise.all([
+    sql`
+      select p.id
+      from product p
+      join category c on c.id = p.category_id
+      left join price cp on cp.product_id = p.id and cp.is_current
+      where ${options.where()}
+      order by ${options.orderBy()}
+      limit ${limit} offset ${offset}
+    `,
+    sql`
+      select count(*)::int as total
+      from product p
+      join category c on c.id = p.category_id
+      where ${options.where()}
+    `,
+  ]);
 
-  const [{ total }] = await sql`
-    select count(*)::int as total
-    from product p
-    join category c on c.id = p.category_id
-    where ${options.where()}
-  `;
-
-  const data = await loadProducts(
-    // deno-lint-ignore no-explicit-any
-    rows.map((r: any) => r.id),
-    { onlyCurrentPrices: options.onlyCurrentPrices },
-  );
+  // deno-lint-ignore no-explicit-any
+  const data = await loadProducts(rows.map((r: any) => r.id));
 
   return paginated(data, total, page, limit);
 }

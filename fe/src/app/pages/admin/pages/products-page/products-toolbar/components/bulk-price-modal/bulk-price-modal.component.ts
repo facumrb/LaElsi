@@ -23,6 +23,7 @@ import {
   bootstrapCheckLg,
 } from '@ng-icons/bootstrap-icons';
 import { ApiProductService } from '@services/api-services/api-product.service';
+import { IBulkPricePreviewItem } from '@models/product.model';
 import { AlertService } from '@services/alert.service';
 import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
 import { PriceAdjustmentInputDirective } from '@shared/directives/price-adjustment-input.directive';
@@ -66,7 +67,7 @@ export class BulkPriceModalComponent implements OnDestroy {
 
   // UI State
   showRoundingOptions = signal(false); // Para el custom select
-  previewData = signal<any[]>([]);
+  previewData = signal<IBulkPricePreviewItem[]>([]);
   loadingPreview = signal(false);
   loadingApply = signal(false);
 

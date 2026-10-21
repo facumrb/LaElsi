@@ -54,7 +54,9 @@ export class CategoryPageComponent implements OnInit {
   category = computed<IApiCategory | null>(
     () => this.categoryQuery.data() ?? null,
   );
-  availableBrands = signal<string[]>([]);
+  // Todas las marcas de la categoría: las informa el servidor, porque con la paginación los
+  // productos de la página actual no alcanzan para armar la lista completa
+  availableBrands = computed(() => this.productsQuery.data()?.brands ?? []);
 
   // Filtros
   priceOrder = signal<PriceOrder>('Defecto');
@@ -138,18 +140,6 @@ export class CategoryPageComponent implements OnInit {
       }
     });
   }
-
-  // Effect para extraer las marcas disponibles de los productos.
-  private brandExtractor = effect(() => {
-    const products = this.productsRaw();
-    const currentBrand = this.brandFilter();
-    // Ignoramos los datos "de relleno": son los de la consulta anterior,
-    // que se siguen mostrando mientras llega la nueva.
-    if (currentBrand === 'Todas' && !this.productsQuery.isPlaceholderData()) {
-      const brands = [...new Set(products.map((p) => p.brand))].sort();
-      this.availableBrands.set(brands);
-    }
-  });
 
   ngOnInit(): void {
     // Escuchamos el ID de la categoría y la página de la URL. Al actualizar los signals,

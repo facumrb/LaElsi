@@ -14,7 +14,13 @@ import { AppError, paginated, pickFields } from './http.ts';
 import { deleteObject } from './r2.ts';
 
 export const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-export const MIN_PASSWORD_LENGTH = 6;
+
+// Mismas reglas que valida el formulario del frontend (FormUtils.usernamePattern y passwordPattern):
+// el servidor no puede confiar en que la petición salió de ese formulario.
+const USERNAME_PATTERN = /^[a-zA-Z0-9._-]+$/;
+const MAX_USERNAME_LENGTH = 50; // VARCHAR(50)
+const PASSWORD_PATTERN = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
+const MAX_PASSWORD_LENGTH = 100;
 
 const VALID_FISCAL_CONDITIONS = ['Consumidor Final', 'Responsable Inscripto', 'Monotributista', 'Exento'];
 
@@ -42,6 +48,38 @@ export function validatePasswords(password?: string, confirmPassword?: string): 
     throw new AppError('Las contraseñas no coinciden', 400);
   }
 }
+
+/** Lanza AppError si la contraseña incumple la política: 8 a 100 caracteres, con al menos una letra y un número. */
+export function assertValidPassword(password: unknown): asserts password is string {
+  if (typeof password !== 'string' || password.length > MAX_PASSWORD_LENGTH || !PASSWORD_PATTERN.test(password)) {
+    throw new AppError('La contraseña debe tener al menos 8 caracteres, con al menos una letra y un número.', 400);
+  }
+}
+
+/**
+ * Lanza AppError si el nombre de usuario tiene caracteres no permitidos.
+ * Importa también para el login: se puede iniciar sesión con el usuario O con el email, y un
+ * usuario con forma de email (con "@") competiría con la cuenta de esa dirección.
+ */
+export function assertValidUsername(username: unknown): asserts username is string {
+  if (typeof username !== 'string' || username.length > MAX_USERNAME_LENGTH || !USERNAME_PATTERN.test(username)) {
+    throw new AppError(
+      `El nombre de usuario solo admite letras, números, puntos, guiones y guiones bajos (máximo ${MAX_USERNAME_LENGTH} caracteres)`,
+      400,
+    );
+  }
+}
+
+/**
+ * Columnas del perfil que viajan al frontend: todas menos supabase_uid, que es interna.
+ * Se listan a propósito en vez de usar `select *`, así una columna nueva de la tabla no se
+ * expone por accidente en cada listado.
+ */
+const userColumns = () => sql`
+  id, role, name, last_name, dni, phone, username, email, cuit, fiscal_condition,
+  street, street_number, city, province, postal_code, floor, apartment,
+  created_at, updated_at, deleted_at
+`;
 
 /**
  * Deja solo los campos permitidos según el rol (reemplaza a sanitizeAdminInput y
@@ -109,7 +147,7 @@ async function attachPhotos(users: any[], db: Db = sql): Promise<any[]> {
 
 /** Busca un usuario por ID y rol, con su foto. Lanza 404 con el mensaje indicado si no existe. */
 export async function findUser(id: number, role: UserRole, notFoundMessage: string) {
-  const [row] = await sql`select * from "user" where id = ${id} and role = ${role}`;
+  const [row] = await sql`select ${userColumns()} from "user" where id = ${id} and role = ${role}`;
   if (!row) throw new AppError(notFoundMessage, 404);
 
   const [user] = await attachPhotos([row]);
@@ -125,7 +163,7 @@ export async function listUsers(role: UserRole, page: number, limit: number, fil
   const offset = (page - 1) * limit;
 
   const rows = await sql`
-    select * from "user" u
+    select ${userColumns()} from "user" u
     where u.role = ${role} ${filter()}
     order by u.id asc
     limit ${limit} offset ${offset}
@@ -186,9 +224,8 @@ export async function createUser(
     throw new AppError('El formato del correo electrónico es inválido', 400);
   }
 
-  if (String(password).length < MIN_PASSWORD_LENGTH) {
-    throw new AppError(`La contraseña debe tener al menos ${MIN_PASSWORD_LENGTH} caracteres`, 400);
-  }
+  assertValidPassword(password);
+  assertValidUsername(username);
 
   const columns = toProfileColumns(input, role);
 
@@ -225,7 +262,7 @@ export async function createUser(
     const [user] = await sql`
       update "user" set ${sql({ ...columns, role })}
       where supabase_uid = ${data.user.id}
-      returning *
+      returning ${userColumns()}
     `;
     if (!user) throw new Error('El trigger de sincronización no creó el perfil del usuario');
 
@@ -245,7 +282,7 @@ export async function createUser(
  */
 // deno-lint-ignore no-explicit-any
 export async function updateUser(id: number, role: UserRole, input: Record<string, any>, notFoundMessage: string) {
-  const [current] = await sql`select * from "user" where id = ${id} and role = ${role}`;
+  const [current] = await sql`select ${userColumns()}, supabase_uid from "user" where id = ${id} and role = ${role}`;
   if (!current) throw new AppError(notFoundMessage, 404);
 
   if (input.email !== undefined && !EMAIL_REGEX.test(input.email)) {
@@ -253,10 +290,11 @@ export async function updateUser(id: number, role: UserRole, input: Record<strin
   }
 
   validatePasswords(input.password, input.confirmPassword);
+  if (input.password) assertValidPassword(input.password);
 
-  if (input.password && String(input.password).length < MIN_PASSWORD_LENGTH) {
-    throw new AppError(`La contraseña debe tener al menos ${MIN_PASSWORD_LENGTH} caracteres`, 400);
-  }
+  // Solo se valida si el usuario cambia: una cuenta heredada con un usuario fuera de la regla
+  // tiene que poder seguir editando el resto de su perfil
+  if (input.username !== undefined && input.username !== current.username) assertValidUsername(input.username);
 
   const columns = toProfileColumns(input, role);
   const emailChanged = columns.email !== undefined && columns.email !== String(current.email).toLowerCase();
@@ -266,7 +304,7 @@ export async function updateUser(id: number, role: UserRole, input: Record<strin
   let updated: any = current;
   if (Object.keys(columns).length > 0) {
     try {
-      [updated] = await sql`update "user" set ${sql(columns)} where id = ${id} returning *`;
+      [updated] = await sql`update "user" set ${sql(columns)} where id = ${id} returning ${userColumns()}`;
     } catch (err) {
       rethrowUnique(err);
     }

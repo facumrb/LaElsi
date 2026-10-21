@@ -32,7 +32,13 @@ import {
   serveRoutes,
   type RequestContext,
 } from '../_shared/http.ts';
-import { createUser, getSessionUser, sanitizeUserInput, validatePasswords } from '../_shared/usuarios.ts';
+import {
+  assertValidPassword,
+  createUser,
+  getSessionUser,
+  sanitizeUserInput,
+  validatePasswords,
+} from '../_shared/usuarios.ts';
 import { getClientIp, requireTurnstile } from '../_shared/turnstile.ts';
 import { assertEmailConfigured, sendEmail } from '../_shared/correo.ts';
 import { passwordChangedEmail, passwordResetEmail } from '../_shared/correo-plantillas.ts';
@@ -78,10 +84,13 @@ async function login(ctx: RequestContext) {
     );
   }
 
-  // Se acepta el email o el nombre de usuario (sin distinguir mayúsculas)
+  // Se acepta el email o el nombre de usuario (sin distinguir mayúsculas). Si un usuario heredado
+  // coincide con el email de OTRA cuenta (ej: usuario "ana@x.com"), gana la cuenta cuyo email es
+  // exactamente ese: así nadie le quita a su dueño el inicio de sesión por email.
   const [profile] = await sql`
     select email from "user"
     where lower(email) = lower(${loginValue}) or lower(username) = lower(${loginValue})
+    order by (lower(email) = lower(${loginValue})) desc, id asc
     limit 1
   `;
 
@@ -94,8 +103,10 @@ async function login(ctx: RequestContext) {
     throw new AppError('Credenciales inválidas', 401);
   }
 
-  // Login correcto: se limpian los intentos de esta IP y los registros viejos
-  await sql`delete from login_attempt where ip = ${ip} or created_at < now() - interval '1 day'`;
+  // Login correcto: solo se limpian los registros viejos. Los intentos fallidos de esta IP NO se
+  // borran: si un login exitoso reiniciara el contador, quien tenga una cuenta propia podría
+  // alternar "4 intentos contra la víctima + 1 login propio" y probar contraseñas sin límite.
+  await sql`delete from login_attempt where created_at < now() - interval '1 day'`;
 
   return ok('Login exitoso', {
     token: session.access_token,
@@ -149,10 +160,6 @@ const MAX_RESET_EMAILS_PER_HOUR = 3;
 /** Máximo de solicitudes que puede hacer una misma IP cada 15 minutos. */
 const MAX_RESET_REQUESTS_PER_IP = 5;
 const RESET_REQUEST_WINDOW_MINUTES = 15;
-
-// Misma regla que valida el formulario: mínimo 8 caracteres, con al menos una letra y un número
-const PASSWORD_PATTERN = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
-const MAX_PASSWORD_LENGTH = 100;
 
 const RESET_REQUESTED_MESSAGE =
   'Si los datos corresponden a una cuenta, te enviamos un correo con las instrucciones para restablecer tu contraseña.';
@@ -322,9 +329,7 @@ async function resetPassword(ctx: RequestContext) {
   if (!TOKEN_PATTERN.test(token)) throw new AppError(INVALID_LINK_MESSAGE, 400);
 
   validatePasswords(password, confirmPassword);
-  if (typeof password !== 'string' || password.length > MAX_PASSWORD_LENGTH || !PASSWORD_PATTERN.test(password)) {
-    throw new AppError('La contraseña debe tener al menos 8 caracteres, con al menos una letra y un número.', 400);
-  }
+  assertValidPassword(password);
 
   // Canje atómico: el UPDATE marca el token como usado y lo devuelve en una sola
   // operación. Si llegan dos peticiones con el mismo enlace, solo una lo obtiene.
