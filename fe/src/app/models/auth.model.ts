@@ -37,6 +37,9 @@ export interface IClientRegister {
   username: string;
   email: string;
   password: string;
+  // Casilla de aceptación de los Términos y la Política de Privacidad, y la versión que se mostró
+  acceptTerms: boolean;
+  termsVersion: string;
 }
 
 // Estado de un enlace de recuperación de contraseña

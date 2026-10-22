@@ -129,3 +129,94 @@ export function passwordChangedEmail(data: { name?: string | null }): EmailConte
 
   return { subject: 'Tu contraseña de Laelsi fue actualizada', html, text };
 }
+
+const SHOP_WHATSAPP = '+54 9 341 712-1860';
+
+/**
+ * Constancia para quien usó el botón de arrepentimiento: lleva el código de
+ * identificación que exige la Resolución 424/2020 (que además se muestra en pantalla).
+ */
+export function revocationReceivedEmail(data: { name: string; code: string }): EmailContent {
+  const hello = greeting(data.name);
+  const code = escapeHtml(data.code);
+
+  const html = layout(
+    'Recibimos tu solicitud de arrepentimiento',
+    `<p style="margin:0 0 16px;">${escapeHtml(hello)}</p>
+          <p style="margin:0 0 16px;">Recibimos tu solicitud para revocar tu compra en Laelsi. Este es tu <strong>código de identificación</strong>:</p>
+          <p style="margin:0 0 24px;text-align:center;">
+            <span style="display:inline-block;padding:12px 24px;background-color:#f3f4f6;border-radius:8px;font-size:22px;font-weight:bold;letter-spacing:1px;color:${BRAND_COLOR};">${code}</span>
+          </p>
+          <p style="margin:0 0 16px;">Guardalo: lo vas a necesitar para consultar cómo va tu solicitud.</p>
+          <p style="margin:0 0 16px;">Nos vamos a comunicar con vos para coordinar la devolución del producto y el reintegro del importe pagado, que se hace por el mismo medio de pago. Los gastos de la devolución corren por cuenta de Laelsi.</p>
+          <p style="margin:0;font-size:13px;color:#6b7280;">Si tenés dudas, escribinos por WhatsApp al ${SHOP_WHATSAPP}. Si vos no hiciste esta solicitud, avisanos.</p>`,
+  );
+
+  const text = [
+    hello,
+    '',
+    'Recibimos tu solicitud para revocar tu compra en Laelsi.',
+    `Tu código de identificación es: ${data.code}`,
+    '',
+    'Guardalo: lo vas a necesitar para consultar cómo va tu solicitud.',
+    'Nos vamos a comunicar con vos para coordinar la devolución del producto y el reintegro del importe pagado, que se hace por el mismo medio de pago. Los gastos de la devolución corren por cuenta de Laelsi.',
+    '',
+    `Si tenés dudas, escribinos por WhatsApp al ${SHOP_WHATSAPP}. Si vos no hiciste esta solicitud, avisanos.`,
+  ].join('\n');
+
+  return { subject: `Recibimos tu solicitud de arrepentimiento (${data.code})`, html, text };
+}
+
+/** Aviso al comercio: una persona pidió revocar una compra. Hay que contactarla. */
+export function revocationNotificationEmail(data: {
+  code: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string | null;
+  orderNumber: number | null;
+  details: string;
+  createdAt: Date;
+}): EmailContent {
+  const fullName = `${data.firstName} ${data.lastName}`;
+  const when = data.createdAt.toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' });
+  const rows: [string, string][] = [
+    ['Código', data.code],
+    ['Nombre', fullName],
+    ['Email', data.email],
+    ['Teléfono', data.phone ?? 'No indicó'],
+    ['Número de pedido', data.orderNumber === null ? 'No indicó' : String(data.orderNumber)],
+    ['Fecha', when],
+  ];
+
+  // Todo lo que escribió la persona se escapa: el contenido no es de confianza
+  const rowsHtml = rows
+    .map(
+      ([label, value]) =>
+        `<p style="margin:0 0 8px;"><strong>${escapeHtml(label)}:</strong> ${escapeHtml(value)}</p>`,
+    )
+    .join('\n          ');
+  const detailsHtml = escapeHtml(data.details).replace(/\n/g, '<br>');
+
+  const html = layout(
+    'Nueva solicitud de arrepentimiento',
+    `<p style="margin:0 0 16px;">Una persona usó el <strong>Botón de arrepentimiento</strong> del sitio.</p>
+          ${rowsHtml}
+          <p style="margin:16px 0 8px;"><strong>Lo que escribió:</strong></p>
+          <p style="margin:0 0 16px;padding:12px;background-color:#f3f4f6;border-radius:8px;">${detailsHtml}</p>
+          <p style="margin:0;font-size:13px;color:#6b7280;">Tenés que contactarla para coordinar la devolución y el reintegro. La solicitud queda guardada en la tabla revocation_request.</p>`,
+  );
+
+  const text = [
+    'Una persona usó el Botón de arrepentimiento del sitio.',
+    '',
+    ...rows.map(([label, value]) => `${label}: ${value}`),
+    '',
+    'Lo que escribió:',
+    data.details,
+    '',
+    'Tenés que contactarla para coordinar la devolución y el reintegro. La solicitud queda guardada en la tabla revocation_request.',
+  ].join('\n');
+
+  return { subject: `Nueva solicitud de arrepentimiento ${data.code}`, html, text };
+}

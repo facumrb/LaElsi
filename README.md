@@ -182,6 +182,10 @@ ALLOWED_ORIGINS=https://tu-dominio.com
 
 # Descuento máximo (en %) permitido en los cambios masivos de precio
 MAX_BULK_DISCOUNT_PERCENTAGE=90
+
+# Email del comercio que recibe el aviso cuando alguien usa el Botón de arrepentimiento (Res. 424/2020).
+# Sin esto la solicitud igual se guarda (tabla revocation_request), pero nadie se entera por correo.
+REVOCATION_NOTIFY_EMAIL=
 ```
 
 **`supabase/.env`** — solo para los scripts de seed:
@@ -252,8 +256,50 @@ Cada vez que se agrega una migración o cambia un secret hay que repetir el paso
   - El enlace vence a la hora, sirve una sola vez y queda anulado si se pide otro. En la base se guarda su hash, no el enlace.
   - El destino del enlace sale de `SITE_URL`, nunca de un dato que envíe el navegador.
   - Límites: 3 correos por hora por cuenta y 5 solicitudes cada 15 minutos por IP, más Turnstile si está configurado. Protegen la cuota de Resend.
+- **Botón de arrepentimiento** (`POST /revocations`, público por exigencia de la norma): Turnstile, tope de 5 solicitudes por hora por IP y validación de todos los campos en el servidor. Los textos que escribe la persona se escapan antes de ir en el correo al comercio.
 - **Pantallas de acceso**: si la persona sale y vuelve, se conserva el usuario o email que había escrito (en `sessionStorage`, hasta cerrar la pestaña). La contraseña nunca se guarda: la completa el navegador o el gestor de contraseñas.
 - **Las reglas de WAF de Cloudflare protegen el sitio, no la API**: las Edge Functions se sirven desde `*.supabase.co`, que no pasa por tu zona de Cloudflare. La protección de la API es la de arriba (validaciones, Turnstile y límite de login).
+
+## Textos legales y verificación de Google
+
+La Política de Privacidad y los Términos y Condiciones son rutas públicas de la SPA:
+
+| Ruta | Contenido | Código |
+| --- | --- | --- |
+| `/privacidad` | Política de Privacidad (incluye la sección sobre los datos de Google) | `fe/src/app/pages/client/pages/footer-pages/privacy-page/` |
+| `/terminos` | Términos y Condiciones | `fe/src/app/pages/client/pages/footer-pages/terms-page/` |
+| `/arrepentimiento` | Botón de arrepentimiento (Res. 424/2020) | `fe/src/app/pages/client/pages/revocation-page/` y Edge Function `revocations` |
+
+- Los datos que comparten las páginas (domicilio, WhatsApp, titular, CUIT, email de contacto) y la **versión** de los textos están en `footer-pages/legal-info.ts`. Los campos opcionales no se muestran mientras estén vacíos.
+- **Los textos describen lo que el código hace hoy** (qué datos se piden, quién los recibe, cuánto se guardan, cómo se compra). Si cambia algo de eso (un proveedor nuevo, un dato nuevo en el perfil, analítica, pagos en línea, envíos a domicilio), hay que actualizar el texto **y** `LEGAL_VERSION` en `legal-info.ts`. Esa versión se guarda con la aceptación de cada persona que se registra (`user.terms_accepted_at` y `user.terms_version`).
+- **Aceptación al registrarse:** casilla obligatoria que el servidor vuelve a exigir (`POST /auth/register` responde 400 sin ella). Con Google no hay casilla: hay un aviso bajo el botón y no queda constancia de la aceptación.
+- **Botón de arrepentimiento:** está en el inicio (banner), en el pie de página y en el marco de las páginas legales. No pide cuenta: guarda la solicitud en `revocation_request`, devuelve un código de identificación (`ARR-000123`) que se muestra al instante y se envía por email, y avisa al comercio a `REVOCATION_NOTIFY_EMAIL`. Protegido con Turnstile y un tope de 5 solicitudes por hora por IP. **Todavía no hay una pantalla de administración para estas solicitudes:** se gestionan desde el email de aviso y la tabla.
+- Enlaces a las páginas legales: pie de página, casilla del registro y aviso bajo "Continuar con Google". El `index.html` repite los dos enlaces dentro de un `<noscript>`.
+
+### Pre-renderizado de las dos páginas legales
+
+El sitio es una SPA: el HTML que baja el navegador está vacío y el texto aparece al ejecutar JavaScript. Para que los robots que no ejecutan JavaScript (como los que verifica Google) vean el texto, `/privacidad` y `/terminos` se **pre-renderizan en el build** (`outputMode: "static"` en `fe/angular.json`). El resto del sitio sigue siendo una SPA.
+
+- Qué rutas se pre-renderizan: `fe/src/app/app.routes.server.ts`. El build genera `privacidad/index.html` y `terminos/index.html`, y el resto de las rutas usa `index.csr.html` (**ya no existe `index.html`**; por eso `fe/vercel.json` apunta ahí).
+- Las páginas legales viven **fuera del layout de la tienda** (`app.routes.ts`) y usan su propio marco liviano (`legal-shell`). El navbar de la tienda depende de `localStorage` y del API, que no existen en el build. **Regla:** nada de lo que usen estas páginas puede depender del navegador (`localStorage`, `window`, `HttpClient`, `AuthService`, `CartService`); si hace falta, va dentro de `afterNextRender`. Un test lo vigila (`legal-pages.spec.ts`).
+- Verificarlo sin buildear: `npm run start:dev` y abrir `http://localhost:4200/privacidad` → _Ver código fuente de la página_ tiene que mostrar el texto de la política (y `ng-server-context="ssg"`).
+- Verificarlo después de un build (`cd fe && npx ng build`): tienen que existir `dist/frontend/browser/privacidad/index.html`, `terminos/index.html` e `index.csr.html`.
+
+### Google Cloud → Google Auth Platform
+
+Antes llamada "Pantalla de consentimiento de OAuth". Usá las URLs **finales, sin redirecciones**: hoy `laelsi.com.ar` responde `308` hacia `www.laelsi.com.ar`, así que las URLs correctas son las de `www` (o el dominio que quede como principal en Vercel).
+
+| Campo | Valor |
+| --- | --- |
+| Página principal de la aplicación | `https://www.laelsi.com.ar` |
+| Vínculo a la política de privacidad | `https://www.laelsi.com.ar/privacidad` |
+| Vínculo a las condiciones del servicio | `https://www.laelsi.com.ar/terminos` |
+| Dominios autorizados | `laelsi.com.ar` |
+
+- El dominio tiene que estar verificado en Google Search Console con la misma cuenta propietaria del proyecto de Google Cloud.
+- Los permisos solicitados deben ser solo los básicos (`openid`, `email`, `profile`), que es lo que pide Supabase. Si se agrega otro, hay que ampliar la sección 4 de la política.
+- Los dos enlaces tienen que responder `200` en producción antes de enviar la solicitud de verificación. En PowerShell usá `curl.exe -I https://www.laelsi.com.ar/privacidad` (`curl` a secas es un alias de otro comando).
+- Si el sitio se sirve desde `www`, ese origen también tiene que estar en `ALLOWED_ORIGINS`, en las _Redirect URLs_ de Supabase y en el CORS de los buckets de R2 (ver `docs/paginas-legales-y-arrepentimiento-2026-10-21.md`).
 
 ## Backend anterior (`be/`)
 

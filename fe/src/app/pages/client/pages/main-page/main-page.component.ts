@@ -1,4 +1,5 @@
 import { Component, computed } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { IApiProduct } from '@models/product.model';
 import { IApiCategory } from '@models/category.model';
 import { ProductCardComponent } from '../../components/product-card/product-card.component';
@@ -14,6 +15,7 @@ import { injectActiveCategoriesQuery } from '@services/queries/category-queries'
 @Component({
   selector: 'app-main-page',
   imports: [
+    RouterLink,
     ProductCardComponent,
     LogoComponent,
     ScrollTrackerDirective,

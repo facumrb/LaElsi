@@ -22,27 +22,37 @@ export class FaqPageComponent {
     {
       question: '¿Cómo realizo una compra en Laelsi?',
       answer:
-        'Elegí los productos que necesitás, agregalos al carrito y seguí el proceso de compra. Podés comprar como usuario registrado o continuar como invitado. Una vez confirmado el pago, recibirás un email con los detalles de tu pedido.',
+        'Elegí los productos que necesitás, agregalos al carrito, iniciá sesión (o creá tu cuenta) y confirmá el pedido eligiendo cómo vas a pagar. El pedido queda registrado como “Pendiente” y lo ves en Mi Perfil, en Mis Pedidos. Después coordinás el pago y el retiro con nosotros.',
     },
     {
-      question: '¿Realizan envíos a todo el país?',
+      question: '¿Realizan envíos a domicilio?',
       answer:
-        'Sí, realizamos envíos a todo el territorio argentino. Trabajamos con servicios de correo confiables para que tu pedido llegue de forma segura y en el menor tiempo posible.',
+        'Por el momento no hacemos envíos a domicilio: los pedidos se retiran en nuestro local de Rosario (9 de Julio 2325). Si habilitamos los envíos, lo vamos a informar en el sitio.',
     },
     {
       question: '¿Cuáles son los medios de pago disponibles?',
       answer:
-        'Aceptamos tarjetas de débito y crédito, transferencias bancarias y otros medios de pago electrónicos habilitados en nuestra tienda. Todas las operaciones se realizan en un entorno seguro.',
+        'Podés pagar por transferencia o depósito bancario (al confirmar el pedido te mostramos el alias y nos enviás el comprobante por WhatsApp) o en el local, con efectivo, tarjeta de débito o tarjeta de crédito. El sitio no cobra en línea ni te pide los datos de tu tarjeta.',
     },
     {
-      question: '¿Puedo retirar mi compra en el local?',
+      question: '¿Cómo retiro mi compra en el local?',
       answer:
-        'Sí, podés optar por retirar tu pedido en nuestro local de Rosario. Una vez que la compra esté lista, te avisaremos para que puedas pasar a buscarla.',
+        'Retirás tu pedido en 9 de Julio 2325, Rosario, en nuestro horario de atención (figura al pie del sitio). Podés seguir el estado del pedido en Mis Pedidos o consultarnos por WhatsApp.',
+    },
+    {
+      question: '¿Puedo cancelar un pedido?',
+      answer:
+        'Sí. Desde Mi Perfil, en Mis Pedidos, podés cancelarlo mientras esté “Pendiente” o “Pagado”. Si ya habías pagado, coordinamos con vos la devolución del dinero.',
+    },
+    {
+      question: '¿Puedo arrepentirme de una compra?',
+      answer:
+        'Sí. Tenés 10 días corridos desde que retirás el producto o confirmás el pedido, lo que ocurra último. Usá el Botón de arrepentimiento que está en el inicio del sitio: no necesitás cuenta y te damos un código de identificación al instante. Los productos hechos a medida, como los sellos, quedan exceptuados por la ley.',
     },
     {
       question: '¿Qué hago si tengo un problema con mi pedido?',
       answer:
-        'Si tu pedido llega con algún inconveniente o tenés una consulta adicional, podés comunicarte con nuestro equipo de atención al cliente. Vamos a ayudarte para resolverlo lo antes posible.',
+        'Escribinos por WhatsApp o acercate al local. Si un producto tiene fallas, te corresponde la garantía legal de la Ley de Defensa del Consumidor. Vamos a ayudarte a resolverlo lo antes posible.',
     },
   ];
 

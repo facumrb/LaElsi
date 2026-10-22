@@ -66,3 +66,4 @@ graphify-out/
 .agents/cache/
 .specify/local/
 .claude/
+docs/Datos de despliegue.md

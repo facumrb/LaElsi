@@ -145,6 +145,39 @@
           </div>
         </div>
 
+        <!-- Aceptación de los Términos y la Política de Privacidad (se abren en otra pestaña para no perder lo cargado) -->
+        <div class="flex justify-center">
+          <label
+            for="acceptTerms"
+            class="flex max-w-xl cursor-pointer items-start gap-2 text-sm text-gray-600"
+          >
+            <input
+              type="checkbox"
+              id="acceptTerms"
+              name="acceptTerms"
+              formControlName="acceptTerms"
+              class="mt-0.5 h-4 w-4 shrink-0 cursor-pointer rounded border-gray-300 accent-[#3d4494]"
+            />
+            <span>
+              Leí y acepto los
+              <a
+                routerLink="/terminos"
+                target="_blank"
+                class="font-bold text-[#3d4494] hover:underline"
+                >Términos y Condiciones</a
+              >
+              y la
+              <a
+                routerLink="/privacidad"
+                target="_blank"
+                class="font-bold text-[#3d4494] hover:underline"
+                >Política de Privacidad</a
+              >, incluida la transferencia de mis datos a proveedores ubicados
+              fuera de la Argentina.
+            </span>
+          </label>
+        </div>
+
         <div class="pt-0 flex justify-center">
           <button
             type="submit"

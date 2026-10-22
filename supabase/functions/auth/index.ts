@@ -33,6 +33,7 @@ import {
   type RequestContext,
 } from '../_shared/http.ts';
 import {
+  assertTermsAccepted,
   assertValidPassword,
   createUser,
   getSessionUser,
@@ -117,9 +118,10 @@ async function login(ctx: RequestContext) {
 
 async function register(ctx: RequestContext) {
   const input = sanitizeUserInput(ctx.body, 'Client');
+  const termsVersion = assertTermsAccepted(ctx.body);
 
   // Los clientes nuevos siempre se crean con rol Client: el rol no se lee del body
-  const client = await createUser(input, 'Client', { requireFullProfile: false });
+  const client = await createUser(input, 'Client', { requireFullProfile: false, termsVersion });
   return created('Usuario registrado exitosamente', { id: client.id });
 }
 

@@ -16,6 +16,7 @@ import { AlertService } from '@services/alert.service';
 import { finalize } from 'rxjs';
 import { IClientRegister } from '@models/auth.model';
 import { injectAccessDraft } from '@services/access-draft';
+import { LEGAL_INFO } from '@client/pages/footer-pages/legal-info';
 
 
 @Component({
@@ -90,6 +91,8 @@ export class RegisterPageComponent {
         '',
         [Validators.required, FormUtils.notOnlyWhiteSpace],
       ],
+      // Aceptación de los Términos y la Política de Privacidad. El servidor la vuelve a exigir
+      acceptTerms: [false, [Validators.requiredTrue]],
     },
     {
       validators: FormUtils.isFieldOneEqualFieldTwo(
@@ -144,8 +147,14 @@ export class RegisterPageComponent {
 
     const { confirmPassword, ...registerData } = this.formRegister.getRawValue();
 
+    // El servidor guarda la fecha de la aceptación junto con la versión de los textos que se mostraron
+    const payload: IClientRegister = {
+      ...registerData,
+      termsVersion: LEGAL_INFO.version,
+    };
+
     this.authService
-      .register(registerData as IClientRegister)
+      .register(payload)
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
         next: () => {

@@ -70,6 +70,26 @@ export function assertValidUsername(username: unknown): asserts username is stri
   }
 }
 
+/** Versión de los textos legales: la fecha AAAA-MM-DD que muestran /terminos y /privacidad. */
+const TERMS_VERSION_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+
+/**
+ * Exige que el registro traiga la casilla de aceptación tildada y devuelve la versión de los
+ * Términos y la Política de Privacidad que la persona tenía delante. Se valida acá y no solo en
+ * el formulario: quien llame a la API directo tampoco puede saltearse la aceptación.
+ */
+// deno-lint-ignore no-explicit-any
+export function assertTermsAccepted(body: any): string {
+  const { acceptTerms, termsVersion } = body ?? {};
+  if (acceptTerms !== true || typeof termsVersion !== 'string' || !TERMS_VERSION_PATTERN.test(termsVersion)) {
+    throw new AppError(
+      'Para crear tu cuenta tenés que aceptar los Términos y Condiciones y la Política de Privacidad. Si ya los aceptaste, recargá la página e intentá de nuevo.',
+      400,
+    );
+  }
+  return termsVersion;
+}
+
 /**
  * Columnas del perfil que viajan al frontend: todas menos supabase_uid, que es interna.
  * Se listan a propósito en vez de usar `select *`, así una columna nueva de la tabla no se
@@ -202,8 +222,9 @@ export async function createUser(
   // deno-lint-ignore no-explicit-any
   input: Record<string, any>,
   role: UserRole,
-  // El alta desde el panel admin exige el perfil completo; el registro público solo las credenciales
-  options: { requireFullProfile: boolean } = { requireFullProfile: true },
+  // El alta desde el panel admin exige el perfil completo; el registro público solo las credenciales.
+  // termsVersion: solo el registro público lo informa; se guarda junto con la fecha de aceptación.
+  options: { requireFullProfile: boolean; termsVersion?: string } = { requireFullProfile: true },
 ) {
   const { email, password, confirmPassword, name, lastName, phone, username, dni } = input;
 
@@ -259,8 +280,11 @@ export async function createUser(
 
   // 2. Perfil: el trigger ya creó la fila base, acá se completa con todos los datos
   try {
+    const accepted = options.termsVersion
+      ? { termsAcceptedAt: new Date(), termsVersion: options.termsVersion }
+      : {};
     const [user] = await sql`
-      update "user" set ${sql({ ...columns, role })}
+      update "user" set ${sql({ ...columns, role, ...accepted })}
       where supabase_uid = ${data.user.id}
       returning ${userColumns()}
     `;

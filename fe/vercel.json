@@ -2,7 +2,9 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "outputDirectory": "dist/frontend/browser",
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/privacidad", "destination": "/privacidad/index.html" },
+    { "source": "/terminos", "destination": "/terminos/index.html" },
+    { "source": "/(.*)", "destination": "/index.csr.html" }
   ],
   "headers": [
     {
@@ -16,7 +18,7 @@
       ]
     },
     {
-      "source": "/(index.html|ngsw.json|ngsw-worker.js)",
+      "source": "/(index.csr.html|ngsw.json|ngsw-worker.js)",
       "headers": [
         { "key": "Cache-Control", "value": "no-cache" }
       ]

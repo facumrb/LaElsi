@@ -37,6 +37,26 @@
     </div>
   </header>
 
+  <!-- Botón de arrepentimiento (Res. 424/2020): tiene que estar en el inicio, a la vista y bien visible -->
+  <section class="mb-6 md:mb-8" aria-label="Botón de arrepentimiento">
+    <div
+      class="flex flex-col items-center justify-between gap-4 rounded-2xl border-2 border-[#EA6C6C] bg-white p-4 shadow-sm md:flex-row md:p-6"
+    >
+      <p class="text-center text-gray-700 md:text-left">
+        <strong class="block text-lg text-gray-900"
+          >¿Te arrepentiste de tu compra?</strong
+        >
+        Tenés 10 días para revocarla. No necesitás cuenta ni iniciar sesión.
+      </p>
+      <a
+        routerLink="/arrepentimiento"
+        class="w-full shrink-0 rounded-xl bg-[#EA6C6C] px-8 py-3 text-center text-base font-bold text-white shadow-md transition-colors hover:bg-[#d95757] focus:outline-none focus:ring-2 focus:ring-[#EA6C6C] focus:ring-offset-2 md:w-auto"
+      >
+        Botón de arrepentimiento
+      </a>
+    </div>
+  </section>
+
   <div>
     @if (loading()) {
       <div class="flex justify-center items-center py-20">

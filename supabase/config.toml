@@ -44,3 +44,7 @@ verify_jwt = false
 
 [functions.analytics]
 verify_jwt = false
+
+# Botón de arrepentimiento: la norma exige que NO haga falta registrarse
+[functions.revocations]
+verify_jwt = false
