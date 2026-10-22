@@ -64,6 +64,6 @@ Thumbs.db
 graphify-out/
 .agents/local/
 .agents/cache/
+.claude/settings.local.json
 .specify/local/
-.claude/
 docs/Datos de despliegue.md
