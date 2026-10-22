@@ -183,7 +183,7 @@ ALLOWED_ORIGINS=https://tu-dominio.com
 # Descuento máximo (en %) permitido en los cambios masivos de precio
 MAX_BULK_DISCOUNT_PERCENTAGE=90
 
-# Email del comercio que recibe el aviso cuando alguien usa el Botón de arrepentimiento (Res. 424/2020).
+# Email del comercio que recibe el aviso cuando alguien usa el Botón de arrepentimiento (Disp. 954/2025).
 # Sin esto la solicitud igual se guarda (tabla revocation_request), pero nadie se entera por correo.
 REVOCATION_NOTIFY_EMAIL=
 ```
@@ -274,7 +274,7 @@ La Política de Privacidad y los Términos y Condiciones son rutas públicas de 
 | --- | --- | --- |
 | `/privacidad` | Política de Privacidad (incluye la sección sobre los datos de Google) | `fe/src/app/pages/client/pages/footer-pages/privacy-page/` |
 | `/terminos` | Términos y Condiciones | `fe/src/app/pages/client/pages/footer-pages/terms-page/` |
-| `/arrepentimiento` | Botón de arrepentimiento (Res. 424/2020) | `fe/src/app/pages/client/pages/revocation-page/` y Edge Function `revocations` |
+| `/arrepentimiento` | Botón de arrepentimiento (Disp. 954/2025) | `fe/src/app/pages/client/pages/revocation-page/` y Edge Function `revocations` |
 
 - Los datos que comparten las páginas (domicilio, WhatsApp, titular, CUIT, email de contacto) y la **versión** de los textos están en `footer-pages/legal-info.ts`. Los campos opcionales no se muestran mientras estén vacíos.
 - **Los textos describen lo que el código hace hoy** (qué datos se piden, quién los recibe, cuánto se guardan, cómo se compra). Si cambia algo de eso (un proveedor nuevo, un dato nuevo en el perfil, analítica, pagos en línea, envíos a domicilio), hay que actualizar el texto **y** `LEGAL_VERSION` en `legal-info.ts`. Esa versión se guarda con la aceptación de cada persona que se registra (`user.terms_accepted_at` y `user.terms_version`).

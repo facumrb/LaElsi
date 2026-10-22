@@ -9,7 +9,8 @@
 --    Quedan en NULL las cuentas anteriores, las altas desde el panel de administración y las que
 --    se crearon con Google (ahí no hay casilla, solo un aviso).
 --
--- 2. BOTÓN DE ARREPENTIMIENTO (Resolución 424/2020 de la Secretaría de Comercio Interior)
+-- 2. BOTÓN DE ARREPENTIMIENTO (Disposición 954/2025 de la Subsecretaría de Defensa del Consumidor
+--    y Lealtad Comercial, que derogó la Resolución 424/2020)
 --    Quien compró por internet puede revocar la compra dentro de los 10 días (art. 34 de la Ley
 --    24.240). La norma exige que el botón esté en el inicio, que NO pida registrarse y que dentro
 --    de las 24 horas se informe un código de identificación. Por eso revocation_request guarda

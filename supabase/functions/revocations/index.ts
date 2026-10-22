@@ -1,8 +1,9 @@
 // ============================================================================
 // Edge Function: revocations
 // ============================================================================
-// Botón de arrepentimiento: Resolución 424/2020 de la Secretaría de Comercio
-// Interior, art. 34 de la Ley 24.240 y art. 1110 del Código Civil y Comercial.
+// Botón de arrepentimiento: Disposición 954/2025 de la Subsecretaría de Defensa
+// del Consumidor y Lealtad Comercial (derogó la Resolución 424/2020), art. 34 de
+// la Ley 24.240 y art. 1110 del Código Civil y Comercial.
 //
 //   POST /revocations     Registra una solicitud de arrepentimiento (pública)
 //

@@ -1,4 +1,4 @@
-// Solicitud de arrepentimiento (botón de arrepentimiento, Res. 424/2020 de la Secretaría de Comercio Interior)
+// Solicitud de arrepentimiento (botón de arrepentimiento, Disp. 954/2025 de la Subsecretaría de Defensa del Consumidor y Lealtad Comercial)
 export interface ICreateRevocation {
   firstName: string;
   lastName: string;

@@ -20,7 +20,7 @@ Entre los pasos 3 y 4 el frontend viejo no manda la casilla de aceptación y `PO
 | Páginas legales | `/privacidad` y `/terminos`, pre-renderizadas, con marco propio | `fe/src/app/pages/client/pages/footer-pages/` |
 | Datos legales | Titular, CUIT, email, versión de los textos | `footer-pages/legal-info.ts` |
 | Aceptación | Casilla obligatoria en el registro; el servidor la exige y guarda fecha y versión | `register-page.*`, `auth/index.ts`, `_shared/usuarios.ts` |
-| Arrepentimiento | Página `/arrepentimiento`, banner en el inicio, enlace en el pie, función `revocations`, tabla `revocation_request`, correos | `revocation-page/`, `supabase/functions/revocations/` |
+| Arrepentimiento | Página `/arrepentimiento`, link compacto arriba del inicio (ver "Actualización 2026-10-22"), enlace en el pie, función `revocations`, tabla `revocation_request`, correos | `revocation-page/`, `supabase/functions/revocations/` |
 | Coherencia | FAQ y "¿Quiénes somos?" ya no prometen envíos nacionales, cobro online ni email de confirmación | `faq-page`, `about-us-page` |
 | Pre-renderizado | `outputMode: "static"` + `server`; solo las dos páginas legales | `angular.json`, `main.server.ts`, `app.config.server.ts`, `app.routes.server.ts` |
 | Hosting | Rewrites a `index.csr.html` (ya no existe `index.html`) y a las páginas pre-renderizadas | `fe/vercel.json`, `fe/ngsw-config.json` |
@@ -72,6 +72,26 @@ Entre los pasos 3 y 4 el frontend viejo no manda la casilla de aceptación y `PO
 ## Hallazgo: `laelsi.com.ar` redirige a `www.laelsi.com.ar`
 
 `curl.exe -I https://laelsi.com.ar/privacidad` respondía `308` hacia `www.laelsi.com.ar` (verificado el 2026-10-21), o sea que Vercel tenía a `www` como dominio principal. **Los datos de despliegue definitivos dicen lo contrario:** el principal es `https://laelsi.com.ar` y `www` es solo el alias. Qué hay que cambiar en Vercel y en cada servicio externo está en `docs/cierre-revision-seguridad-y-datos-definitivos-2026-10-22.md`.
+
+## Actualización 2026-10-22: la norma del botón de arrepentimiento cambió
+
+La **Disposición 954/2025** de la Subsecretaría de Defensa del Consumidor y Lealtad Comercial (publicada el 04/09/2025) **derogó la Resolución 424/2020** (su art. 10). Todo el proyecto citaba la 424/2020; las citas ya están corregidas (README, migración, función `revocations`, plantillas de correo, modelo, página y rutas).
+
+Qué dice ahora ([texto en InfoLEG](https://servicios.infoleg.gob.ar/infolegInternet/anexos/415000-419999/417152/norma.htm)):
+
+- **Art. 1:** el link "Botón de arrepentimiento" tiene que estar *"a simple vista, en lugar destacado y en el primer acceso"*, sin pedir registro previo ni otro trámite. No exige un banner ni explicar el plazo.
+- **Art. 5:** dentro de las 24 horas se informa un código de identificación por el mismo medio. Ya se cumple: el código sale en pantalla al instante y por correo.
+- **Art. 6 (nuevo):** el horario de consultas y reclamos no puede ser menor al comercial, y la web tiene que informar un canal de contacto y **el área responsable**.
+- **Art. 4 (botón de baja de servicios):** corresponde a servicios contratados. La tienda vende bienes, así que no aplica.
+
+Qué se cambió:
+
+- **Inicio:** el banner grande (con "Tenés 10 días…" y "No necesitás cuenta…") se reemplazó por una línea chica y neutra, arriba de todo y antes del mensaje de bienvenida, para que quede en el primer acceso. El plazo de 10 días se explica solo en `/arrepentimiento` (donde ya estaba), porque en el inicio lo ve cualquier visitante, haya comprado o no.
+- **Pie:** se agregó "Consultas y reclamos: Atención al Cliente" debajo de los horarios (`areaConsultasSignal` en `footer.component.ts`).
+
+**A confirmar con la librería:** "Atención al Cliente" es el nombre que puse yo para el área responsable. Si se llama distinto, se cambia en un solo lugar (`areaConsultasSignal`). Tampoco se verificó que los horarios del pie coincidan con el horario comercial real.
+
+Los textos de Privacidad y Términos no cambiaron, así que `LEGAL_VERSION` queda igual. La interpretación de "a simple vista, en lugar destacado" no es asesoramiento legal: que lo valide un abogado junto con el resto de los textos.
 
 ## Pendiente y decisiones
 

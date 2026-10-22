@@ -21,7 +21,8 @@ import { environment } from 'src/environments/environment';
 import { LEGAL_INFO } from '../footer-pages/legal-info';
 
 /**
- * Botón de arrepentimiento (Resolución 424/2020 de la Secretaría de Comercio Interior).
+ * Botón de arrepentimiento (Disposición 954/2025 de la Subsecretaría de Defensa del Consumidor y
+ * Lealtad Comercial).
  *
  * La norma exige que cualquier persona pueda pedir la revocación de su compra SIN registrarse ni
  * hacer otro trámite, y que se le informe un código de identificación por el mismo medio. Por eso

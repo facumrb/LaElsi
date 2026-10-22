@@ -134,7 +134,7 @@ const SHOP_WHATSAPP = '+54 9 341 712-1860';
 
 /**
  * Constancia para quien usó el botón de arrepentimiento: lleva el código de
- * identificación que exige la Resolución 424/2020 (que además se muestra en pantalla).
+ * identificación que exige la Disposición 954/2025 (que además se muestra en pantalla).
  */
 export function revocationReceivedEmail(data: { name: string; code: string }): EmailContent {
   const hello = greeting(data.name);

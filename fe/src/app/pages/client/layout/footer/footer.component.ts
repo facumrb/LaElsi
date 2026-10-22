@@ -25,6 +25,8 @@ import { LogoComponent } from '@shared/components/logo/logo.component';
 export class FooterComponent {
   horario1Signal = signal('Lunes a Viernes: 8:00 a 17:00');
   horario2Signal = signal('Sábados: 9:00 a 13:00');
+  // Disp. 954/2025, art. 6: hay que indicar qué área atiende las consultas y reclamos
+  areaConsultasSignal = signal('Atención al Cliente');
   currentYear = signal(new Date().getFullYear());
 
   scrollToTop() {

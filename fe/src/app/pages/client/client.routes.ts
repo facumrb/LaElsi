@@ -98,7 +98,7 @@ export const clientRoutes: Routes = [
       // Las páginas legales (/privacidad y /terminos) NO están acá: viven en app.routes.ts, fuera de
       // este layout, porque se pre-renderizan en el build.
       {
-        // Botón de arrepentimiento (Res. 424/2020): público, sin registro y accesible desde el inicio
+        // Botón de arrepentimiento (Disp. 954/2025): público, sin registro y accesible desde el inicio
         path: 'arrepentimiento',
         title: 'Botón de arrepentimiento | Laelsi',
         data: {

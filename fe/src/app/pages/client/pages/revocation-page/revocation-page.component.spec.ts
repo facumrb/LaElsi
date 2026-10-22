@@ -7,7 +7,7 @@ import { ApiRevocationService } from '@services/api-services/api-revocation.serv
 import { AlertService } from '@services/alert.service';
 import { RevocationPageComponent } from './revocation-page.component';
 
-// Botón de arrepentimiento (Res. 424/2020): la norma pide que se pueda usar SIN registrarse
+// Botón de arrepentimiento (Disp. 954/2025): la norma pide que se pueda usar SIN registrarse
 // y que se informe al instante un código de identificación.
 describe('RevocationPageComponent', () => {
   const datosMinimos = {
