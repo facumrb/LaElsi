@@ -1,7 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { AlertService } from '@services/alert.service';
 import { AuthService } from '@services/auth.service';
@@ -29,6 +29,8 @@ describe('RegisterPageComponent: aceptación de los Términos', () => {
     // Estas pruebas no son sobre la unicidad: se evita consultarle al servidor si el usuario o el email existen
     componente.formRegister.controls.username.clearAsyncValidators();
     componente.formRegister.controls.email.clearAsyncValidators();
+    // El token lo emite el widget real de Turnstile: acá se da por verificado
+    componente.turnstileToken.set('token-de-prueba');
     return componente;
   }
 
@@ -66,12 +68,45 @@ describe('RegisterPageComponent: aceptación de los Términos', () => {
     componente.formRegister.setValue({ ...datos, acceptTerms: true });
     componente.onSubmit();
 
-    expect(registrar).toHaveBeenCalledExactlyOnceWith({
-      username: 'maria.g',
-      email: 'maria@example.com',
-      password: 'clave-segura-123',
-      acceptTerms: true,
-      termsVersion: LEGAL_INFO.version,
-    });
+    expect(registrar).toHaveBeenCalledExactlyOnceWith(
+      {
+        username: 'maria.g',
+        email: 'maria@example.com',
+        password: 'clave-segura-123',
+        acceptTerms: true,
+        termsVersion: LEGAL_INFO.version,
+      },
+      'token-de-prueba',
+    );
+  });
+
+  // El registro público no tenía ninguna protección anti-bots: ahora lleva Turnstile
+  it('si la verificación anti-bots no terminó, avisa y no llama al registro', () => {
+    const registrar = vi.spyOn(TestBed.inject(AuthService), 'register');
+    const aviso = vi
+      .spyOn(TestBed.inject(AlertService), 'modal')
+      .mockResolvedValue({ isConfirmed: true, isDenied: false, isDismissed: false });
+    const componente = crear();
+
+    componente.turnstileToken.set(null);
+    componente.formRegister.setValue({ ...datos, acceptTerms: true });
+    componente.onSubmit();
+
+    expect(aviso).toHaveBeenCalledOnce();
+    expect(registrar).not.toHaveBeenCalled();
+  });
+
+  it('si el registro falla, no navega y el formulario queda para reintentar', () => {
+    vi.spyOn(TestBed.inject(AuthService), 'register').mockReturnValue(throwError(() => ({ error: { message: 'Ya existe' } })));
+    const toast = vi.spyOn(TestBed.inject(AlertService), 'toast').mockResolvedValue(undefined);
+    const navegar = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    const componente = crear();
+
+    componente.formRegister.setValue({ ...datos, acceptTerms: true });
+    componente.onSubmit();
+
+    expect(toast).toHaveBeenCalledWith('Ya existe', 'error');
+    expect(navegar).not.toHaveBeenCalled();
+    expect(componente.loading()).toBe(false);
   });
 });

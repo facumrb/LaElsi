@@ -258,6 +258,12 @@ Cada vez que se agrega una migración o cambia un secret hay que repetir el paso
   - Límites: 3 correos por hora por cuenta y 5 solicitudes cada 15 minutos por IP, más Turnstile si está configurado. Protegen la cuota de Resend.
 - **Botón de arrepentimiento** (`POST /revocations`, público por exigencia de la norma): Turnstile, tope de 5 solicitudes por hora por IP y validación de todos los campos en el servidor. Los textos que escribe la persona se escapan antes de ir en el correo al comercio.
 - **Pantallas de acceso**: si la persona sale y vuelve, se conserva el usuario o email que había escrito (en `sessionStorage`, hasta cerrar la pestaña). La contraseña nunca se guarda: la completa el navegador o el gestor de contraseñas.
+- **Cambiar el email o la contraseña de la propia cuenta exige la contraseña actual**, verificada en el servidor (`PATCH /clients/:id` y `PATCH /admins/:id`). Con solo el token de sesión (por ejemplo, robado con un XSS) no alcanza para quedarse con la cuenta. Un administrador que edita a otra persona no la necesita, y las cuentas de solo Google (sin contraseña) tampoco. Los intentos fallidos cuentan para el mismo límite de login, que ahora también protege `verify-password`.
+- **Las contraseñas se leen tal cual llegan**: el servidor ya no les recorta los espacios ni colapsa los repetidos. Las cuentas anteriores se guardaron normalizadas, así que el login prueba también esa versión (`_shared/contrasenas.ts`).
+- **Turnstile falla cerrado en producción**: si falta `TURNSTILE_SECRET_KEY`, el checkout, el registro, la recuperación de contraseña y el botón de arrepentimiento responden 500 en vez de omitir la verificación. Solo se omite en el stack local de Supabase (`http://`). El registro público ahora también lleva Turnstile y un tope de 10 registros por hora por IP.
+- **Una orden o una foto ajena responden igual que una inexistente (404)**, y sin sesión siempre es 401: los IDs son secuenciales y la respuesta no sirve para averiguar cuáles existen.
+- **El trigger de alta de cuentas** (`handle_new_auth_user`) solo vincula por email un perfil existente si el email de la cuenta nueva está confirmado y el perfil no tiene ya otra cuenta. `create_order` rechaza productos con precio fuera de ARS, y todas las funciones `SECURITY DEFINER` fijan `search_path = public, pg_temp`.
+- **Content-Security-Policy en modo solo reporte** (`fe/vercel.json`): no bloquea nada todavía. Mirá la consola del navegador durante un tiempo y, cuando no aparezcan violaciones legítimas, cambiá la cabecera a `Content-Security-Policy` para que se aplique.
 - **Las reglas de WAF de Cloudflare protegen el sitio, no la API**: las Edge Functions se sirven desde `*.supabase.co`, que no pasa por tu zona de Cloudflare. La protección de la API es la de arriba (validaciones, Turnstile y límite de login).
 
 ## Textos legales y verificación de Google
@@ -272,7 +278,8 @@ La Política de Privacidad y los Términos y Condiciones son rutas públicas de 
 
 - Los datos que comparten las páginas (domicilio, WhatsApp, titular, CUIT, email de contacto) y la **versión** de los textos están en `footer-pages/legal-info.ts`. Los campos opcionales no se muestran mientras estén vacíos.
 - **Los textos describen lo que el código hace hoy** (qué datos se piden, quién los recibe, cuánto se guardan, cómo se compra). Si cambia algo de eso (un proveedor nuevo, un dato nuevo en el perfil, analítica, pagos en línea, envíos a domicilio), hay que actualizar el texto **y** `LEGAL_VERSION` en `legal-info.ts`. Esa versión se guarda con la aceptación de cada persona que se registra (`user.terms_accepted_at` y `user.terms_version`).
-- **Aceptación al registrarse:** casilla obligatoria que el servidor vuelve a exigir (`POST /auth/register` responde 400 sin ella). Con Google no hay casilla: hay un aviso bajo el botón y no queda constancia de la aceptación.
+- **Aceptación al registrarse:** casilla obligatoria que el servidor vuelve a exigir (`POST /auth/register` responde 400 sin ella).
+- **Aceptación con Google:** la cuenta se crea al volver de Google, sin casilla. Por eso, mientras una cuenta de cliente tenga `termsAccepted = false` (cuentas de Google y cuentas anteriores a la casilla), el layout de la tienda muestra un diálogo bloqueante (`terms-gate`) con una casilla explícita. Al aceptar, `POST /auth/accept-terms` guarda la fecha y la versión en `user.terms_accepted_at` y `user.terms_version`. Las cuentas de administración no pasan por acá.
 - **Botón de arrepentimiento:** está en el inicio (banner), en el pie de página y en el marco de las páginas legales. No pide cuenta: guarda la solicitud en `revocation_request`, devuelve un código de identificación (`ARR-000123`) que se muestra al instante y se envía por email, y avisa al comercio a `REVOCATION_NOTIFY_EMAIL`. Protegido con Turnstile y un tope de 5 solicitudes por hora por IP. **Todavía no hay una pantalla de administración para estas solicitudes:** se gestionan desde el email de aviso y la tabla.
 - Enlaces a las páginas legales: pie de página, casilla del registro y aviso bajo "Continuar con Google". El `index.html` repite los dos enlaces dentro de un `<noscript>`.
 
@@ -287,19 +294,20 @@ El sitio es una SPA: el HTML que baja el navegador está vacío y el texto apare
 
 ### Google Cloud → Google Auth Platform
 
-Antes llamada "Pantalla de consentimiento de OAuth". Usá las URLs **finales, sin redirecciones**: hoy `laelsi.com.ar` responde `308` hacia `www.laelsi.com.ar`, así que las URLs correctas son las de `www` (o el dominio que quede como principal en Vercel).
+Antes llamada "Pantalla de consentimiento de OAuth". El dominio principal es `https://laelsi.com.ar` (sin `www`); `www.laelsi.com.ar` es solo un alias que tiene que **redirigir al principal** (Vercel → Project → Settings → Domains). Usá las URLs finales, sin redirecciones.
 
 | Campo | Valor |
 | --- | --- |
-| Página principal de la aplicación | `https://www.laelsi.com.ar` |
-| Vínculo a la política de privacidad | `https://www.laelsi.com.ar/privacidad` |
-| Vínculo a las condiciones del servicio | `https://www.laelsi.com.ar/terminos` |
+| Página principal de la aplicación | `https://laelsi.com.ar` |
+| Vínculo a la política de privacidad | `https://laelsi.com.ar/privacidad` |
+| Vínculo a las condiciones del servicio | `https://laelsi.com.ar/terminos` |
 | Dominios autorizados | `laelsi.com.ar` |
+| Orígenes de JavaScript autorizados (cliente OAuth) | `https://laelsi.com.ar` y `https://www.laelsi.com.ar` |
 
 - El dominio tiene que estar verificado en Google Search Console con la misma cuenta propietaria del proyecto de Google Cloud.
 - Los permisos solicitados deben ser solo los básicos (`openid`, `email`, `profile`), que es lo que pide Supabase. Si se agrega otro, hay que ampliar la sección 4 de la política.
-- Los dos enlaces tienen que responder `200` en producción antes de enviar la solicitud de verificación. En PowerShell usá `curl.exe -I https://www.laelsi.com.ar/privacidad` (`curl` a secas es un alias de otro comando).
-- Si el sitio se sirve desde `www`, ese origen también tiene que estar en `ALLOWED_ORIGINS`, en las _Redirect URLs_ de Supabase y en el CORS de los buckets de R2 (ver `docs/paginas-legales-y-arrepentimiento-2026-10-21.md`).
+- Los dos enlaces tienen que responder `200` en producción antes de enviar la solicitud de verificación. En PowerShell usá `curl.exe -I https://laelsi.com.ar/privacidad` (`curl` a secas es un alias de otro comando). Tiene que responder `200` directo, **sin** `308`.
+- Mientras `www` siga activo como alias, su origen también tiene que figurar en `ALLOWED_ORIGINS`, en las _Redirect URLs_ de Supabase, en el CORS de los buckets de R2 y en los hostnames de Turnstile. Detalle de qué cargar en cada servicio: `docs/cierre-revision-seguridad-y-datos-definitivos-2026-10-22.md`.
 
 ## Backend anterior (`be/`)
 

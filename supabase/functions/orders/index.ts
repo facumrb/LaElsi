@@ -21,7 +21,7 @@
 // create_order y cancel_order (ver migrations/..._funciones_rpc.sql).
 // ============================================================================
 import { sql, type Db } from '../_shared/db.ts';
-import { requireAdmin, requireOwnerOrAdmin, requireUser } from '../_shared/auth.ts';
+import { requireAdmin, requireOwnerOrAdmin, requireOwnerOrAdminOf, requireUser } from '../_shared/auth.ts';
 import {
   AppError,
   created,
@@ -71,11 +71,19 @@ async function loadOrder(id: number) {
   return order;
 }
 
-/** Devuelve el ID del cliente dueño de la orden, o lanza 404 si la orden no existe. */
-async function getOrderOwnerId(id: number): Promise<number> {
+/** Devuelve el ID del cliente dueño de la orden, o null si la orden no existe. */
+async function getOrderOwnerId(id: number): Promise<number | null> {
   const [order] = await sql`select client_id from "order" where id = ${id}`;
-  if (!order) throw new AppError('Orden no encontrada', 404);
-  return order.clientId;
+  return order ? order.clientId : null;
+}
+
+/**
+ * Exige sesión y que la orden sea del usuario (o que sea administrador). Sin sesión es siempre 401
+ * y una orden ajena responde igual que una inexistente (404): los IDs son secuenciales y la
+ * respuesta no puede servir para averiguar cuáles existen.
+ */
+function requireOrderAccess(req: Request, id: number) {
+  return requireOwnerOrAdminOf(req, () => getOrderOwnerId(id), 'Orden no encontrada');
 }
 
 // ─── Rutas ───────────────────────────────────────────────────────────────────
@@ -199,7 +207,7 @@ async function findAll(ctx: RequestContext) {
 
 async function findOne(ctx: RequestContext) {
   const id = intParam(ctx, 'id', 'ID de orden inválido');
-  await requireOwnerOrAdmin(ctx.req, await getOrderOwnerId(id));
+  await requireOrderAccess(ctx.req, id);
   return ok('Orden encontrada', await loadOrder(id));
 }
 
@@ -290,7 +298,7 @@ async function updateDeliveryMethod(ctx: RequestContext) {
 
 async function cancel(ctx: RequestContext) {
   const id = intParam(ctx, 'id', 'ID de orden inválido');
-  await requireOwnerOrAdmin(ctx.req, await getOrderOwnerId(id));
+  await requireOrderAccess(ctx.req, id);
 
   // Transacción atómica: restaura el stock y marca la orden como cancelada
   await sql`select cancel_order(${id})`;

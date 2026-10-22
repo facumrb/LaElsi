@@ -12,6 +12,7 @@ import { sql, type Db } from './db.ts';
 import { supabaseAdmin, type UserRole } from './auth.ts';
 import { AppError, paginated, pickFields } from './http.ts';
 import { deleteObject } from './r2.ts';
+import { accountHasPassword, assertCurrentPassword } from './contrasenas.ts';
 
 export const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -198,7 +199,7 @@ export async function listUsers(role: UserRole, page: number, limit: number, fil
 /** Datos de sesión que guarda el frontend después de iniciar sesión. */
 export async function getSessionUser(supabaseUid: string) {
   const [row] = await sql`
-    select id, name, last_name, role from "user" where supabase_uid = ${supabaseUid}
+    select id, name, last_name, role, terms_accepted_at from "user" where supabase_uid = ${supabaseUid}
   `;
   if (!row) return null;
 
@@ -209,7 +210,23 @@ export async function getSessionUser(supabaseUid: string) {
     lastName: row.lastName,
     role: row.role,
     photo: photo ? { id: photo.id, fileName: photo.fileName } : null,
+    // El frontend pide aceptar los Términos si es false (cuentas de Google y cuentas anteriores a la casilla)
+    termsAccepted: row.termsAcceptedAt !== null,
+    // Si es false (cuentas de solo Google) no hay contraseña actual que pedir al cambiar el email
+    hasPassword: await accountHasPassword(supabaseUid),
   };
+}
+
+/**
+ * Registra que una cuenta YA EXISTENTE aceptó los Términos y la Política de Privacidad (por ejemplo,
+ * una cuenta creada con Google, donde no hay casilla al registrarse). Si ya aceptó esa misma versión
+ * no se toca nada: la fecha que vale es la de la primera aceptación.
+ */
+export async function recordTermsAcceptance(userId: number, termsVersion: string): Promise<void> {
+  await sql`
+    update "user" set terms_accepted_at = now(), terms_version = ${termsVersion}
+    where id = ${userId} and terms_version is distinct from ${termsVersion}
+  `;
 }
 
 // ─── Escritura ───────────────────────────────────────────────────────────────
@@ -304,8 +321,16 @@ export async function createUser(
  * Actualiza un usuario. Los datos de perfil se guardan en public."user"; el email
  * y la contraseña además se sincronizan con Supabase Auth.
  */
-// deno-lint-ignore no-explicit-any
-export async function updateUser(id: number, role: UserRole, input: Record<string, any>, notFoundMessage: string) {
+export async function updateUser(
+  id: number,
+  role: UserRole,
+  // deno-lint-ignore no-explicit-any
+  input: Record<string, any>,
+  notFoundMessage: string,
+  // selfEdit: lo informa quien edita SU PROPIA cuenta. Si cambia el email o la contraseña tiene que
+  // confirmar con la contraseña actual (un administrador que edita a otra persona no la necesita)
+  options: { selfEdit?: { req: Request; currentPassword: unknown } } = {},
+) {
   const [current] = await sql`select ${userColumns()}, supabase_uid from "user" where id = ${id} and role = ${role}`;
   if (!current) throw new AppError(notFoundMessage, 404);
 
@@ -322,6 +347,18 @@ export async function updateUser(id: number, role: UserRole, input: Record<strin
 
   const columns = toProfileColumns(input, role);
   const emailChanged = columns.email !== undefined && columns.email !== String(current.email).toLowerCase();
+
+  // Antes de escribir NADA: con solo el token de sesión (por ejemplo, robado con un XSS) no alcanza
+  // para quedarse con la cuenta cambiando su email o su contraseña. Las cuentas que entran solo con
+  // Google no tienen contraseña, así que no hay nada que pedirles.
+  if (
+    options.selfEdit &&
+    (emailChanged || input.password) &&
+    current.supabaseUid &&
+    (await accountHasPassword(current.supabaseUid))
+  ) {
+    await assertCurrentPassword(options.selfEdit.req, current.email, options.selfEdit.currentPassword);
+  }
 
   // 1. Perfil
   // deno-lint-ignore no-explicit-any

@@ -71,23 +71,12 @@ Entre los pasos 3 y 4 el frontend viejo no manda la casilla de aceptación y `PO
 
 ## Hallazgo: `laelsi.com.ar` redirige a `www.laelsi.com.ar`
 
-`curl.exe -I https://laelsi.com.ar/privacidad` responde `308` con `Location: https://www.laelsi.com.ar/privacidad` (verificado el 2026-10-21). Entonces el dominio principal del sitio es `www`. Esto no se puede confirmar desde el repo (no se puede leer `supabase/functions/.env`), pero hay que revisarlo, porque la documentación de configuración usa el dominio sin `www`:
-
-| Dónde | Qué comprobar |
-| --- | --- |
-| Secret `ALLOWED_ORIGINS` | Tiene que incluir `https://www.laelsi.com.ar`. Si no, el navegador bloquea (CORS) **todas** las llamadas a las Edge Functions desde ese origen |
-| Secret `SITE_URL` | Los enlaces de los correos de recuperación usan este valor. Conviene que apunte al dominio final |
-| Supabase → Authentication → URL Configuration | _Redirect URLs_ con `https://www.laelsi.com.ar/**`; si no, el login con Google vuelve con error |
-| Cloudflare R2 → CORS de los dos buckets | `AllowedOrigins` con `https://www.laelsi.com.ar`, o la subida de imágenes falla |
-| Cloudflare Turnstile | El hostname del widget tiene que cubrir `www` |
-| Google Cloud → Google Auth Platform | Cargar las URLs finales (`https://www.laelsi.com.ar/...`), sin redirecciones |
-
-Si ya estaba resuelto, no hay nada que hacer.
+`curl.exe -I https://laelsi.com.ar/privacidad` respondía `308` hacia `www.laelsi.com.ar` (verificado el 2026-10-21), o sea que Vercel tenía a `www` como dominio principal. **Los datos de despliegue definitivos dicen lo contrario:** el principal es `https://laelsi.com.ar` y `www` es solo el alias. Qué hay que cambiar en Vercel y en cada servicio externo está en `docs/cierre-revision-seguridad-y-datos-definitivos-2026-10-22.md`.
 
 ## Pendiente y decisiones
 
 1. **Pantalla de administración para las solicitudes de arrepentimiento.** Hoy se gestionan desde el email de aviso y la tabla `revocation_request` (la columna `resolved_at` queda para que el comercio marque las resueltas). Es la mejora más útil que sigue.
-2. **Constancia de aceptación con Google.** Quien entra con Google no tilda ninguna casilla: solo hay un aviso bajo el botón y no queda registro. Cerrarlo requiere una pantalla de aceptación en el primer ingreso.
+2. ~~**Constancia de aceptación con Google.**~~ **Resuelto el 2026-10-22:** la primera vez que una cuenta de cliente entra sin aceptación registrada, el layout de la tienda le muestra un diálogo con una casilla explícita y el servidor guarda la fecha y la versión (`POST /auth/accept-terms`). Ver `docs/cierre-revision-seguridad-y-datos-definitivos-2026-10-22.md`.
 3. **El Botón de arrepentimiento solo está donde pide la norma** (inicio) más el pie y las páginas legales. No está en "Mis Pedidos" ni en el carrito; se puede agregar.
 4. **Revisión profesional.** Los textos son una base adaptada al proyecto, no asesoramiento legal. Conviene que los revise un abogado, sobre todo la transferencia internacional de datos, y consultar si corresponde inscribir la base en el Registro Nacional de Bases de Datos de la AAIP.
 5. Las políticas del negocio que quedaron escritas en los Términos (causas de cancelación por parte del comercio, devolución del importe por el mismo medio, "plazo razonable" para pagar o retirar) hay que confirmarlas con la librería.

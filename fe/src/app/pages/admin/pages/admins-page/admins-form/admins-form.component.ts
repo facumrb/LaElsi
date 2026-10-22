@@ -9,6 +9,7 @@ import { AuthService } from '@services/auth.service';
 import { ICreateAdmin, UserRole } from '@models/user.model';
 import { IApiUserPhoto } from '@models/photo.model';
 import { AlertService } from '@services/alert.service';
+import { CurrentPasswordService } from '@services/current-password.service';
 import { FormUtils } from '@shared/validators/form-utils';
 import { NumericInputDirective } from '@shared/directives/numeric-input.directive';
 import { PhotoManagerComponent } from '@shared/components/photo-manager/photo-manager.component';
@@ -41,6 +42,7 @@ export class AdminsFormComponent implements OnInit {
   private adminService = inject(ApiAdminService);
   private authService = inject(AuthService);
   private alertService = inject(AlertService);
+  private currentPasswordService = inject(CurrentPasswordService);
   private http = inject(HttpClient);
 
   photoManager = viewChild.required(PhotoManagerComponent);
@@ -216,13 +218,34 @@ export class AdminsFormComponent implements OnInit {
     return formHasChanges || photoHasChanges;
   }
 
-  onSubmit() {
+  /** Email con el que se cargó el formulario (para saber si se lo cambió). */
+  private get originalEmail(): string {
+    try {
+      return (JSON.parse(this.initialFormValue()) as { email?: string }).email ?? '';
+    } catch {
+      return '';
+    }
+  }
+
+  async onSubmit() {
     if (!this.formAdmin.valid) {
       this.formAdmin.markAllAsTouched();
       return;
     }
 
     const formValue = this.formAdmin.getRawValue();
+
+    // Si el administrador se edita A SÍ MISMO, cambiar el email o la contraseña exige confirmar con la
+    // contraseña actual (el servidor lo pide). Editar a otro administrador no la necesita.
+    const editingOwnAccount =
+      this.isEditMode() && this.adminId() === this.authService.currentUser()?.id;
+    const currentPassword = await this.currentPasswordService.requestIfNeeded({
+      editingOwnAccount,
+      changesEmail:
+        (formValue.email ?? '').trim().toLowerCase() !== this.originalEmail.trim().toLowerCase(),
+      changesPassword: !!formValue.password,
+    });
+    if (currentPassword === null) return; // la persona canceló: no se guarda nada
 
     const baseData = {
       name: formValue.name!,
@@ -234,13 +257,16 @@ export class AdminsFormComponent implements OnInit {
       role: UserRole.Admin,
     };
 
-    const adminData = formValue.password
-      ? {
-          ...baseData,
-          password: formValue.password,
-          confirmPassword: formValue.confirmPassword,
-        }
-      : baseData;
+    const adminData = {
+      ...(formValue.password
+        ? {
+            ...baseData,
+            password: formValue.password,
+            confirmPassword: formValue.confirmPassword,
+          }
+        : baseData),
+      ...(currentPassword ? { currentPassword } : {}),
+    };
 
     // Guardar datos del Usuario
     let userRequest$;

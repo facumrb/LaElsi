@@ -118,16 +118,28 @@ export function buildCorsHeaders(req: Request): Record<string, string> {
 // ─── Entrada ─────────────────────────────────────────────────────────────────
 
 /**
+ * Campos que se leen EXACTAMENTE como llegan. Una contraseña no se recorta ni se le colapsan
+ * los espacios: hacerlo cambiaba la contraseña que la persona creyó elegir y recortaba su
+ * entropía. Las cuentas creadas antes de este cambio se guardaron ya normalizadas; por eso el
+ * login prueba también la versión normalizada (ver _shared/contrasenas.ts).
+ */
+const RAW_FIELDS: ReadonlySet<string> = new Set(['password', 'confirmPassword', 'currentPassword']);
+
+/**
  * Limpia los espacios en blanco de los textos entrantes: recorta los extremos
  * y colapsa los espacios repetidos. Recorre objetos y arrays anidados.
+ *
+ * @param rawKeys Nombres de campo que se dejan sin tocar (ej: las contraseñas)
  */
 // deno-lint-ignore no-explicit-any
-export function trimStrings(value: any): any {
+export function trimStrings(value: any, rawKeys: ReadonlySet<string> = new Set()): any {
   if (typeof value === 'string') return value.trim().replace(/\s{2,}/g, ' ');
-  if (Array.isArray(value)) return value.map(trimStrings);
+  if (Array.isArray(value)) return value.map((item) => trimStrings(item, rawKeys));
   if (value !== null && typeof value === 'object') {
     // Seguridad: Object.entries + Object.fromEntries evita la contaminación de prototipos (CWE-1321)
-    return Object.fromEntries(Object.entries(value).map(([key, inner]) => [key, trimStrings(inner)]));
+    return Object.fromEntries(
+      Object.entries(value).map(([key, inner]) => [key, rawKeys.has(key) ? inner : trimStrings(inner, rawKeys)]),
+    );
   }
   return value;
 }
@@ -143,7 +155,7 @@ async function readJsonBody(req: Request): Promise<any> {
 
   try {
     const body = JSON.parse(text);
-    return body !== null && typeof body === 'object' ? trimStrings(body) : {};
+    return body !== null && typeof body === 'object' ? trimStrings(body, RAW_FIELDS) : {};
   } catch {
     throw new AppError('El cuerpo de la petición no es un JSON válido', 400);
   }

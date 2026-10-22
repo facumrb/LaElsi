@@ -178,6 +178,11 @@
           </label>
         </div>
 
+        @if (turnstileEnabled) {
+          <!-- Verificación anti-bots de Cloudflare Turnstile -->
+          <app-turnstile (tokenChange)="turnstileToken.set($event)" />
+        }
+
         <div class="pt-0 flex justify-center">
           <button
             type="submit"

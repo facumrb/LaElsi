@@ -42,7 +42,7 @@ function formatLongDate(isoDate: string): string {
 }
 
 /** Cambiar SOLO cuando cambia el texto de los Términos o de la Política (ver LEGAL_INFO). */
-const LEGAL_VERSION = '2026-10-21';
+const LEGAL_VERSION = '2026-10-22';
 
 /**
  * Datos que comparten la Política de Privacidad y los Términos y Condiciones.

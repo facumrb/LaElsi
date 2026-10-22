@@ -19,6 +19,7 @@ import {
 import { IApiClient, IUpdateClient, FiscalCondition } from '@models/user.model';
 import { ApiClientService } from '@services/api-services/api-client.service';
 import { AlertService } from '@services/alert.service';
+import { CurrentPasswordService } from '@services/current-password.service';
 import { PhoneInputDirective } from '@shared/directives/phone-input.directive';
 import { NumericInputDirective } from '@shared/directives/numeric-input.directive';
 import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
@@ -53,6 +54,7 @@ export class ProfileDetailsComponent {
   private apiClientService = inject(ApiClientService);
   private http = inject(HttpClient);
   private alertService = inject(AlertService);
+  private currentPasswordService = inject(CurrentPasswordService);
 
   profile = input<IApiClient | null>(null);
 
@@ -176,7 +178,7 @@ export class ProfileDetailsComponent {
     );
   }
 
-  onSubmit() {
+  async onSubmit() {
     if (!this.formPerfil.valid) {
       this.formPerfil.markAllAsTouched();
       return;
@@ -185,8 +187,20 @@ export class ProfileDetailsComponent {
     const userId = this.profile()?.id;
     if (!userId) return;
 
-    this.saving.set(true);
     const rawValue = this.formPerfil.getRawValue();
+
+    // Cambiar el email de la propia cuenta exige confirmar con la contraseña actual (el servidor lo pide)
+    const emailChanged =
+      rawValue.email.trim().toLowerCase() !==
+      (this.profile()?.email ?? '').trim().toLowerCase();
+    const currentPassword = await this.currentPasswordService.requestIfNeeded({
+      editingOwnAccount: true,
+      changesEmail: emailChanged,
+      changesPassword: false,
+    });
+    if (currentPassword === null) return; // la persona canceló: no se guarda nada
+
+    this.saving.set(true);
 
     const clientData: IUpdateClient = {
       name: rawValue.name,
@@ -205,6 +219,7 @@ export class ProfileDetailsComponent {
       postalCode: rawValue.postalCode,
       floor: rawValue.floor,
       apartment: rawValue.apartment,
+      ...(currentPassword ? { currentPassword } : {}),
     };
 
     this.apiClientService.updateClient(userId, clientData).subscribe({

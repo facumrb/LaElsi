@@ -95,9 +95,13 @@ async function add(ctx: RequestContext) {
 
 async function update(ctx: RequestContext) {
   const id = intParam(ctx, 'id', 'ID de cliente inválido');
-  await requireOwnerOrAdmin(ctx.req, id);
+  const actor = await requireOwnerOrAdmin(ctx.req, id);
 
-  const client = await updateUser(id, 'Client', sanitizeUserInput(ctx.body, 'Client'), NOT_FOUND);
+  // Quien edita SU PROPIA cuenta confirma con la contraseña actual si cambia el email o la contraseña.
+  // Un administrador que edita la cuenta de un cliente no la necesita.
+  const client = await updateUser(id, 'Client', sanitizeUserInput(ctx.body, 'Client'), NOT_FOUND, {
+    selfEdit: actor.id === id ? { req: ctx.req, currentPassword: ctx.body.currentPassword } : undefined,
+  });
   return ok('Datos actualizados correctamente', client);
 }
 

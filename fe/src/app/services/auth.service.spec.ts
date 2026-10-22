@@ -166,3 +166,127 @@ describe('AuthService: datos de la sesión guardados en el navegador', () => {
     expect(guardar).not.toHaveBeenCalled();
   });
 });
+
+// Quien entra con Google no tilda ninguna casilla al registrarse: el servidor lo informa en la sesión
+// (termsAccepted) y el frontend le pide aceptar. Acá se prueba la parte del servicio.
+describe('AuthService: aceptación de los Términos y registro', () => {
+  const urlMe = `${environment.apiUrl}/auth/me`;
+  const urlAceptar = `${environment.apiUrl}/auth/accept-terms`;
+  const urlRegistro = `${environment.apiUrl}/auth/register`;
+
+  let http: HttpTestingController;
+
+  function crearServicio(sesionGuardada?: object) {
+    localStorage.clear();
+    if (sesionGuardada) localStorage.setItem('auth_user', JSON.stringify(sesionGuardada));
+    vi.spyOn(supabase.auth, 'onAuthStateChange').mockReturnValue({
+      data: { subscription: { unsubscribe: () => undefined } },
+    } as never);
+    TestBed.configureTestingModule({
+      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
+    });
+    http = TestBed.inject(HttpTestingController);
+    return TestBed.inject(AuthService);
+  }
+
+  // El constructor completa las sesiones viejas en el próximo ciclo (setTimeout 0)
+  const esperarCiclo = () => new Promise<void>((resolve) => setTimeout(resolve, 0));
+
+  const cliente = { id: 2, name: 'Ana', lastName: 'Pérez', role: UserRole.Client };
+
+  afterEach(() => {
+    http.verify();
+    vi.restoreAllMocks();
+  });
+
+  it('acceptTerms envía la aceptación con la versión de los textos y marca la sesión como aceptada', async () => {
+    const servicio = crearServicio({ ...cliente, termsAccepted: false, hasPassword: false });
+
+    const resultado = new Promise<void>((resolve, reject) =>
+      servicio.acceptTerms('2026-10-22').subscribe({ next: () => resolve(), error: reject }),
+    );
+    const peticion = http.expectOne(urlAceptar);
+    expect(peticion.request.method).toBe('POST');
+    expect(peticion.request.body).toEqual({ acceptTerms: true, termsVersion: '2026-10-22' });
+    peticion.flush({ status: 'success', message: 'ok', data: { termsAccepted: true } });
+    await resultado;
+
+    expect(servicio.currentUser()?.termsAccepted).toBe(true);
+    expect(JSON.parse(localStorage.getItem('auth_user')!).termsAccepted).toBe(true);
+  });
+
+  it('si el servidor rechaza la aceptación, la sesión NO queda marcada como aceptada', async () => {
+    const servicio = crearServicio({ ...cliente, termsAccepted: false, hasPassword: false });
+
+    const resultado = new Promise((_resolve, reject) => servicio.acceptTerms('2026-10-22').subscribe({ error: reject }));
+    http.expectOne(urlAceptar).flush({ message: 'Aceptá los Términos' }, { status: 400, statusText: 'Bad Request' });
+
+    await expect(resultado).rejects.toMatchObject({ status: 400 });
+    expect(servicio.currentUser()?.termsAccepted).toBe(false);
+  });
+
+  it('una sesión guardada por una versión anterior (sin termsAccepted) se completa desde /auth/me', async () => {
+    const servicio = crearServicio(cliente);
+    await esperarCiclo();
+
+    http.expectOne(urlMe).flush({
+      status: 'success',
+      message: 'ok',
+      data: { ...cliente, photo: null, termsAccepted: false, hasPassword: true },
+    });
+
+    expect(servicio.currentUser()?.termsAccepted).toBe(false);
+    expect(servicio.currentUser()?.hasPassword).toBe(true);
+  });
+
+  it('si no se puede completar la sesión vieja, NO se cierra la sesión', async () => {
+    const servicio = crearServicio(cliente);
+    await esperarCiclo();
+
+    http.expectOne(urlMe).flush({ message: 'caído' }, { status: 500, statusText: 'Server Error' });
+
+    expect(servicio.isLoggedIn()).toBe(true);
+    expect(localStorage.getItem('auth_user')).not.toBeNull();
+  });
+
+  it('una sesión que ya sabe si aceptó los Términos no vuelve a consultar /auth/me', async () => {
+    crearServicio({ ...cliente, termsAccepted: true, hasPassword: true });
+    await esperarCiclo();
+
+    http.expectNone(urlMe);
+  });
+
+  it('el registro envía el token de Turnstile en el header X-Turnstile-Token', async () => {
+    const servicio = crearServicio();
+    const datos = {
+      username: 'maria',
+      email: 'm@e.com',
+      password: 'clave-segura-123',
+      acceptTerms: true,
+      termsVersion: '2026-10-22',
+    };
+
+    const resultado = new Promise((resolve, reject) =>
+      servicio.register(datos, 'token-turnstile').subscribe({ next: resolve, error: reject }),
+    );
+    const peticion = http.expectOne(urlRegistro);
+    expect(peticion.request.headers.get('X-Turnstile-Token')).toBe('token-turnstile');
+    expect(peticion.request.body).toEqual(datos);
+    peticion.flush({ status: 'success', message: 'ok', data: { id: 9 } });
+    await resultado;
+  });
+
+  it('el registro sin token no manda el header (desarrollo local sin clave)', async () => {
+    const servicio = crearServicio();
+
+    const resultado = new Promise((resolve, reject) =>
+      servicio
+        .register({ username: 'maria', email: 'm@e.com', password: 'clave-segura-123', acceptTerms: true, termsVersion: '2026-10-22' })
+        .subscribe({ next: resolve, error: reject }),
+    );
+    const peticion = http.expectOne(urlRegistro);
+    expect(peticion.request.headers.has('X-Turnstile-Token')).toBe(false);
+    peticion.flush({ status: 'success', message: 'ok', data: { id: 9 } });
+    await resultado;
+  });
+});

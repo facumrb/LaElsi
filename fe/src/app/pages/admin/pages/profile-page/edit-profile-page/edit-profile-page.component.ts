@@ -8,6 +8,7 @@ import { IApiAdmin, ICreateAdmin, UserRole } from '@models/user.model';
 import { IApiUserPhoto } from '@models/photo.model';
 import { AuthService } from '@services/auth.service';
 import { AlertService } from '@services/alert.service';
+import { CurrentPasswordService } from '@services/current-password.service';
 import { FormUtils } from '@shared/validators/form-utils';
 import { PhotoManagerComponent } from '@shared/components/photo-manager/photo-manager.component';
 import { FieldErrorComponent } from '@shared/validators/field-error/field-error.component';
@@ -36,6 +37,7 @@ export class EditProfilePageComponent implements OnInit {
   private apiService = inject(ApiAdminService);
   private authService = inject(AuthService);
   private alertService = inject(AlertService);
+  private currentPasswordService = inject(CurrentPasswordService);
   private http = inject(HttpClient);
 
   photoManager = viewChild.required(PhotoManagerComponent);
@@ -161,7 +163,16 @@ export class EditProfilePageComponent implements OnInit {
     return formHasChanges || photoHasChanges;
   }
 
-  onSubmit(): void {
+  /** Email con el que se cargó el formulario (para saber si la persona lo cambió). */
+  private get originalEmail(): string {
+    try {
+      return (JSON.parse(this.initialFormValue()) as { email?: string }).email ?? '';
+    } catch {
+      return '';
+    }
+  }
+
+  async onSubmit(): Promise<void> {
     if (!this.formEditProfile.valid) {
       this.formEditProfile.markAllAsTouched();
       return;
@@ -169,6 +180,16 @@ export class EditProfilePageComponent implements OnInit {
 
     const userId = this.authService.currentUser()?.id;
     const formValue = this.formEditProfile.getRawValue();
+
+    // Es la propia cuenta: cambiar el email o la contraseña exige confirmar con la contraseña actual
+    const currentPassword = await this.currentPasswordService.requestIfNeeded({
+      editingOwnAccount: true,
+      changesEmail:
+        (formValue.email ?? '').trim().toLowerCase() !== this.originalEmail.trim().toLowerCase(),
+      changesPassword: !!formValue.password,
+    });
+    if (currentPassword === null) return; // la persona canceló: no se guarda nada
+
     const baseData = {
       name: formValue.name!,
       lastName: formValue.lastName!,
@@ -179,13 +200,16 @@ export class EditProfilePageComponent implements OnInit {
       role: UserRole.Admin,
     };
 
-    const adminData = formValue.password
-      ? {
-          ...baseData,
-          password: formValue.password,
-          confirmPassword: formValue.confirmPassword,
-        }
-      : baseData;
+    const adminData = {
+      ...(formValue.password
+        ? {
+            ...baseData,
+            password: formValue.password,
+            confirmPassword: formValue.confirmPassword,
+          }
+        : baseData),
+      ...(currentPassword ? { currentPassword } : {}),
+    };
 
     this.apiService
       .updateAdmin(userId!, adminData as Partial<ICreateAdmin>)

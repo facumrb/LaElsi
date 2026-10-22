@@ -76,4 +76,26 @@ export class AlertService {
       cancelButtonText: 'Cancelar',
     }).then((result) => result.isConfirmed);
   }
+
+  /**
+   * Pide la contraseña actual de la cuenta. Se usa para confirmar el cambio del email o de la
+   * contraseña propios: con solo la sesión iniciada no alcanza. Devuelve null si la persona cancela.
+   */
+  async askCurrentPassword(text: string): Promise<string | null> {
+    const Swal = await cargarSwal();
+    const { value } = await Swal.fire({
+      title: 'Confirmá que sos vos',
+      text,
+      input: 'password',
+      inputPlaceholder: 'Tu contraseña actual',
+      showCancelButton: true,
+      confirmButtonText: 'Confirmar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#3d4494',
+      inputAttributes: { autocapitalize: 'off', autocorrect: 'off', autocomplete: 'current-password' },
+      inputValidator: (valor) => (valor ? null : 'Tenés que ingresar tu contraseña actual'),
+    });
+    // La contraseña se devuelve tal cual: no se recorta (los espacios pueden ser parte de ella)
+    return typeof value === 'string' && value !== '' ? value : null;
+  }
 }

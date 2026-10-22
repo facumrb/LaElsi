@@ -64,6 +64,13 @@ describe('Páginas legales', () => {
       expect(renderizar(PrivacyPageComponent).enlaces).toContain('/terminos');
     });
 
+    it('explica que con Google se acepta la primera vez que se entra y que queda constancia', () => {
+      const { texto } = renderizar(PrivacyPageComponent);
+
+      expect(texto).toContain('la primera vez que entrás con Google');
+      expect(texto).toContain('guardamos la constancia (fecha y versión)');
+    });
+
     it('identifica al responsable y su contacto', () => {
       const { texto } = renderizar(PrivacyPageComponent);
 
@@ -98,6 +105,13 @@ describe('Páginas legales', () => {
 
     it('lleva a la Política de Privacidad', () => {
       expect(renderizar(TermsPageComponent).enlaces).toContain('/privacidad');
+    });
+
+    it('explica cómo se aceptan los Términos con el formulario y con Google', () => {
+      const { texto } = renderizar(TermsPageComponent);
+
+      expect(texto).toContain('tildando una casilla');
+      expect(texto).toContain('si entrás con Google, la primera vez te pedimos que los aceptes');
     });
   });
 

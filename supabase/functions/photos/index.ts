@@ -15,7 +15,7 @@
 //     DELETE /photos/userPhoto/:photoId
 // ============================================================================
 import { sql, type Db } from '../_shared/db.ts';
-import { requireAdmin, requireOwnerOrAdmin } from '../_shared/auth.ts';
+import { requireAdmin, requireOwnerOrAdmin, requireOwnerOrAdminOf } from '../_shared/auth.ts';
 import { AppError, created, intParam, ok, serveRoutes, type RequestContext } from '../_shared/http.ts';
 import { assertValidKey, deleteObject, getObjectSize, type PhotoScope } from '../_shared/r2.ts';
 
@@ -228,14 +228,9 @@ async function deleteUserPhoto(ctx: RequestContext) {
   const photoId = intParam(ctx, 'photoId', 'ID de foto inválido');
 
   const [photo] = await sql`select id, file_name, user_id from photo where id = ${photoId} and type = 'user_photo'`;
-  if (!photo) throw new AppError('Foto no encontrada', 404);
 
-  await requireOwnerOrAdmin(ctx.req, photo.userId).catch((err) => {
-    if (err instanceof AppError && err.statusCode === 403) {
-      throw new AppError('No tienes permisos para eliminar esta foto', 403);
-    }
-    throw err;
-  });
+  // Sin sesión es siempre 401; una foto ajena responde igual que una inexistente (los IDs son secuenciales)
+  await requireOwnerOrAdminOf(ctx.req, async () => photo?.userId ?? null, 'Foto no encontrada');
 
   await sql`delete from photo where id = ${photoId}`;
   await sql`update "user" set updated_at = now() where id = ${photo.userId}`;

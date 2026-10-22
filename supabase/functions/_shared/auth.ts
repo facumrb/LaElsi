@@ -83,3 +83,26 @@ export async function requireOwnerOrAdmin(req: Request, ownerId: number): Promis
   }
   return user;
 }
+
+/**
+ * Como requireOwnerOrAdmin, para recursos que se buscan por ID (una orden, una foto).
+ *
+ * El orden importa para no revelar qué IDs existen (son secuenciales): primero se exige la sesión
+ * (sin sesión SIEMPRE es 401, exista o no el recurso) y recién después se busca el recurso. Y un
+ * recurso AJENO responde igual que uno inexistente (404), no con un 403 que confirmaría que existe.
+ * Un administrador sí ve la diferencia: para él un recurso inexistente es un 404 real.
+ *
+ * @param loadOwnerId Devuelve el ID del dueño, o null si el recurso no existe
+ */
+export async function requireOwnerOrAdminOf(
+  req: Request,
+  loadOwnerId: () => Promise<number | null>,
+  notFoundMessage: string,
+): Promise<AuthUser> {
+  const user = await requireUser(req);
+  const ownerId = await loadOwnerId();
+  if (ownerId === null || (user.role !== 'Admin' && user.id !== ownerId)) {
+    throw new AppError(notFoundMessage, 404);
+  }
+  return user;
+}

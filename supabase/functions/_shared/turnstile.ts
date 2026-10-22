@@ -40,14 +40,28 @@ export function getClientIp(req: Request): string {
 }
 
 /**
+ * Indica si la función corre en el stack local de Supabase (`supabase start`), que se sirve por
+ * http://. En producción SUPABASE_URL es siempre https://.
+ */
+function isLocalStack(): boolean {
+  return (Deno.env.get('SUPABASE_URL') ?? '').startsWith('http://');
+}
+
+/**
  * Exige un token de Turnstile válido.
  *
- * Si TURNSTILE_SECRET_KEY no está configurada (desarrollo local) la verificación
- * se omite, para poder probar el flujo sin el widget.
+ * Si falta TURNSTILE_SECRET_KEY la verificación solo se omite en el stack LOCAL, para poder probar
+ * el flujo sin el widget. En producción FALLA CERRADO: un secret olvidado o borrado no puede dejar
+ * el checkout, el registro y la recuperación de contraseña sin protección anti-bots sin que nadie
+ * lo note.
  */
 export async function requireTurnstile(req: Request): Promise<void> {
   const secret = Deno.env.get('TURNSTILE_SECRET_KEY');
-  if (!secret) return;
+  if (!secret) {
+    if (isLocalStack()) return;
+    console.error('Falta TURNSTILE_SECRET_KEY: se rechaza la petición (la verificación anti-bots no puede omitirse en producción)');
+    throw new AppError('La verificación de seguridad no está configurada. Intentá de nuevo más tarde.', 500);
+  }
 
   const token = req.headers.get('X-Turnstile-Token');
   if (!token) {

@@ -1,6 +1,6 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { from, map, Observable, switchMap } from 'rxjs';
+import { from, map, Observable, switchMap, tap } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Router } from '@angular/router';
 import {
@@ -14,7 +14,7 @@ import { UserRole } from '@models/user.model';
 import { supabase } from './supabase.client';
 
 // Lo único que se guarda del usuario en el navegador (localStorage)
-const SESSION_FIELDS = ['id', 'name', 'lastName', 'role', 'photo'] as const;
+const SESSION_FIELDS = ['id', 'name', 'lastName', 'role', 'photo', 'termsAccepted', 'hasPassword'] as const;
 
 /**
  * Deja solo los campos de UserSession. Se usa antes de guardar el usuario en localStorage: otras
@@ -113,10 +113,39 @@ export class AuthService {
     );
   }
 
-  register(userData: IClientRegister): Observable<{ id: number }> {
+  /**
+   * @param turnstileToken Token anti-bots del widget de Cloudflare Turnstile
+   */
+  register(
+    userData: IClientRegister,
+    turnstileToken?: string | null,
+  ): Observable<{ id: number }> {
+    const headers = turnstileToken
+      ? new HttpHeaders({ 'X-Turnstile-Token': turnstileToken })
+      : undefined;
+
     return this.http
-      .post<IApiResponse<{ id: number }>>(`${this.apiUrl}/register`, userData)
+      .post<IApiResponse<{ id: number }>>(`${this.apiUrl}/register`, userData, { headers })
       .pipe(map((response) => response.data));
+  }
+
+  /**
+   * Registra que la cuenta con sesión iniciada acepta los Términos y la Política de Privacidad.
+   * Es lo que se le pide a quien entra con Google: la cuenta se crea al volver de Google, sin
+   * casilla, así que la aceptación queda registrada en el servidor (fecha y versión) recién acá.
+   *
+   * @param termsVersion Versión de los textos que se le mostraron (LEGAL_INFO.version)
+   */
+  acceptTerms(termsVersion: string): Observable<void> {
+    return this.http
+      .post<IApiResponse<{ termsAccepted: boolean }>>(`${this.apiUrl}/accept-terms`, {
+        acceptTerms: true,
+        termsVersion,
+      })
+      .pipe(
+        tap(() => this.updateCurrentUser({ termsAccepted: true })),
+        map(() => void 0),
+      );
   }
 
   verifyPassword(password: string): Observable<IApiResponse<null>> {
@@ -250,6 +279,18 @@ export class AuthService {
     });
   }
 
+  /**
+   * Vuelve a pedir los datos del usuario para completar una copia local vieja (guardada antes de que
+   * existieran termsAccepted y hasPassword). A diferencia de loadProfile, si falla NO cierra la sesión:
+   * la copia local sigue sirviendo y se vuelve a intentar en la próxima carga.
+   */
+  private refreshProfile(): void {
+    this.http.get<IApiResponse<UserSession>>(`${this.apiUrl}/me`).subscribe({
+      next: (response) => this.saveUser(response.data),
+      error: () => undefined,
+    });
+  }
+
   private saveUser(user: UserSession): void {
     localStorage.setItem(this.USER_KEY, JSON.stringify(user));
     this.currentUser.set(user);
@@ -274,6 +315,12 @@ export class AuthService {
         // se reescribe solo con lo necesario para no dejar esos datos en el navegador
         if (Object.keys(parsedUser).length !== Object.keys(sessionUser).length) {
           localStorage.setItem(this.USER_KEY, JSON.stringify(sessionUser));
+        }
+
+        // Una copia guardada por una versión anterior no sabe si la cuenta aceptó los Términos:
+        // se completa desde el servidor sin esperar (setTimeout: el constructor aún está inyectando)
+        if (sessionUser.termsAccepted === undefined) {
+          setTimeout(() => this.refreshProfile(), 0);
         }
       } catch (e) {
         // Si el JSON está corrupto, limpiamos todo

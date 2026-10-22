@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, viewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '@services/auth.service';
@@ -11,6 +11,8 @@ import { GoBackButtonComponent } from '@shared/components/buttons/go-back-button
 import { TrimInputDirective } from '@shared/directives/trim-input.directive';
 import { PasswordToggleButtonComponent } from '@shared/components/buttons/password-toggle-button/password-toggle-button.component';
 import { LogoComponent } from '@shared/components/logo/logo.component';
+import { TurnstileComponent } from '@shared/components/turnstile/turnstile.component';
+import { environment } from 'src/environments/environment';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { AlertService } from '@services/alert.service';
 import { finalize } from 'rxjs';
@@ -30,6 +32,7 @@ import { LEGAL_INFO } from '@client/pages/footer-pages/legal-info';
     TrimInputDirective,
     PasswordToggleButtonComponent,
     LogoComponent,
+    TurnstileComponent,
   ],
   viewProviders: [
     provideIcons({
@@ -48,6 +51,11 @@ export class RegisterPageComponent {
   loading = signal(false);
   passwordVisible = signal(false);
   confirmPasswordVisible = signal(false);
+
+  // Verificación anti-bots (Cloudflare Turnstile). Solo se exige si hay una clave configurada.
+  turnstileEnabled = !!environment.turnstileSiteKey;
+  turnstileToken = signal<string | null>(null);
+  private turnstile = viewChild(TurnstileComponent);
 
   formRegister = this.fb.nonNullable.group(
     {
@@ -143,6 +151,15 @@ export class RegisterPageComponent {
       return;
     }
 
+    if (this.turnstileEnabled && !this.turnstileToken()) {
+      this.alertService.modal(
+        'Verificación en curso',
+        'Todavía estamos verificando que no seas un robot. Esperá unos segundos y volvé a intentar.',
+        'info',
+      );
+      return;
+    }
+
     this.loading.set(true);
 
     const { confirmPassword, ...registerData } = this.formRegister.getRawValue();
@@ -154,7 +171,7 @@ export class RegisterPageComponent {
     };
 
     this.authService
-      .register(payload)
+      .register(payload, this.turnstileToken())
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
         next: () => {
@@ -167,6 +184,8 @@ export class RegisterPageComponent {
           });
         },
         error: (err) => {
+          // El token de Turnstile es de un solo uso: si el registro falla, se pide uno nuevo
+          this.turnstile()?.reset();
           const message =
             err.error?.message ||
             'Ocurrió un error al intentar crear tu cuenta.';

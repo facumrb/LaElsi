@@ -74,9 +74,14 @@ async function add(ctx: RequestContext) {
 }
 
 async function update(ctx: RequestContext) {
-  await requireAdmin(ctx.req);
+  const requester = await requireAdmin(ctx.req);
   const id = intParam(ctx, 'id', 'ID de administrador inválido');
-  const admin = await updateUser(id, 'Admin', sanitizeUserInput(ctx.body, 'Admin'), NOT_FOUND);
+
+  // Si el administrador edita SU PROPIA cuenta, confirma con la contraseña actual al cambiar el email
+  // o la contraseña. Editar a otro administrador no la necesita.
+  const admin = await updateUser(id, 'Admin', sanitizeUserInput(ctx.body, 'Admin'), NOT_FOUND, {
+    selfEdit: requester.id === id ? { req: ctx.req, currentPassword: ctx.body.currentPassword } : undefined,
+  });
   return ok('Administrador actualizado', admin);
 }
 

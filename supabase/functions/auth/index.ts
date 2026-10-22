@@ -20,7 +20,6 @@
 // Google OAuth y la renovación de tokens NO pasan por acá: los maneja el
 // cliente de Supabase directamente en el navegador.
 // ============================================================================
-import { createClient } from 'jsr:@supabase/supabase-js@2';
 import { sql } from '../_shared/db.ts';
 import { requireUser, supabaseAdmin } from '../_shared/auth.ts';
 import {
@@ -37,34 +36,22 @@ import {
   assertValidPassword,
   createUser,
   getSessionUser,
+  recordTermsAcceptance,
   sanitizeUserInput,
   validatePasswords,
 } from '../_shared/usuarios.ts';
+import { assertNotLocked, recordFailedAttempt, signInWithAnyCandidate } from '../_shared/contrasenas.ts';
+import { enforceIpRateLimit } from '../_shared/limites.ts';
 import { getClientIp, requireTurnstile } from '../_shared/turnstile.ts';
 import { assertEmailConfigured, sendEmail } from '../_shared/correo.ts';
 import { passwordChangedEmail, passwordResetEmail } from '../_shared/correo-plantillas.ts';
 import { generateToken, sha256Hex, TOKEN_PATTERN } from '../_shared/tokens.ts';
 
-const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? '';
-const ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY') ?? '';
+// Registros por IP. La ventana no puede superar 1 hora (ver _shared/limites.ts)
+const MAX_REGISTRATIONS_PER_HOUR = 10;
 
-// Límite de intentos fallidos de login por IP (reemplaza a loginLimiter)
-const MAX_FAILED_ATTEMPTS = 5;
-const ATTEMPT_WINDOW_MINUTES = 15;
-
-/**
- * Valida email + contraseña contra Supabase Auth y devuelve la sesión.
- * Se usa un cliente descartable con la clave pública: así cada intento es
- * independiente y no se mezclan sesiones entre peticiones.
- */
-async function signInWithPassword(email: string, password: string) {
-  const client = createClient(SUPABASE_URL, ANON_KEY, {
-    auth: { persistSession: false, autoRefreshToken: false },
-  });
-  const { data, error } = await client.auth.signInWithPassword({ email, password });
-  if (error || !data.session) return null;
-  return data.session;
-}
+// El límite de intentos fallidos de login por IP y la verificación de contraseñas
+// (login, verify-password, cambio de email/contraseña) viven en _shared/contrasenas.ts
 
 async function login(ctx: RequestContext) {
   const { username, email, identifier, password } = ctx.body;
@@ -74,16 +61,7 @@ async function login(ctx: RequestContext) {
   if (!password) throw new AppError('Credenciales inválidas', 401);
 
   const ip = getClientIp(ctx.req);
-  const [{ total }] = await sql`
-    select count(*)::int as total from login_attempt
-    where ip = ${ip} and created_at > now() - make_interval(mins => ${ATTEMPT_WINDOW_MINUTES})
-  `;
-  if (total >= MAX_FAILED_ATTEMPTS) {
-    throw new AppError(
-      `Demasiados intentos de inicio de sesión. Por favor, intente de nuevo en ${ATTEMPT_WINDOW_MINUTES} minutos.`,
-      429,
-    );
-  }
+  await assertNotLocked(ip);
 
   // Se acepta el email o el nombre de usuario (sin distinguir mayúsculas). Si un usuario heredado
   // coincide con el email de OTRA cuenta (ej: usuario "ana@x.com"), gana la cuenta cuyo email es
@@ -95,11 +73,13 @@ async function login(ctx: RequestContext) {
     limit 1
   `;
 
-  const session = profile ? await signInWithPassword(profile.email, String(password)) : null;
+  // La contraseña se prueba tal cual y, si difiere, también normalizada: las cuentas anteriores se
+  // guardaron recortadas y con los espacios repetidos colapsados (ver _shared/contrasenas.ts)
+  const session = profile ? await signInWithAnyCandidate(profile.email, password) : null;
   const user = session ? await getSessionUser(session.user.id) : null;
 
   if (!session || !user) {
-    await sql`insert into login_attempt (ip) values (${ip})`;
+    await recordFailedAttempt(ip);
     // Mismo mensaje exista o no el usuario: no se revela cuál de los dos datos falló
     throw new AppError('Credenciales inválidas', 401);
   }
@@ -120,6 +100,16 @@ async function register(ctx: RequestContext) {
   const input = sanitizeUserInput(ctx.body, 'Client');
   const termsVersion = assertTermsAccepted(ctx.body);
 
+  // Registro público: sin estos controles cualquier programa podía crear cuentas sin límite
+  await enforceIpRateLimit({
+    bucket: 'register',
+    ip: getClientIp(ctx.req),
+    max: MAX_REGISTRATIONS_PER_HOUR,
+    windowMinutes: 60,
+    message: 'Hiciste demasiados intentos de registro. Probá de nuevo en una hora o escribinos por WhatsApp.',
+  });
+  await requireTurnstile(ctx.req);
+
   // Los clientes nuevos siempre se crean con rol Client: el rol no se lee del body
   const client = await createUser(input, 'Client', { requireFullProfile: false, termsVersion });
   return created('Usuario registrado exitosamente', { id: client.id });
@@ -136,13 +126,33 @@ async function verifyPassword(ctx: RequestContext) {
   const authUser = await requireUser(ctx.req);
   const password = ctx.body.password;
 
-  const session = password ? await signInWithPassword(authUser.email, String(password)) : null;
+  // Mismo límite de intentos que el login: con un token robado no se puede probar contraseñas sin freno
+  const ip = getClientIp(ctx.req);
+  await assertNotLocked(ip);
+
+  const session = await signInWithAnyCandidate(authUser.email, password);
   if (!session) {
+    await recordFailedAttempt(ip);
     // 400 y no 401: el frontend interpreta un 401 como sesión vencida y cierra la sesión
     throw new AppError('Contraseña actual incorrecta', 400);
   }
 
   return ok('Contraseña verificada');
+}
+
+/**
+ * Registra la aceptación de los Términos y la Política de Privacidad de una cuenta que ya existe.
+ * Es el caso de Google: la cuenta se crea al volver de Google, sin casilla, así que el frontend le
+ * pide a la persona que acepte antes de seguir y acá queda la constancia (fecha y versión).
+ */
+async function acceptTerms(ctx: RequestContext) {
+  const authUser = await requireUser(ctx.req);
+  if (authUser.role !== 'Client') {
+    throw new AppError('Solo las cuentas de clientes aceptan los Términos y Condiciones', 403);
+  }
+
+  await recordTermsAcceptance(authUser.id, assertTermsAccepted(ctx.body));
+  return ok('Aceptación registrada', { termsAccepted: true });
 }
 
 // ─── Recuperación de contraseña ──────────────────────────────────────────────
@@ -370,6 +380,7 @@ serveRoutes('auth', [
   ['POST', '/login', login],
   ['POST', '/register', register],
   ['GET', '/me', me],
+  ['POST', '/accept-terms', acceptTerms],
   ['POST', '/verify-password', verifyPassword],
   ['POST', '/forgot-password', forgotPassword],
   ['POST', '/reset-password/validate', validateResetToken],

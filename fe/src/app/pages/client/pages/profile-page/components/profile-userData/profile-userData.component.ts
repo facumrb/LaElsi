@@ -48,6 +48,10 @@ export class ProfileUserComponent {
   saving = signal(false);
   isChangePasswordMode = signal(false);
 
+  // La contraseña actual que la persona escribió y el servidor verificó. Se envía junto con la nueva:
+  // el servidor la vuelve a exigir, porque con solo la sesión iniciada no alcanza para cambiarla.
+  private verifiedCurrentPassword: string | null = null;
+
   formUsuario = this.fb.nonNullable.group({
     username: [
       '',
@@ -123,6 +127,7 @@ export class ProfileUserComponent {
     if (password) {
       this.authService.verifyPassword(password).subscribe({
         next: () => {
+          this.verifiedCurrentPassword = password;
           this.isChangePasswordMode.set(true);
           this.alertService.toast('Contraseña verificada correctamente', 'success');
         },
@@ -150,8 +155,10 @@ export class ProfileUserComponent {
     };
     if (rawValue.password && rawValue.password.trim() !== '') {
       clientData.password = rawValue.password;
+      if (this.verifiedCurrentPassword) {
+        clientData.currentPassword = this.verifiedCurrentPassword;
+      }
     }
-
     this.apiClientService
       .updateClient(userId, clientData)
       .pipe(switchMap(() => this.photoManager().saveChanges(userId)))
@@ -159,6 +166,8 @@ export class ProfileUserComponent {
         next: () => {
           this.saving.set(false);
           this.isChangePasswordMode.set(false);
+          // Ya se usó: no se guarda más tiempo del necesario (si el guardado falla se conserva para reintentar)
+          this.verifiedCurrentPassword = null;
           this.alertService.toast('Datos de usuario actualizados', 'success');
           this.formUsuario.get('password')?.setValue('');
           this.formUsuario.get('confirmPassword')?.setValue('');

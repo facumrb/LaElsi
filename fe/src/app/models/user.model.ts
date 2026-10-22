@@ -73,8 +73,12 @@ export type ICreateClient = Omit<IApiClient, OmitAutoFields> & {
 
 export type IUpdateClient = Partial<Omit<IApiClient, OmitAutoFields>> & {
   password?: string;
+  // La contraseña ACTUAL: el servidor la exige para que una persona cambie su propio email o contraseña
+  currentPassword?: string;
 };
 
 export type IUpdateAdmin = Partial<Omit<IApiAdmin, OmitAutoFields>> & {
   password?: string;
+  // La contraseña ACTUAL: el servidor la exige para que un administrador cambie su propio email o contraseña
+  currentPassword?: string;
 };

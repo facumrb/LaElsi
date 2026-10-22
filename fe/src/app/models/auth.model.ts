@@ -7,6 +7,11 @@ export interface UserSession {
   lastName: string;
   role: UserRole;
   photo?: IApiUserPhoto | null;
+  // false = todavía no aceptó los Términos y la Política de Privacidad (cuentas de Google y cuentas
+  // anteriores a la casilla del registro). Ausente en copias locales viejas: se completa desde /auth/me
+  termsAccepted?: boolean;
+  // false = la cuenta no tiene contraseña propia (entra solo con Google): no hay "contraseña actual" que pedir
+  hasPassword?: boolean;
 }
 
 export interface LoginData {
